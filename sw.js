@@ -1,7 +1,7 @@
 /* VIBRA app service worker: works offline, receives notifications.
    A push carries no content: on each push the worker asks the admin's helper for the text, with this device's
    own secret, and shows it. Nothing else leaves the device. */
-var CACHE = 'vibra-app-1.0.0';
+var CACHE = 'vibra-app-1.1.0';
 var SHELL = ['./', './index.html', './app.js', './config.js', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png',
   './icons/maskable-512.png', './icons/apple-touch-icon.png', './icons/badge-96.png', './icons/favicon-32.png'];
 var LABEL = { ball_to_you: 'Ball to you', changed: 'Manuscript changed', ai_update: 'AI update', inbox_reply: 'Quick update', deadline: 'Deadline',
@@ -75,7 +75,7 @@ function onPush() {
       return kv('set', 'news', news).catch(function () { });
     }).then(function () {
       var shown = items.slice(0, 3).map(function (n) {
-        return self.registration.showNotification(LABEL[n.kind] || 'VIBRA Tracker', Object.assign({ body: n.text, tag: 'vibra-' + n.id, data: { url: './?n=' + encodeURIComponent(n.id) } }, opts));
+        return self.registration.showNotification(LABEL[n.kind] || 'VIBRA Tracker', Object.assign({ body: n.text, tag: 'vibra-' + n.id, data: { url: n.mid ? './?m=' + encodeURIComponent(n.mid) : './', m: Number(n.mid) || 0 } }, opts));
       });
       var extra = Math.max(0, items.length - 3) + (j.more || 0);
       if (extra) shown.push(self.registration.showNotification('VIBRA Tracker', Object.assign({ body: 'and ' + extra + ' more update' + (extra > 1 ? 's' : '') + '.', tag: 'vibra-more', data: { url: './' } }, opts)));
@@ -84,12 +84,13 @@ function onPush() {
   });
 }
 
+/* a click opens VIBRA (the tracker itself in the installed app) on the manuscript the notification is about */
 self.addEventListener('notificationclick', function (e) {
   e.notification.close();
-  var target = new URL((e.notification.data && e.notification.data.url) || './', self.registration.scope).href;
+  var data = e.notification.data || {}, target = new URL(data.url || './', self.registration.scope).href;
   e.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function (cs) {
     for (var i = 0; i < cs.length; i++) {
-      if (cs[i].url.indexOf(self.registration.scope) === 0 && 'focus' in cs[i]) { cs[i].postMessage({ type: 'refresh' }); return cs[i].focus(); }
+      if (cs[i].url.indexOf(self.registration.scope) === 0 && 'focus' in cs[i]) { cs[i].postMessage({ type: 'open', m: data.m || 0 }); return cs[i].focus(); }
     }
     return self.clients.openWindow(target);
   }));

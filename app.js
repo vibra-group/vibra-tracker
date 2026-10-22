@@ -1,5 +1,8 @@
-/* VIBRA app (installable page on GitHub Pages). It holds no group data: it opens the tracker, pairs this device for
-   notifications with a one-time code from the tracker, and keeps the owner's own manuscript list for offline reading. */
+/* VIBRA app (installable page on GitHub Pages). It holds no group data.
+   Installed on a computer or Android phone, it shows the tracker itself, full window (the tracker page in a frame);
+   notifications are then turned on from the tracker's Settings, which talks to this page with a few messages.
+   In a browser tab, on iPhone, offline or when the frame cannot open, it shows the app page: open the tracker,
+   pair this device with a one-time code, and the owner's own manuscript list kept for offline reading. */
 (function () {
   'use strict';
   var C = window.VIBRA || {};
@@ -10,6 +13,10 @@
   var STANDALONE = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
   var PUSH_OK = 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
   var S = { device: null, summary: null, news: [], busy: false, msg: null, installEvt: null };
+  // the installed app shows the tracker itself; iPhone and iPad keep the app page (Safari does not keep Google's sign-in inside frames)
+  var EMBEDDABLE = STANDALONE && !IOS && !!C.trackerUrl;
+  var TRACKER_ORIGIN = /^https:\/\/[a-z0-9-]+-script\.googleusercontent\.com$/;
+  var A = { on: false, ready: false, win: null, origin: '', timers: [], permP: null, pendingOpen: 0 };
   var $ = function (id) { return document.getElementById(id); };
 
   /* ---------- small helpers */
@@ -55,7 +62,7 @@
     a.href = C.trackerUrl || '#';
     $('open-hint').textContent = !navigator.onLine ? 'You are offline: the tracker needs a connection. Your own list below is the copy from the last sync.' :
       STANDALONE && IOS ? 'The tracker opens inside VIBRA; tap Done at the top to come back here.' :
-      STANDALONE ? 'The tracker opens in this window; use Back to return here.' : '';
+      EMBEDDABLE ? 'The tracker opens right here, in the VIBRA window.' : '';
   }
   function renderInstall() {
     var box = $('install'), body = $('install-body');
@@ -74,7 +81,7 @@
     var body = $('notif-body'), kids = [];
     if (S.msg) kids.push(el('p', { cls: 'msg' + (S.msg.err ? ' err' : ' ok'), role: S.msg.err ? 'alert' : 'status', text: S.msg.text }));
     if (S.device) {
-      kids.push(el('p', { style: 'margin:0', text: 'On for ' + (S.device.member || 'you') + ' on this ' + (S.device.label || 'device') + '. You are told when the ball comes to you or a manuscript you are on changes, as chosen in the tracker (My account).' }));
+      kids.push(el('p', { style: 'margin:0', text: 'On for ' + (S.device.member || 'you') + ' on this ' + (S.device.label || 'device') + '. You are told when the ball comes to you or a manuscript you are on changes, as chosen in the tracker (Settings, Notifications).' }));
       kids.push(el('div', { cls: 'row' }, [
         el('button', { cls: 'btn small', type: 'button', text: 'Send a test', onclick: test }),
         el('button', { cls: 'btn small', type: 'button', text: 'Turn off', onclick: off })]));
@@ -88,7 +95,7 @@
     } else {
       var input = el('input', { id: 'code', cls: 'code', type: 'text', inputmode: 'text', autocomplete: 'one-time-code', autocapitalize: 'characters', spellcheck: 'false', maxlength: '9', placeholder: 'ABCD-EFGH', 'aria-describedby': 'code-hint' });
       input.value = S.prefill || '';
-      kids.push(el('p', { style: 'margin:0', text: 'Get a one-time code in the tracker (My account, box "VIBRA app on your phone and computer"), type it here, and allow notifications.' }));
+      kids.push(el('p', { style: 'margin:0', text: 'Get a one-time code in the tracker (Settings, Notifications, box "VIBRA app on your phone and computer"), type it here, and allow notifications.' }));
       kids.push(el('label', { cls: 'lbl', for: 'code', text: 'Pairing code' }));
       kids.push(input);
       kids.push(el('p', { cls: 'hint', id: 'code-hint', text: 'The code is valid 30 minutes and pairs this one device with your tracker account.' }));
@@ -126,14 +133,14 @@
 
   /* ---------- actions */
   function say(text, err) { S.msg = { text: text, err: !!err }; render(); }
-  function pair() {
-    var code = String(($('code') || {}).value || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
-    if (code.length !== 8) return say('Type the 8-character code shown in the tracker (for example ABCD-EFGH).', true);
-    if (!helperUrl()) return say('Notifications are not switched on yet.', true);
-    S.busy = true; S.msg = null; render();
+  function pairWith(code, permP) {
+    code = String(code || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+    if (code.length !== 8) return Promise.reject(new Error('Type the 8-character code shown in the tracker (for example ABCD-EFGH).'));
+    if (!helperUrl()) return Promise.reject(new Error('Notifications are not switched on yet.'));
+    if (!PUSH_OK) return Promise.reject(new Error('This browser cannot receive notifications.'));
     var dev = rand(18), k = rand(32), vapid = '';
-    Notification.requestPermission().then(function (perm) {
-      if (perm !== 'granted') throw new Error('Notifications were not allowed. Allow them for VIBRA, then try again.');
+    return (permP || Notification.requestPermission()).then(function () {
+      if (Notification.permission !== 'granted') throw new Error('Notifications were not allowed. Allow them for VIBRA, then try again.');
       return fetch(helperUrl() + '?action=config', { credentials: 'omit', cache: 'no-store' }).then(function (r) { return r.json(); });
     }).then(function (cfg) {
       vapid = cfg && cfg.vapid; if (!vapid) throw new Error('The helper is not ready for notifications yet.');
@@ -149,27 +156,39 @@
         return kv('set', 'device', S.device);
       });
     }).then(function () {
-      S.busy = false; S.prefill = ''; history.replaceState(null, '', location.pathname);
-      say('Notifications are on. A test is on its way.');
-      return post({ action: 'test', dev: S.device.dev, k: S.device.k }).catch(function () { });
-    }).then(sync).catch(function (e) { S.busy = false; say(String(e && e.message || e), true); });
+      post({ action: 'test', dev: S.device.dev, k: S.device.k }).catch(function () { }).then(sync);
+      return 'Notifications are on. A test is on its way.';
+    });
   }
-  function test() {
-    post({ action: 'test', dev: S.device.dev, k: S.device.k }).then(function (r) {
-      if (r && r.error === 'unknown device') return forget('This device is no longer paired (the push service ended the subscription). Pair it again.');
-      say(r && r.ok ? 'Test sent. It should arrive in a few seconds.' : 'The test could not be sent (' + ((r && (r.result || r.error)) || 'no answer') + ').', !(r && r.ok));
-    }).catch(function (e) { say('No connection to the helper: ' + e.message, true); });
+  function pair() {
+    var code = ($('code') || {}).value; // read before the box is drawn again
+    S.busy = true; S.msg = null; S.prefill = code; render();
+    pairWith(code).then(function (t) {
+      S.busy = false; S.prefill = ''; history.replaceState(null, '', location.pathname); say(t);
+    }).catch(function (e) { S.busy = false; say(String(e && e.message || e), true); });
   }
-  function off() {
+  function testP() {
+    if (!S.device) return Promise.reject(new Error('This device is not paired.'));
+    return post({ action: 'test', dev: S.device.dev, k: S.device.k }).then(function (r) {
+      if (r && r.error === 'unknown device') { drop(); throw new Error('This device is no longer paired (the push service ended the subscription). Pair it again.'); }
+      if (r && r.ok) return 'Test sent. It should arrive in a few seconds.';
+      throw new Error('The test could not be sent (' + ((r && (r.result || r.error)) || 'no answer') + ').');
+    }, function (e) { throw new Error('No connection to the helper: ' + e.message); });
+  }
+  function test() { testP().then(function (t) { say(t); }).catch(function (e) { say(e.message, true); }); }
+  function offP() {
     var d = S.device;
-    post({ action: 'unsubscribe', dev: d.dev, k: d.k }).catch(function () { }).then(function () {
-      return navigator.serviceWorker.ready.then(function (reg) { return reg.pushManager.getSubscription(); }).then(function (s) { return s && s.unsubscribe(); }).catch(function () { });
-    }).then(function () { forget('Notifications are off on this device, and your offline list was removed.'); });
+    if (!d) return Promise.resolve('Notifications are already off on this device.');
+    return post({ action: 'unsubscribe', dev: d.dev, k: d.k }).catch(function () { }).then(function () {
+      return navigator.serviceWorker.ready.then(function (reg) { return reg.pushManager.getSubscription(); }).then(function (x) { return x && x.unsubscribe(); }).catch(function () { });
+    }).then(drop).then(function () { return 'Notifications are off on this device, and your offline list was removed.'; });
   }
-  function forget(text) {
+  function off() { offP().then(function (t) { say(t); }); }
+  function drop() {
     S.device = null; S.summary = null; S.news = [];
-    Promise.all([kv('del', 'device'), kv('del', 'summary'), kv('del', 'news')]).catch(function () { }).then(function () { say(text, false); });
+    return Promise.all([kv('del', 'device'), kv('del', 'summary'), kv('del', 'news')]).catch(function () { });
   }
+  function forget(text) { drop().then(function () { say(text, false); }); }
   function sync() {
     if (!S.device || !navigator.onLine) return Promise.resolve();
     return post({ action: 'summary', dev: S.device.dev, k: S.device.k }).then(function (r) {
@@ -177,6 +196,66 @@
       if (r && r.error === 'unknown device') forget('This device is no longer paired. Pair it again with a new code from the tracker.');
     }).catch(function () { render(); });
   }
+
+
+  /* ---------- the installed app: the tracker fills the window */
+  function trackerSrc(m) { return C.trackerUrl + (m ? (C.trackerUrl.indexOf('?') >= 0 ? '&' : '?') + 'm=' + encodeURIComponent(m) : ''); }
+  function splash(text, actions, stuck) {
+    $('splash-msg').textContent = text; $('splash-act').hidden = !actions; $('splash').classList.toggle('stuck', !!stuck);
+  }
+  function startApp(m) {
+    if (!EMBEDDABLE || !navigator.onLine) return false;
+    A.on = true; A.ready = false; A.win = null; A.timers.forEach(clearTimeout);
+    $('home').hidden = true; $('app').hidden = false; $('app').classList.remove('ready');
+    splash('Opening your manuscripts…', false, false);
+    A.timers = [
+      setTimeout(function () { if (!A.ready) splash('Still opening… Google can take a few seconds the first time.', true, false); }, 12000),
+      setTimeout(function () { if (!A.ready) splash('The tracker did not open inside the app. If Google asks you to sign in, open it in the browser once, sign in with your group account, then tap Try again.', true, true); }, 30000)];
+    $('tracker').src = trackerSrc(m);
+    if (location.search) history.replaceState(null, '', location.pathname);
+    return true;
+  }
+  function showHome() {
+    A.on = false; A.ready = false; A.win = null; A.timers.forEach(clearTimeout);
+    $('app').hidden = true; $('tracker').src = 'about:blank'; $('home').hidden = false; render();
+  }
+  function ourFrame(w) { // the message comes from inside our own frame (the tracker sits two frames deep)
+    var top = $('tracker').contentWindow;
+    for (var i = 0; i < 6 && w; i++) { if (w === top) return true; if (w === w.parent) return false; w = w.parent; }
+    return false;
+  }
+  function tell(m) { if (A.win) try { A.win.postMessage(m, A.origin); } catch (e) { } }
+  function status() {
+    return { type: 'vibra-push-status', supported: PUSH_OK, permission: PUSH_OK ? Notification.permission : 'unsupported', paired: !!S.device,
+      member: S.device ? S.device.member : '', label: S.device ? S.device.label : deviceLabel(), helper: !!helperUrl() };
+  }
+  function result(p) {
+    p.then(function (t) { render(); tell({ type: 'vibra-push-result', ok: true, text: t, status: status() }); })
+      .catch(function (e) { render(); tell({ type: 'vibra-push-result', ok: false, error: String(e && e.message || e), status: status() }); });
+  }
+  function setTheme(dark) {
+    Array.prototype.forEach.call(document.querySelectorAll('meta[name="theme-color"]'), function (m) { m.removeAttribute('media'); m.setAttribute('content', dark ? '#1F1E1D' : '#F1EEE6'); });
+    $('app').style.background = $('tracker').style.background = dark ? '#262624' : '#F8F6F1';
+  }
+  function openInTracker(m) { if (!A.on) return startApp(m); if (A.ready) tell({ type: 'vibra-open', m: m }); else A.pendingOpen = m; }
+  window.addEventListener('message', function (e) {
+    if (!A.on || !TRACKER_ORIGIN.test(e.origin) || !e.data || typeof e.data !== 'object' || !ourFrame(e.source)) return;
+    var d = e.data;
+    A.win = e.source; A.origin = e.origin;
+    if (d.type === 'vibra-ready' || d.type === 'vibra-error') {
+      A.ready = true; A.timers.forEach(clearTimeout); $('app').classList.add('ready');
+      if (A.pendingOpen) { tell({ type: 'vibra-open', m: A.pendingOpen }); A.pendingOpen = 0; }
+    } else if (d.type === 'vibra-push-status') tell(status());
+    else if (d.type === 'vibra-push-permission') A.permP = PUSH_OK ? Notification.requestPermission() : null; // still inside the person's click
+    else if (d.type === 'vibra-push-on') { var pp = A.permP; A.permP = null; result(pairWith(d.code, pp)); }
+    else if (d.type === 'vibra-push-test') result(testP());
+    else if (d.type === 'vibra-push-off') result(offP());
+    else if (d.type === 'vibra-theme') setTheme(!!d.dark);
+  });
+  $('sp-browser').addEventListener('click', function () { window.open(C.trackerUrl, '_blank', 'noopener'); });
+  $('sp-retry').addEventListener('click', function () { startApp(0); });
+  $('sp-home').addEventListener('click', showHome);
+  $('open').addEventListener('click', function (e) { if (EMBEDDABLE && navigator.onLine) { e.preventDefault(); startApp(0); } });
 
   /* ---------- start */
   var m = /[#&]pair=([A-Za-z0-9-]{8,9})/.exec(location.hash || '');
@@ -190,7 +269,11 @@
   document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') { load().then(sync); } });
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js', { scope: './' }).catch(function () { });
-    navigator.serviceWorker.addEventListener('message', function (e) { if (e.data && e.data.type === 'refresh') load().then(sync); });
+    navigator.serviceWorker.addEventListener('message', function (e) {
+      if (!e.data) return;
+      if (e.data.type === 'refresh' || e.data.type === 'open') load().then(sync);
+      if (e.data.type === 'open' && e.data.m && EMBEDDABLE) openInTracker(Number(e.data.m));
+    });
   }
   function load() {
     return Promise.all([kv('get', 'device'), kv('get', 'summary'), kv('get', 'news')]).then(function (v) {
@@ -198,5 +281,7 @@
     }).catch(function () { render(); });
   }
   render();
+  var startM = Number(new URLSearchParams(location.search).get('m')) || 0;
+  if (!/[?&]home\b/.test(location.search)) startApp(startM);
   load().then(sync);
 })();

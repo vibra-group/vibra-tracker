@@ -1,14 +1,14 @@
 {
   "name": "VIBRA Tracker",
   "short_name": "VIBRA",
-  "description": "Manuscripts of the VIBRA research group: open the tracker, get notifications, read your manuscripts offline.",
+  "description": "The VIBRA research group's manuscript tracker, in its own window, with notifications and your own list offline.",
   "id": "./",
   "start_url": "./?source=app",
   "scope": "./",
   "display": "standalone",
   "orientation": "any",
-  "background_color": "#F1F2F4",
-  "theme_color": "#17407F",
+  "background_color": "#F8F6F1",
+  "theme_color": "#F1EEE6",
   "lang": "en",
   "categories": ["productivity", "education", "medical"],
   "icons": [
