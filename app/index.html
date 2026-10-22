@@ -63,8 +63,8 @@ window.VIBRA_WEB = { helper: "https://script.google.com/macros/s/AKfycbzNE__5onO
       var el = document.getElementById('vw-gate');
       if (!el) {
         el = document.createElement('div'); el.id = 'vw-gate'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-modal', 'true'); el.setAttribute('aria-labelledby', 'vw-h');
-        el.innerHTML = '<div class="vw-card"><img class="vw-logo" src="../icons/icon-192.png" alt="" width="64" height="64">' +
-          '<h1 id="vw-h">VIBRA Tracker</h1><p class="vw-sub">Manuscripts of the VIBRA group</p>' +
+        el.innerHTML = '<div class="vw-card"><div class="vw-logo"><img src="../icons/vibra-logo-full.jpg" width="760" height="692" alt="VIBRA, Visionary International Board for Research and Analgesia"></div>' +
+          '<h1 id="vw-h">Manuscript Tracker</h1>' +
           '<div id="vw-btn" class="vw-btn"></div><p id="vw-msg" role="status" aria-live="polite"></p>' +
           '<p class="vw-note">Sign in with the Google account that is on the VIBRA member list. The app receives only your name and e-mail address.</p>' +
           (W.classic ? '<p class="vw-note"><a href="' + W.classic + '" target="_top">Open the classic tracker instead</a></p>' : '') + '</div>';
@@ -105,14 +105,14 @@ window.VIBRA_WEB = { helper: "https://script.google.com/macros/s/AKfycbzNE__5onO
 })();
 </script>
 <script src="https://accounts.google.com/gsi/client" async defer onload="window.__vibraGisLoaded()"></script>
-<link rel="icon" href="../icons/favicon-32.png"><link rel="apple-touch-icon" href="../icons/apple-touch-icon.png">
+<link rel="icon" href="../icons/favicon-32.png"><link rel="apple-touch-icon" href="../icons/apple-touch-icon.png"><link rel="preload" as="image" href="../icons/vibra-logo-full.jpg">
 <style>
 #vw-gate{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;padding:24px 16px;background:var(--bg,#F5F5F2)}
 #vw-gate[hidden]{display:none}
-#vw-gate .vw-card{width:100%;max-width:400px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;padding:36px 28px;border-radius:14px;background:var(--surface,#fff);box-shadow:var(--shadow-2);border:1px solid var(--line,#E6E4DF)}
-#vw-gate .vw-logo{border-radius:14px}
-#vw-gate h1{margin:6px 0 0;font:500 30px/1.15 'Source Serif 4',Georgia,serif;color:var(--accent-text,#14396E)}
-#vw-gate .vw-sub{margin:0 0 14px;color:var(--muted,#66645E);font:14px var(--sans,system-ui)}
+#vw-gate .vw-card{width:100%;max-width:440px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;padding:28px 28px 30px;border-radius:14px;background:var(--surface,#fff);box-shadow:var(--shadow-2);border:1px solid var(--line,#E6E4DF)}
+#vw-gate .vw-logo{width:100%;max-width:340px;background:#fff;border-radius:12px;overflow:hidden}
+#vw-gate .vw-logo img{display:block;width:100%;height:auto}
+#vw-gate h1{margin:4px 0 14px;font:500 26px/1.2 'Source Serif 4',Georgia,serif;color:var(--ink,#15171C)}
 #vw-gate .vw-btn{min-height:44px;display:flex;justify-content:center}
 #vw-gate #vw-msg{min-height:20px;margin:4px 0 0;font:13.5px var(--sans,system-ui);color:var(--ink-2,#3B3A37)}
 #vw-gate #vw-msg.vw-bad{color:var(--danger,#8E2417)}
