@@ -1,9 +1,9 @@
-/* VIBRA app service worker: works offline, receives notifications.
+/* VIBRA app service worker (2.0.0: the tracker itself is the app, at ./app/): works offline, receives notifications.
    A push carries no content: on each push the worker asks the admin's helper for the text, with this device's
    own secret, and shows it. Nothing else leaves the device. */
-var CACHE = 'vibra-app-1.2.0';
-var SHELL = ['./', './index.html', './app.js', './config.js', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png',
-  './icons/maskable-512.png', './icons/apple-touch-icon.png', './icons/badge-96.png', './icons/favicon-32.png'];
+var CACHE = 'vibra-app-2.0.0';
+var SHELL = ['./', './app/', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png', './icons/maskable-512.png',
+  './icons/apple-touch-icon.png', './icons/badge-96.png', './icons/favicon-32.png', './icons/vibra-logo-full.jpg'];
 var LABEL = { ball_to_you: 'Ball to you', changed: 'Manuscript changed', ai_update: 'AI update', inbox_reply: 'Quick update', deadline: 'Deadline',
   delete_request: 'Deletion request', delete_reply: 'Deletion', feedback_reply: 'App feedback', inbox: 'Quick update', test: 'VIBRA Tracker' };
 
@@ -19,14 +19,13 @@ self.addEventListener('fetch', function (e) {
   var req = e.request, url = new URL(req.url);
   if (req.method !== 'GET' || url.origin !== self.location.origin) return;
   if (req.mode === 'navigate') {
-    // 1.2.0: only the app page itself is kept as the offline shell; other pages under this address (the tracker's
-    // web front end in app/) are kept under their own name and never replace the shell.
-    var scope = new URL(self.registration.scope).pathname, shell = url.pathname === scope || url.pathname === scope + 'index.html';
-    var key = shell ? './index.html' : url.origin + url.pathname;
+    // network first; each page (the app at ./app/, the address ./ that leads to it) is kept under its own address
+    // for offline use, without its ?query (the manuscript number)
+    var key = url.origin + url.pathname.replace(/index\.html$/, '');
     e.respondWith(fetch(req).then(function (r) {
       if (r.ok) { var c = r.clone(); caches.open(CACHE).then(function (x) { x.put(key, c); }); }
       return r;
-    }).catch(function () { return caches.match(key).then(function (r) { return r || caches.match('./index.html'); }); }));
+    }).catch(function () { return caches.match(key).then(function (r) { return r || caches.match('./app/'); }); }));
     return;
   }
   e.respondWith(caches.match(req, { ignoreSearch: true }).then(function (hit) {
@@ -72,26 +71,23 @@ function onPush() {
     var items = j.items || [];
     if (!items.length) {
       // a push must always show something (browsers stop delivering otherwise)
-      return self.registration.showNotification('VIBRA Tracker', Object.assign({ body: 'Something changed on one of your manuscripts. Open VIBRA to see it.', tag: 'vibra-generic', data: { url: './' } }, opts));
+      return self.registration.showNotification('VIBRA Tracker', Object.assign({ body: 'Something changed on one of your manuscripts. Open VIBRA to see it.', tag: 'vibra-generic', data: { url: './app/' } }, opts));
     }
-    return kv('get', 'news').catch(function () { return []; }).then(function (old) {
-      var seen = {}, news = items.concat(old || []).filter(function (n) { if (seen[n.id]) return false; seen[n.id] = 1; return true; }).slice(0, 30);
-      return kv('set', 'news', news).catch(function () { });
-    }).then(function () {
+    return Promise.resolve().then(function () {
       var shown = items.slice(0, 3).map(function (n) {
-        return self.registration.showNotification(LABEL[n.kind] || 'VIBRA Tracker', Object.assign({ body: n.text, tag: 'vibra-' + n.id, data: { url: n.mid ? './?m=' + encodeURIComponent(n.mid) : './', m: Number(n.mid) || 0 } }, opts));
+        return self.registration.showNotification(LABEL[n.kind] || 'VIBRA Tracker', Object.assign({ body: n.text, tag: 'vibra-' + n.id, data: { url: n.mid ? './app/?m=' + encodeURIComponent(n.mid) : './app/', m: Number(n.mid) || 0 } }, opts));
       });
       var extra = Math.max(0, items.length - 3) + (j.more || 0);
-      if (extra) shown.push(self.registration.showNotification('VIBRA Tracker', Object.assign({ body: 'and ' + extra + ' more update' + (extra > 1 ? 's' : '') + '.', tag: 'vibra-more', data: { url: './' } }, opts)));
+      if (extra) shown.push(self.registration.showNotification('VIBRA Tracker', Object.assign({ body: 'and ' + extra + ' more update' + (extra > 1 ? 's' : '') + '.', tag: 'vibra-more', data: { url: './app/' } }, opts)));
       return Promise.all(shown);
     });
   });
 }
 
-/* a click opens VIBRA (the tracker itself in the installed app) on the manuscript the notification is about */
+/* a click opens VIBRA on the manuscript the notification is about (an open VIBRA window is focused and told) */
 self.addEventListener('notificationclick', function (e) {
   e.notification.close();
-  var data = e.notification.data || {}, target = new URL(data.url || './', self.registration.scope).href;
+  var data = e.notification.data || {}, target = new URL(data.url || './app/', self.registration.scope).href;
   e.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function (cs) {
     for (var i = 0; i < cs.length; i++) {
       if (cs[i].url.indexOf(self.registration.scope) === 0 && 'focus' in cs[i]) { cs[i].postMessage({ type: 'open', m: data.m || 0 }); return cs[i].focus(); }

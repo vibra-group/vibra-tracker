@@ -1,9 +1,9 @@
 {
   "name": "VIBRA Tracker",
   "short_name": "VIBRA",
-  "description": "The VIBRA research group's manuscript tracker, in its own window, with notifications and your own list offline.",
+  "description": "The VIBRA research group's manuscript tracker: its own window, notifications for what concerns you, your last data readable offline.",
   "id": "./",
-  "start_url": "./?source=app",
+  "start_url": "./app/?source=app",
   "scope": "./",
   "display": "standalone",
   "orientation": "any",

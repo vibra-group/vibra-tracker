@@ -5,18 +5,22 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <script>
-/* VIBRA web front end (vibra-group.github.io), built by tools/build_web.py from app/Index.html 0.1.15.
-   Google confirms who the member is ("Sign in with Google"); the admin's helper checks that sign-in once and gives a
-   session; every server call then goes to the helper with that session and runs the tracker's own code as the member. */
-window.VIBRA_WEB = { helper: "https://script.google.com/macros/s/AKfycbzNE__5onOmvia3VaFHjybAJ5G35cnDJCN1ysuiNAYlgOC5xsbCi0xyDnmoJP7lEaFR3w/exec", clientId: "619243121375-pi18v7vjgvcue7qo6455uids4v28megi.apps.googleusercontent.com", classic: "https://script.google.com/macros/s/AKfycbzkG5eCrxQvQtJgfksL92G9vtl2I4LLEew-Az4qYlDxX6V1QfgtIrwGjYOGq9CQ0r3aWA/exec", built: "0.1.15" };
+/* VIBRA Tracker 0.2.0 on the group's own address (vibra-group.github.io), built by tools/build_web.py from app/Index.html.
+   This page is the VIBRA app: installable, with notifications and the last data readable offline.
+   Google confirms who the member is ("Sign in with Google"), or a one-time code made on a signed-in device does; the
+   admin's helper checks that once and gives a session; every server call then goes to the helper with that session
+   and runs the tracker's own code as the member. */
+window.VIBRA_WEB = { helper: "https://script.google.com/macros/s/AKfycbzNE__5onOmvia3VaFHjybAJ5G35cnDJCN1ysuiNAYlgOC5xsbCi0xyDnmoJP7lEaFR3w/exec", clientId: "619243121375-pi18v7vjgvcue7qo6455uids4v28megi.apps.googleusercontent.com", classic: "https://script.google.com/macros/s/AKfycbzkG5eCrxQvQtJgfksL92G9vtl2I4LLEew-Az4qYlDxX6V1QfgtIrwGjYOGq9CQ0r3aWA/exec", built: "0.2.0" };
 (function () {
   var W = window.VIBRA_WEB, KEY = 'vibra-web-session', S = null, queue = [], gisInit = false, tries = 0, gateOn = false;
+  var ua = navigator.userAgent || '', IOS = /iPad|iPhone|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+  var STANDALONE = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
   try { S = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) { S = null; }
   if (S && !(S.exp > Date.now() + 60000 && S.session)) S = null;
   if (S) { window.__VIBRA_U = S.u || ''; window.__VIBRA_V = S.v || ''; }
   function save() { try { if (S) localStorage.setItem(KEY, JSON.stringify(S)); else localStorage.removeItem(KEY); } catch (e) { } }
-  function post(body) {
-    return fetch(W.helper, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(body),
+  function post(body, url) {
+    return fetch(url || W.helper, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(body),
       credentials: 'omit', cache: 'no-store', redirect: 'follow' }).then(function (r) {
       if (!r.ok) throw new Error('The VIBRA server did not answer (' + r.status + '). Try again in a moment.');
       return r.json();
@@ -55,20 +59,34 @@ window.VIBRA_WEB = { helper: "https://script.google.com/macros/s/AKfycbzNE__5onO
   attach();
   window.__vibraGisLoaded = function () { attach(); if (gateOn) initGis(); };
 
-  /* the sign-in screen */
-  function msg(t, bad) { var m = document.getElementById('vw-msg'); if (m) { m.textContent = t || ''; m.className = bad ? 'vw-bad' : ''; } }
+  /* ---------- the sign-in screen: Google, or a one-time code from a device where the member is signed in */
+  var $ = function (id) { return document.getElementById(id); };
+  function msg(t, bad) { var m = $('vw-msg'); if (m) { m.textContent = t || ''; m.className = bad ? 'vw-bad' : ''; } }
   function gate() {
     if (gateOn) return; gateOn = true;
     var show = function () {
-      var el = document.getElementById('vw-gate');
+      var el = $('vw-gate');
       if (!el) {
         el = document.createElement('div'); el.id = 'vw-gate'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-modal', 'true'); el.setAttribute('aria-labelledby', 'vw-h');
+        var iosApp = IOS && STANDALONE;
         el.innerHTML = '<div class="vw-card"><div class="vw-logo"><img src="../icons/vibra-logo-full.jpg" width="760" height="692" alt="VIBRA, Visionary International Board for Research and Analgesia"></div>' +
           '<h1 id="vw-h">Manuscript Tracker</h1>' +
           '<div id="vw-btn" class="vw-btn"></div><p id="vw-msg" role="status" aria-live="polite"></p>' +
-          '<p class="vw-note">Sign in with the Google account that is on the VIBRA member list. The app receives only your name and e-mail address.</p>' +
-          (W.classic ? '<p class="vw-note"><a href="' + W.classic + '" target="_top">Open the classic tracker instead</a></p>' : '') + '</div>';
+          '<div class="vw-or"><span>or</span></div>' +
+          '<button type="button" id="vw-code-open" class="vw-link"' + (iosApp ? ' hidden' : '') + '>Sign in with a code</button>' +
+          '<form id="vw-code" class="vw-code"' + (iosApp ? '' : ' hidden') + ' novalidate>' +
+          '<label for="vw-code-in">Code from a device where you are signed in</label>' +
+          '<div class="vw-row"><input id="vw-code-in" type="text" inputmode="text" autocomplete="one-time-code" autocapitalize="characters" spellcheck="false" maxlength="9" placeholder="ABCD-EFGH" aria-describedby="vw-code-hint">' +
+          '<button type="submit" id="vw-code-go">Sign in</button></div>' +
+          '<p id="vw-code-hint" class="vw-hint">On that device (computer or browser): Settings, General, <b>Sign in another device with a code</b>. The code works once, for 10 minutes.</p></form>' +
+          '<p class="vw-note">Use the Google account that is on the VIBRA member list. The app receives only your name and e-mail address.</p>' +
+          (W.classic ? '<p class="vw-note vw-small"><a href="' + W.classic + '?classic=1" target="_top">Trouble signing in? Open the classic tracker</a></p>' : '') + '</div>';
         document.body.appendChild(el);
+        $('vw-code-open').addEventListener('click', function () { $('vw-code').hidden = false; this.hidden = true; $('vw-code-in').focus(); });
+        $('vw-code').addEventListener('submit', function (e) { e.preventDefault(); codeLogin(); });
+        $('vw-code-in').addEventListener('input', function () {
+          var v = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8); this.value = v.length > 4 ? v.slice(0, 4) + '-' + v.slice(4) : v;
+        });
       }
       el.hidden = false; initGis();
     };
@@ -76,24 +94,37 @@ window.VIBRA_WEB = { helper: "https://script.google.com/macros/s/AKfycbzNE__5onO
   }
   function initGis() {
     var id = window.google && google.accounts && google.accounts.id;
-    if (!id) { if (++tries === 25) msg('Google sign-in is slow to load. Check the connection, or open the classic tracker.', true); if (tries < 200) setTimeout(initGis, 150); return; }
+    if (!id) { if (++tries === 25) msg('Google sign-in is slow to load. Check the connection, or sign in with a code.', true); if (tries < 200) setTimeout(initGis, 150); return; }
     if (!gisInit) {
       id.initialize({ client_id: W.clientId, callback: onCred, auto_select: true, itp_support: true, use_fedcm_for_prompt: true, context: 'signin', ux_mode: 'popup' });
       gisInit = true;
     }
-    var b = document.getElementById('vw-btn');
+    var b = $('vw-btn');
     if (b && !b.childNodes.length) id.renderButton(b, { theme: 'filled_blue', size: 'large', shape: 'pill', text: 'signin_with', logo_alignment: 'left', width: 260 });
     try { id.prompt(); } catch (e) { }
+  }
+  function signedIn(x) {
+    S = { session: x.session, exp: x.exp, email: x.email, key: x.key, u: x.u, v: x.v }; save();
+    window.__VIBRA_U = x.u; window.__VIBRA_V = x.v;
+    var el = $('vw-gate'); if (el) el.hidden = true; gateOn = false; msg('');
+    var q = queue; queue = []; q.forEach(function (c) { run(c[0], c[1], c[2], c[3]); });
   }
   function onCred(resp) {
     msg('Checking your sign-in…');
     post({ api: 'login', idToken: resp && resp.credential }).then(function (x) {
       if (!x || !x.ok) { msg((x && x.error) || 'Sign-in failed. Try again.', true); try { google.accounts.id.disableAutoSelect(); } catch (e) { } return; }
-      S = { session: x.session, exp: x.exp, email: x.email, key: x.key, u: x.u, v: x.v }; save();
-      window.__VIBRA_U = x.u; window.__VIBRA_V = x.v;
-      var el = document.getElementById('vw-gate'); if (el) el.hidden = true; gateOn = false; msg('');
-      var q = queue; queue = []; q.forEach(function (c) { run(c[0], c[1], c[2], c[3]); });
+      signedIn(x);
     }).catch(function (e) { msg(netMsg(e), true); });
+  }
+  function codeLogin() {
+    var inp = $('vw-code-in'), go = $('vw-code-go'), code = String(inp.value || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+    if (code.length !== 8) { msg('Type the 8-character code (for example ABCD-EFGH).', true); inp.focus(); return; }
+    go.disabled = true; msg('Checking the code…');
+    post({ api: 'codelogin', code: code }).then(function (x) {
+      go.disabled = false;
+      if (!x || !x.ok) { msg((x && x.error) || 'The code did not work. Try again.', true); inp.select(); return; }
+      inp.value = ''; signedIn(x);
+    }).catch(function (e) { go.disabled = false; msg(netMsg(e), true); });
   }
   W.signOut = function () {
     var s = S; S = null; save();
@@ -102,22 +133,155 @@ window.VIBRA_WEB = { helper: "https://script.google.com/macros/s/AKfycbzNE__5onO
     if (s) post({ api: 'logout', session: s.session }).then(done, done); else done();
   };
   W.session = function () { return S ? { email: S.email, key: S.key, exp: S.exp } : null; };
+  W.newCode = function () {
+    if (!S) return Promise.reject(new Error('Sign in first.'));
+    return post({ api: 'code', session: S.session }).then(function (x) {
+      if (x && x.ok) return { code: x.code, minutes: x.minutes };
+      if (x && x.auth) { S = null; save(); gate(); }
+      throw new Error((x && x.error) || 'No code could be made. Try again.');
+    }, function (e) { throw new Error(netMsg(e)); });
+  };
+
+  /* ---------- the app itself: install, notifications on this device, opening a manuscript from a notification.
+     The tracker page asks with the same messages it used inside the old installed app (vibra-push-*). The device's
+     own secret and its pairing stay in this browser (IndexedDB "vibra", shared with the service worker). */
+  var PUSH_OK = 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
+  var D = { dev: null, loaded: null, permP: null, installEvt: null };
+  function kv(op, key, val) {
+    return new Promise(function (res, rej) {
+      if (!window.indexedDB) return rej(new Error('no storage'));
+      var o = indexedDB.open('vibra', 1);
+      o.onupgradeneeded = function () { o.result.createObjectStore('kv'); };
+      o.onerror = function () { rej(o.error); };
+      o.onsuccess = function () {
+        var tx = o.result.transaction('kv', op === 'get' ? 'readonly' : 'readwrite'), st = tx.objectStore('kv');
+        var r = op === 'get' ? st.get(key) : op === 'set' ? st.put(val, key) : st.delete(key);
+        tx.oncomplete = function () { res(r.result); o.result.close(); };
+        tx.onerror = function () { rej(tx.error); };
+      };
+    });
+  }
+  function loadDev() { if (!D.loaded) D.loaded = kv('get', 'device').then(function (d) { D.dev = d || null; }, function () { D.dev = null; }); return D.loaded; }
+  function rand(n) { var a = new Uint8Array(n); crypto.getRandomValues(a); return btoa(String.fromCharCode.apply(null, a)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); }
+  function b64ToU8(s) { s = String(s).replace(/-/g, '+').replace(/_/g, '/'); while (s.length % 4) s += '='; var raw = atob(s), out = new Uint8Array(raw.length); for (var i = 0; i < raw.length; i++) out[i] = raw.charCodeAt(i); return out; }
+  function label() { return IOS ? (/iPad/.test(ua) ? 'iPad' : 'iPhone') : /Android/.test(ua) ? 'Android' : /Mac/.test(ua) ? 'Mac' : /Windows/.test(ua) ? 'Windows' : 'Computer'; }
+  function helper() { return (D.dev && D.dev.helper) || W.helper; }
+  function askPermission() {
+    return new Promise(function (res) { var r = Notification.requestPermission(res); if (r && r.then) r.then(res, function () { res(Notification.permission); }); });
+  }
+  function status() {
+    return { type: 'vibra-push-status', supported: PUSH_OK, permission: PUSH_OK ? Notification.permission : 'unsupported', paired: !!D.dev,
+      member: D.dev ? D.dev.member : '', label: D.dev ? D.dev.label : label(), helper: true, installed: STANDALONE };
+  }
+  function pairWith(code, permP) {
+    code = String(code || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+    if (code.length !== 8) return Promise.reject(new Error('The pairing code was not valid. Try again.'));
+    if (!PUSH_OK) return Promise.reject(new Error(IOS && !STANDALONE ? 'On iPhone and iPad, notifications work once VIBRA is on the Home Screen: install it (Share, Add to Home Screen) and turn them on from there.' : 'This browser cannot receive notifications.'));
+    var dev = rand(18), k = rand(32), vapid = '';
+    return (permP || askPermission()).then(function () {
+      if (Notification.permission !== 'granted') throw new Error('Notifications were not allowed. Allow them for VIBRA, then try again.');
+      return fetch(W.helper + '?action=config', { credentials: 'omit', cache: 'no-store' }).then(function (r) { return r.json(); });
+    }).then(function (cfg) {
+      vapid = cfg && cfg.vapid; if (!vapid) throw new Error('The helper is not ready for notifications yet.');
+      return navigator.serviceWorker.ready;
+    }).then(function (reg) {
+      return reg.pushManager.getSubscription().then(function (old) { return old ? old.unsubscribe() : null; }).then(function () {
+        return reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: b64ToU8(vapid) });
+      });
+    }).then(function (sub) {
+      return post({ action: 'subscribe', code: code, dev: dev, k: k, sub: sub.toJSON(), label: label() }).then(function (r) {
+        if (!r.ok) { sub.unsubscribe(); throw new Error(r.error || 'Pairing failed.'); }
+        D.dev = { dev: dev, k: k, helper: W.helper, vapid: vapid, member: r.member, label: label() };
+        return kv('set', 'device', D.dev);
+      });
+    }).then(function () {
+      post({ action: 'test', dev: D.dev.dev, k: D.dev.k }, helper()).catch(function () { });
+      return 'Notifications are on. A test is on its way.';
+    });
+  }
+  function drop() { D.dev = null; return Promise.all([kv('del', 'device'), kv('del', 'summary'), kv('del', 'news')]).catch(function () { }); }
+  function testP() {
+    if (!D.dev) return Promise.reject(new Error('This device is not paired.'));
+    return post({ action: 'test', dev: D.dev.dev, k: D.dev.k }, helper()).then(function (r) {
+      if (r && r.error === 'unknown device') return drop().then(function () { throw new Error('This device is no longer paired (the push service ended the subscription). Turn notifications on again.'); });
+      if (r && r.ok) return 'Test sent. It should arrive in a few seconds.';
+      throw new Error('The test could not be sent (' + ((r && (r.result || r.error)) || 'no answer') + ').');
+    }, function (e) { throw new Error(netMsg(e)); });
+  }
+  function offP() {
+    var d = D.dev;
+    if (!d) return Promise.resolve('Notifications are already off on this device.');
+    return post({ action: 'unsubscribe', dev: d.dev, k: d.k }, helper()).catch(function () { }).then(function () {
+      return navigator.serviceWorker.ready.then(function (reg) { return reg.pushManager.getSubscription(); }).then(function (x) { return x && x.unsubscribe(); }).catch(function () { });
+    }).then(drop).then(function () { return 'Notifications are off on this device.'; });
+  }
+  function setTheme(dark) {
+    Array.prototype.forEach.call(document.querySelectorAll('meta[name="theme-color"]'), function (m) { m.removeAttribute('media'); m.setAttribute('content', dark ? '#1F1E1D' : '#F1EEE6'); });
+  }
+  W.app = function (m, reply) {
+    if (!m || typeof m !== 'object') return;
+    var answer = function (p) {
+      p.then(function (t) { reply({ type: 'vibra-push-result', ok: true, text: t, status: status() }); })
+        .catch(function (e) { reply({ type: 'vibra-push-result', ok: false, error: String(e && e.message || e), status: status() }); });
+    };
+    if (m.type === 'vibra-push-permission') { D.permP = PUSH_OK ? askPermission() : null; return; } // still inside the person's click
+    if (m.type === 'vibra-push-status') loadDev().then(function () { reply(status()); });
+    else if (m.type === 'vibra-push-on') { var pp = D.permP; D.permP = null; answer(loadDev().then(function () { return pairWith(m.code, pp); })); }
+    else if (m.type === 'vibra-push-test') answer(loadDev().then(testP));
+    else if (m.type === 'vibra-push-off') answer(loadDev().then(offP));
+    else if (m.type === 'vibra-theme') setTheme(!!m.dark);
+  };
+  function poke() { loadDev().then(function () { if (window.__vibraAppMsg) window.__vibraAppMsg(status()); }); }
+  W.installed = function () { return STANDALONE; };
+  W.canInstall = function () { return !!D.installEvt; };
+  W.install = function () {
+    var e = D.installEvt; if (!e) return Promise.resolve(false);
+    D.installEvt = null; e.prompt();
+    return Promise.resolve(e.userChoice).then(function (c) { poke(); return !!c && c.outcome === 'accepted'; }, function () { return false; });
+  };
+  window.addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); D.installEvt = e; poke(); });
+  window.addEventListener('appinstalled', function () { D.installEvt = null; poke(); });
+  if ('serviceWorker' in navigator && window.isSecureContext) {
+    navigator.serviceWorker.register('../sw.js', { scope: '../' }).catch(function () { });
+    navigator.serviceWorker.addEventListener('message', function (e) {
+      var d = e.data; if (d && d.type === 'open' && Number(d.m) && window.__vibraAppMsg) window.__vibraAppMsg({ type: 'vibra-open', m: Number(d.m) });
+    });
+  }
 })();
 </script>
 <script src="https://accounts.google.com/gsi/client" async defer onload="window.__vibraGisLoaded()"></script>
-<link rel="icon" href="../icons/favicon-32.png"><link rel="apple-touch-icon" href="../icons/apple-touch-icon.png"><link rel="preload" as="image" href="../icons/vibra-logo-full.jpg">
+<link rel="manifest" href="../manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="VIBRA">
+<meta name="theme-color" content="#F1EEE6" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#1F1E1D" media="(prefers-color-scheme: dark)">
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/png" sizes="32x32" href="../icons/favicon-32.png"><link rel="apple-touch-icon" href="../icons/apple-touch-icon.png"><link rel="preload" as="image" href="../icons/vibra-logo-full.jpg">
 <style>
-#vw-gate{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;padding:24px 16px;background:var(--bg,#F5F5F2)}
+#vw-gate{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;padding:24px 16px;overflow:auto;background:var(--bg,#F5F5F2)}
 #vw-gate[hidden]{display:none}
-#vw-gate .vw-card{width:100%;max-width:440px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;padding:28px 28px 30px;border-radius:14px;background:var(--surface,#fff);box-shadow:var(--shadow-2);border:1px solid var(--line,#E6E4DF)}
+#vw-gate .vw-card{width:100%;max-width:440px;margin:auto;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;padding:28px 28px 26px;border-radius:14px;background:var(--surface,#fff);box-shadow:var(--shadow-2);border:1px solid var(--line,#E6E4DF)}
 #vw-gate .vw-logo{width:100%;max-width:340px;background:#fff;border-radius:12px;overflow:hidden}
 #vw-gate .vw-logo img{display:block;width:100%;height:auto}
 #vw-gate h1{margin:4px 0 14px;font:500 26px/1.2 'Source Serif 4',Georgia,serif;color:var(--ink,#15171C)}
 #vw-gate .vw-btn{min-height:44px;display:flex;justify-content:center}
-#vw-gate #vw-msg{min-height:20px;margin:4px 0 0;font:13.5px var(--sans,system-ui);color:var(--ink-2,#3B3A37)}
+#vw-gate #vw-msg{min-height:20px;margin:2px 0 0;font:13.5px var(--sans,system-ui);color:var(--ink-2,#3B3A37)}
 #vw-gate #vw-msg.vw-bad{color:var(--danger,#8E2417)}
-#vw-gate .vw-note{margin:0;font:12.5px/1.5 var(--sans,system-ui);color:var(--muted,#66645E)}
-#vw-gate .vw-note a{color:var(--accent-text,#14396E)}
+#vw-gate .vw-or{display:flex;align-items:center;gap:10px;width:100%;max-width:300px;color:var(--muted,#66645E);font:12px var(--sans,system-ui)}
+#vw-gate .vw-or:before,#vw-gate .vw-or:after{content:"";flex:1;height:1px;background:var(--line,#E6E4DF)}
+#vw-gate .vw-link{border:0;background:none;padding:8px 10px;min-height:40px;font:600 14px var(--sans,system-ui);color:var(--accent-text,#14396E);cursor:pointer;border-radius:8px}
+#vw-gate .vw-link:hover{background:var(--hover,rgba(0,0,0,.05))}
+#vw-gate .vw-code{width:100%;max-width:320px;display:flex;flex-direction:column;gap:6px;text-align:left}
+#vw-gate .vw-code[hidden]{display:none}
+#vw-gate .vw-code label{font:600 12.5px var(--sans,system-ui);color:var(--ink-2,#3B3A37)}
+#vw-gate .vw-row{display:flex;gap:8px}
+#vw-gate .vw-code input{flex:1;min-width:0;min-height:46px;padding:6px 12px;border:1px solid var(--line-2,#D5D3CD);border-radius:10px;background:var(--surface-2,#F4F1EA);color:var(--ink,#15171C);font:600 20px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:.12em;text-transform:uppercase}
+#vw-gate .vw-code button{min-height:46px;padding:0 18px;border:0;border-radius:10px;background:var(--accent,#14396E);color:#fff;font:600 14.5px var(--sans,system-ui);cursor:pointer}
+#vw-gate .vw-code button[disabled]{opacity:.55;cursor:default}
+#vw-gate .vw-hint{margin:0;font:12.5px/1.5 var(--sans,system-ui);color:var(--muted,#66645E)}
+#vw-gate .vw-note{margin:4px 0 0;font:12.5px/1.5 var(--sans,system-ui);color:var(--muted,#66645E)}
+#vw-gate .vw-small{font-size:12px}
+#vw-gate .vw-note a{color:var(--muted,#66645E)}
+#vw-gate input:focus-visible,#vw-gate button:focus-visible,#vw-gate a:focus-visible{outline:3px solid var(--accent-text,#14396E);outline-offset:2px}
 </style>
 <script>/* Runs only on Google's own page or inside the installed VIBRA app; any other site that embeds it gets nothing. */
 (function(){try{var ao=location.ancestorOrigins;if(!ao||!ao.length)return;var top=ao[ao.length-1];
@@ -127,7 +291,6 @@ if(top==="https://script.google.com")return;if(top==="https://vibra-group.github
 try{if(!window.__VIBRA_BLOCKED&&window.google&&google.script&&google.script.run){window.__bootP=new Promise(function(res,rej){google.script.run.withSuccessHandler(res).withFailureHandler(rej).api_bootstrap();});}}catch(e){}</script>
 <script>try{var t=localStorage.getItem("vibra-theme");if(t){document.documentElement.setAttribute("data-theme",t==="system"?(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"):t);}}catch(e){}</script>
 <title>VIBRA Tracker</title>
-<meta name="theme-color" content="#14396E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&display=swap" media="print" onload="this.media='all'">
@@ -712,6 +875,40 @@ html{transition:background-color .3s var(--ease)}
 .tbody{display:flex;flex-direction:column;gap:14px;transition:opacity .22s ease,transform .22s var(--ease)}
 .tbody.tout{opacity:0;transform:translateY(4px);transition-duration:.13s}
 .tour-b{margin:0;line-height:1.6;color:var(--ink-2)}
+/* 0.2.0 welcome page and anchored tour */
+.wel-ov{align-items:center}
+.wel{max-width:520px;gap:14px;padding:26px 28px 22px}
+.wel-logo{align-self:center;width:min(300px,78%);background:#fff;border-radius:12px;overflow:hidden}
+.wel-logo img{display:block;width:100%;height:auto}
+.wel h2{margin:4px 0 0;text-align:center;font:500 28px/1.2 var(--serif);color:var(--ink)}
+.wel-lead{margin:0;text-align:center;color:var(--ink-2);line-height:1.6}
+.wel-points{list-style:none;margin:4px 0 0;padding:0;display:flex;flex-direction:column;gap:10px}
+.wel-points li{display:flex;gap:12px;align-items:flex-start;padding:10px 12px;border-radius:10px;background:var(--surface-2);font-size:14px;line-height:1.5;color:var(--ink-2)}
+.wel-points b{color:var(--ink)}
+.wel-ic{flex:none;width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;background:var(--accent-soft);color:var(--accent-text)}
+.wel-ic .ic{width:18px;height:18px}
+.wel-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:4px}
+.wel-btns .btn-p{min-height:44px;padding:0 22px}
+.coach{position:fixed;inset:0;z-index:90}
+.coach-block{position:absolute;inset:0}
+.coach-spot{position:fixed;border-radius:12px;box-shadow:0 0 0 2px var(--accent),0 0 0 9999px rgba(12,16,24,.56);pointer-events:none;transition:left .35s var(--ease),top .35s var(--ease),width .35s var(--ease),height .35s var(--ease)}
+.coach-card{position:fixed;display:flex;flex-direction:column;gap:8px;padding:16px 18px;border-radius:14px;background:var(--surface);color:var(--ink);box-shadow:var(--shadow-2),0 18px 40px -18px rgba(0,0,0,.45);border:1px solid var(--line);animation:coachIn .28s var(--ease)}
+.calm-tour .coach-card{animation:none}
+@keyframes coachIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.coach-card h2{margin:2px 0 0;font:600 17px/1.3 var(--sans)}
+.coach-card p{margin:0;font-size:14px;line-height:1.6;color:var(--ink-2)}
+.coach-top{display:flex;align-items:center;justify-content:space-between;font-size:12px}
+.coach-top .btn-q{min-height:28px;padding:0 4px;font-size:12.5px}
+.coach-nav{display:flex;align-items:center;gap:8px;margin-top:4px}
+.coach-nav .dots i{width:6px;height:6px}
+.coach-nav .dots i.on{width:16px}
+.coach-arrow{position:absolute;width:16px;height:16px;background:var(--surface);border:1px solid var(--line);transform:rotate(45deg);display:none}
+.coach-card[data-side="below"] .coach-arrow{display:block;top:-9px;border-right:0;border-bottom:0}
+.coach-card[data-side="above"] .coach-arrow{display:block;bottom:-9px;border-left:0;border-top:0}
+.coach-card[data-side="right"] .coach-arrow{display:block;left:-9px;border-top:0;border-right:0}
+.coach-card[data-side="left"] .coach-arrow{display:block;right:-9px;border-bottom:0;border-left:0}
+@media (prefers-reduced-motion:reduce){.coach-spot{transition:none}.coach-card{animation:none}}
+@media (max-width:560px){.coach-nav .dots{display:none}.wel{padding:20px 18px 16px}.wel h2{font-size:24px}}
 .tbody h2{margin:0}
 @media (hover:none){.tip:not(.open) .tipbox{display:none}}
 @supports not (overflow-x:clip){body{overflow-x:hidden}}
@@ -811,10 +1008,11 @@ svg.ic2{fill:none!important;stroke:currentColor;stroke-width:1.6;stroke-linecap:
 /* sidebar */
 .sb{position:sticky;top:0;height:100vh;height:100dvh;flex:0 0 var(--sbw);width:var(--sbw);display:flex;flex-direction:column;gap:2px;padding:10px 10px 12px;background:var(--side);border-right:1px solid var(--line);overflow:hidden;z-index:30;transition:width .25s var(--ease),flex-basis .25s var(--ease)}
 .sb-top{display:flex;align-items:center;gap:6px;height:44px;padding:0 2px 0 6px;margin-bottom:6px}
-.sb-brand{display:flex;align-items:center;gap:9px;min-width:0;flex:1;height:40px;padding:0 4px;border:0;background:none;border-radius:10px;cursor:pointer;color:var(--ink)}
+.sb-brand{display:flex;align-items:center;gap:9px;min-width:0;flex:1;overflow:hidden;height:40px;padding:0 4px;border:0;background:none;border-radius:10px;cursor:pointer;color:var(--ink)}
 .sb-brand img{width:28px;height:28px;border-radius:8px;background:#fff;box-shadow:0 0 0 1px var(--line)}
-.sb-brand b{font:700 16px/1 var(--sans);letter-spacing:.07em;color:var(--accent-text)}
-.sb-brand span{font:500 15px/1 var(--sans);color:var(--muted)}
+.sb-brand b{font:800 17px/1 var(--sans);letter-spacing:.07em;color:var(--accent-text)}
+:root:not([data-theme="dark"]) .sb-brand b{color:#14396E}
+.sb-brand span{font:600 16px/1 var(--sans);color:var(--ink)}
 .sb-brand em{font:500 10.5px/1 var(--sans);font-style:normal;color:var(--muted);padding:3px 6px;border-radius:999px;background:var(--hover)}
 .sb-ib{width:34px;height:34px;display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:9px;background:none;color:var(--muted);cursor:pointer;flex:none}
 .sb-ib:hover{background:var(--hover);color:var(--ink)}
@@ -1060,12 +1258,26 @@ var TIPS = {
   wk: 'Each bar counts the open manuscripts where the person is the primary ball holder, split by urgency. "Author on" counts open manuscripts where the person is in the author list.',
   desk: 'The morning routine pastes a JSON batch here. Rule: newer information wins, so a field a person edited after the evidence time is skipped and reported. Inbox and feedback items listed in the batch are closed and their senders notified.'
 };
-var TOUR = [
-  { t: 'Welcome to the VIBRA Tracker', b: 'One shared list of every VIBRA manuscript. You are signed in with your own Google account; what you change, the whole group sees, and every change is logged with your name.', art: [['action', 'Shared'], ['waiting', 'Logged'], ['drafting', 'Your account']] },
-  { t: 'Start with Today', b: 'Today sorts manuscripts by what has to happen: deadlines first, then what the group must do, then journals to chase. Click a count to jump to its list, and choose Me under Whose work to see only what waits on you.', art: [['due', 'Due in 1 d'], ['action', 'Our move'], ['chase', 'Chase journal']] },
-  { t: 'Open a manuscript to update it', b: 'Click any row. The details open beside the list and follow you as you scroll. Change the status, deadline or next actions, tag who has the ball, then Save. On a phone the details open full screen.', art: [['action', 'Status'], ['deadline', 'Deadline'], ['waiting', 'History']] },
-  { t: 'Notifications are yours', b: 'The bell lists what concerns you: the ball passed to you, changes to manuscripts you are tagged on. Choose what you receive in Settings, at the bottom of the sidebar.', art: [['action', 'Ball to you'], ['waiting', 'Changed'], ['drafting', 'Only you']] },
-  { t: 'Everything is one step away', b: 'The sidebar holds the views, your pinned and recent manuscripts and what waits on you; hide it with the button at its top. Bottom right: the magnifier finds any manuscript, person or command (Ctrl+K), and Quick update takes news in any language or a screenshot, so the AI updates the fields. Settings, at the bottom of the sidebar, has appearance, notifications, reminders and help. Every small i explains a field.', art: [['waiting', 'Sidebar'], ['action', 'Quick update'], ['drafting', 'Ctrl K']] }];
+/* 0.2.0 onboarding (admin's request): a welcome page, then each step points at the real control on the page.
+   sel: the first visible match is highlighted (desktop selector first, phone fallback after); open: the step needs a
+   manuscript's details open (the tour opens the first one on Today, read only, and closes it afterwards). */
+var COACH = [
+  { sel: ['.sb nav [data-v="today"]', '.topbar [data-a="drawer-open"]'], t: 'Start with Today', b: 'Your daily view: what needs attention now. Deadlines first, then what the group must do, then journals to chase. On a phone the views are behind this menu button.' },
+  { sel: ['.sb nav', '.topbar [data-a="drawer-open"]'], t: 'Three more views', b: 'Pipeline shows every manuscript by stage, like a board. All manuscripts keeps every paper ever tracked, finished ones too. Dashboard is the whole group at a glance.' },
+  { sel: ['.main .chips'], t: 'Whose work', b: 'Everyone, or one person. Choose Me to see only what waits on you; the number is how many manuscripts.' },
+  { sel: ['.main .tiles'], t: 'Urgency at a glance', b: 'Due, later deadlines, our move, journals to chase, waiting, drafting. Click a tile to jump to its list.' },
+  { sel: ['.main [data-a="open"][data-v]'], t: 'One row, one manuscript', b: 'The coloured tag says how urgent it is, then the title, who has the ball and the next action. Click a row to open it. The tour opens this one for you.' },
+  { sel: ['#f-status'], open: true, t: 'Status and stage', b: 'Where the paper is, from Drafting to Published. While it is at a journal, the stage says who must act: Reviews back or Returned to authors means it is our move.' },
+  { sel: ['#f-dl'], open: true, t: 'Deadline', b: 'A real date from the journal or from GV. Whoever has the ball gets an alert 7 days and 1 day before.' },
+  { sel: ['.panel .p-sec:has(#ball-l)', '#ball-l'], open: true, t: 'Ball is with', b: 'Who must act next, not the author list. Add a short note such as corr. or submitting; the primary person gets the alerts.' },
+  { sel: ['#f-next'], open: true, t: 'Next actions', b: 'A numbered list of what happens next. Press Enter and the next number appears.' },
+  { sel: ['#b-save'], open: true, t: 'Save', b: 'Nothing changes until you save. Everyone sees it at once, History keeps your name, and you can undo your own change.' },
+  { sel: ['.panel [data-a="rem-open"]'], open: true, t: 'Remind me', b: 'A private reminder in your own calendar. Deadline to my calendar adds the deadline in one click.' },
+  { sel: ['.fab', '.panel .p-qu'], t: 'Quick update', b: 'The fastest way to report news: say what happened in any language, or paste a screenshot of the journal\'s e-mail. The AI updates the fields within about a minute, and you can undo.' },
+  { sel: ['.fab-s', '.topbar [data-a="pal-open"]'], t: 'Find anything', b: 'Any manuscript, person or command. Ctrl + K, or Command + K on a Mac.' },
+  { sel: ['.sb-foot [data-v="notif"]', '.topbar [data-v="notif"]'], t: 'Notifications', b: 'The ball passed to you, a change on your manuscripts, a deadline close. Turn them on for this phone or computer in Settings, Notifications.' },
+  { sel: ['.sb-foot [data-v="settings"]', '.topbar [data-a="drawer-open"]'], t: 'Settings', b: 'Notifications on this device, your private calendar link, the Monday e-mail, light or dark. Help replays this tour.' }
+];
 /* Phosphor Icons (Light), MIT licence, @phosphor-icons/core 2.1.1: path data only */
 var ICON = {
   x: '<path d="M204.24,195.76a6,6,0,1,1-8.48,8.48L128,136.49,60.24,204.24a6,6,0,0,1-8.48-8.48L119.51,128,51.76,60.24a6,6,0,0,1,8.48-8.48L128,119.51l67.76-67.75a6,6,0,0,1,8.48,8.48L136.49,128Z"/>',
@@ -1252,6 +1464,18 @@ function peopleText(ps) { return ps && ps.length ? ps.map(function (p) { return 
 /* Stages where the next move is the group's, even at a journal. "Returned to authors": the journal asked us for
    something (a checklist, forms, files, "resume the submission") and is waiting: it goes to the top as Due. */
 var OUR_STAGES = ['Returned to authors', 'Authors confirming', 'Reviews back R1', 'Minor rev R1', 'Major rev R1', 'Reviews back R2', 'Minor rev R2', 'Major rev R2', 'Revising'];
+/* 0.2.0: the next actions say whose move it is. At a journal, a manuscript whose first next action is still a task for
+   the group (the ball is with a member) is our move, whatever the stage says: one step done (the response posted) is
+   not the revision done. Waiting is written as "Await ..." (or Chase, Query); "X sent ...; await ..." also waits. */
+var WAIT_RX = /^(await|awaiting|wait|waiting|chase|query|remind|follow[- ]?up|monitor|nothing)\b/i, DONE_RX = /\b(sent|submitted|posted|uploaded|received|confirmed|done)\b/i;
+function nextIsOurs(m) {
+  var line = String(m.next || '').split('\n').map(function (l) { return l.trim(); }).filter(Boolean)[0] || '';
+  line = line.replace(/^\d+[.)]\s*/, '').replace(/^[^:]{1,40}:\s+/, '');
+  if (!line || !(m.people || []).some(function (p) { return p.member; })) return false;
+  var parts = line.split(/;\s*|\s+(?:->|→|then)\s+/i);
+  for (var i = 0; i < parts.length; i++) { if (WAIT_RX.test(parts[i].trim())) return false; if (!DONE_RX.test(parts[i])) return true; }
+  return true;
+}
 function derive(m) {
   var t = S.boot.today;
   var dl = m.deadline ? days(m.deadline, t) : null;
@@ -1262,6 +1486,7 @@ function derive(m) {
   else if (dl !== null) { tier = dl <= 7 ? 'due' : 'deadline'; score = dl; }
   else if (m.stage === 'Returned to authors' && (m.status === 'Submitted' || m.status === 'Under Review')) { tier = 'due'; score = -100000 - (idle || 0); } // always first: someone outside is waiting on us
   else if (OUR_STAGES.indexOf(m.stage) >= 0 && (m.status === 'Submitted' || m.status === 'Under Review')) { tier = 'action'; score = 2000 - (idle || 0); }
+  else if ((m.status === 'Submitted' || m.status === 'Under Review') && nextIsOurs(m)) { tier = 'action'; score = 2000 - (idle || 0); }
   else if (m.status === 'Drafting') { tier = 'drafting'; score = 4000 - (idle || 0); }
   else if (['Internal review', 'Ready to Submit', 'Accepted'].indexOf(m.status) >= 0) { tier = 'action'; score = 2000 - (idle || 0); }
   else { tier = idle !== null && idle > 90 ? 'chase' : 'waiting'; score = 3000 - (idle || 0); }
@@ -1305,7 +1530,7 @@ function render() {
   // Animate only what is new (a view, filter or search result, or a layer that just opened); plain
   // re-renders (typing, toggles, saves, live refresh, tour steps) repaint without replaying animations.
   app.classList.toggle('calm', !S.fx.list && !!S.painted);
-  var pk = S.pop || '', dk = S.del ? 'del' : S.qu ? 'qu' : S.fb ? 'fb' : S.nf ? 'nf' : '', tk = S.tour >= 0 ? 'tour' : '', sk = S.pal ? 'pal' : '';
+  var pk = S.pop || '', dk = S.del ? 'del' : S.qu ? 'qu' : S.fb ? 'fb' : S.nf ? 'nf' : '', tk = S.tour >= 0 ? 'tour' + S.tour : '', sk = S.pal ? 'pal' : '';
   layer.className = (pk && pk === S.lk[0] ? 'calm-pop ' : '') + (dk && dk === S.lk[1] ? 'calm-dlg ' : '') + (tk && tk === S.lk[2] ? 'calm-tour ' : '') + (sk && sk === S.lk[3] ? 'calm-pal' : '');
   S.lk = [pk, dk, tk, sk]; S.painted = true;
   var sbs = document.querySelector('.sb-scroll'), sbScroll = sbs ? sbs.scrollTop : 0;
@@ -1314,6 +1539,7 @@ function render() {
   document.documentElement.style.setProperty('--sbw', sbCollapsed() ? '60px' : '264px');
   var sbs2 = document.querySelector('.sb-scroll'); if (sbs2) sbs2.scrollTop = sbScroll;
   layer.innerHTML = popover() + dialog() + palHtml() + tourHtml();
+  if (S.tour > 0) requestAnimationFrame(placeCoach); // after the details' scroll position is restored below
   placeFab(); placePop();
   placeTip();
   Array.prototype.forEach.call(layer.querySelectorAll('input[data-indet]'), function (el) { el.indeterminate = true; });
@@ -1388,7 +1614,7 @@ function sidebar() {
   };
   var unread = unreadCount();
   return '<aside class="sb" aria-label="Sidebar">' +
-    '<div class="sb-top"><button class="sb-brand" data-a="view" data-v="today" aria-label="VIBRA Tracker, go to Today"><img src="' + LOGO_MARK + '" alt="" width="28" height="28"><b>VIBRA</b><span>Tracker</span><em title="Version ' + esc(S.boot.version) + ', test release">v' + esc(S.boot.version) + '</em></button>' +
+    '<div class="sb-top"><button class="sb-brand" data-a="view" data-v="today" aria-label="VIBRA Tracker, go to Today" title="VIBRA Tracker ' + esc(S.boot.version) + '"><img src="' + LOGO_MARK + '" alt="" width="28" height="28"><b>VIBRA</b><span>Tracker</span></button>' +
     '<button class="sb-ib sb-hide" data-a="sb-toggle" aria-label="' + (S.drawer ? 'Close the sidebar' : sbCollapsed() ? 'Show the sidebar' : 'Hide the sidebar') + '"' + tt(sbCollapsed() ? 'Show the sidebar' : 'Hide the sidebar', 'Ctrl .') + '>' + ic('sidebar') + '</button></div>' +
     (canEdit() ? '<button class="sb-item sb-new" data-a="nf-open"' + (sbCollapsed() ? tt('New manuscript') : '') + '><span class="plus">' + ic('plus') + '</span><span class="lab">New manuscript</span></button>' : '') +
     '<nav aria-label="Views">' + navHtml + '</nav>' +
@@ -1511,7 +1737,8 @@ function viewSettings() {
     body = '<div class="box"><div style="display:flex;align-items:center;gap:14px"><div class="avatar" style="width:52px;height:52px;display:flex;align-items:center;justify-content:center;font-size:16px">' + esc(u.initials) + '</div>' +
       '<div style="min-width:0"><div style="font-weight:600;font-size:16px">' + esc(u.full_name || u.display) + '</div><div class="mono muted" style="font-size:12px">' + esc(u.email) + '</div></div><span class="tag t-action" style="margin-left:auto">' + esc(u.role) + '</span></div>' +
       '<p class="muted" style="margin:0;font-size:13px">Signed in with Google. Your name is recorded on every change you save.</p>' +
-      (window.VIBRA_WEB ? '<div class="btns"><button class="btn btn-s" data-a="web-signout">Sign out on this device</button></div>' : '') + '</div>' +
+      (window.VIBRA_WEB ? '<div class="btns"><button class="btn btn-s" data-a="web-code"' + (S.webCodeBusy ? ' disabled' : '') + '>' + ic('phone') + 'Sign in another device with a code</button><button class="btn btn-s" data-a="web-signout">Sign out on this device</button></div>' +
+        (S.webCode ? '<div class="pairbox"><span class="lbl">Code for your other device</span><b class="paircode mono">' + esc(S.webCode.code) + '</b><span class="muted" style="font-size:12.5px">Valid ' + S.webCode.minutes + ' minutes, once. On the other device open VIBRA, choose <b>Sign in with a code</b> and type it. Useful for the app installed on an iPhone.</span></div>' : '') : '') + '</div>' +
       '<div class="box"><h2>Appearance</h2><div class="seg" role="group" aria-label="Appearance">' +
       [['light', 'Light', 'sun'], ['dark', 'Dark', 'moon'], ['system', 'Like my device', 'desktop']].map(function (o) { return '<button data-a="theme-set" data-v="' + o[0] + '" aria-pressed="' + (themePref() === o[0]) + '">' + ic(o[2]) + o[1] + '</button>'; }).join('') +
       '</div><div class="setrow"><div style="flex:1;min-width:0"><label for="p-sb" style="font-weight:500">Keep the sidebar hidden</label><div class="muted" style="font-size:12px">Only the icons stay on the left. The button at the top of the sidebar (or Ctrl + .) does the same.</div></div>' +
@@ -1557,7 +1784,20 @@ function viewSettings() {
 }
 /* This device: inside the installed VIBRA app the tracker talks to the app directly; elsewhere it explains how to install. */
 function devBox() {
-  if (!EMBED) return appBox();
+  if (!EMBED && !localApp()) return appBox();
+  return (localApp() ? installBox() : '') + devBoxInner();
+}
+/* 0.2.0: install VIBRA from this page (the page is the app) */
+function installBox() {
+  var W = window.VIBRA_WEB || {}, ins = W.installed && W.installed(), ios = /iPhone|iPad|iPod/.test(navigator.userAgent), can = W.canInstall && W.canInstall();
+  if (ins) return '';
+  var steps = ios ? '<ol class="appsteps"><li>In <b>Safari</b>, tap <b>Share</b> (the square with an arrow).</li><li>Choose <b>Add to Home Screen</b>, then <b>Add</b>.</li><li>Open VIBRA from the Home Screen and sign in once. Then turn notifications on below.</li></ol>' :
+    '<ol class="appsteps"><li><b>Chrome or Edge on a computer:</b> the install icon at the right of the address bar, or the button below.</li><li><b>Android:</b> Chrome menu, <b>Install app</b> (or Add to Home screen).</li><li><b>Mac with Safari:</b> File, <b>Add to Dock</b>.</li></ol>';
+  return '<div class="box"><div class="frow"><h2>Install VIBRA on this device</h2>' + tip('pwa', true) + '</div>' +
+    '<p style="margin:0;font-size:13.5px">Its own icon and window, full screen on a phone, notifications for what concerns you, and your last data readable offline.</p>' +
+    (can ? '<div class="btns"><button class="btn btn-p" data-a="web-install">' + ic('desktop') + 'Install VIBRA</button></div>' : '') + steps + '</div>';
+}
+function devBoxInner() {
   var d = S.dev, P = S.boot.pwa || {};
   var state = !d ? 'Checking this device…' : !d.supported ? 'This device or browser cannot receive notifications.' :
     d.permission === 'denied' ? 'Notifications are blocked for VIBRA on this device. Allow them in the system settings, then try again.' :
@@ -1565,7 +1805,7 @@ function devBox() {
   var btns = !d || !d.supported ? '' : d.paired ? '<button class="btn btn-s" data-a="dev-test"' + (S.devBusy ? ' disabled' : '') + '>' + ic('bell') + 'Send a test</button><button class="btn btn-s" data-a="dev-off"' + (S.devBusy ? ' disabled' : '') + '>Turn off</button>' :
     (P.push ? '<button class="btn btn-p" data-a="dev-on"' + (S.devBusy ? ' disabled' : '') + '>' + ic('bell') + (S.devBusy ? 'Turning on…' : 'Turn on notifications on this device') + '</button>' : '<span class="muted" style="font-size:13px">The admin has not switched notifications on yet.</span>');
   return '<div class="box"><div class="frow"><h2>This device</h2>' + tip('pwa', true) + '</div><div class="devstate">' + ic('phone') + '<span>' + esc(state) + '</span></div><div class="btns">' + btns + '</div>' +
-    '<p class="muted" style="margin:0;font-size:12px">You are using the installed VIBRA app. Each phone or computer is turned on separately; turning it off also removes the offline copy kept on it.</p></div>';
+    '<p class="muted" style="margin:0;font-size:12px">' + (localApp() ? 'Each phone or computer is turned on separately. On iPhone and iPad, notifications need VIBRA installed on the Home Screen (iOS 16.4 or later).' : 'You are using the installed VIBRA app. Each phone or computer is turned on separately; turning it off also removes the offline copy kept on it.') + '</p></div>';
 }
 
 /* Quick update is the strongest shortcut in the app: one button, bottom right, on every screen. */
@@ -2651,45 +2891,99 @@ function applyDraft(out) {
   a.dup = out.duplicate && mById(out.duplicate.id) ? out.duplicate : null;
   a.snap = JSON.parse(JSON.stringify(nfValues()));
 }
-function tourArt(t) { return t.art.map(function (a) { return '<span class="tag t-' + a[0] + '" style="height:28px;padding:0 14px;font-size:13px">' + esc(a[1]) + '</span>'; }).join(''); }
-function tourNav(i) {
-  var last = i === TOUR.length - 1;
-  return (i > 0 ? '<button class="btn btn-s" data-a="tour-back">Back</button>' : '') + '<button class="btn btn-p" data-a="' + (last ? 'tour-end' : 'tour-next') + '">' + (last ? 'Get started' : 'Next') + '</button>';
-}
 function tourHtml() {
   if (S.tour < 0) return '';
-  var t = TOUR[S.tour];
-  return '<div class="overlay tour-ov" style="align-items:center"><div class="dialog tour-dlg" id="tour-dlg" role="dialog" aria-modal="true" aria-labelledby="tour-h" style="max-width:540px">' +
-    '<div style="display:flex;justify-content:space-between;align-items:center"><span class="mono muted tstepn" style="font-size:12px">Step ' + (S.tour + 1) + ' of ' + TOUR.length + '</span><button class="btn btn-q" data-a="tour-end">Skip tour</button></div>' +
-    '<div class="tbody"><div class="tour-art" aria-hidden="true">' + tourArt(t) + '</div>' +
-    '<h2 id="tour-h">' + esc(t.t) + '</h2><p class="tour-b">' + esc(t.b) + '</p></div>' +
-    '<div style="display:flex;align-items:center;gap:10px"><div class="dots" aria-hidden="true">' + TOUR.map(function (_, i) { return '<i class="' + (i === S.tour ? 'on' : '') + '"></i>'; }).join('') + '</div><span style="margin-left:auto"></span>' +
-    '<span class="tnav">' + tourNav(S.tour) + '</span></div>' +
-    '<p class="muted" style="margin:0;font-size:12px">Shown once for your account. Reopen it any time from the ? button.</p></div></div>';
+  if (S.tour === 0) return welcomeHtml();
+  var i = S.tour, st = COACH[i - 1], last = i === COACH.length;
+  return '<div class="coach"><div class="coach-block" aria-hidden="true"></div><div class="coach-spot" id="coach-spot" aria-hidden="true"></div>' +
+    '<div class="coach-card" id="coach-card" role="dialog" aria-modal="true" aria-labelledby="coach-h" aria-describedby="coach-b"><span class="coach-arrow" aria-hidden="true"></span>' +
+    '<div class="coach-top"><span class="mono muted">Step ' + i + ' of ' + COACH.length + '</span><button class="btn btn-q" data-a="tour-end">Skip tour</button></div>' +
+    '<h2 id="coach-h">' + esc(st.t) + '</h2><p id="coach-b">' + esc(st.b) + '</p>' +
+    '<div class="coach-nav"><div class="dots" aria-hidden="true">' + COACH.map(function (_, k) { return '<i class="' + (k === i - 1 ? 'on' : '') + '"></i>'; }).join('') + '</div><span style="margin-left:auto"></span>' +
+    '<button class="btn btn-s" data-a="tour-back">Back</button><button class="btn btn-p" data-a="' + (last ? 'tour-end' : 'tour-next') + '">' + (last ? 'Done' : 'Next') + '</button></div></div></div>';
 }
-/* Tour steps change in place: the dialog and the page behind it stay still, only the text crossfades. */
+function welcomeHtml() {
+  var first = String(me().full_name || me().display || '').split(/\s+/)[0];
+  var pt = function (icon, t, b) { return '<li><span class="wel-ic">' + ic(icon) + '</span><span><b>' + esc(t) + '</b>' + esc(b) + '</span></li>'; };
+  return '<div class="overlay tour-ov wel-ov"><div class="dialog tour-dlg wel" role="dialog" aria-modal="true" aria-labelledby="wel-h">' +
+    '<div class="wel-logo"><img src="' + LOGO_FULL + '" alt="VIBRA, Visionary International Board for Research and Analgesia"></div>' +
+    '<h2 id="wel-h">Welcome' + (first ? ', ' + esc(first) : '') + '</h2>' +
+    '<p class="wel-lead">VIBRA Tracker keeps every manuscript of the group in one shared list: where it stands, who has the ball, what comes next and what is due. What you change, everyone sees, with your name on it.</p>' +
+    '<ul class="wel-points">' + pt('list', 'One list for the whole group. ', 'Today shows what needs attention; nothing is lost from the old workbook.') +
+      pt('bolt', 'The ball shows who acts next. ', 'Alerts reach whoever has it, on the phone too.') +
+      pt('spark', 'Quick update. ', 'Tell the tracker what happened, in any language; the AI fills in the fields.') + '</ul>' +
+    '<div class="wel-btns"><button class="btn btn-p" data-a="tour-next">Show me around (1 minute)</button><button class="btn btn-s" data-a="tour-end">Skip tour</button></div>' +
+    '<p class="muted" style="margin:0;font-size:12px;text-align:center">You can replay it any time: Settings, Help.</p></div></div>';
+}
+/* the first visible element of the step (on screen, not hidden in a closed drawer) */
+function coachTarget(st) {
+  for (var k = 0; k < st.sel.length; k++) {
+    var list = []; try { list = document.querySelectorAll(st.sel[k]); } catch (e) { list = []; }
+    for (var j = 0; j < list.length; j++) {
+      var el = list[j], r = el.getBoundingClientRect();
+      if (r.width > 0 && r.height > 0 && r.right > 0 && r.left < innerWidth && getComputedStyle(el).visibility !== 'hidden') return el;
+    }
+  }
+  return null;
+}
+/* Puts the light on the step's control and the card beside it (below, above, right or left, whichever fits; on a
+   small screen the card sits at the edge away from the control). Runs after every render while the tour is open. */
+function placeCoach() {
+  var c = document.getElementById('coach-card'), sp = document.getElementById('coach-spot');
+  if (!c || !sp || S.tour < 1) return;
+  var st = COACH[S.tour - 1], el = coachTarget(st), vw = innerWidth, vh = innerHeight, cw = Math.min(380, vw - 24), gap = 14, pad = 8;
+  c.style.width = cw + 'px';
+  var clamp = function (v, lo, hi) { return Math.max(lo, Math.min(hi, v)); };
+  if (!el) {
+    sp.style.cssText = 'left:' + vw / 2 + 'px;top:' + vh / 2 + 'px;width:0;height:0';
+    c.style.left = (vw - cw) / 2 + 'px'; c.style.top = Math.max(12, (vh - c.offsetHeight) / 2) + 'px'; c.setAttribute('data-side', 'none'); return;
+  }
+  var r = el.getBoundingClientRect();
+  if (r.top < 64 || r.bottom > vh - 64) { el.scrollIntoView({ block: 'center', inline: 'nearest' }); r = el.getBoundingClientRect(); }
+  var x = clamp(r.left - pad, 4, vw - 8), y = clamp(r.top - pad, 4, vh - 8), w = Math.min(vw - 8 - x, r.width + 2 * pad), h = Math.min(vh - 8 - y, r.height + 2 * pad);
+  var prev = S.coachRect;
+  if (prev && !sp.getAttribute('data-placed')) { sp.style.left = prev[0] + 'px'; sp.style.top = prev[1] + 'px'; sp.style.width = prev[2] + 'px'; sp.style.height = prev[3] + 'px'; void sp.offsetWidth; }
+  sp.setAttribute('data-placed', '1');
+  sp.style.left = x + 'px'; sp.style.top = y + 'px'; sp.style.width = w + 'px'; sp.style.height = h + 'px';
+  S.coachRect = [x, y, w, h];
+  var ch = c.offsetHeight, side, left, top;
+  if (y + h + gap + ch <= vh - 8) { side = 'below'; top = y + h + gap; }
+  else if (y - gap - ch >= 8) { side = 'above'; top = y - gap - ch; }
+  else if (x + w + gap + cw <= vw - 8) { side = 'right'; left = x + w + gap; }
+  else if (x - gap - cw >= 8) { side = 'left'; left = x - gap - cw; }
+  else { side = 'edge'; top = (y + h / 2 > vh / 2) ? 12 : vh - ch - 12; }
+  if (side === 'below' || side === 'above' || side === 'edge') left = clamp(x + w / 2 - cw / 2, 12, vw - cw - 12);
+  if (side === 'right' || side === 'left') top = clamp(y + h / 2 - ch / 2, 12, vh - ch - 12);
+  c.style.left = left + 'px'; c.style.top = top + 'px'; c.setAttribute('data-side', side);
+  var a = c.querySelector('.coach-arrow');
+  if (a) {
+    if (side === 'below' || side === 'above') { a.style.left = clamp(x + w / 2 - left - 8, 18, cw - 34) + 'px'; a.style.top = ''; }
+    else if (side === 'right' || side === 'left') { a.style.top = clamp(y + h / 2 - top - 8, 18, ch - 34) + 'px'; a.style.left = ''; }
+  }
+}
+/* opens or closes the example manuscript for the steps inside its details; always on Today */
+function tourPrepare(i) {
+  var st = COACH[i - 1];
+  S.pop = null; S.drawer = false; S.tip = null; S.pal = null;
+  if (i >= 1 && S.view !== 'today' && !(st && st.open && S.sel)) { S.view = 'today'; }
+  if (st && st.open) {
+    if (!S.sel) {
+      var row = document.querySelector('.main [data-a="open"][data-v]'), id = row ? Number(row.getAttribute('data-v')) : 0;
+      var m = (id && mById(id)) || S.boot.manuscripts.filter(function (x) { return derive(x).tier !== 'closed'; })[0];
+      if (m) { S.sel = m.id; openDraft(m); S.fx.panel = true; S.tourOpened = true; }
+    }
+  } else if (S.tourOpened) { S.sel = null; S.draft = null; S.tourOpened = false; }
+}
 function tourGo(i) {
-  i = Math.max(0, Math.min(TOUR.length - 1, i));
-  var d = document.getElementById('tour-dlg');
-  S.tour = i;
-  if (!d) { render(); return; }
-  var tok = (S.tourTok = (S.tourTok || 0) + 1), body = d.querySelector('.tbody');
-  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var swap = function () {
-    if (tok !== S.tourTok) return;
-    var t = TOUR[i];
-    d.querySelector('.tstepn').textContent = 'Step ' + (i + 1) + ' of ' + TOUR.length;
-    d.querySelector('.tour-art').innerHTML = tourArt(t);
-    d.querySelector('#tour-h').textContent = t.t;
-    d.querySelector('.tour-b').textContent = t.b;
-    Array.prototype.forEach.call(d.querySelectorAll('.dots i'), function (el, k) { el.className = k === i ? 'on' : ''; });
-    d.querySelector('.tnav').innerHTML = tourNav(i);
-    body.classList.remove('tout');
-    var nb = d.querySelector('.tnav .btn-p'); if (nb) nb.focus({ preventScroll: true });
-  };
-  if (reduce) { swap(); return; }
-  body.classList.add('tout');
-  setTimeout(swap, 140);
+  i = Math.max(0, Math.min(COACH.length, i));
+  S.tour = i; tourPrepare(i); render();
+  if (COACH[i - 1] && COACH[i - 1].open) setTimeout(placeCoach, 380); // after the details slide in
+  var nb = document.querySelector('.coach-nav .btn-p, .wel-btns .btn-p'); if (nb) nb.focus({ preventScroll: true });
+}
+function startTour() {
+  if (dirty()) { toast('Save or discard your changes first.'); return; }
+  if (S.sel) { S.sel = null; S.draft = null; }
+  S.view = 'today'; S.tour = 0; S.coachRect = null; render();
 }
 var toastTimer;
 function toast(text, isErr, ms) {
@@ -3022,7 +3316,12 @@ function csv() {
   var a = document.createElement('a'); a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent('﻿' + lines.join('\r\n')); a.download = 'VIBRA_tracker_' + S.boot.today + '.csv'; a.target = '_blank';
   document.body.appendChild(a); a.click(); a.remove(); S.pop = null; render(); toast('CSV of ' + list.length + ' manuscripts downloaded.');
 }
-function endTour() { S.tour = -1; if (S.boot) { S.boot.prefs = S.boot.prefs || {}; S.boot.prefs.tourSeen = true; keepBoot(); } render(); api('api_setPrefs', { tourSeen: true }).catch(function () { }); }
+function endTour() {
+  if (S.tourOpened) { S.sel = null; S.draft = null; S.tourOpened = false; }
+  S.tour = -1; S.coachRect = null;
+  if (S.boot) { S.boot.prefs = S.boot.prefs || {}; S.boot.prefs.tourSeen = true; S.boot.prefs.tour2 = true; keepBoot(); }
+  render(); api('api_setPrefs', { tourSeen: true, tour2: true }).catch(function () { });
+}
 
 /* 0.1.14: get, renew or stop a private calendar address */
 function feedCall(k, fn, args, done) {
@@ -3094,7 +3393,7 @@ var ACT = {
   },
   'dash-reset': function () { saveDash({ order: DASH.map(function (x) { return x.k; }), hide: [], scope: 'all' }); toast('Dashboard reset: everything is shown again.'); },
   tip: function (v) { S.tip = S.tip === v ? null : v; document.querySelectorAll('.tip').forEach(function (t) { var b = t.querySelector('[data-v]'); var on = b && b.getAttribute('data-v') === S.tip; t.classList.toggle('open', on); if (b) b.setAttribute('aria-expanded', on); var bx = t.querySelector('.tipbox'); if (bx && !on) bx.removeAttribute('style'); }); placeTip(); },
-  tour: function () { S.tour = 0; S.pop = null; render(); },
+  tour: function () { S.pop = null; startTour(); },
   'tour-next': function () { tourGo(S.tour + 1); }, 'tour-back': function () { tourGo(S.tour - 1); }, 'tour-end': endTour,
   'toast-x': function () { var el = document.getElementById('toast'); if (el) el.innerHTML = ''; },
   reload: function () { location.reload(); },
@@ -3198,6 +3497,12 @@ var ACT = {
   'theme-toggle': function () { setTheme(curTheme() === 'dark' ? 'light' : 'dark'); },
   'theme-set': function (v) { setTheme(v); },
   'web-signout': function () { if (window.VIBRA_WEB && window.VIBRA_WEB.signOut) window.VIBRA_WEB.signOut(); },
+  'web-code': function () {
+    if (!window.VIBRA_WEB || !window.VIBRA_WEB.newCode) return;
+    S.webCodeBusy = true; render();
+    window.VIBRA_WEB.newCode().then(function (r) { S.webCodeBusy = false; S.webCode = r; render(); }).catch(function (e) { S.webCodeBusy = false; render(); toast(msg(e), true); });
+  },
+  'web-install': function () { if (window.VIBRA_WEB && window.VIBRA_WEB.install) window.VIBRA_WEB.install().then(function () { render(); }); },
   'del-open': function () { var m = curM(); if (!m) return; if (dirty()) { toast('Save or discard your changes first.'); return; } S.del = { id: m.id, reason: '', err: '' }; render(); var t = document.getElementById('del-reason'); if (t) t.focus(); },
   'del-close': function () { S.del = null; render(); },
   'del-bg': function (v, e) { if (e.target.classList && e.target.classList.contains('overlay')) ACT['del-close'](); },
@@ -3413,6 +3718,10 @@ document.addEventListener('focusin', function (e) { var t = e.target; if (!S.cbH
 document.addEventListener('mousedown', function (e) { var t = e.target.closest && e.target.closest('[data-cb]'); if (t && document.activeElement === t && (!S.cb || S.cb.key !== t.getAttribute('data-cb'))) { S.cb = { key: t.getAttribute('data-cb'), text: t.value }; cbRefresh(S.cb.key); } });
 document.addEventListener('keydown', function (e) {
   var t = e.target, k = t.getAttribute && t.getAttribute('data-k');
+  if (S.tour >= 0 && !/INPUT|TEXTAREA|SELECT/.test(t.tagName || '')) { // 0.2.0 tour: arrow keys step through it
+    if (e.key === 'ArrowRight') { e.preventDefault(); if (S.tour < COACH.length) tourGo(S.tour + 1); else endTour(); return; }
+    if (e.key === 'ArrowLeft' && S.tour > 0) { e.preventDefault(); tourGo(S.tour - 1); return; }
+  }
   if ((e.metaKey || e.ctrlKey) && !e.altKey && (e.key === 'k' || e.key === 'K')) { e.preventDefault(); if (S.pal) { S.pal = null; render(); } else if (S.boot) palOpen(); return; }
   if ((e.metaKey || e.ctrlKey) && e.key === '.') { e.preventDefault(); if (S.boot) ACT['sb-toggle'](); return; }
   if (t.id === 'pal-q') {
@@ -3441,14 +3750,24 @@ document.addEventListener('keydown', function (e) {
 });
 
 /* ---------- inside the installed VIBRA app: a few messages with the app (its own origin only) */
-function toApp(m) { if (EMBED) try { window.top.postMessage(m, EMBED); } catch (e) { } }
+/* 0.2.0: on the group's own address the page is the VIBRA app itself; VIBRA_WEB.app answers the same messages. */
+function localApp() { return !!(window.VIBRA_WEB && window.VIBRA_WEB.app); }
+function toApp(m) {
+  if (localApp()) { try { window.VIBRA_WEB.app(m, onAppMsg); } catch (e) { } return; }
+  if (EMBED) try { window.top.postMessage(m, EMBED); } catch (e) { }
+}
 window.addEventListener('message', function (e) {
   if (!EMBED || e.origin !== EMBED || !e.data || typeof e.data !== 'object') return;
-  var d = e.data;
+  onAppMsg(e.data);
+});
+window.__vibraAppMsg = function (d) { onAppMsg(d); };
+window.addEventListener('resize', function () { if (S.tour > 0) placeCoach(); });
+function onAppMsg(d) {
+  if (!d || typeof d !== 'object') return;
   if (d.type === 'vibra-push-status') { S.dev = d; if (S.view === 'settings') render(); }
   else if (d.type === 'vibra-push-result') { S.devBusy = false; if (d.status) S.dev = d.status; render(); toast(d.ok ? d.text : (d.error || 'It did not work.'), !d.ok, 8000); }
   else if (d.type === 'vibra-open' && S.boot && mById(Number(d.m))) { if (S.view === 'settings' || S.view === 'desk') S.view = 'today'; openManuscript(Number(d.m)); }
-});
+}
 function openFromLink() {
   try {
     google.script.url.getLocation(function (loc) {
@@ -3480,9 +3799,10 @@ function keepBoot() {
 }
 function started(b) {
   S.fx.list = true; applyTheme();
-  if (!b.prefs || !b.prefs.tourSeen) S.tour = 0;
+  if (!b.prefs || !b.prefs.tour2) S.tour = 0; // 0.2.0: everyone sees the new welcome and tour once
   render();
-  if (EMBED) { toApp({ type: 'vibra-ready', version: b.version, kept: !!S.stale, head: window.__T0 || 0, t: Math.round(performance.now()) }); toApp({ type: 'vibra-push-status' }); }
+  if (EMBED) toApp({ type: 'vibra-ready', version: b.version, kept: !!S.stale, head: window.__T0 || 0, t: Math.round(performance.now()) });
+  if (EMBED || localApp()) toApp({ type: 'vibra-push-status' });
   openFromLink();
 }
 function freshBoot(b) {
@@ -3515,6 +3835,7 @@ if (window.__VIBRA_BLOCKED) {
   });
 }
 window.__vibra = S;
+window.__vibraTour = { steps: COACH, target: function (st) { return coachTarget(st); } }; // test hook
 window.__vibraPoll = poll;
 window.__vibraDerived = function () { return allDerived(); };
 window.__vibraNames = { authorKey: authorKey, isMemberKey: isMemberKey, onMine: onMine, open: function (id) { openManuscript(id); }, close: function () { closePanel(true); }, render: render };
