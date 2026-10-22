@@ -1,7 +1,7 @@
 /* VIBRA app service worker: works offline, receives notifications.
    A push carries no content: on each push the worker asks the admin's helper for the text, with this device's
    own secret, and shows it. Nothing else leaves the device. */
-var CACHE = 'vibra-app-1.1.0';
+var CACHE = 'vibra-app-1.2.0';
 var SHELL = ['./', './index.html', './app.js', './config.js', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png',
   './icons/maskable-512.png', './icons/apple-touch-icon.png', './icons/badge-96.png', './icons/favicon-32.png'];
 var LABEL = { ball_to_you: 'Ball to you', changed: 'Manuscript changed', ai_update: 'AI update', inbox_reply: 'Quick update', deadline: 'Deadline',
@@ -19,10 +19,14 @@ self.addEventListener('fetch', function (e) {
   var req = e.request, url = new URL(req.url);
   if (req.method !== 'GET' || url.origin !== self.location.origin) return;
   if (req.mode === 'navigate') {
+    // 1.2.0: only the app page itself is kept as the offline shell; other pages under this address (the tracker's
+    // web front end in app/) are kept under their own name and never replace the shell.
+    var scope = new URL(self.registration.scope).pathname, shell = url.pathname === scope || url.pathname === scope + 'index.html';
+    var key = shell ? './index.html' : url.origin + url.pathname;
     e.respondWith(fetch(req).then(function (r) {
-      if (r.ok) { var c = r.clone(); caches.open(CACHE).then(function (x) { x.put('./index.html', c); }); }
+      if (r.ok) { var c = r.clone(); caches.open(CACHE).then(function (x) { x.put(key, c); }); }
       return r;
-    }).catch(function () { return caches.match('./index.html').then(function (r) { return r || caches.match('./'); }); }));
+    }).catch(function () { return caches.match(key).then(function (r) { return r || caches.match('./index.html'); }); }));
     return;
   }
   e.respondWith(caches.match(req, { ignoreSearch: true }).then(function (hit) {
