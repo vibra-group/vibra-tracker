@@ -5,9 +5,10 @@
    2.4.0: the new VIBRA app icons (app-*.png).
    2.5.0: page 0.2.5 (one-call quick updates through the helper, undo in one go, links, preprint).
    2.6.0: page 0.2.6 (each quick update read once with its screenshots, Paste in the text box, the dialog above the keyboard).
+   2.7.0: page 0.2.7 (compact notifications page by page, floating buttons over the details on a phone, urgency scrubber, text size in 6 steps).
    A push carries no content: on each push the worker asks the admin's helper for the text, with this device's
    own secret, and shows it. Nothing else leaves the device. */
-var CACHE = 'vibra-app-2.6.0';
+var CACHE = 'vibra-app-2.7.0';
 var SHELL = ['./', './app/', './manifest.webmanifest', './icons/app-192.png', './icons/app-512.png', './icons/app-maskable-512.png',
   './icons/app-apple-180.png', './icons/app-badge-96.png', './icons/app-favicon-32.png', './icons/vibra-logo-full.jpg'];
 var LABEL = { nudge: 'Nudge', ball_to_you: 'Ball to you', changed: 'Manuscript changed', ai_update: 'AI update', inbox_reply: 'Quick update', deadline: 'Deadline',

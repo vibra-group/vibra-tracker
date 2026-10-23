@@ -5,12 +5,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <script>
-/* VIBRA Tracker 0.2.6 on the group's own address (vibra-group.github.io), built by tools/build_web.py from app/Index.html.
+/* VIBRA Tracker 0.2.7 on the group's own address (vibra-group.github.io), built by tools/build_web.py from app/Index.html.
    This page is the VIBRA app: installable, with notifications and the last data readable offline.
    Google confirms who the member is ("Sign in with Google"), or a one-time code made on a signed-in device does; the
    admin's helper checks that once and gives a session; every server call then goes to the helper with that session
    and runs the tracker's own code as the member. */
-window.VIBRA_WEB = { helper: "https://script.google.com/macros/s/AKfycbzNE__5onOmvia3VaFHjybAJ5G35cnDJCN1ysuiNAYlgOC5xsbCi0xyDnmoJP7lEaFR3w/exec", clientId: "619243121375-pi18v7vjgvcue7qo6455uids4v28megi.apps.googleusercontent.com", classic: "https://script.google.com/macros/s/AKfycbzkG5eCrxQvQtJgfksL92G9vtl2I4LLEew-Az4qYlDxX6V1QfgtIrwGjYOGq9CQ0r3aWA/exec", built: "0.2.6" };
+window.VIBRA_WEB = { helper: "https://script.google.com/macros/s/AKfycbzNE__5onOmvia3VaFHjybAJ5G35cnDJCN1ysuiNAYlgOC5xsbCi0xyDnmoJP7lEaFR3w/exec", clientId: "619243121375-pi18v7vjgvcue7qo6455uids4v28megi.apps.googleusercontent.com", classic: "https://script.google.com/macros/s/AKfycbzkG5eCrxQvQtJgfksL92G9vtl2I4LLEew-Az4qYlDxX6V1QfgtIrwGjYOGq9CQ0r3aWA/exec", built: "0.2.7" };
 (function () {
   var W = window.VIBRA_WEB, KEY = 'vibra-web-session', S = null, queue = [], gisInit = false, tries = 0, gateOn = false;
   var ua = navigator.userAgent || '', IOS = /iPad|iPhone|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
@@ -305,7 +305,7 @@ if(top==="https://script.google.com")return;if(top==="https://vibra-group.github
 <script>window.__VIBRA_U=window.__VIBRA_U||"";window.__VIBRA_V=window.__VIBRA_V||"";window.__T0=Math.round(performance.now());</script>
 <script>/* Ask the server for the data at once, before the rest of the page is read (saves a few hundred ms). */
 try{if(!window.__VIBRA_BLOCKED&&window.google&&google.script&&google.script.run){window.__bootP=new Promise(function(res,rej){google.script.run.withSuccessHandler(res).withFailureHandler(rej).api_bootstrap();});}}catch(e){}</script>
-<script>try{var t=localStorage.getItem("vibra-theme");if(t){document.documentElement.setAttribute("data-theme",t==="system"?(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"):t);}var z=localStorage.getItem("vibra-fs");if(z==="s"||z==="l")document.documentElement.setAttribute("data-fs",z);}catch(e){}</script>
+<script>try{var t=localStorage.getItem("vibra-theme");if(t){document.documentElement.setAttribute("data-theme",t==="system"?(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"):t);}var z=localStorage.getItem("vibra-fs");z={s:"2",m:"3",l:"5"}[z]||z;if(/^[124-6]$/.test(z||""))document.documentElement.setAttribute("data-fs",z);}catch(e){}</script>
 <title>VIBRA Tracker</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -977,10 +977,24 @@ tr.closed td{background:color-mix(in srgb,var(--surface-2) 55%,transparent)}
 .qu-ex .tags{gap:5px}
 .qu-ex .tag{font-size:calc(11.5px*var(--fz,1))}
 /* 0.2.6: text size (Settings, Appearance). The web build multiplies every font size by --fz (tools/build_web.py) */
-html[data-fs="s"]{--fz:.92}
-html[data-fs="l"]{--fz:1.18}
+/* 0.2.7 (admin: Small and Medium hardly differed, Large was much bigger; "thành khung kéo 6 nấc"): six even steps of 6%,
+   step 3 is the usual size; the admin's default for some members is step 5 (a little smaller than the old Large) */
+html[data-fs="1"]{--fz:.88}
+html[data-fs="2"]{--fz:.94}
+html[data-fs="4"]{--fz:1.06}
+html[data-fs="5"]{--fz:1.12}
+html[data-fs="6"]{--fz:1.18}
 .fs-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-.fs-row .fs-a{font-weight:700;line-height:1;width:16px;text-align:center}
+.fs-row .fs-a{font-weight:700;line-height:1;text-align:center;color:var(--ink-2);flex:none}
+.fs-sl{display:flex;align-items:center;gap:10px;flex:1 1 220px;max-width:360px}
+.fs-sl .fs-v{min-width:44px;text-align:right;font-size:calc(12.5px*var(--fz,1));color:var(--muted)}
+.fs-rng{-webkit-appearance:none;appearance:none;flex:1;min-width:120px;height:28px;margin:0;background:transparent;cursor:pointer}
+.fs-rng::-webkit-slider-runnable-track{height:6px;border-radius:999px;background:radial-gradient(circle,var(--muted) 1.6px,transparent 2.2px) 0 50%/calc((100% - 22px) / 5) 6px repeat-x content-box,var(--surface-2);background-origin:content-box;padding:0 8px;box-shadow:inset 0 0 0 1px var(--line)}
+.fs-rng::-moz-range-track{height:6px;border-radius:999px;background:var(--surface-2);box-shadow:inset 0 0 0 1px var(--line)}
+.fs-rng::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;margin-top:-8px;border-radius:999px;background:var(--surface);border:2px solid var(--accent);box-shadow:0 2px 8px -2px rgba(0,0,0,.35)}
+.fs-rng::-moz-range-thumb{width:18px;height:18px;border-radius:999px;background:var(--surface);border:2px solid var(--accent);box-shadow:0 2px 8px -2px rgba(0,0,0,.35)}
+.fs-rng:focus-visible{outline:3px solid var(--accent-soft);outline-offset:2px;border-radius:999px}
+.fs-ticks{display:flex;justify-content:space-between;padding:0 11px;margin-top:-4px;font-size:calc(10.5px*var(--fz,1));color:var(--muted)}
 .qu-hint{margin:2px 0 0;font-size:calc(12px*var(--fz,1));color:var(--muted)}
 /* 0.2.6: Paste inside the text box; the box keeps room for it */
 .ta-wrap{position:relative}
@@ -1070,6 +1084,22 @@ svg.ic2{fill:none!important;stroke:currentColor;stroke-width:1.6;stroke-linecap:
 .sb-new{margin-bottom:6px;color:var(--ink);font-weight:550}
 .sb-new .plus{width:24px;height:24px;margin-left:-2px;border-radius:999px;background:var(--accent);color:var(--accent-fg);display:inline-flex;align-items:center;justify-content:center;flex:none}
 .sb-new .plus svg.ic{width:14px;height:14px;color:var(--accent-fg)}
+/* 0.2.7: New manuscript in the phone top bar, a pill with a soft gradient ring (admin: "cách điệu hơn xíu") */
+.tb-new{display:inline-flex;align-items:center;gap:7px;height:34px;padding:0 13px 0 4px;margin-right:4px;border:1.5px solid transparent;border-radius:999px;cursor:pointer;flex:none;
+  background:linear-gradient(var(--surface),var(--surface)) padding-box,linear-gradient(120deg,var(--accent),#7C6CF0 55%,#1BAF7A) border-box;
+  color:var(--ink);font:650 calc(13.5px*var(--fz,1)) var(--sans);letter-spacing:.01em;box-shadow:0 4px 14px -8px rgba(42,120,214,.7);transition:transform .15s var(--ease)}
+.tb-new:active{transform:scale(.96)}
+.tb-new .plus{width:24px;height:24px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;flex:none;color:#fff;
+  background:linear-gradient(135deg,var(--accent),#7C6CF0)}
+.tb-new .plus svg.ic{width:14px;height:14px;color:#fff;stroke-width:2.4}
+.tb-new:focus-visible{outline:3px solid var(--accent-text);outline-offset:2px}
+/* the same look for New manuscript in the sidebar on a computer (admin: "thay trên bản web luôn") */
+.sb .sb-new{min-height:40px;margin-bottom:8px;border:1.5px solid transparent;border-radius:999px;font-weight:650;color:var(--ink);
+  background:linear-gradient(var(--surface),var(--surface)) padding-box,linear-gradient(120deg,var(--accent),#7C6CF0 55%,#1BAF7A) border-box;box-shadow:0 4px 14px -9px rgba(42,120,214,.7);padding:0 12px 0 6px}
+.sb .sb-new:hover{background:linear-gradient(var(--surface-2),var(--surface-2)) padding-box,linear-gradient(120deg,var(--accent),#7C6CF0 55%,#1BAF7A) border-box}
+.sb .sb-new .plus{width:26px;height:26px;margin-left:0;background:linear-gradient(135deg,var(--accent),#7C6CF0);color:#fff}
+.sb .sb-new .plus svg.ic{color:#fff;stroke-width:2.4}
+.shell.sbc .sb .sb-new{width:40px;height:40px;min-height:40px;padding:0;border-radius:999px}
 .sb-scroll{flex:1 1 auto;min-height:0;overflow-y:auto;overflow-x:hidden;margin:8px -4px 0;padding:0 4px;scrollbar-width:thin}
 .sb-sec{margin-top:14px}
 .sb-sec h3{display:flex;align-items:center;gap:6px;margin:0 6px 4px;font:500 calc(12px*var(--fz,1))/1.4 var(--sans);color:var(--muted)}
@@ -1309,6 +1339,38 @@ html.dragging,html.dragging *{cursor:grabbing!important;-webkit-user-select:none
 @media (max-width:599px){.cal-c{min-height:58px;padding:3px}.cal-e{font-size:0;height:6px;padding:0;border-radius:3px}.cal-more{font-size:calc(9.5px*var(--fz,1));padding:0}.cal-g{gap:3px}}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 .wn{max-width:560px;gap:16px}
+/* 0.2.7 (admin, iPhone: "khi kéo xuống thì sẽ xuất hiện các vạch như các nấc scroll để lướt nhanh giữa các trạng thái
+   urgency ... trượt có hiệu ứng như xoay nút"): the urgency scrubber on Today, phones only. One notch per manuscript in
+   the colour of its urgency, a small gap between groups; it appears at the right edge while Today scrolls, a finger
+   on it slides through the list (the notches under the finger swell like a dial, the bubble names the group). */
+:root{--sc-due:#E0483B;--sc-deadline:#DE9C12;--sc-action:#2A78D6;--sc-chase:#7A5BD8;--sc-waiting:#A3A098;--sc-drafting:#1BAF7A}
+:root[data-theme="dark"]{--sc-due:#F26A5E;--sc-deadline:#EBB840;--sc-action:#4D93EC;--sc-chase:#9C87F0;--sc-waiting:#727985;--sc-drafting:#2FC58D}
+#scrub{position:fixed;right:0;top:calc(var(--hdr-h) + 18px);bottom:calc(max(20px,env(safe-area-inset-bottom)) + 74px);width:44px;z-index:64;pointer-events:none;opacity:0;transform:translateX(10px);transition:opacity .22s,transform .3s var(--ease)}
+#scrub.show{opacity:1;transform:none}
+#scrub.show .sc-rail{pointer-events:auto}
+.sc-rail{position:absolute;right:0;top:0;bottom:0;width:30px;touch-action:none;-webkit-user-select:none;user-select:none}
+.sc-rail::before{content:"";position:absolute;right:4px;top:-8px;bottom:-8px;width:18px;border-radius:999px;background:color-mix(in srgb,var(--surface) 82%,transparent);box-shadow:0 0 0 1px var(--line),0 6px 18px -8px rgba(0,0,0,.35);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);transition:width .2s var(--ease)}
+#scrub.drag .sc-rail::before{width:32px}
+.sc-n{position:absolute;right:8px;width:10px;height:3px;margin-top:-1.5px;border-radius:2px;transition:width .12s var(--ease)}
+#scrub.drag .sc-n{transition:none}
+.sc-due{background:var(--sc-due)}.sc-deadline{background:var(--sc-deadline)}.sc-action{background:var(--sc-action)}.sc-chase{background:var(--sc-chase)}.sc-waiting{background:var(--sc-waiting)}.sc-drafting{background:var(--sc-drafting)}
+.sc-thumb{position:absolute;right:5px;width:16px;border-radius:999px;border:1.5px solid var(--ink-2);opacity:.35;transition:top .12s linear,height .12s linear}
+#scrub.drag .sc-thumb{opacity:0}
+.sc-bub{position:fixed;right:52px;top:0;max-width:min(250px,calc(100vw - 80px));padding:7px 11px 8px;border-radius:12px;background:var(--surface);color:var(--ink);box-shadow:0 0 0 1px var(--line),0 12px 28px -10px rgba(0,0,0,.45);font:500 calc(12.5px*var(--fz,1))/1.35 var(--sans);opacity:0;transform:translateY(-50%) scale(.96);transition:opacity .15s,transform .15s var(--ease);pointer-events:none}
+#scrub.drag .sc-bub{opacity:1;transform:translateY(-50%)}
+.sc-bub b{display:flex;align-items:center;gap:6px;font-weight:650;font-size:calc(13px*var(--fz,1))}
+.sc-bub b i{width:9px;height:9px;border-radius:999px;flex:none}
+.sc-bub span{display:block;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (min-width:900px){#scrub{display:none}}
+@media (prefers-reduced-motion:reduce){#scrub,.sc-n,.sc-thumb{transition:none}}
+/* 0.2.7: a frame of fixed height, the releases scroll inside it */
+.wn-ov{align-items:center}
+.dialog.wn{padding:0;gap:0;overflow:hidden;max-height:min(640px,calc(100vh - 48px));max-height:min(640px,calc(100dvh - 48px - env(safe-area-inset-top) - env(safe-area-inset-bottom)))}
+.wn-top{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:20px 22px 14px;border-bottom:1px solid var(--line);flex:none}
+.wn-body{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:16px 22px 18px;display:flex;flex-direction:column;gap:16px;outline:none}
+.wn-body .wn-rel + .wn-rel{border-top:1px solid var(--line);padding-top:14px}
+.wn-foot{justify-content:flex-end;padding:12px 22px 16px;border-top:1px solid var(--line);flex:none;background:var(--surface)}
+@media (max-width:600px){.wn-top{padding:16px 16px 12px}.wn-body{padding:14px 16px 16px}.wn-foot{padding:10px 16px 14px}}
 .wn-rel{display:flex;flex-direction:column;gap:10px}
 .wn-h{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap}
 .wn-h b{font-size:calc(15px*var(--fz,1))}
@@ -1408,6 +1470,23 @@ button.kpi:hover:not([disabled]),.tile:hover:not([disabled]){transform:none;box-
 @keyframes fxIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 .pop.sbpop{top:auto;right:auto;bottom:14px;left:calc(var(--sbw) + 10px);transform-origin:bottom left}
 @media (max-width:899px){.pop.sbpop{top:calc(var(--hdr-h) + 6px);bottom:auto;left:12px;right:12px;width:auto}}
+/* 0.2.7 (admin: "luôn giữ chiều cao gọn ... blur viền nhẹ thôi để phân biệt với xung quanh", light and dark alike): the
+   notifications list is never taller than about half the window and scrolls inside; a soft blur just around its edge
+   sets it apart from the page behind. The list itself (np-scroll) covers the inside, so only the rim shows the blur. */
+.pop.npop{overflow:visible;display:flex;flex-direction:column;max-height:min(48vh,520px);max-height:min(48dvh,520px)}
+.np-halo{position:fixed;z-index:69;border-radius:34px;pointer-events:none;opacity:0;transition:opacity .25s;
+  background:color-mix(in srgb,var(--bg) 22%,transparent);-webkit-backdrop-filter:blur(7px) saturate(.9);backdrop-filter:blur(7px) saturate(.9);
+  -webkit-mask:linear-gradient(90deg,transparent,#000 20px,#000 calc(100% - 20px),transparent),linear-gradient(transparent,#000 20px,#000 calc(100% - 20px),transparent);
+  -webkit-mask-composite:source-in;mask:linear-gradient(90deg,transparent,#000 20px,#000 calc(100% - 20px),transparent),linear-gradient(transparent,#000 20px,#000 calc(100% - 20px),transparent);mask-composite:intersect}
+.calm-pop .np-halo{transition:none}
+.npop .np-scroll{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;border-radius:inherit;background:var(--surface)}
+:root[data-theme="dark"] .pop.npop{box-shadow:0 0 0 1px rgba(255,255,255,.11),0 18px 48px -12px rgba(0,0,0,.7)}
+.nmore{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:44px;padding:10px 14px;border:0;border-bottom:1px solid var(--line);background:none;color:var(--accent-text);font:600 calc(13px*var(--fz,1)) var(--sans);cursor:pointer}
+.nmore:hover{background:var(--surface-2)}
+.nmore[disabled]{color:var(--muted);cursor:default}
+.nmore i{width:14px;height:14px;border-radius:999px;border:2px solid currentColor;border-right-color:transparent;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.nmore i{animation:none}}
 
 /* floating Search + Quick update */
 .fabs{position:fixed;right:max(20px,env(safe-area-inset-right));bottom:max(20px,env(safe-area-inset-bottom));z-index:65;display:flex;align-items:center;gap:10px;transition:bottom .28s var(--ease),right .28s var(--ease)}
@@ -1454,12 +1533,23 @@ button.kpi:hover:not([disabled]),.tile:hover:not([disabled]){transform:none;box-
 .row .lkc{margin:4px 0 0 6px}
 .card .lkc{margin:0;align-self:flex-start}
 .sb-m .lkc{margin-left:0;padding:0 5px}
-/* 0.1.9 phones: the details fill the screen and nothing floats over them; the date box stays in its column */
-.p-top .p-qu{display:none}
+/* 0.1.9 phones: the details fill the screen; the date box stays in its column. 0.2.7 (admin: Quick update and Search
+   within thumb reach everywhere): the floating buttons stay over the details too, above Save, and the small Quick update
+   button at the top of the details is gone. */
 @media (max-width:1023px){
   .panel{top:0!important;bottom:0;max-height:none!important;border-radius:0!important;box-shadow:none!important}
-  .shell.pshown ~ .fabs{display:none}
-  .p-top .p-qu{display:inline-flex}
+}
+@media (max-width:899px){
+  .panel .savebar{margin-top:84px} /* the end of the details scrolls clear of the floating buttons */
+  .panel{overflow-x:hidden} /* hidden tip boxes no longer let the details slide sideways */
+  /* Quick update keeps its name on the lists; over an open manuscript it is a round ⚡ beside Search (admin: "chỉ khi
+     nào mở pop up mới thu gọn quick update thành icon"), and its name slides out while it is pressed and held */
+  .fabs .fab{min-width:54px;gap:0;overflow:hidden;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;transition:padding .3s var(--ease),transform .18s var(--ease)}
+  .fabs .fab span{display:inline-block;max-width:140px;opacity:1;margin-left:8px;white-space:nowrap;transition:max-width .34s var(--ease),opacity .22s,margin-left .34s var(--ease)}
+  .shell.pshown ~ .fabs .fab:not(.peek){padding:0 16px}
+  .shell.pshown ~ .fabs .fab:not(.peek) span{max-width:0;opacity:0;margin-left:0}
+  .fabs .fab-s{width:52px;height:52px}
+  html.fld .fabs{opacity:0;visibility:hidden;transition:opacity .15s,visibility 0s .15s} /* typing: nothing floats over the box */
 }
 .in[type="date"]{-webkit-appearance:none;appearance:none;min-width:0;max-width:100%;display:block;text-align:left}
 .in[type="date"]::-webkit-date-and-time-value{text-align:left}
@@ -1579,6 +1669,12 @@ var TIPS = {
    something works, a bug they may have met); internal fixes need none. Each member sees the card once per release
    (preference relSeen; the 0.2.0 tour stands for 0.2.0), never in a session that showed the tour; the bell keeps it. */
 var RELEASES = [
+  { v: '0.2.7', date: '2026-10-24', title: 'Calmer phone screens, compact notifications', items: [
+    ['bell2', 'Notifications stay compact: the latest few, scrolling inside the list. "See earlier notifications" brings older ones when you want them, and a soft blur around the list sets it apart.'],
+    ['phone', 'On a phone, Quick update and Search float at the bottom everywhere, also over an open manuscript, where Quick update becomes a round ⚡ (press and hold to see its name).'],
+    ['plus', 'New manuscript at the top of the phone screen; the Search and ⚡ buttons up there are gone (both float at the bottom).'],
+    ['sliders', 'Today on a phone: as you scroll, coloured notches appear at the right edge, one per manuscript. Slide a finger along them to jump between Due, Deadline, Our move, Chase journal, Waiting and Drafting.'],
+    ['restore', 'Easier on the battery: the app checks for news every 20 seconds while you use it, every minute after 5 idle minutes. What\'s new scrolls inside its own frame.']] },
   { v: '0.2.6', date: '2026-10-23', title: 'Larger text if you like, smoother quick updates', items: [
     ['bolt', 'Fixed: a quick update with a screenshot could be read before its screenshot arrived ("no visible screenshots") and then read a second time. Each update is now read once, with its screenshots.'],
     ['phone', 'On a phone the keyboard no longer covers the text box: the dialog fits above it while you type.'],
@@ -1641,10 +1737,11 @@ function relBlock(r) {
 function wnDialog() {
   var list = relNew(); if (!list.length) list = RELEASES.slice(0, 1);
   var shown = list.slice(0, 3), go = (shown.filter(function (r) { return r.go; })[0] || {}).go;
-  return '<div class="overlay" data-a="wn-bg"><div class="dialog wn" role="dialog" aria-modal="true" aria-labelledby="wn-h">' +
-    '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h2 id="wn-h">What\'s new in VIBRA Tracker ' + esc(RELEASES[0].v) + '</h2><button type="button" class="ibtn" data-a="wn-close" aria-label="Close">' + ic('x') + '</button></div>' +
-    shown.map(relBlock).join('') + (list.length > 3 ? '<p class="muted" style="margin:0;font-size:calc(12.5px*var(--fz,1))">Earlier changes: Settings, Help, What\'s new.</p>' : '') +
-    '<div class="btns" style="justify-content:flex-end">' + (go ? '<button class="btn btn-s" data-a="wn-go" data-v="' + go[0] + '">' + esc(go[1]) + '</button>' : '') + '<button class="btn btn-p" data-a="wn-close">Got it</button></div></div></div>';
+  // 0.2.7 (admin: "làm khung rồi scrolling đi"): the title and the buttons stay put; the list scrolls inside a frame
+  return '<div class="overlay wn-ov" data-a="wn-bg"><div class="dialog wn" role="dialog" aria-modal="true" aria-labelledby="wn-h">' +
+    '<div class="wn-top"><h2 id="wn-h">What\'s new in VIBRA Tracker ' + esc(RELEASES[0].v) + '</h2><button type="button" class="ibtn" data-a="wn-close" aria-label="Close">' + ic('x') + '</button></div>' +
+    '<div class="wn-body" tabindex="0">' + shown.map(relBlock).join('') + (list.length > 3 ? '<p class="muted" style="margin:0;font-size:calc(12.5px*var(--fz,1))">Earlier changes: Settings, Help, What\'s new.</p>' : '') + '</div>' +
+    '<div class="btns wn-foot">' + (go ? '<button class="btn btn-s" data-a="wn-go" data-v="' + go[0] + '">' + esc(go[1]) + '</button>' : '') + '<button class="btn btn-p" data-a="wn-close">Got it</button></div></div></div>';
 }
 var COACH = [
   { sel: ['.sb nav [data-v="today"]', '.topbar [data-a="drawer-open"]'], t: 'Start with Today', b: 'Your daily view: what needs attention now. Deadlines first, then what the group must do, then journals to chase. On a phone the views are behind this menu button.' },
@@ -1659,8 +1756,8 @@ var COACH = [
   { id: 'author', sel: ['.panel .au-det'], open: true, when: function () { return canEdit(); }, t: 'Author details and the author sheet', b: 'Fill in every author\'s affiliation, e-mail and ORCID together: look up an ORCID, or paste a screenshot of the title page and the AI proposes the details for you to check. Then download the Author sheet for the submission.' },
   { id: 'save', sel: ['#b-save'], open: true, t: 'Save', b: 'Nothing changes until you save. Everyone sees it at once, History keeps your name, and you can undo your own change. No connection? You can still read everything, and what you change is kept on this device: press Save when you are back online. A blue Updating label means fresh data is on its way.' },
   { sel: ['.panel [data-a="rem-open"]'], open: true, t: 'Remind me', b: 'A private reminder in your own calendar. Deadline to my calendar adds the deadline in one click.' },
-  { sel: ['.fab', '.panel .p-qu'], t: 'Quick update', b: 'The fastest way to report news: say what happened in any language, or paste a screenshot of the journal\'s e-mail. The AI updates the fields within about a minute, and you can undo.' },
-  { sel: ['.fab-s', '.topbar [data-a="pal-open"]'], t: 'Find anything', b: 'Any manuscript, person or command. Ctrl + K, or Command + K on a Mac.' },
+  { sel: ['.fab'], t: 'Quick update', b: 'The fastest way to report news: say what happened in any language, or paste a screenshot of the journal\'s e-mail. The AI updates the fields within about a minute, and you can undo.' },
+  { sel: ['.fab-s'], t: 'Find anything', b: 'Any manuscript, person or command. Ctrl + K, or Command + K on a Mac.' },
   { id: 'feedback', sel: ['.sb-fb', '.topbar [data-a="fb-open"]'], t: 'Send feedback', b: 'While we test the app, tell us what goes wrong or what you would like. A bug report also sends the screen and device details to help fix it; an idea sends nothing extra.' },
   { sel: ['.sb-foot [data-v="notif"]', '.topbar [data-v="notif"]'], t: 'Notifications', b: 'The ball passed to you, a change on your manuscripts, a deadline close. Turn them on for this phone or computer in Settings, Notifications.' },
   { id: 'getapp', sel: ['.sb-get', '.topbar [data-a="drawer-open"]'], t: 'Get the app', b: 'Install VIBRA on this computer or phone: its own icon and window, and notifications. It also shows the address and a QR code for your other devices. On a phone it sits beside your name in the menu.' },
@@ -1942,10 +2039,12 @@ function render() {
   var sbs2 = document.querySelector('.sb-scroll'); if (sbs2) sbs2.scrollTop = sbScroll;
   var sbm2 = document.querySelector('.sb-mid'); if (sbm2) sbm2.scrollTop = sbMid;
   var ovl = layer.querySelector('.overlay'), ovTop = ovl && dk && dk === prevDk ? ovl.scrollTop : 0;
+  var nps = layer.querySelector('.np-scroll'), npTop = nps ? nps.scrollTop : 0; // 0.2.7
   layer.innerHTML = popover() + dialog() + palHtml() + tourHtml() + ngCardHtml();
+  if (npTop) { var nps2 = layer.querySelector('.np-scroll'); if (nps2) nps2.scrollTop = npTop; }
   if (ovTop) { var ovl2 = layer.querySelector('.overlay'); if (ovl2) ovl2.scrollTop = ovTop; }
   if (S.tour > 0) requestAnimationFrame(placeCoach); // after the details' scroll position is restored below
-  placeFab(); placePop();
+  placeFab(); placePop(); placeHalo();
   placeTip();
   Array.prototype.forEach.call(layer.querySelectorAll('input[data-indet]'), function (el) { el.indeterminate = true; });
   var p2 = document.querySelector('.panel');
@@ -1955,6 +2054,7 @@ function render() {
   setBadge();
   if (glideFrom) glideBlocks(glideFrom);
   syncLock();
+  scSync(); // 0.2.7
 }
 /* On narrow screens an open tip is pinned to the screen width under its "i", so it never pushes the page sideways. */
 function placeTip() {
@@ -1975,6 +2075,15 @@ function placePop() {
   var r = b.getBoundingClientRect();
   pop.style.top = Math.round(r.bottom + 8) + 'px'; pop.style.right = Math.max(12, Math.round(window.innerWidth - r.right)) + 'px';
 }
+/* 0.2.7: the soft blur around the notifications list (the list's rectangle and 20 px around it) */
+function placeHalo() {
+  var h = layer.querySelector('.np-halo'), p = layer.querySelector('.npop'); if (!h || !p) return;
+  var r = p.getBoundingClientRect(), g = 20;
+  h.style.left = (r.left - g) + 'px'; h.style.top = (r.top - g) + 'px'; h.style.width = (r.width + 2 * g) + 'px'; h.style.height = (r.height + 2 * g) + 'px';
+  h.style.opacity = '1';
+  if (!p.__hl) { p.__hl = 1; p.addEventListener('animationend', placeHalo); } // placed again once the list has grown in
+}
+window.addEventListener('resize', function () { placeHalo(); });
 /* On a computer the floating buttons sit at the bottom right of the list, left of the details panel. */
 function placeFab() {
   var f = document.querySelector('.fabs'), p = document.querySelector('.panel'); if (!f) return;
@@ -1988,7 +2097,28 @@ var PWA_ORIGIN = 'https://vibra-group.github.io';
 var EMBED = window.__VIBRA_EMBED || '';
 function prefs() { return (S.boot && S.boot.prefs) || {}; }
 function sbCollapsed() { return !!prefs().sbCollapsed && window.innerWidth >= 900; }
-function unreadCount() { return S.boot.notifications.filter(function (n) { return !n.read; }).length + remDue().length + (relNew().length ? 1 : 0); }
+function unreadCount() { return allNotes().filter(function (n) { return !n.read; }).length + notesUnreadMore() + remDue().length + (relNew().length ? 1 : 0); }
+/* 0.2.7 (admin: "hiện vài noti gần đây thôi ... ấn vào mới load thêm thông báo trước đó, cho đỡ phải tải về hết 1 lượt"):
+   the data brings the 15 most recent notifications; "See earlier notifications" fetches the next 20 from the server.
+   Order: newest first, then by id (the server's order), so a page never skips or repeats one. */
+function noteCmp(a, b) { return a.ts !== b.ts ? (a.ts < b.ts ? 1 : -1) : (a.id < b.id ? 1 : a.id > b.id ? -1 : 0); }
+function allNotes() {
+  var a = (S.boot && S.boot.notifications) || [], o = S.nOld && S.nOld.list.length ? S.nOld.list : null; if (!o) return a;
+  var k = {}; a.forEach(function (n) { k[n.id] = 1; });
+  return a.concat(o.filter(function (n) { return !k[n.id]; })).sort(noteCmp);
+}
+function notesMore() { return S.nOld && S.nOld.loaded ? S.nOld.more : !!(S.boot && S.boot.notifMore); }
+function notesUnreadMore() { return S.nOld && S.nOld.loaded ? S.nOld.unreadMore || 0 : (S.boot && S.boot.notifUnreadMore) || 0; }
+function loadOlderNotes() {
+  if (S.nOld && S.nOld.busy) return;
+  var all = allNotes(), last = all.length ? all[all.length - 1] : null;
+  S.nOld = S.nOld || { list: [], more: true, unreadMore: 0, loaded: false }; S.nOld.busy = true; render();
+  api('api_notifs', last ? { ts: last.ts, id: last.id } : null).then(function (r) {
+    var k = {}; allNotes().forEach(function (n) { k[n.id] = 1; });
+    S.nOld.list = S.nOld.list.concat((r.notifications || []).filter(function (n) { return !k[n.id]; }));
+    S.nOld.more = !!r.more; S.nOld.unreadMore = r.unreadMore || 0; S.nOld.loaded = true; S.nOld.busy = false; render();
+  }).catch(function (e) { S.nOld.busy = false; render(); toast(msg(e), true); });
+}
 function pins() { return (prefs().pins || []).filter(function (id) { return mById(id); }); }
 function recents() { return (prefs().recent || []).filter(function (id) { return mById(id); }); }
 function myWork() {
@@ -2049,8 +2179,9 @@ function topbar() {
   var unread = unreadCount();
   return '<div class="topbar"><button class="sb-ib" data-a="drawer-open" aria-label="Open the sidebar">' + ic('menu') + '</button>' +
     '<button class="sb-brand tb-brand" data-a="view" data-v="today" aria-label="VIBRA Tracker"><b>VIBRA</b></button><span class="sp"></span>' +
-    '<button class="sb-ib" data-a="fb-open" aria-label="Send feedback on the app (test phase)">' + ic('chat2') + '</button>' +
-    '<button class="sb-ib" data-a="pal-open" aria-label="Search">' + ic('find') + '</button>' +
+    (canEdit() ? '<button class="tb-new" data-a="nf-open" aria-label="New manuscript"><span class="plus" aria-hidden="true">' + ic('plus') + '</span>New</button>' : '') + // 0.2.7 (admin)
+    '<button class="sb-ib" data-a="fb-open" aria-label="Send feedback on the app (test phase)">' + ic('chat2') + '</button>' + // 0.2.7: Search floats at the bottom
+
     '<button class="sb-ib" data-a="pop" data-v="notif" aria-label="Notifications, ' + unread + ' unread">' + ic('bell2') + (unread ? '<span class="badge" aria-hidden="true">' + unread + '</span>' : '') + '</button></div>';
 }
 /* 0.2.2: what the page is showing, large enough to notice: the latest data on its way, offline, a new version ready */
@@ -2237,8 +2368,8 @@ function viewSettings() {
       myDetailsBox() +
       '<div class="box"><h2>Appearance</h2><div class="seg" role="group" aria-label="Appearance">' +
       [['light', 'Light', 'sun'], ['dark', 'Dark', 'moon'], ['system', 'Like my device', 'desktop']].map(function (o) { return '<button data-a="theme-set" data-v="' + o[0] + '" aria-pressed="' + (themePref() === o[0]) + '">' + ic(o[2]) + o[1] + '</button>'; }).join('') +
-      '</div>' + (window.VIBRA_WEB ? '<div class="fs-row"><span class="lbl" id="fs-l">Text size</span><div class="seg" role="group" aria-labelledby="fs-l">' +
-        [['s', 'Small', 13], ['m', 'Medium', 15], ['l', 'Large', 18]].map(function (o) { return '<button data-a="font-set" data-v="' + o[0] + '" aria-pressed="' + (fontPref() === o[0]) + '"><span class="fs-a" style="font-size:' + o[2] + 'px" aria-hidden="true">A</span>' + o[1] + '</button>'; }).join('') + '</div></div>' : '') +
+      '</div>' + (window.VIBRA_WEB ? '<div class="fs-row"><label class="lbl" for="fs-range" id="fs-l">Text size</label><div class="fs-sl"><span class="fs-a" style="font-size:calc(12px*var(--fz,1))" aria-hidden="true">A</span>' +
+        '<input type="range" class="fs-rng" id="fs-range" min="1" max="6" step="1" value="' + fontPref() + '" aria-valuetext="' + fsPct(fontPref()) + '"><span class="fs-a" style="font-size:calc(20px*var(--fz,1))" aria-hidden="true">A</span><span class="fs-v mono" id="fs-v">' + fsPct(fontPref()) + '</span></div></div>' : '') +
       '<div class="setrow"><div style="flex:1;min-width:0"><label for="p-sb" style="font-weight:500">Keep the sidebar hidden</label><div class="muted" style="font-size:calc(12px*var(--fz,1))">Only the icons stay on the left. The button at the top of the sidebar (or Ctrl + .) does the same.</div></div>' +
       '<input id="p-sb" class="switch" type="checkbox" data-i="pref" data-v="sbCollapsed"' + (prefs().sbCollapsed ? ' checked' : '') + '></div>' +
       '<p class="muted" style="margin:0;font-size:calc(12px*var(--fz,1))">Remembered for your account, on every device.</p></div>' +
@@ -2445,7 +2576,7 @@ function panelShown() { return !!(S.sel && S.view !== 'settings' && S.view !== '
 function fab() {
   var open = panelShown();
   return '<div class="fabs' + (open && canEdit() ? ' up' : '') + '"><button type="button" class="fab-s" data-a="pal-open" aria-label="Search manuscripts, people and commands (Ctrl+K)"' + tt('Search manuscripts, people, journals and commands', 'Ctrl K') + '>' + ic('find') + '</button>' +
-    '<button type="button" class="fab" data-a="qu-open" aria-label="Quick update: tell the tracker what happened"' +
+    '<button type="button" class="fab' + (S.fabPeek ? ' peek' : '') + '" data-a="qu-open" aria-label="Quick update: tell the tracker what happened"' +
     tt('Tell the tracker what happened, in any language: the AI updates the fields') + '>' + ic('spark') + '<span>Quick update</span></button></div>';
 }
 
@@ -3039,7 +3170,7 @@ function helperDone(r, qid) {
   if (!r || !r.ok) return;
   api('api_bootstrap').then(function (b) {
     var busy = dirty() || S.nf || S.qu || S.fb || S.del || S.rem || S.ned;
-    if (busy) { S.boot.notifications = b.notifications; S.boot.requests = b.requests; render(); return; }
+    if (busy) { S.boot.notifications = b.notifications; S.boot.notifMore = b.notifMore; S.boot.notifUnreadMore = b.notifUnreadMore; S.boot.requests = b.requests; render(); return; }
     var keepDesk = S.desk; S.boot = b; S.desk = keepDesk;
     if (S.sel) { var m = curM(); if (m) { openDraft(m); if (!S.hist[S.sel]) loadHistory(S.sel); } else { S.sel = null; S.draft = null; } }
     render();
@@ -3454,7 +3585,7 @@ function panel() {
   var stageOk = d.status === 'Submitted' || d.status === 'Under Review';
   return '<aside class="panel' + (S.fx.panel ? ' fx-panel' : '') + '" aria-label="Manuscript details">' +
     '<div class="p-top"><button class="btn btn-q back" data-a="close">' + ic('back') + 'Back</button>' + tagHtml(dd) + '<span class="mono muted" style="font-size:calc(12px*var(--fz,1))">#' + m.id + '</span>' +
-    '<span style="margin-left:auto"></span><button class="ibtn p-qu" data-a="qu-open" aria-label="Quick update on this manuscript">' + ic('spark') + '</button><button class="ibtn" data-a="pin" data-v="' + m.id + '" aria-pressed="' + (pins().indexOf(m.id) >= 0) + '" aria-label="' + (pins().indexOf(m.id) >= 0 ? 'Unpin from the sidebar' : 'Pin to the sidebar') + '"' + tt(pins().indexOf(m.id) >= 0 ? 'Unpin from the sidebar' : 'Pin to the sidebar') + '>' + ic('pin') + '</button><button class="ibtn close" data-a="close" aria-label="Close details">' + ic('x') + '</button></div>' +
+    '<span style="margin-left:auto"></span><button class="ibtn" data-a="pin" data-v="' + m.id + '" aria-pressed="' + (pins().indexOf(m.id) >= 0) + '" aria-label="' + (pins().indexOf(m.id) >= 0 ? 'Unpin from the sidebar' : 'Pin to the sidebar') + '"' + tt(pins().indexOf(m.id) >= 0 ? 'Unpin from the sidebar' : 'Pin to the sidebar') + '>' + ic('pin') + '</button><button class="ibtn close" data-a="close" aria-label="Close details">' + ic('x') + '</button></div>' +
     (S.confirmClose ? '<div class="warn" style="margin-top:12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center">' + (S.offline ? 'You are offline. Keep your changes on this device and save them later?' : 'You have unsaved changes.') + '<span style="margin-left:auto"></span>' +
       (S.offline ? '<button class="btn btn-p" data-a="close-keep">Keep for later</button><button class="btn btn-s" data-a="discard">Discard</button>' : '<button class="btn btn-s" data-a="discard">Discard</button><button class="btn btn-p" data-a="save">Save</button>') + '</div>' : '') +
     lockBanner(m) + delNote(m) + '<h2 class="p-title">' + esc(m.title) + '</h2><div class="muted" style="font-size:calc(13px*var(--fz,1))">' + esc([m.type, m.journal || 'Journal not chosen', m.ms_id].filter(Boolean).join(' · ')) + '</div>' +
@@ -3728,9 +3859,12 @@ function curTheme() { var p = themePref(); return p === 'system' ? (darkMQ && da
 function applyTheme() { applyFont(); document.documentElement.setAttribute('data-theme', curTheme()); try { localStorage.setItem('vibra-theme', themePref()); } catch (e) { } toApp({ type: 'vibra-theme', dark: curTheme() === 'dark' }); }
 /* 0.2.6 (admin: "chọn cỡ chữ to trung bình nhỏ", for members who read better with larger text): kept with the account,
    on every device; the admin can make Large the default for some members (Meta large_text_users). */
-function fontPref() { var f = S.boot && S.boot.prefs && S.boot.prefs.fontSize; return f === 's' || f === 'l' ? f : 'm'; }
+/* 0.2.7: six steps (1 to 6, 3 is the usual size); s, m and l of 0.2.6 read as 2, 3 and 5 */
+var FS_PCT = [0, 88, 94, 100, 106, 112, 118];
+function fontPref() { var f = S.boot && S.boot.prefs && S.boot.prefs.fontSize; f = { s: '2', m: '3', l: '5' }[f] || String(f || ''); return /^[1-6]$/.test(f) ? f : '3'; }
+function fsPct(f) { return FS_PCT[Number(f)] + '%'; }
 function applyFont() {
-  var f = fontPref(); if (f === 'm') document.documentElement.removeAttribute('data-fs'); else document.documentElement.setAttribute('data-fs', f);
+  var f = fontPref(); if (f === '3') document.documentElement.removeAttribute('data-fs'); else document.documentElement.setAttribute('data-fs', f);
   try { localStorage.setItem('vibra-fs', f); } catch (e) { }
 }
 function setFont(f) {
@@ -3764,10 +3898,10 @@ function poll() {
   if (polling || !S.boot || S.stale) return; polling = true; S.lastPoll = Date.now();
   api('api_poll').then(function (r) {
     polling = false;
-    var known = {}; S.boot.notifications.forEach(function (n) { known[n.id] = 1; });
+    var known = {}; allNotes().forEach(function (n) { known[n.id] = 1; });
     var fresh = r.notifications.filter(function (n) { return !known[n.id] && !n.read; });
     if (fresh.length) {
-      S.boot.notifications = fresh.concat(S.boot.notifications).sort(function (a, b) { return a.ts < b.ts ? 1 : -1; });
+      S.boot.notifications = fresh.concat(S.boot.notifications).sort(noteCmp);
       var ball = fresh.filter(function (n) { return n.kind === 'ball_to_you'; }), ngN = fresh.filter(function (n) { return n.kind === 'nudge'; })[0];
       if (ngN) { showNudge(ngN); chime(); } // 0.2.3: a nudge from the admin is a card, not a toast
       else { toast((fresh.length > 1 ? fresh.length + ' new: ' : '') + fresh[0].text); if (ball.length) chime(); }
@@ -3794,8 +3928,18 @@ function poll() {
     if (fresh.length || delChanged || lockChanged) render();
   }).catch(function () { polling = false; });
 }
+/* 0.2.7 (admin's choice): every 20 s while the member uses the app; after 5 minutes without a touch, key, click or
+   scroll, every 60 s; the first touch after that checks at once (if the last check is older than 20 s). */
+var IDLE_MS = 300000;
+function idleNow() { return Date.now() - (S.actAt || S.t0 || 0) > IDLE_MS; }
+S.t0 = Date.now();
+['keydown', 'pointerdown', 'wheel', 'touchstart'].forEach(function (t) {
+  document.addEventListener(t, function () { var was = idleNow(); S.actAt = Date.now(); if (was && Date.now() - (S.lastPoll || 0) > 20000) poll(); }, { capture: true, passive: true });
+});
+window.addEventListener('scroll', function () { S.actAt = Date.now(); }, { passive: true });
 setInterval(function () {
-  if (document.visibilityState === 'visible' || Date.now() - (S.lastPoll || 0) > 115000) poll();
+  var since = Date.now() - (S.lastPoll || 0);
+  if (document.visibilityState === 'visible' ? (!idleNow() || since > 58000) : since > 115000) poll();
   // keep my editing lock alive while I am working on the draft (it lapses 5 minutes after I stop)
   if (S.myLock && dirty() && Date.now() - (S.lastAct || 0) < 300000 && Date.now() - (S.lockAt || 0) > 40000) {
     S.lockAt = Date.now();
@@ -3808,10 +3952,83 @@ setInterval(function () {
 document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') poll(); });
 ['keydown', 'pointerdown', 'input'].forEach(function (t) { document.addEventListener(t, function () { S.lastAct = Date.now(); }, true); });
 
+/* ---------- 0.2.7: the urgency scrubber (phones, Today); see the CSS of #scrub */
+var SC = { el: null, items: [], u: 1, cur: -1, drag: false, hideT: 0 };
+function scOn() { return phoneW() && !!S.boot && S.view === 'today' && !panelShown() && !S.pop && !S.drawer && !S.pal && !(S.tour >= 0) && !layer.querySelector('.overlay'); }
+function scSync() {
+  if (!SC.el) {
+    SC.el = document.createElement('div'); SC.el.id = 'scrub'; SC.el.setAttribute('aria-hidden', 'true');
+    SC.el.innerHTML = '<div class="sc-rail"><b class="sc-thumb"></b></div><div class="sc-bub"></div>'; document.body.appendChild(SC.el); scBind();
+  }
+  if (SC.drag) return;
+  var items = scOn() ? Array.prototype.map.call(document.querySelectorAll('.main .sec .list > [data-a="open"][data-v], .main .sec .blocks > [data-a="open"][data-v]'), function (el) {
+    var tg = el.querySelector('.tag'), m = /\bt-(due|deadline|action|chase|waiting|drafting)\b/.exec(tg ? tg.className : ''), t = el.querySelector('.t');
+    return { el: el, tier: m ? m[1] : 'waiting', label: tg ? tg.textContent : '', title: t ? t.textContent : '' };
+  }) : [];
+  var rail = SC.el.querySelector('.sc-rail'), key = items.map(function (x) { return x.tier; }).join(',');
+  SC.items = items.length >= 6 ? items : [];
+  if (!SC.items.length) { SC.el.classList.remove('show'); SC.key = ''; return; }
+  if (key !== SC.key) {
+    SC.key = key;
+    var n = items.length, gaps = 0, i; for (i = 1; i < n; i++) if (items[i].tier !== items[i - 1].tier) gaps++;
+    var u = SC.u = 100 / (n + gaps * 1.6), y = u / 2, html = '';
+    items.forEach(function (it, j) { if (j && it.tier !== items[j - 1].tier) y += u * 1.6; it.y = y; html += '<i class="sc-n sc-' + it.tier + '" style="top:' + y.toFixed(2) + '%"></i>'; y += u; });
+    Array.prototype.forEach.call(rail.querySelectorAll('.sc-n'), function (x) { x.remove(); });
+    rail.insertAdjacentHTML('beforeend', html);
+    SC.ys = items.map(function (x) { return x.y; });
+  } else items.forEach(function (it, j) { it.y = SC.ys[j]; });
+  scThumb();
+}
+function scPast() { var t = document.querySelector('.main .tiles'); return !t || t.getBoundingClientRect().bottom < 60; }
+function scThumb() {
+  if (!SC.items.length) return;
+  var top = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--hdr-h')) || 56, bot = window.innerHeight - 90, f = -1, l = -1;
+  SC.items.forEach(function (it, i) { var r = it.el.getBoundingClientRect(); if (r.bottom > top && r.top < bot) { if (f < 0) f = i; l = i; } });
+  var th = SC.el.querySelector('.sc-thumb'); if (f < 0) { th.style.height = '0'; return; }
+  th.style.top = 'calc(' + (SC.items[f].y - SC.u * .8).toFixed(2) + '% - 2px)'; th.style.height = 'calc(' + (SC.items[l].y - SC.items[f].y + SC.u * 1.6).toFixed(2) + '% + 4px)';
+}
+function scHide() { if (!SC.drag && SC.el) SC.el.classList.remove('show'); }
+window.addEventListener('scroll', function () {
+  if (!SC.el || !SC.items.length) return;
+  if (!SC.drag && !scPast()) { scHide(); return; }
+  SC.el.classList.add('show'); scThumb(); clearTimeout(SC.hideT); if (!SC.drag) SC.hideT = setTimeout(scHide, 2000);
+}, { passive: true });
+window.addEventListener('resize', function () { if (SC.el) { SC.key = ''; scSync(); } });
+function scBind() {
+  var rail = SC.el.querySelector('.sc-rail');
+  rail.addEventListener('pointerdown', function (e) {
+    if (!SC.el.classList.contains('show') || !SC.items.length) return;
+    e.preventDefault(); SC.drag = true; SC.cur = -1; try { rail.setPointerCapture(e.pointerId); } catch (x) { }
+    SC.el.classList.add('drag'); clearTimeout(SC.hideT); scMove(e);
+  });
+  rail.addEventListener('pointermove', function (e) { if (SC.drag) { e.preventDefault(); scMove(e); } });
+  ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(function (t) {
+    rail.addEventListener(t, function () {
+      if (!SC.drag) return; SC.drag = false; SC.el.classList.remove('drag');
+      Array.prototype.forEach.call(rail.querySelectorAll('.sc-n'), function (x) { x.style.width = ''; x.style.height = ''; });
+      clearTimeout(SC.hideT); SC.hideT = setTimeout(scHide, 1400);
+    });
+  });
+}
+function scMove(e) {
+  var rail = SC.el.querySelector('.sc-rail'), r = rail.getBoundingClientRect(), p = (e.clientY - r.top) / r.height * 100, best = 0, bd = 1e9;
+  SC.items.forEach(function (it, i) { var d = Math.abs(it.y - p); if (d < bd) { bd = d; best = i; } });
+  Array.prototype.forEach.call(rail.querySelectorAll('.sc-n'), function (x, i) { // the notches near the finger swell, like a dial
+    var d = Math.abs((SC.items[i] ? SC.items[i].y : 0) - p) * r.height / 100, k = Math.max(0, 1 - d / 72); x.style.width = (10 + 20 * k) + 'px'; x.style.height = (3 + 1.5 * k) + 'px';
+  });
+  var bub = SC.el.querySelector('.sc-bub'); bub.style.top = Math.max(r.top + 16, Math.min(r.bottom - 16, e.clientY)) + 'px';
+  if (best === SC.cur) return;
+  var prev = SC.cur, it = SC.items[best]; SC.cur = best;
+  if (navigator.vibrate) try { navigator.vibrate(prev >= 0 && SC.items[prev].tier !== it.tier ? 14 : 4); } catch (x) { }
+  var same = SC.items.filter(function (x) { return x.tier === it.tier; }), pos = same.indexOf(it) + 1;
+  bub.innerHTML = '<b><i class="sc-' + it.tier + '"></i>' + esc(TIER_LABEL[it.tier]) + ' · ' + pos + ' of ' + same.length + '</b><span>' + (it.label && it.label !== TIER_LABEL[it.tier] ? esc(it.label) + ' · ' : '') + esc(short(it.title, 60)) + '</span>';
+  var hdr = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--hdr-h')) || 56;
+  window.scrollTo(0, Math.max(0, it.el.getBoundingClientRect().top + window.scrollY - hdr - 12));
+}
 /* ---------- popovers, dialogs, tour */
 function popover() {
   if (S.pop === 'notif') {
-    var ns = S.boot.notifications, due = remDue();
+    var ns = allNotes(), due = remDue(), nb = S.nOld && S.nOld.busy;
     var remItems = due.map(function (r) {
       var m = mById(r.mid);
       return '<div class="nitem unread" style="cursor:default"><span class="ndot" style="background:var(--c-stale)" aria-hidden="true"></span><span style="flex:1;min-width:0"><span class="lbl" style="display:block">' + (r.k === 't' ? 'To-do' : 'Reminder') + ' · ' + esc(niceShort(r.date)) + (r.time ? ' ' + esc(r.time) : '') + '</span><span>' + esc(r.note || 'Reminder') + '</span>' +
@@ -3821,12 +4038,13 @@ function popover() {
     var rel = RELEASES[0], relU = relNew().length > 0, relItem = relU || (Date.now() - new Date(rel.date + 'T00:00:00').getTime()) < 14 * 86400000 ?
       '<button class="nitem' + (relU ? ' unread' : '') + '" data-a="wn-open"><span class="ndot" aria-hidden="true"></span><span><span class="lbl" style="display:block">What\'s new · ' + esc(niceShort(rel.date)) + '</span>' +
       'VIBRA Tracker ' + esc(rel.v) + ': ' + esc(rel.title) + '</span></button>' : '';
-    return '<div class="pop sbpop" role="dialog" aria-label="Notifications" data-pop><div class="pop-h"><b>For you</b><button class="btn btn-q" data-a="read-all"' + (relU || ns.some(function (n) { return !n.read; }) ? '' : ' disabled') + '>Mark all read</button></div>' + remItems + relItem +
+    return '<div class="np-halo" aria-hidden="true"></div><div class="pop sbpop npop" role="dialog" aria-label="Notifications" data-pop><div class="np-scroll"><div class="pop-h"><b>For you</b><button class="btn btn-q" data-a="read-all"' + (relU || notesUnreadMore() || ns.some(function (n) { return !n.read; }) ? '' : ' disabled') + '>Mark all read</button></div>' + remItems + relItem +
       (ns.length ? ns.map(function (n) {
         return '<button class="nitem' + (n.read ? '' : ' unread') + (n.undone ? ' undone' : '') + '" data-a="notif-open" data-v="' + esc(n.id) + '"' + (n.undone ? ' title="This change was undone"' : '') + '><span class="ndot" aria-hidden="true"></span><span><span class="lbl" style="display:block">' +
           esc({ nudge: 'Nudge', ball_to_you: 'Ball to you', changed: 'Changed', ai_update: 'AI update', ai_kept_edit: 'Morning check', deadline: 'Deadline', reminder: 'Reminder', inbox: 'Quick update', feedback: 'Feedback', inbox_reply: 'Quick update', feedback_reply: 'App feedback', undone: 'Undone' }[n.kind] || n.kind) + (n.undone ? ' · undone' : '') + ' · ' + esc(niceShort(n.ts)) + ' ' + esc(String(n.ts).slice(11, 16)) + '</span><span>' + esc(n.text) + '</span></span></button>';
       }).join('') : due.length || relItem ? '' : '<p class="empty" style="margin:0">Nothing yet. You will see here when the ball is passed to you or a manuscript you are on changes.</p>') +
-      '<div style="padding:8px 6px"><button class="btn btn-q" data-a="set-tab" data-v="notifications">Choose what notifies you</button></div></div>';
+      (notesMore() ? '<button class="nmore" data-a="notif-more"' + (nb ? ' disabled' : '') + '>' + (nb ? '<i aria-hidden="true"></i>Loading earlier notifications…' : 'See earlier notifications' + (notesUnreadMore() ? ' · ' + notesUnreadMore() + ' unread' : '')) + '</button>' : '') +
+      '<div style="padding:8px 6px"><button class="btn btn-q" data-a="set-tab" data-v="notifications">Choose what notifies you</button></div></div></div>';
   }
   if (S.pop === 'dash') return dashPop();
   if (S.pop === 'since') return sincePop();
@@ -4597,9 +4815,10 @@ var ACT = {
   'wn-close': function () { S.wn = null; wnSeen(); render(); },
   'wn-bg': function (v, e) { if (e.target.classList && e.target.classList.contains('overlay')) ACT['wn-close'](); },
   'wn-go': function (v) { ACT['wn-close'](); ACT['set-tab'](v); setTimeout(function () { var x = document.getElementById('myd'); if (x && x.scrollIntoView) x.scrollIntoView({ block: 'center' }); }, 80); },
-  'read-all': function () { wnSeen(); S.boot.notifications.forEach(function (n) { n.read = true; }); render(); api('api_markRead', 'all').catch(function (e) { toast(msg(e), true); }); },
+  'read-all': function () { wnSeen(); allNotes().forEach(function (n) { n.read = true; }); S.boot.notifUnreadMore = 0; if (S.nOld) S.nOld.unreadMore = 0; render(); api('api_markRead', 'all').catch(function (e) { toast(msg(e), true); }); },
+  'notif-more': function () { loadOlderNotes(); }, // 0.2.7
   'notif-open': function (v) {
-    var n = S.boot.notifications.filter(function (x) { return x.id === v; })[0]; if (!n) return;
+    var n = allNotes().filter(function (x) { return x.id === v; })[0]; if (!n) return;
     n.read = true; S.pop = null; api('api_markRead', [v]).catch(function () { });
     if (!n.manuscript_id || !mById(n.manuscript_id)) { if ((n.kind === 'inbox' || n.kind === 'feedback') && me().role === 'Admin') S.view = 'desk'; else { S.view = 'settings'; S.setTab = 'requests'; } S.desk = null; window.scrollTo(0, 0); render(); return; }
     if (S.view === 'settings' || S.view === 'desk') S.view = 'today';
@@ -5124,6 +5343,7 @@ document.addEventListener('focusout', hideTip);
 window.addEventListener('scroll', hideTip, true);
 document.addEventListener('input', function (e) {
   var t = e.target, i = t.getAttribute('data-i');
+  if (t.id === 'fs-range') { S.boot.prefs = S.boot.prefs || {}; S.boot.prefs.fontSize = t.value; applyFont(); var fv = document.getElementById('fs-v'); if (fv) fv.textContent = fsPct(t.value); t.setAttribute('aria-valuetext', fsPct(t.value)); return; } // 0.2.7
   if (t.getAttribute('data-cb')) { var key = t.getAttribute('data-cb'); S.cb = { key: key, text: t.value }; cbRefresh(key); return; }
   if (i === 'pal') { S.pal.q = t.value; S.pal.i = 0; palRefresh(); return; }
   if (i === 'q') { S.q = t.value; clearTimeout(window.__qt); window.__qt = setTimeout(function () { S.fx.list = true; render(); }, 160); return; }
@@ -5151,6 +5371,7 @@ document.addEventListener('input', function (e) {
 });
 document.addEventListener('change', function (e) {
   var t = e.target, i = t.getAttribute('data-i');
+  if (t.id === 'fs-range') { setFont(t.value); return; } // 0.2.7
   if (i === 'd' && S.draft && t.tagName === 'SELECT') { S.draft[t.getAttribute('data-v')] = t.value; render(); }
   if (i === 'ed-note') render();
   if (i === 'remchk' && S.rem) { S.rem[t.getAttribute('data-v')] = t.checked; if (t.getAttribute('data-v') === 'allDay' && !t.checked && !S.rem.time) S.rem.time = '09:00'; render(); }
@@ -5287,11 +5508,15 @@ function initSince(b) {
   if (S.since) return;
   var p = (b && b.prefs) || {};
   S.since = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/.test(p.seenAt || '') ? p.seenAt : vnTs(Date.now() - 86400000);
-  setTimeout(function () {
-    if (!S.boot) return;
+  // 0.2.7: this visit counts only once Today itself has been on screen for 8 seconds, so opening the app on another
+  // view (the 06:00 check works in the AI desk) leaves the line under Today as it was
+  var on = 0, t = setInterval(function () {
+    if (!S.boot || S.stale) return;
+    on = S.view === 'today' && document.visibilityState === 'visible' ? on + 1 : 0;
+    if (on < 4) return; clearInterval(t);
     var now = vnTs(); S.boot.prefs = S.boot.prefs || {}; S.boot.prefs.seenAt = now; keepBoot();
     api('api_setPrefs', { seenAt: now }).catch(function () { });
-  }, 8000);
+  }, 2000);
 }
 function sinceWhat(r, m) {
   var t = m ? short(m.title, 46) : '#' + r.mid;
@@ -5370,6 +5595,29 @@ function vvFit() {
   if (kb) setTimeout(function () { var b = document.activeElement; if (b && b.closest && b.closest('.overlay')) try { b.scrollIntoView({ block: 'nearest' }); } catch (e) { } }, 40);
 }
 if (window.visualViewport) { window.visualViewport.addEventListener('resize', vvFit); window.visualViewport.addEventListener('scroll', vvFit); }
+/* 0.2.7 phones: over an open manuscript the round ⚡ (Quick update) shows its name while it is pressed and held (a hold
+   shows the name and does not open the dialog); while a box is being typed in, the floating buttons step aside so
+   they never cover it (html.fld). */
+function phoneW() { return window.innerWidth < 900; }
+function fabPeek(on) { S.fabPeek = on; var f = document.querySelector('.fabs .fab'); if (f) f.classList.toggle('peek', on); }
+var fabHold = null, fabHeld = false;
+document.addEventListener('pointerdown', function (e) {
+  var f = e.target.closest && e.target.closest('.fabs .fab'); if (!f || !phoneW()) return;
+  fabHeld = false; clearTimeout(fabHold);
+  fabHold = setTimeout(function () { fabHeld = true; fabPeek(true); }, 450);
+}, true);
+['pointerup', 'pointercancel'].forEach(function (t) {
+  document.addEventListener(t, function () { if (!fabHold) return; clearTimeout(fabHold); fabHold = null; if (fabHeld) setTimeout(function () { fabPeek(false); }, 1400); }, true);
+});
+document.addEventListener('click', function (e) {
+  if (fabHeld && e.target.closest && e.target.closest('.fabs .fab')) { e.preventDefault(); e.stopPropagation(); fabHeld = false; }
+}, true);
+document.addEventListener('contextmenu', function (e) { if (e.target.closest && e.target.closest('.fabs .fab')) e.preventDefault(); }, true);
+function fldSync() {
+  var a = document.activeElement, on = !!(a && (/^(TEXTAREA|SELECT)$/.test(a.tagName) || (a.tagName === 'INPUT' && !/^(checkbox|radio|button|submit|range|color|file)$/.test(a.type)) || a.isContentEditable));
+  document.documentElement.classList.toggle('fld', on);
+}
+document.addEventListener('focusin', fldSync); document.addEventListener('focusout', function () { setTimeout(fldSync, 60); });
 document.addEventListener('focusin', function () { setTimeout(vvFit, 60); setTimeout(vvFit, 400); });
 document.addEventListener('focusout', function () { setTimeout(vvFit, 120); });
 function retryBoot() { if (S.stale) api('api_bootstrap').then(freshBoot).catch(function () { setTimeout(retryBoot, 30000); }); }
