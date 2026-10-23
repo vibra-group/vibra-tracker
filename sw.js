@@ -1,12 +1,13 @@
 /* VIBRA app service worker (2.0.0: the tracker itself is the app, at ./app/): works offline, receives notifications.
    2.2.0: the app page opens from this device at once and is refreshed in the background; when a newer page arrived,
    open windows are told ("New version · Reload") and the next opening uses it.
+   2.3.0: a push also sets the number on the app icon (badge) and tells open windows to fetch the news at once.
    A push carries no content: on each push the worker asks the admin's helper for the text, with this device's
    own secret, and shows it. Nothing else leaves the device. */
-var CACHE = 'vibra-app-2.2.0';
+var CACHE = 'vibra-app-2.3.0';
 var SHELL = ['./', './app/', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png', './icons/maskable-512.png',
   './icons/apple-touch-icon.png', './icons/badge-96.png', './icons/favicon-32.png', './icons/vibra-logo-full.jpg'];
-var LABEL = { ball_to_you: 'Ball to you', changed: 'Manuscript changed', ai_update: 'AI update', inbox_reply: 'Quick update', deadline: 'Deadline',
+var LABEL = { nudge: 'Nudge', ball_to_you: 'Ball to you', changed: 'Manuscript changed', ai_update: 'AI update', inbox_reply: 'Quick update', deadline: 'Deadline',
   delete_request: 'Deletion request', delete_reply: 'Deletion', feedback_reply: 'App feedback', inbox: 'Quick update', test: 'VIBRA Tracker' };
 
 self.addEventListener('install', function (e) {
@@ -86,6 +87,9 @@ function onPush() {
       .catch(function () { return { items: [], more: 0 }; });
   }).then(function (j) {
     var items = j.items || [];
+    // 0.2.3: the number on the app icon, and an open VIBRA window fetches the news at once
+    try { if (typeof j.unread === 'number' && self.navigator && self.navigator.setAppBadge) (j.unread ? self.navigator.setAppBadge(j.unread) : self.navigator.clearAppBadge()).catch(function () { }); } catch (x) { }
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function (cs) { cs.forEach(function (c) { c.postMessage({ type: 'news' }); }); }).catch(function () { });
     if (!items.length) {
       // a push must always show something (browsers stop delivering otherwise)
       return self.registration.showNotification('VIBRA Tracker', Object.assign({ body: 'Something changed on one of your manuscripts. Open VIBRA to see it.', tag: 'vibra-generic', data: { url: './app/' } }, opts));

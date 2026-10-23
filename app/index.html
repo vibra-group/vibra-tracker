@@ -5,12 +5,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <script>
-/* VIBRA Tracker 0.2.2 on the group's own address (vibra-group.github.io), built by tools/build_web.py from app/Index.html.
+/* VIBRA Tracker 0.2.3 on the group's own address (vibra-group.github.io), built by tools/build_web.py from app/Index.html.
    This page is the VIBRA app: installable, with notifications and the last data readable offline.
    Google confirms who the member is ("Sign in with Google"), or a one-time code made on a signed-in device does; the
    admin's helper checks that once and gives a session; every server call then goes to the helper with that session
    and runs the tracker's own code as the member. */
-window.VIBRA_WEB = { helper: "https://script.google.com/macros/s/AKfycbzNE__5onOmvia3VaFHjybAJ5G35cnDJCN1ysuiNAYlgOC5xsbCi0xyDnmoJP7lEaFR3w/exec", clientId: "619243121375-pi18v7vjgvcue7qo6455uids4v28megi.apps.googleusercontent.com", classic: "https://script.google.com/macros/s/AKfycbzkG5eCrxQvQtJgfksL92G9vtl2I4LLEew-Az4qYlDxX6V1QfgtIrwGjYOGq9CQ0r3aWA/exec", built: "0.2.2" };
+window.VIBRA_WEB = { helper: "https://script.google.com/macros/s/AKfycbzNE__5onOmvia3VaFHjybAJ5G35cnDJCN1ysuiNAYlgOC5xsbCi0xyDnmoJP7lEaFR3w/exec", clientId: "619243121375-pi18v7vjgvcue7qo6455uids4v28megi.apps.googleusercontent.com", classic: "https://script.google.com/macros/s/AKfycbzkG5eCrxQvQtJgfksL92G9vtl2I4LLEew-Az4qYlDxX6V1QfgtIrwGjYOGq9CQ0r3aWA/exec", built: "0.2.3" };
 (function () {
   var W = window.VIBRA_WEB, KEY = 'vibra-web-session', S = null, queue = [], gisInit = false, tries = 0, gateOn = false;
   var ua = navigator.userAgent || '', IOS = /iPad|iPhone|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
@@ -258,6 +258,7 @@ window.VIBRA_WEB = { helper: "https://script.google.com/macros/s/AKfycbzNE__5onO
     navigator.serviceWorker.addEventListener('message', function (e) {
       var d = e.data; if (d && d.type === 'open' && Number(d.m) && window.__vibraAppMsg) window.__vibraAppMsg({ type: 'vibra-open', m: Number(d.m) });
       if (d && d.type === 'update' && window.__vibraUpdate) window.__vibraUpdate(); // 2.2.0: a newer page is ready
+      if (d && d.type === 'news' && window.__vibraNews) window.__vibraNews(); // 2.3.0: a push arrived: fetch the news now
     });
   }
 })();
@@ -1001,7 +1002,8 @@ tr.closed td{background:color-mix(in srgb,var(--surface-2) 55%,transparent)}
   --t-wait-bg:#EFECE5;--t-wait-fg:#56524A;
 }
 :root[data-theme="dark"]{
-  --bg:#262624;--side:#1F1E1D;--surface:#2E2E2B;--surface-2:#353532;--hover:rgba(255,255,255,.05);--sel:rgba(255,255,255,.09);
+  /* 0.2.3 (admin): a darker page, the sidebar darker still, the cards and blocks keep their colour so they stand out */
+  --bg:#1A1A18;--side:#121211;--surface:#2E2E2B;--surface-2:#353532;--hover:rgba(255,255,255,.05);--sel:rgba(255,255,255,.09);
   --line:rgba(255,255,255,.08);--line-2:rgba(255,255,255,.15);
   --ink:#F2F0E8;--ink-2:#D5D2C8;--muted:#A3A097;
   --accent:#4C7AC9;--accent-fg:#FFFFFF;--accent-text:#AFC6F0;--accent-soft:#2C3445;--accent-line:#4A6290;
@@ -1113,8 +1115,19 @@ svg.ic2{fill:none!important;stroke:currentColor;stroke-width:1.6;stroke-linecap:
 .pscrim{display:none}
 @media (min-width:1024px){
   .shell{--pw:min(640px,calc(100vw - var(--sbw) - 400px))}
-  .shell.pshown .panel{position:fixed;top:14px;right:14px;bottom:14px;width:var(--pw);max-height:none;z-index:50;flex:none;border-radius:18px;
+  .shell.pshown .panel{position:fixed;top:14px;right:14px;bottom:14px;width:var(--pw);max-height:none;z-index:50;flex:none;border-radius:12px;
     box-shadow:0 0 0 1px var(--line),0 28px 70px -14px rgba(15,20,32,.38),0 10px 24px -10px rgba(15,20,32,.2)}
+  /* 0.2.3 (admin): all four corners round, also where the system always shows scroll bars (a mouse on a Mac, Windows):
+     a thin bar kept clear of the corners */
+  .shell.pshown .panel::-webkit-scrollbar{width:12px;background:transparent}
+  .shell.pshown .panel::-webkit-scrollbar-track{background:transparent;margin:14px 0}
+  .shell.pshown .panel::-webkit-scrollbar-thumb{background-color:color-mix(in srgb,var(--muted) 38%,transparent);border-radius:999px;border:4px solid transparent;background-clip:padding-box}
+  .shell.pshown .panel::-webkit-scrollbar-thumb:hover{background-color:color-mix(in srgb,var(--muted) 62%,transparent)}
+  .shell.pshown .panel::-webkit-scrollbar-corner{background:transparent}
+  /* 0.2.3 (admin): Today as blocks makes room for the card (the blocks move left and wrap) instead of going under it */
+  .shell.tvb{--pw:clamp(400px,calc(100vw - var(--sbw) - 560px),560px)}
+  .shell.pshown.tvb .wrap{max-width:none;padding-right:calc(var(--pw) + 30px)}
+  .shell.pshown.tvb .blocks{grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}
   .shell.pshown .pscrim{display:block;position:fixed;inset:0;z-index:40;pointer-events:none;background:rgba(15,20,32,.13);animation:fadeIn .25s var(--ease) both}
   .shell.pshown .main [aria-current="true"],.shell.pshown .sb [aria-current="true"]{position:relative;z-index:45}
   .shell.pshown .main .row[aria-current="true"],.shell.pshown .main .block[aria-current="true"],.shell.pshown .main .card[aria-current="true"]{background:var(--surface);box-shadow:0 0 0 2px var(--accent),0 8px 24px -10px rgba(15,20,32,.35);border-radius:12px}
@@ -1122,6 +1135,81 @@ svg.ic2{fill:none!important;stroke:currentColor;stroke-width:1.6;stroke-linecap:
 }
 :root[data-theme="dark"] .shell.pshown .pscrim{background:rgba(0,0,0,.32)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .shell.pshown .pscrim{background:rgba(0,0,0,.32)}}
+@supports not selector(::-webkit-scrollbar){.shell.pshown .panel{scrollbar-width:thin}}
+/* 0.2.3: Changes to review */
+.revlist{display:grid;gap:10px}
+.revitem{background:var(--surface);border-radius:var(--r-sm);box-shadow:var(--bezel);padding:12px 14px;display:grid;gap:6px}
+.rev-h{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;font-size:13.5px}
+.rev-h .mono{font-size:12px}
+.rev-t{all:unset;cursor:pointer;color:var(--accent-text);font-weight:500;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:min(520px,100%)}
+.rev-t:hover{text-decoration:underline}.rev-t:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.rev-l{margin:0;padding:0 0 0 18px;display:grid;gap:4px;font-size:13.5px;color:var(--ink-2)}
+.rev-l li{display:flex;align-items:flex-start;gap:6px}.rev-l li>span{flex:1;min-width:0;overflow-wrap:anywhere}
+.rev-l .btn-q{min-height:28px;padding:2px 6px}
+/* 0.2.3: Nudge (admin) and its card for the member */
+.ngbox{margin-top:10px;padding:12px;border-radius:var(--r-sm);background:var(--accent-soft);display:grid;gap:8px}
+.ngb-h{display:inline-flex;align-items:center;gap:6px}.ngb-h .ic{width:16px;height:16px}
+.ngcard{position:fixed;z-index:90;top:16px;left:50%;transform:translateX(-50%);width:min(460px,calc(100vw - 24px));display:flex;gap:12px;align-items:flex-start;
+  padding:14px 16px;border-radius:14px;background:var(--surface);box-shadow:0 0 0 1px var(--line),0 24px 60px -16px rgba(15,20,32,.45);animation:ngIn .32s var(--ease) both}
+.ngc-ic{flex:none;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:var(--accent-fg)}
+.ngc-ic .ic{width:18px;height:18px}
+.ngc-h{font:600 12px var(--sans);letter-spacing:.02em;color:var(--accent-text);text-transform:uppercase}
+.ngcard p{margin:4px 0 10px;font-size:14px;line-height:1.45;overflow-wrap:anywhere}
+@keyframes ngIn{from{opacity:0;transform:translate(-50%,-10px)}to{opacity:1;transform:translate(-50%,0)}}
+@media (prefers-reduced-motion:reduce){.ngcard{animation:none}}
+.sb-item .cnt.cnt-due{color:var(--danger);font-weight:600}
+.onb-ic{width:52px;height:52px;border-radius:16px;margin:4px auto 0;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent)}
+.onb-ic .ic{width:26px;height:26px}
+.onb-steps{text-align:left;font-size:13.5px}.onb-steps .appsteps{margin:0}
+/* 0.2.3: To-do (list and month calendar) */
+.td-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.td-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.08fr);gap:16px;align-items:start}
+.td-seg{display:none}
+@media (max-width:1099px){.td-grid{grid-template-columns:minmax(0,1fr)}.td-seg{display:inline-flex}.td-grid.m-list .td-cal,.td-grid.m-cal .td-list{display:none}}
+.td-add{display:grid;gap:8px;margin:0 0 6px}
+.td-add2{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.td-add2 .in[type=date]{width:auto;flex:0 0 160px}.td-add2 .in[type=time]{width:auto;flex:0 0 120px}.td-add2 select.in{flex:1 1 180px;min-width:0}
+.td-sec h3{margin:12px 0 4px;font:600 12px var(--sans);letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.td-sec h3.late{color:var(--danger)}.td-sec h3.now{color:var(--accent-text)}
+.td-row{display:flex;align-items:flex-start;gap:10px;padding:8px 4px;border-top:1px solid var(--line)}
+.td-sec .td-row:first-of-type{border-top:0}
+.td-chk{flex:none;width:22px;height:22px;margin-top:1px;border-radius:7px;border:1.5px solid var(--line-2);background:var(--surface);display:grid;place-items:center;cursor:pointer;color:transparent;padding:0}
+.td-chk .ic{width:14px;height:14px}
+.td-chk:hover{border-color:var(--accent);color:var(--accent-line)}
+.td-chk:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.td-row.done .td-chk{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
+.td-row.done .td-t{text-decoration:line-through;color:var(--muted)}
+.td-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.td-t{font-size:14px;line-height:1.4;overflow-wrap:anywhere}
+.td-meta{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center;font-size:12px;color:var(--muted)}
+.td-d{font-weight:500;color:var(--ink-2)}.td-d.late{color:var(--danger)}.td-d.now{color:var(--accent-text)}
+.td-m{all:unset;cursor:pointer;color:var(--accent-text);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.td-m:hover{text-decoration:underline}.td-m:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.td-tag{display:inline-flex;align-items:center;gap:3px}.td-tag .ic{width:12px;height:12px}
+.td-acts{display:flex;gap:2px;flex:none;opacity:.55;transition:opacity .15s}
+.td-row:hover .td-acts,.td-acts:focus-within{opacity:1}
+.td-acts .btn-q{min-height:30px;padding:4px 6px}
+@media (hover:none){.td-acts{opacity:1}}
+.td-editing{background:var(--accent-soft);border-radius:var(--r-sm);padding:10px}
+.td-done{margin-top:12px}.td-done summary{cursor:pointer;font-size:13px;color:var(--muted);padding:4px 0}
+.td-cal .frow h2{font-family:var(--serif);font-weight:500}
+.td-next .ic{transform:scaleX(-1)}
+.cal-g{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.cal-w{font:600 11px var(--sans);letter-spacing:.04em;text-transform:uppercase;color:var(--muted);text-align:center;padding:2px 0 4px}
+.cal-c{min-height:86px;border-radius:8px;padding:5px 5px 6px;background:var(--surface-2);display:flex;flex-direction:column;gap:3px;cursor:pointer;min-width:0;border:1px solid transparent}
+.cal-c:hover{border-color:var(--accent-line)}
+.cal-c.out{opacity:.45}.cal-c.past .cal-n{color:var(--muted)}
+.cal-c.today .cal-n{background:var(--accent);color:var(--accent-fg);border-radius:999px;padding:0 6px}
+.cal-c.sel{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.cal-n{font:600 12px var(--sans);align-self:flex-start;line-height:20px}
+.cal-e{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;font-size:11px;line-height:1.3;padding:1px 5px;border-radius:5px;background:var(--accent-soft);color:var(--accent-text);overflow:hidden;overflow-wrap:anywhere}
+.cal-e.rem{background:var(--t-wait-bg);color:var(--t-wait-fg)}
+.cal-e.dl{background:var(--t-dl-bg);color:var(--t-dl-fg);font-weight:600}
+.cal-more{font-size:10.5px;color:var(--muted);padding-left:4px}
+.cal-keys{display:flex;flex-wrap:wrap;gap:6px 14px;margin:2px 0 0;font-size:12px;color:var(--ink-2)}
+.cal-keys span{display:inline-flex;align-items:center;gap:5px}.cal-keys i{width:10px;height:10px;border-radius:3px;display:inline-block}
+.cal-keys .k-td{background:var(--accent-soft);box-shadow:inset 0 0 0 1px var(--accent-line)}.cal-keys .k-rem{background:var(--t-wait-bg);box-shadow:inset 0 0 0 1px var(--line-2)}.cal-keys .k-dl{background:var(--t-dl-bg);box-shadow:inset 0 0 0 1px var(--line-2)}
+@media (max-width:599px){.cal-c{min-height:58px;padding:3px}.cal-e{font-size:0;height:6px;padding:0;border-radius:3px}.cal-more{font-size:9.5px;padding:0}.cal-g{gap:3px}}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 .wn{max-width:560px;gap:16px}
 .wn-rel{display:flex;flex-direction:column;gap:10px}
@@ -1357,7 +1445,9 @@ var TIPS = {
   authors: 'The author list in submission order; the first tag is the first author. Each author is one person in the Authors list, shown with the full name on file however it was written (point at a tag to see how it was written). A tag with ? is not settled yet: the admin confirms it in the AI desk. Click a tag to add a note, mark the corresponding author or move it.',
   note: 'Adds a dated line to this manuscript\'s history, visible to everyone. Use it for facts: a mail received, a decision, a file sent.',
   notif: 'Choose which events put a notification under your bell. They are yours only.',
-  roles: 'Admin: adds members and changes roles. Editor: creates and updates manuscripts. Viewer: reads and exports only. A member also needs the Google Sheet shared with them.',
+  review: 'Changes made by others apply at once, as before. This list shows them (one line per save, with what changed) until you mark them reviewed; Undo puts a field back and History records that you undid it. Only the admin and the supervisor see this page; each keeps their own reviewed list.',
+  todo: 'Only you see your to-do list (it is kept with your settings, not in the shared Sheet). A reminder made with Remind me appears here too. Add a date to see it in the calendar and under your bell on that day; the calendar icon adds it to Google Calendar, the arrow gives a file for Apple or Outlook.',
+  roles: 'Admin: adds members, changes roles, the AI desk. Supervisor: everything an Editor does, plus deciding deletion requests, restoring deleted manuscripts and Changes to review (see and undo what others changed). Editor: creates and updates manuscripts. Viewer: reads and exports only. A member also needs the Google Sheet shared with them.',
   dashc: 'Choose which blocks you see, in which order, and whether the dashboard shows the whole group or only the manuscripts you are on. Saved for you only.',
   xl: 'Every cell this manuscript had in the Excel workbook (Manuscripts_tracker.xlsx) when the app was set up, kept read-only so nothing is lost. The fields above are the live ones.',
   lst: 'All: every manuscript ever tracked. In progress: something is still to do (an accepted paper with proofs pending counts here). Accepted, Published, Rejected: by status, kept for the record.',
@@ -1388,6 +1478,11 @@ var TIPS = {
    something works, a bug they may have met); internal fixes need none. Each member sees the card once per release
    (preference relSeen; the 0.2.0 tour stands for 0.2.0), never in a session that showed the tour; the bell keeps it. */
 var RELEASES = [
+  { v: '0.2.3', date: '2026-10-23', title: 'Easier details, nudges, a short tour', items: [
+    ['list', 'On a computer, click a manuscript to open its card; click it again, or any empty space, to close it; click another title to switch. With Today as blocks, the blocks move aside so none is hidden.'],
+    ['bell', 'Nudges: the admin can nudge whoever has the ball. You see it in the bell, on your phone or computer where notifications are on, and as a card when VIBRA is open. The app icon shows how many things are unread.'],
+    ['people', 'A Supervisor role: decides deletion requests, restores deleted manuscripts and reviews what others changed.'],
+    ['desktop', 'New members are helped to install VIBRA and turn on notifications first; the tour now also shows author details, working offline and Send feedback.']] },
   { v: '0.2.2', date: '2026-10-23', title: 'Opens faster, works offline', items: [
     ['bolt', 'VIBRA opens at once with the data from your last visit, even right after an update; the latest data follows a few seconds later (the blue "Updating" label). The server also answers faster.'],
     ['restore', 'No connection? You can still read everything. What you change is kept on this device until you are back online; then press Save. Nothing is sent by itself, and nothing overwrites a colleague\'s newer change.'],
@@ -1441,14 +1536,24 @@ var COACH = [
   { sel: ['#f-dl'], open: true, t: 'Deadline', b: 'A real date from the journal or from GV. Whoever has the ball gets an alert 7 days and 1 day before.' },
   { sel: ['.panel .p-sec:has(#ball-l)', '#ball-l'], open: true, t: 'Ball is with', b: 'Who must act next, not the author list. Add a short note such as corr. or submitting; the primary person gets the alerts.' },
   { sel: ['#f-next'], open: true, t: 'Next actions', b: 'A numbered list of what happens next. Press Enter and the next number appears.' },
-  { sel: ['#b-save'], open: true, t: 'Save', b: 'Nothing changes until you save. Everyone sees it at once, History keeps your name, and you can undo your own change.' },
+  { id: 'author', sel: ['.panel .au-det'], open: true, when: function () { return canEdit(); }, t: 'Author details and the author sheet', b: 'Fill in every author\'s affiliation, e-mail and ORCID together: look up an ORCID, or paste a screenshot of the title page and the AI proposes the details for you to check. Then download the Author sheet for the submission.' },
+  { id: 'save', sel: ['#b-save'], open: true, t: 'Save', b: 'Nothing changes until you save. Everyone sees it at once, History keeps your name, and you can undo your own change. No connection? You can still read everything, and what you change is kept on this device: press Save when you are back online. A blue Updating label means fresh data is on its way.' },
   { sel: ['.panel [data-a="rem-open"]'], open: true, t: 'Remind me', b: 'A private reminder in your own calendar. Deadline to my calendar adds the deadline in one click.' },
   { sel: ['.fab', '.panel .p-qu'], t: 'Quick update', b: 'The fastest way to report news: say what happened in any language, or paste a screenshot of the journal\'s e-mail. The AI updates the fields within about a minute, and you can undo.' },
   { sel: ['.fab-s', '.topbar [data-a="pal-open"]'], t: 'Find anything', b: 'Any manuscript, person or command. Ctrl + K, or Command + K on a Mac.' },
+  { id: 'feedback', sel: ['.sb-fb', '.topbar [data-a="fb-open"]'], t: 'Send feedback', b: 'While we test the app, tell us what goes wrong or what you would like. A bug report also sends the screen and device details to help fix it; an idea sends nothing extra.' },
   { sel: ['.sb-foot [data-v="notif"]', '.topbar [data-v="notif"]'], t: 'Notifications', b: 'The ball passed to you, a change on your manuscripts, a deadline close. Turn them on for this phone or computer in Settings, Notifications.' },
-  { sel: ['.sb-get', '.topbar [data-a="drawer-open"]'], t: 'Get the app', b: 'Install VIBRA on this computer or phone: its own icon and window, and notifications. It also shows the address and a QR code for your other devices. On a phone it sits beside your name in the menu.' },
-  { sel: ['.sb-foot [data-v="settings"]', '.topbar [data-a="drawer-open"]'], t: 'Settings', b: 'Notifications on this device, your private calendar link, the Monday e-mail, light or dark. Help replays this tour.' }
+  { id: 'getapp', sel: ['.sb-get', '.topbar [data-a="drawer-open"]'], t: 'Get the app', b: 'Install VIBRA on this computer or phone: its own icon and window, and notifications. It also shows the address and a QR code for your other devices. On a phone it sits beside your name in the menu.' },
+  { id: 'settings', sel: ['.sb-foot [data-v="settings"]', '.topbar [data-a="drawer-open"]'], t: 'Settings', b: 'Notifications on this device, your private calendar link, the Monday e-mail, light or dark. Help replays this tour. Under General, add My details (affiliation, e-mail, ORCID) once: they serve every manuscript you are on.' }
 ];
+/* 0.2.3: the steps of the tour in progress: the full tour, or for members who saw the 0.2.0 tour a short one with what was
+   added since (author details, offline, feedback, the app, my details) */
+var CO_NEW = ['author', 'save', 'feedback', 'getapp', 'settings'];
+function CO() {
+  var list = COACH.filter(function (st) { return !st.when || st.when(); });
+  if (S.tourSet === 'new') list = list.filter(function (st) { return CO_NEW.indexOf(st.id) >= 0 && !(st.id === 'getapp' && appInstalled()); });
+  return list;
+}
 /* Phosphor Icons (Light), MIT licence, @phosphor-icons/core 2.1.1: path data only */
 var ICON = {
   x: '<path d="M204.24,195.76a6,6,0,1,1-8.48,8.48L128,136.49,60.24,204.24a6,6,0,0,1-8.48-8.48L119.51,128,51.76,60.24a6,6,0,0,1,8.48-8.48L128,119.51l67.76-67.75a6,6,0,0,1,8.48,8.48L136.49,128Z"/>',
@@ -1518,7 +1623,7 @@ function api(fn) {
   });
 }
 /* After a change, ask the admin's helper to send phone notifications now rather than at its next one-minute run. */
-var NUDGE_FN = { api_save: 1, api_create: 1, api_addNote: 1, api_undo: 1, api_editNote: 1, api_deleteNote: 1, api_deleteManuscript: 1, api_decideDeletion: 1, api_restoreManuscript: 1, api_aiApply: 1 };
+var NUDGE_FN = { api_save: 1, api_create: 1, api_addNote: 1, api_undo: 1, api_editNote: 1, api_deleteNote: 1, api_deleteManuscript: 1, api_decideDeletion: 1, api_restoreManuscript: 1, api_nudge: 1, api_aiApply: 1 };
 function nudge() {
   var p = S.boot && S.boot.pwa; if (!p || !p.helper || !p.push || !window.fetch) return;
   try { fetch(p.helper + '?action=nudge', { credentials: 'omit', cache: 'no-store', mode: 'no-cors' }).catch(function () { }); } catch (e) { }
@@ -1699,7 +1804,7 @@ function render() {
   var all = allDerived();
   var open = all.filter(function (d) { return d.tier !== 'closed'; });
   var main = S.view === 'today' ? viewToday(filtered(open)) : S.view === 'board' ? viewBoard(filtered(all)) :
-    S.view === 'list' ? viewList(filtered(all)) : S.view === 'dash' ? viewDash(all) : S.view === 'desk' ? viewDesk() : viewSettings();
+    S.view === 'list' ? viewList(filtered(all)) : S.view === 'dash' ? viewDash(all) : S.view === 'desk' ? viewDesk() : S.view === 'review' ? viewReview() : S.view === 'todo' ? viewTodo() : viewSettings();
   // Animate only what is new (a view, filter or search result, or a layer that just opened); plain
   // re-renders (typing, toggles, saves, live refresh, tour steps) repaint without replaying animations.
   app.classList.toggle('calm', !S.fx.list && !!S.painted);
@@ -1707,12 +1812,12 @@ function render() {
   layer.className = (pk && pk === S.lk[0] ? 'calm-pop ' : '') + (dk && dk === S.lk[1] ? 'calm-dlg ' : '') + (tk && tk === S.lk[2] ? 'calm-tour ' : '') + (sk && sk === S.lk[3] ? 'calm-pal' : '');
   var prevDk = S.lk[1]; S.lk = [pk, dk, tk, sk]; S.painted = true;
   var sbs = document.querySelector('.sb-scroll'), sbScroll = sbs ? sbs.scrollTop : 0;
-  app.innerHTML = '<div class="shell' + (sbCollapsed() ? ' sbc' : '') + (S.drawer ? ' drawer' : '') + (panelShown() ? ' pshown' : '') + '">' + sidebar() + '<div class="scrim" data-a="drawer-close"></div>' + (panelShown() ? '<div class="pscrim" aria-hidden="true"></div>' : '') +
+  app.innerHTML = '<div class="shell' + (sbCollapsed() ? ' sbc' : '') + (S.drawer ? ' drawer' : '') + (panelShown() ? ' pshown' : '') + (S.view === 'today' && todayView() === 'blocks' ? ' tvb' : '') + '">' + sidebar() + '<div class="scrim" data-a="drawer-close"></div>' + (panelShown() ? '<div class="pscrim" aria-hidden="true"></div>' : '') +
     '<div class="mainwrap">' + topbar() + '<div class="wrap"><div class="cols"><div class="main">' + pageTools() + draftBar() + main + '</div>' + (panelShown() ? panel() : '') + '</div></div></div></div>' + fab();
   document.documentElement.style.setProperty('--sbw', sbCollapsed() ? '60px' : '264px');
   var sbs2 = document.querySelector('.sb-scroll'); if (sbs2) sbs2.scrollTop = sbScroll;
   var ovl = layer.querySelector('.overlay'), ovTop = ovl && dk && dk === prevDk ? ovl.scrollTop : 0;
-  layer.innerHTML = popover() + dialog() + palHtml() + tourHtml();
+  layer.innerHTML = popover() + dialog() + palHtml() + tourHtml() + ngCardHtml();
   if (ovTop) { var ovl2 = layer.querySelector('.overlay'); if (ovl2) ovl2.scrollTop = ovTop; }
   if (S.tour > 0) requestAnimationFrame(placeCoach); // after the details' scroll position is restored below
   placeFab(); placePop();
@@ -1722,6 +1827,7 @@ function render() {
   if (p2 && !S.fx.panel) p2.scrollTop = pScroll;
   if (keep) { var el = document.getElementById(keep.id); if (el) { el.focus({ preventScroll: true }); try { if (keep.s !== null && el.setSelectionRange) el.setSelectionRange(keep.s, keep.e); } catch (x) { } } }
   S.fx = {};
+  setBadge();
   syncLock();
 }
 /* On narrow screens an open tip is pinned to the screen width under its "i", so it never pushes the page sideways. */
@@ -1774,11 +1880,13 @@ function dlText(d) {
 }
 function sidebar() {
   var nav = [['today', 'Today', 'today'], ['board', 'Pipeline', 'board'], ['list', 'All manuscripts', 'list'], ['dash', 'Dashboard', 'dash']];
+  if (todoOn()) nav.push(['todo', 'To-do', 'check']); // 0.2.3
+  if (isSup()) nav.push(['review', 'Changes to review', 'undo']); // 0.2.3: Supervisor and Admin
   if (me().role === 'Admin') nav.push(['desk', 'AI desk', 'desk']);
   var openN = allDerived().filter(function (d) { return d.tier !== 'closed'; }).length;
   var navHtml = nav.map(function (n) {
     return '<button class="sb-item" data-a="view" data-v="' + n[0] + '"' + (S.view === n[0] ? ' aria-current="page"' : '') + (sbCollapsed() ? tt(n[1]) : '') + '>' + ic(n[2]) + '<span class="lab">' + n[1] + '</span>' +
-      (n[0] === 'today' ? '<span class="cnt">' + openN + '</span>' : '') + '</button>';
+      (n[0] === 'today' ? '<span class="cnt">' + openN + '</span>' : n[0] === 'todo' && tdDueN() ? '<span class="cnt cnt-due">' + tdDueN() + '</span>' : n[0] === 'review' && S.rev && S.rev.total ? '<span class="cnt">' + S.rev.total + '</span>' : '') + '</button>';
   }).join('');
   var byId = {}; allDerived().forEach(function (d) { byId[d.m.id] = d; });
   var pinned = pins().map(function (id) { return byId[id]; }).filter(Boolean);
@@ -1825,7 +1933,7 @@ function statusChip() {
 }
 function keptWhen(t) { var d = new Date(t), p = function (n) { return ('0' + n).slice(-2); }; var day = d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()); return (S.boot && day === S.boot.today ? '' : niceShort(day) + ' ') + p(d.getHours()) + ':' + p(d.getMinutes()); }
 /* 0.2.2: unsent changes kept on this device (manuscript fields, quick update, feedback), until they are saved online */
-function draftKey() { return typeof BOOT_KEY === 'string' && BOOT_KEY ? BOOT_KEY + '-drafts' : null; }
+function draftKey() { var k = bootKey(); return k ? k + '-drafts' : null; }
 function lsGet(k, d) { try { return k ? JSON.parse(localStorage.getItem(k) || 'null') || d : d; } catch (e) { return d; } }
 function lsSet(k, v) { try { if (!k) return false; if (v === null) localStorage.removeItem(k); else localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } }
 function drafts() { var o = lsGet(draftKey(), {}); return o && typeof o === 'object' ? o : {}; }
@@ -1879,6 +1987,7 @@ function backOnline() {
 }
 function pageTools() {
   if (S.view === 'settings' || S.view === 'desk') return '';
+  if (S.view === 'review' || S.view === 'todo') return '<div class="ptools">' + statusChip() + '</div>';
   return '<div class="ptools">' + statusChip() + (S.view === 'today' ? '<div class="seg seg-s" role="group" aria-label="Layout of Today">' +
     [['list', 'List', 'list'], ['blocks', 'Blocks', 'apps']].map(function (o) { return '<button data-a="tview" data-v="' + o[0] + '" aria-pressed="' + (todayView() === o[0]) + '" title="Show Today as ' + o[1].toLowerCase() + '">' + ic(o[2]) + '<span class="lab">' + o[1] + '</span></button>'; }).join('') + '</div>' : '') + (S.q ? '<button class="fchip" data-a="q-clear" aria-label="Remove the filter ' + esc(S.q) + '">Filter: ' + esc(short(S.q, 24)) + ic('x') + '</button>' : '') +
     (S.view !== 'dash' ? '<button class="btn btn-s" data-a="pop" data-v="export" aria-expanded="' + (S.pop === 'export') + '">' + ic('down') + 'Export</button>' : '') + '</div>';
@@ -1911,6 +2020,8 @@ function palEntries(q) {
   var cmds = [['view', 'today', 'Go to Today', 'today'], ['view', 'board', 'Go to Pipeline', 'board'], ['view', 'list', 'Go to All manuscripts', 'list'], ['view', 'dash', 'Go to Dashboard', 'dash'],
     ['view', 'settings', 'Open Settings', 'gear']];
   if (me().role === 'Admin') cmds.push(['view', 'desk', 'Open the AI desk', 'desk']);
+  if (todoOn()) cmds.push(['view', 'todo', 'Open my to-do', 'check']);
+  if (isSup()) cmds.push(['view', 'review', 'Changes to review', 'undo']);
   if (canEdit()) cmds.push(['nf-open', '', 'New manuscript', 'plus']);
   cmds.push(['qu-open', '', 'Quick update: tell the tracker what happened', 'spark'], ['xlsx', '', 'Export this view to Excel', 'sheet'], ['pdf', '', 'Export this view to PDF', 'down'],
     ['csv', '', 'Export this view to CSV', 'down'], ['theme-toggle', '', curTheme() === 'dark' ? 'Switch to the light appearance' : 'Switch to the dark appearance', curTheme() === 'dark' ? 'sun' : 'moon'],
@@ -2002,7 +2113,7 @@ function viewSettings() {
   else if (tab === 'members') {
     var members = S.boot.people.map(function (p, i) {
       return '<div class="setrow"><div style="flex:1;min-width:0"><label for="role-' + i + '" style="font-weight:500">' + esc(p.display) + '</label><div class="muted mono" style="font-size:12px">' + esc(p.email || '') + '</div></div>' +
-        (u.role === 'Admin' ? '<select id="role-' + i + '" class="in" style="width:120px" data-i="role" data-v="' + esc(p.key) + '">' + ['Admin', 'Editor', 'Viewer'].map(function (r) { return '<option' + (p.role === r ? ' selected' : '') + '>' + r + '</option>'; }).join('') + '</select>' : '<span class="tag t-waiting">' + esc(p.role) + '</span>') + '</div>';
+        (u.role === 'Admin' ? '<select id="role-' + i + '" class="in" style="width:120px" data-i="role" data-v="' + esc(p.key) + '">' + ['Admin', 'Supervisor', 'Editor', 'Viewer'].map(function (r) { return '<option' + (p.role === r ? ' selected' : '') + '>' + r + '</option>'; }).join('') + '</select>' : '<span class="tag t-waiting">' + esc(p.role) + '</span>') + '</div>';
     }).join('');
     body = '<div class="box"><div class="frow"><h2>Members and roles</h2>' + tip('roles', true) + '</div><div>' + members + '</div>' +
       (u.role === 'Admin' ? '<details><summary style="cursor:pointer;color:var(--accent-text);font-weight:500;padding:6px 0">Add a member</summary><div style="display:grid;gap:8px;margin-top:8px">' +
@@ -2537,7 +2648,7 @@ function dashWork(open) {
 
 /* ---------- reminders (private; calendar side needs no permission) */
 function remList() { return S.boot.reminders || []; }
-function remDue() { var t = S.boot.today; return remList().filter(function (r) { return !r.done && r.date <= t; }); }
+function remDue() { var t = S.boot.today; return remList().filter(function (r) { return !r.done && r.date && r.date <= t; }); }
 function addDays(iso, n) { return new Date((dnum(iso) + n) * 86400000).toISOString().slice(0, 10); }
 function defaultRem(m, dl) {
   var t = S.boot.today, date;
@@ -2599,9 +2710,9 @@ function persistRem(list, ok) {
   api('api_setReminders', list).then(function (l) { S.boot.reminders = l; render(); if (ok) toast(ok); }).catch(function (e) { toast(msg(e), true); });
 }
 function remSave(r) {
-  var item = { id: 'r' + Date.now().toString(36), mid: r.mid, date: r.date, time: timed(r) ? r.time : '', note: String(r.note || '').trim(), done: false };
+  var item = { id: 'r' + Date.now().toString(36), k: 'r', mid: r.mid, date: r.date, time: timed(r) ? r.time : '', note: String(r.note || '').trim(), done: false, cal: !!r.cal };
   S.rem = null;
-  persistRem(remList().concat([item]), 'Reminder saved. It appears under your bell on ' + nice(item.date) + '.');
+  persistRem(remList().concat([item]), 'Reminder saved' + (todoOn() ? ' in your to-do;' : '. It') + ' appears under your bell on ' + nice(item.date) + '.');
 }
 function myDeadlines() {
   var k = me().key;
@@ -2751,6 +2862,195 @@ function helperDone(r) {
   }).catch(function () { });
 }
 
+/* ---------- 0.2.3: Changes to review (Supervisor and Admin). What others changed already applies; the reviewer marks it
+   reviewed or undoes it. Deletion requests and the trash are decided here too (the supervisor has no AI desk). */
+function loadReview() {
+  if (!S.boot || S.stale || !isSup() || S.revLoading) return;
+  S.revLoading = true;
+  api('api_review').then(function (r) { S.rev = r; S.revAt = Date.now(); S.revLoading = false; render(); })
+    .catch(function (e) { S.revLoading = false; S.revAt = Date.now(); if (S.view === 'review') toast(msg(e), true); });
+}
+function viewReview() {
+  var h = '<h1 class="h1">Changes to review</h1>';
+  if (!isSup()) return h + '<p class="sub">For the admin and the supervisor.</p>';
+  var R = S.rev;
+  if (!R || Date.now() - (S.revAt || 0) > 60000) loadReview();
+  if (!R) return h + '<p class="sub">Loading the changes…</p>';
+  var sub = R.total ? R.total + ' change' + (R.total > 1 ? 's' : '') + ' by others since ' + esc(niceShort(R.since)) + ' ' + esc(String(R.since).slice(11, 16)) + '. They already apply: mark them reviewed, or undo what should not stay.' :
+    'Nothing new to review. What others change (members, the AI, edits made in the Sheet) appears here until you mark it reviewed.';
+  return h + '<p class="sub">' + sub + '</p>' +
+    (R.total ? '<div class="btns" style="margin:0 0 14px;align-items:center"><button class="btn btn-s" data-a="rev-all">' + ic('check') + 'Mark all reviewed</button>' + tip('review', true) + '</div>' : '') +
+    '<div class="revlist">' + R.items.map(revItem).join('') + '</div>' +
+    (R.total > R.items.length ? '<p class="muted" style="font-size:13px">' + (R.total - R.items.length) + ' older changes are not shown yet; mark these reviewed to see them.</p>' : '') +
+    '<div style="margin-top:22px">' + deskDeletions({ deletions: S.boot.deletions || [], trash: R.trash || [] }) + '</div>';
+}
+function revItem(g) {
+  var m = mById(g.mid), who = g.who === 'AI routine' ? 'AI · mail' : g.who || 'Someone';
+  var lines = g.items.map(function (x) {
+    return '<li><span>' + histVal({ field: x.field, old: x.old, new: x.new }) + '</span>' + (x.undo && canEdit() ? '<button class="btn btn-q" data-a="rev-undo" data-v="' + x.row + '" aria-label="Undo this change"' + tt('Undo this change') + '>' + ic('undo') + '</button>' : '') + '</li>';
+  }).join('');
+  return '<div class="revitem"><div class="rev-h"><span class="mono muted">' + esc(niceShort(g.ts)) + ' ' + esc(String(g.ts).slice(11, 16)) + '</span><b>' + esc(who) + '</b>' +
+    (m ? '<button class="rev-t" data-a="open" data-v="' + m.id + '">#' + m.id + ' ' + esc(short(m.title, 90)) + '</button>' : '<span class="muted">#' + g.mid + (g.title ? ' ' + esc(short(g.title, 80)) : '') + ' (deleted)</span>') +
+    '<span style="margin-left:auto"></span><button class="btn btn-s" data-a="rev-ok" data-v="' + esc(g.key) + '">' + ic('check') + 'Reviewed</button></div>' +
+    '<ul class="rev-l">' + lines + '</ul>' + (g.source && g.source !== 'Manuscripts_tracker.xlsx' ? '<div class="muted" style="font-size:12px">' + esc(short(g.source, 200)) + '</div>' : '') + '</div>';
+}
+
+/* ---------- 0.2.3: Nudge (admin). The members who have the ball get it in their bell, on their devices where
+   notifications are on (the helper pushes it), and as a card when VIBRA is open. Once a day per manuscript and person. */
+function ngHolders(m) {
+  var seen = {};
+  return m.people.filter(function (p) { if (!p.member || !person(p.name) || p.name === me().key || seen[p.name]) return false; seen[p.name] = 1; return true; }).map(function (p) { return p.name; });
+}
+function pName(k) { return String((person(k) || {}).display || k).split(' (')[0]; }
+function ngEditor(m) {
+  var g = S.ng; if (!g || g.mid !== m.id || me().role !== 'Admin') return '';
+  var to = ngHolders(m);
+  return '<div class="ngbox" id="ng-box"><div class="frow"><b class="ngb-h">' + ic('bell') + 'Nudge</b><span class="muted" style="font-size:12.5px">to ' + esc(to.map(pName).join(', ') || 'nobody') + '</span></div>' +
+    '<input id="ng-note" class="in" maxlength="200" data-i="ng" placeholder="A short note (optional), e.g. please upload the revision today" value="' + esc(g.note || '') + '" aria-label="Note with the nudge (optional)">' +
+    '<div class="btns"><button class="btn btn-p" data-a="ng-send"' + (g.busy || !to.length ? ' disabled' : '') + '>' + (g.busy ? 'Sending…' : 'Send nudge') + '</button><button class="btn btn-q" data-a="ng-cancel">Cancel</button></div>' +
+    '<p class="muted" style="margin:0;font-size:12px">They see it in their bell, on their phone or computer where notifications are on, and as a card if VIBRA is open. Once a day per person for this manuscript.</p></div>';
+}
+function showNudge(n) {
+  S.ngSeen = S.ngSeen || {};
+  if (!n || S.ngSeen[n.id]) return;
+  S.ngSeen[n.id] = 1; S.ngCard = n; render();
+}
+function ngCardHtml() {
+  var n = S.ngCard; if (!n || !S.boot) return '';
+  var m = mById(n.manuscript_id);
+  return '<div class="ngcard" role="alertdialog" aria-labelledby="ngc-h" aria-describedby="ngc-b"><span class="ngc-ic">' + ic('bell') + '</span><div style="min-width:0;flex:1">' +
+    '<div id="ngc-h" class="ngc-h">Nudge · ' + esc(niceShort(n.ts)) + ' ' + esc(String(n.ts).slice(11, 16)) + '</div><p id="ngc-b">' + esc(n.text) + '</p>' +
+    '<div class="btns">' + (m ? '<button class="btn btn-p" data-a="ngc-open">Open the manuscript</button>' : '') + '<button class="btn btn-s" data-a="ngc-later">Later</button></div></div></div>';
+}
+/* after fresh data: the review count, a nudge still waiting, the badge on the app icon */
+function afterFresh() {
+  if (isSup()) { S.revLoading = false; loadReview(); }
+  waitingNudge();
+  setBadge();
+}
+/* a nudge from the last 2 days not yet read is shown once per session, not over the tour (it comes after it) */
+function waitingNudge() {
+  if (!S.boot || S.stale || S.tour >= 0) return;
+  var since = addDays(S.boot.today, -2);
+  var w = (S.boot.notifications || []).filter(function (n) { return n.kind === 'nudge' && !n.read && String(n.ts).slice(0, 10) >= since; })[0];
+  if (w) showNudge(w);
+}
+/* 0.2.3: the number on the installed app's icon = the bell's unread count (where the system supports it) */
+var badgeN = -1;
+function setBadge() {
+  if (!S.boot || S.stale || !navigator.setAppBadge) return;
+  var n = unreadCount(); if (n === badgeN) return; badgeN = n;
+  try { var pr = n ? navigator.setAppBadge(n) : navigator.clearAppBadge(); if (pr && pr.catch) pr.catch(function () { }); } catch (e) { }
+}
+window.__vibraNews = function () { if (S.boot && !S.stale) poll(); }; // the service worker got a push: fetch the news now
+
+/* ---------- 0.2.3: To-do. Private to each member (kept with their reminders, never in the shared Sheet); on for the
+   members named in Meta todo_users. A reminder is a to-do with a date; a to-do may have no date. On a computer the list
+   and a month calendar sit side by side; on a phone one at a time. */
+function todoOn() { return !!(S.boot && S.boot.todo); }
+function tdDueN() { if (!todoOn()) return 0; var t = S.boot.today; return remList().filter(function (r) { return !r.done && r.date && r.date <= t; }).length; }
+function tdText(r) { var m = mById(r.mid); return r.note || (m ? 'Check ' + short(m.title, 70) : 'Reminder'); }
+function tdM(r) { return mById(r.mid) || { id: 0, title: 'To-do', journal: '', next: '', deadline: '' }; }
+function tdGcal(r) { return gcalUrl(r, tdM(r)); }
+function tdYmd(d) { return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); }
+var TD_MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+function tdAdd(o) {
+  var item = { id: 't' + Date.now().toString(36), k: 't', mid: Number(o.mid) || 0, date: o.date || '', time: '', note: String(o.note).trim(), done: false, c: S.boot.today };
+  persistRem(remList().concat([item]), 'Added to your to-do' + (item.date ? ' for ' + nice(item.date) : '') + '.');
+}
+function tdSubmit() {
+  var a = S.td || {}, n = String(a.note || '').trim();
+  if (!n) { toast('Write what is to be done.', true); var t0 = document.getElementById('td-note'); if (t0) t0.focus(); return; }
+  tdAdd({ note: n, date: a.date, mid: a.mid });
+  S.td = { note: '', date: S.tdDay || '', mid: '' };
+  setTimeout(function () { var t = document.getElementById('td-note'); if (t) t.focus(); }, 30);
+}
+function viewTodo() {
+  if (!todoOn()) return '<h1 class="h1">To-do</h1><p class="sub">The to-do list is not switched on for you yet.</p>';
+  var T0 = S.boot.today, open = remList().filter(function (r) { return !r.done; });
+  var over = open.filter(function (r) { return r.date && r.date < T0; }).length, today = open.filter(function (r) { return r.date === T0; }).length;
+  var sub = open.length ? open.length + ' to do' + (over ? ', ' + over + ' overdue' : '') + (today ? ', ' + today + ' today' : '') + '. Only you see this list.' : 'Only you see this list. Add what you must do, or press Remind me in a manuscript.';
+  var mode = S.tdMode === 'cal' ? 'cal' : 'list';
+  return '<div class="td-head"><div><h1 class="h1">To-do</h1><p class="sub">' + sub + '</p></div>' +
+    '<div class="seg seg-s td-seg" role="group" aria-label="To-do layout">' + [['list', 'List', 'list'], ['cal', 'Calendar', 'cal2']].map(function (o) { return '<button data-a="td-mode" data-v="' + o[0] + '" aria-pressed="' + (mode === o[0]) + '">' + ic(o[2]) + '<span class="lab">' + o[1] + '</span></button>'; }).join('') + '</div></div>' +
+    '<div class="td-grid m-' + mode + '">' + tdListCard() + tdCalCard() + '</div>';
+}
+function tdListCard() {
+  var T0 = S.boot.today, f = S.tdDay, items = remList();
+  var a = S.td || (S.td = { note: '', date: f || '', mid: '' });
+  var openMs = S.boot.manuscripts.filter(function (m) { return ['Published', 'Rejected'].indexOf(m.status) < 0; }).slice().sort(function (x, y) { return x.id - y.id; });
+  var add = '<form class="td-add" id="td-form" novalidate><input id="td-note" class="in" data-i="td" data-v="note" maxlength="300" placeholder="Add a to-do, e.g. send the cover letter to GV" value="' + esc(a.note || '') + '" aria-label="What is to be done">' +
+    '<div class="td-add2"><input id="td-date" class="in" type="date" data-i="td" data-v="date" value="' + esc(a.date || '') + '" aria-label="Date (optional)" title="Date (optional)">' +
+    '<select id="td-mid" class="in" data-i="td" data-v="mid" aria-label="Manuscript (optional)"><option value="">No manuscript</option>' +
+    openMs.map(function (m) { return '<option value="' + m.id + '"' + (String(a.mid) === String(m.id) ? ' selected' : '') + '>#' + m.id + ' ' + esc(short(m.title, 56)) + '</option>'; }).join('') + '</select>' +
+    '<button class="btn btn-p" type="submit">' + ic('plus') + 'Add</button></div></form>';
+  var sel = f ? items.filter(function (r) { return r.date === f; }) : items;
+  var groups = f ? [['On ' + nice(f), sel.filter(function (r) { return !r.done; }), '']] : [
+    ['Overdue', sel.filter(function (r) { return !r.done && r.date && r.date < T0; }), 'late'],
+    ['Today', sel.filter(function (r) { return !r.done && r.date === T0; }), 'now'],
+    ['Coming up', sel.filter(function (r) { return !r.done && r.date > T0; }), ''],
+    ['No date', sel.filter(function (r) { return !r.done && !r.date; }), '']];
+  var by = function (x, y) { var p = (x.date || '9999') + (x.time || ''), q = (y.date || '9999') + (y.time || ''); return p < q ? -1 : p > q ? 1 : (x.c || '') < (y.c || '') ? -1 : 1; };
+  var body = groups.filter(function (g) { return g[1].length; }).map(function (g) {
+    return '<div class="td-sec"><h3 class="' + g[2] + '">' + esc(g[0]) + ' <span class="muted">' + g[1].length + '</span></h3>' + g[1].slice().sort(by).map(tdRow).join('') + '</div>';
+  }).join('');
+  var done = sel.filter(function (r) { return r.done; }).sort(function (x, y) { return (x.dd || x.date) < (y.dd || y.date) ? 1 : -1; });
+  return '<div class="box td-list"><div class="frow"><h2>My to-do</h2>' + tip('todo', true) + (f ? '<span style="margin-left:auto"></span><button class="btn btn-q" data-a="td-day" data-v="">Show all</button>' : '') + '</div>' + add +
+    (body || '<p class="empty" style="margin:0">' + (f ? 'Nothing open on ' + esc(nice(f)) + '.' : 'Nothing to do. Add what you must do above, or press Remind me in a manuscript.') + '</p>') +
+    (done.length ? '<details class="td-done"><summary>Done (' + done.length + ')</summary>' + done.map(tdRow).join('') + '</details>' : '') + '</div>';
+}
+function tdRow(r) {
+  if (S.tde && S.tde.id === r.id) return tdEditRow();
+  var m = mById(r.mid), T0 = S.boot.today, late = !r.done && r.date && r.date < T0;
+  return '<div class="td-row' + (r.done ? ' done' : '') + '"><button class="td-chk" data-a="td-done" data-v="' + esc(r.id) + '" role="checkbox" aria-checked="' + !!r.done + '" aria-label="' + (r.done ? 'Mark as not done' : 'Mark as done') + ': ' + esc(short(tdText(r), 60)) + '">' + ic('check') + '</button>' +
+    '<div class="td-main"><span class="td-t">' + esc(tdText(r)) + '</span>' +
+    '<span class="td-meta">' + (r.date ? '<span class="td-d' + (late ? ' late' : r.date === T0 ? ' now' : '') + '">' + esc(niceShort(r.date)) + (r.time ? ' ' + esc(r.time) : '') + '</span>' : '') +
+    (m ? '<button class="td-m" data-a="open" data-v="' + m.id + '">#' + m.id + ' ' + esc(short(m.title, 46)) + '</button>' : '') +
+    (r.k !== 't' ? '<span class="td-tag">Reminder</span>' : '') + (r.cal ? '<span class="td-tag">' + ic('cal') + 'In my calendar</span>' : '') + '</span></div>' +
+    '<span class="td-acts">' + (r.date && !r.done ? '<a class="btn btn-q" data-a="td-gcal" data-v="' + esc(r.id) + '" target="_blank" rel="noopener" href="' + esc(tdGcal(r)) + '" aria-label="Add to Google Calendar"' + tt('Add to Google Calendar') + '>' + ic('cal') + '</a>' +
+      '<button class="btn btn-q" data-a="td-ics" data-v="' + esc(r.id) + '" aria-label="Apple or Outlook calendar file"' + tt('Apple or Outlook (.ics)') + '>' + ic('down') + '</button>' : '') +
+    '<button class="btn btn-q" data-a="td-edit" data-v="' + esc(r.id) + '" aria-label="Edit"' + tt('Edit') + '>' + ic('pencil') + '</button>' +
+    '<button class="btn btn-q" data-a="td-del" data-v="' + esc(r.id) + '" aria-label="Delete"' + tt('Delete') + '>' + ic('trash') + '</button></span></div>';
+}
+function tdEditRow() {
+  var e = S.tde;
+  return '<div class="td-row td-editing"><div class="td-main" style="display:grid;gap:8px;width:100%"><input id="tde-note" class="in" data-i="tde" data-v="note" maxlength="300" value="' + esc(e.note) + '" aria-label="What is to be done">' +
+    '<div class="td-add2"><input class="in" type="date" data-i="tde" data-v="date" value="' + esc(e.date || '') + '" aria-label="Date (optional)"><input class="in" type="time" data-i="tde" data-v="time" value="' + esc(e.time || '') + '" aria-label="Time (optional)">' +
+    '<button class="btn btn-p" data-a="tde-save">Save</button><button class="btn btn-q" data-a="tde-cancel">Cancel</button></div></div></div>';
+}
+function tdCalCard() {
+  var T0 = S.boot.today, mk = S.tdMonth || T0.slice(0, 7), y = Number(mk.slice(0, 4)), mo = Number(mk.slice(5, 7)) - 1;
+  var first = new Date(y, mo, 1), lead = (first.getDay() + 6) % 7, days = new Date(y, mo + 1, 0).getDate(), weeks = Math.ceil((lead + days) / 7);
+  var byDay = {}, put = function (d, x) { (byDay[d] = byDay[d] || []).push(x); };
+  remList().forEach(function (r) { if (r.date && !r.done) put(r.date, { t: 'td', r: r }); });
+  S.boot.manuscripts.forEach(function (m) {
+    var k = me().key;
+    if (m.deadline && ['Published', 'Rejected'].indexOf(m.status) < 0 && (m.people.some(function (p) { return p.name === k; }) || m.authors.some(function (a) { return authorKey(a) === k; }))) put(m.deadline, { t: 'dl', m: m });
+  });
+  var cells = '';
+  for (var i = 0; i < weeks * 7; i++) {
+    var d = new Date(y, mo, 1 - lead + i), ds = tdYmd(d), ev = byDay[ds] || [];
+    ev.sort(function (a, b) { return a.t === b.t ? 0 : a.t === 'dl' ? -1 : 1; });
+    cells += '<div class="cal-c' + (d.getMonth() === mo ? '' : ' out') + (ds === T0 ? ' today' : '') + (S.tdDay === ds ? ' sel' : '') + (ds < T0 ? ' past' : '') + '" data-a="td-day" data-v="' + ds + '" role="gridcell" tabindex="-1" aria-label="' + esc(nice(ds)) + (ev.length ? ', ' + ev.length + ' item' + (ev.length > 1 ? 's' : '') : '') + '">' +
+      '<span class="cal-n">' + d.getDate() + '</span>' +
+      ev.slice(0, 3).map(function (x) {
+        return x.t === 'dl' ? '<span class="cal-e dl" data-a="open" data-v="' + x.m.id + '" title="Deadline: ' + esc(x.m.title) + '">#' + x.m.id + '</span>' :
+          '<span class="cal-e' + (x.r.k === 't' ? '' : ' rem') + '" title="' + esc(tdText(x.r)) + '">' + esc(short(tdText(x.r), 26)) + '</span>';
+      }).join('') + (ev.length > 3 ? '<span class="cal-more">+' + (ev.length - 3) + ' more</span>' : '') + '</div>';
+  }
+  return '<div class="box td-cal"><div class="frow"><h2>' + esc(TD_MONTHS[mo] + ' ' + y) + '</h2><span style="margin-left:auto"></span>' +
+    '<button class="btn btn-q" data-a="td-mon" data-v="-1" aria-label="Previous month">' + ic('back') + '</button><button class="btn btn-s" data-a="td-mon" data-v="0">Today</button>' +
+    '<button class="btn btn-q td-next" data-a="td-mon" data-v="1" aria-label="Next month">' + ic('back') + '</button></div>' +
+    '<div class="cal-g" role="grid" aria-label="' + esc(TD_MONTHS[mo] + ' ' + y) + '">' + ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(function (w) { return '<div class="cal-w" role="columnheader">' + w + '</div>'; }).join('') + cells + '</div>' +
+    '<p class="cal-keys"><span><i class="k-td"></i>To-do</span><span><i class="k-rem"></i>Reminder</span><span><i class="k-dl"></i>Deadline of a manuscript you are on</span><span class="muted">Click a day to see it in the list.</span></p></div>';
+}
+function tdxEditor(m) {
+  var x = S.tdx; if (!x || x.mid !== m.id || !todoOn()) return '';
+  return '<div class="ngbox" id="tdx-box"><div class="frow"><b class="ngb-h">' + ic('check') + 'Add to my to-do</b><span class="muted" style="font-size:12.5px">only you see it</span></div>' +
+    '<input id="tdx-note" class="in" maxlength="300" data-i="tdx" data-v="note" value="' + esc(x.note || '') + '" aria-label="What is to be done">' +
+    '<div class="td-add2"><input class="in" type="date" data-i="tdx" data-v="date" value="' + esc(x.date || '') + '" aria-label="Date (optional)" title="Date (optional)"><button class="btn btn-p" data-a="tdx-save">' + ic('plus') + 'Add</button><button class="btn btn-q" data-a="tdx-cancel">Cancel</button></div></div>';
+}
+
 /* ---------- AI desk (Admin only) */
 function deskDeletions(D) {
   var req = (D.deletions || []).map(function (d) {
@@ -2830,7 +3130,7 @@ function appBox() {
       '<p class="muted" style="margin:0;font-size:13px">The installable app is being set up by the admin. Until then, add this page to your home screen: on an iPhone it opens full screen.</p>') + '</div>';
 }
 function remBox() {
-  var rems = remList().slice().sort(function (a, b) { return (a.done - b.done) || ((a.date + a.time) < (b.date + b.time) ? -1 : 1); });
+  var rems = remList().filter(function (r) { return r.k !== 't'; }).sort(function (a, b) { return (a.done - b.done) || ((a.date + a.time) < (b.date + b.time) ? -1 : 1); });
   var list = rems.length ? rems.map(function (r) {
     var m = mById(r.mid), due = !r.done && r.date <= S.boot.today;
     return '<div class="ritem"><div style="min-width:0"><div class="mono" style="font-size:12px">' + (due ? '<span class="tag t-due" style="height:18px">Due</span> ' : r.done ? '<span class="tag t-closed" style="height:18px">Done</span> ' : '') + esc(nice(r.date)) + (r.time ? ' · ' + esc(r.time) : '') + '</div>' +
@@ -2952,14 +3252,19 @@ function panel() {
     field('Status', 'status', '<select id="f-status" class="in" data-i="d" data-v="status"' + ro + '>' + st.statuses.map(function (s) { return '<option' + (d.status === s ? ' selected' : '') + '>' + s + '</option>'; }).join('') + '</select>') +
     field('Stage', 'stage', '<select id="f-stage" class="in" data-i="d" data-v="stage"' + (stageOk ? ro : ' disabled') + '><option value="">' + (stageOk ? 'Choose a stage' : 'Only when at a journal') + '</option>' + st.stages.map(function (s) { return '<option' + (d.stage === s ? ' selected' : '') + '>' + s + '</option>'; }).join('') + '</select>', true) +
     field('Deadline', 'deadline', '<input id="f-dl" class="in" type="date" data-i="d" data-v="deadline" value="' + esc(d.deadline) + '"' + ro + '>') +
-    '<div style="display:flex;align-items:flex-end"><button class="btn btn-s" style="width:100%" data-a="nudge" title="Opens one draft e-mail to every member who has the ball, in your own mail program"' + (m.people.some(function (p) { return p.member && person(p.name) && p.name !== me().key; }) ? '' : ' disabled') + '>' + ic('mail') + 'Nudge by e-mail</button></div></div>' +
+    (function () { // 0.2.3: the admin also nudges in the app (bell, phone, a card when VIBRA is open)
+      var any = m.people.some(function (p) { return p.member && person(p.name) && p.name !== me().key; }), off = any ? '' : ' disabled';
+      if (me().role !== 'Admin') return '<div style="display:flex;align-items:flex-end"><button class="btn btn-s" style="width:100%" data-a="nudge" title="Opens one draft e-mail to every member who has the ball, in your own mail program"' + off + '>' + ic('mail') + 'Nudge by e-mail</button></div>';
+      return '<div style="display:flex;align-items:flex-end;gap:8px"><button class="btn btn-s" style="flex:1" data-a="ng-open" aria-expanded="' + !!(S.ng && S.ng.mid === m.id) + '" title="Sends a notification to every member who has the ball: their bell, their phone if notifications are on, a card if VIBRA is open"' + off + '>' + ic('bell') + 'Nudge</button>' +
+        '<button class="btn btn-s" style="flex:1" data-a="nudge" title="Opens one draft e-mail to every member who has the ball, in your own mail program"' + off + '>' + ic('mail') + 'E-mail</button></div>';
+    })() + '</div>' + ngEditor(m) +
     (back ? '<div class="warn" style="margin-top:10px">This moves the manuscript back from ' + esc(m.status) + ' to ' + esc(d.status) + '. Save only if it really went back.</div>' : '') +
     '<div class="pact"><button class="btn btn-s" data-a="rem-open" aria-expanded="' + !!(S.rem && S.rem.mid === m.id) + '">' + ic('cal') + 'Remind me</button>' +
     (m.deadline ? '<button class="btn btn-s" data-a="rem-dl">' + ic('cal') + 'Deadline to my calendar</button>' : '') +
     tip('remind', true) + '</div>' + remEditor(m) +
     '<div class="p-sec"><div class="frow"><span class="lbl" id="ball-l">Ball is with</span>' + tip('ball') + '</div>' + tagsHtml('ball', d.people) + (ce ? editorHtml('ball') + cbHtml('ball') : '') + '</div>' +
-    '<div class="p-sec"><div class="frow"><label class="lbl" for="f-next">Next actions</label>' + tip('next') + '</div>' +
-    '<textarea id="f-next" class="in" rows="3" data-i="d" data-v="next" data-k="num" placeholder="Type an action and press Enter: the list numbers itself"' + ro + '>' + esc(d.next) + '</textarea></div>' +
+    '<div class="p-sec"><div class="frow"><label class="lbl" for="f-next">Next actions</label>' + tip('next') + (todoOn() ? '<button class="btn btn-q" style="margin-left:auto;min-height:28px;padding:2px 8px;font-size:12.5px" data-a="tdx-open" aria-expanded="' + !!(S.tdx && S.tdx.mid === m.id) + '">' + ic('plus') + 'To-do</button>' : '') + '</div>' +
+    '<textarea id="f-next" class="in" rows="3" data-i="d" data-v="next" data-k="num" placeholder="Type an action and press Enter: the list numbers itself"' + ro + '>' + esc(d.next) + '</textarea>' + tdxEditor(m) + '</div>' +
     '<div class="p-sec"><div class="frow"><span class="lbl" id="au-l">Authors, in order</span>' + tip('authors') + '<span class="mono muted" style="margin-left:auto;font-size:11px">' + (d.authors.length ? d.authors.length + ' authors' : '') + '</span></div>' +
     (d.authors.length ? tagsHtml('au', d.authors) + (ce ? editorHtml('au') + cbHtml('au') : '') +
       (canEdit() && m.authors && m.authors.length ? '<div class="au-det"><button class="btn btn-s" data-a="ad-open" data-v="' + m.id + '">' + ic('people') + 'Author details</button>' +
@@ -3087,21 +3392,27 @@ function cbPick(key, i) {
   S.cbHold = false;
 }
 
-function histItem(h) {
+/* the text of one History entry (also used by Changes to review) */
+function histVal(h) {
   var lab = LABEL[h.field] || h.field, val;
   var listNames = function (s) { try { return JSON.parse(s).map(function (x) { return x.name + (x.note ? ' (' + x.note + ')' : ''); }).join(', ') || 'nobody'; } catch (e) { return s; } };
-  var aiAdmin = h.actor === 'AI routine' && (me().role === 'Admin' || h.qmine);
-  if (h.field === 'note') val = /deleted by its author/.test(h.new) ? '<span class="muted">' + esc(h.new) + '</span>' : esc(h.new);
+  if (h.field === 'nudge') val = '<b>Nudged</b> ' + esc(h.new || 'nobody') + '.'; // 0.2.3
+  else if (h.field === 'note') val = /deleted by its author/.test(h.new) ? '<span class="muted">' + esc(h.new) + '</span>' : esc(h.new);
   else if (h.field === 'created') val = 'Created the manuscript.';
   else if (h.field === 'deleted') val = '<b>Deleted</b> the manuscript.';
   else if (h.field === 'restored') val = '<b>Restored</b> it from the trash.';
   else if (h.field === 'people_json' || h.field === 'authors_json') val = '<b>' + lab + '</b>: ' + esc(short(listNames(h.new), 160));
   else if (/^author:/.test(h.field)) val = '<b>Author details</b>: ' + esc(dirName(h.field.slice(7))) + ' <span class="muted">(' + esc(String(h.new || 'no change').replace(/\borcid\b/g, 'ORCID').replace(/\bemail\b/g, 'e-mail')) + ')</span>';
   else val = '<b>' + esc(lab) + '</b>: ' + (h.old ? '<span class="muted">' + esc(short(h.old, 80)) + '</span> → ' : '') + esc(short(h.new || '(empty)', 220));
+  return val;
+}
+function histItem(h) {
+  var lab = LABEL[h.field] || h.field, val = histVal(h);
+  var aiAdmin = h.actor === 'AI routine' && (isSup() || h.qmine);
   var acts = '';
   // 0.1.15: an admin may undo anyone's change (History names whose change it was)
-  if (canEdit() && (EDITABLE.indexOf(h.field) >= 0 || /^author:/.test(h.field)) && !h.undo_of && (h.mine || aiAdmin || me().role === 'Admin'))
-    acts += '<button class="btn btn-q" data-a="undo" data-v="' + h.row + '" aria-label="Undo this change"' + tt(h.mine ? 'Undo my change' : 'Undo this change (admin)') + '>' + ic('undo') + '</button>';
+  if (canEdit() && (EDITABLE.indexOf(h.field) >= 0 || /^author:/.test(h.field)) && !h.undo_of && (h.mine || aiAdmin || isSup()))
+    acts += '<button class="btn btn-q" data-a="undo" data-v="' + h.row + '" aria-label="Undo this change"' + tt(h.mine ? 'Undo my change' : 'Undo this change (' + (me().role === 'Admin' ? 'admin' : 'supervisor') + ')') + '>' + ic('undo') + '</button>';
   var noteOk = canEdit() && h.field === 'note' && h.mine && !/deleted by its author/.test(h.new);
   if (noteOk && !(S.ned && S.ned.row === h.row)) {
     acts += '<button class="btn btn-q" data-a="note-edit" data-v="' + h.row + '" aria-label="Edit my note"' + tt('Edit my note') + '>' + ic('pencil') + '</button>';
@@ -3114,19 +3425,21 @@ function histItem(h) {
   return '<div class="hitem"><span class="mono muted" style="font-size:12px">' + esc(niceShort(h.ts)) + '</span><span class="hnew"><span class="hby">' + esc(h.actor === 'AI routine' ? 'AI · mail' : h.actor || 'Imported') + '</span>' + val +
     (h.source && h.source !== 'Manuscripts_tracker.xlsx' && !(S.ned && S.ned.row === h.row) ? ' <span class="muted" style="font-size:12px">(' + esc(h.source) + ')</span>' : '') + '</span><span class="acts">' + acts + '</span></div>';
 }
-function canDelNow(m) { return me().role === 'Admin' || (m.created_by && m.created_by === me().key); }
+function canDelNow(m) { return isSup() || (m.created_by && m.created_by === me().key); }
+/* 0.2.3: Admins and Supervisors decide deletion requests, restore from the trash, undo any change, review changes */
+function isSup() { var r = me().role; return r === 'Admin' || r === 'Supervisor'; }
 function pendingDel(id) { return (S.boot.deletions || []).filter(function (d) { return d.manuscript_id === id; })[0]; }
 function delNote(m) {
   var d = pendingDel(m.id); if (!d) return '';
   return '<div class="delnote" role="status"><span><b>Deletion requested</b> by ' + esc(d.requester) + ' on ' + esc(niceShort(d.ts)) + (d.reason ? ': ' + esc(d.reason) : '') + '</span>' +
-    (me().role === 'Admin' ? '<span class="btns"><button class="btn btn-red" data-a="del-approve" data-v="' + esc(d.id) + '">' + 'Approve and delete</button><button class="btn btn-s" data-a="del-keep" data-v="' + esc(d.id) + '">Keep it</button></span>' :
-      '<span>Waiting for the admin. The manuscript stays until then.</span>') + '</div>';
+    (isSup() ? '<span class="btns"><button class="btn btn-red" data-a="del-approve" data-v="' + esc(d.id) + '">' + 'Approve and delete</button><button class="btn btn-s" data-a="del-keep" data-v="' + esc(d.id) + '">Keep it</button></span>' :
+      '<span>Waiting for the admin or the supervisor. The manuscript stays until then.</span>') + '</div>';
 }
 function delZone(m) {
   if (!canEdit()) return '';
   var now = canDelNow(m), pend = pendingDel(m.id);
   return '<div class="dzone"><button class="btn btn-s btn-del" data-a="del-open"' + (pend && !now ? ' disabled' : '') + '>' + ic('trash') + (now ? 'Delete manuscript' : pend ? 'Deletion requested' : 'Ask to delete') + '</button>' +
-    '<span class="muted">' + (now ? (me().role === 'Admin' ? 'As admin you can delete any manuscript.' : 'You created this manuscript, so you can delete it.') + ' The admin can restore it from the trash.' : 'Only the admin, or the person who created it, can delete a manuscript. Your request goes to the admin.') + '</span></div>';
+    '<span class="muted">' + (now ? (isSup() ? 'As ' + (me().role === 'Admin' ? 'admin' : 'supervisor') + ' you can delete any manuscript.' : 'You created this manuscript, so you can delete it.') + ' The admin can restore it from the trash.' : 'Only the admin, or the person who created it, can delete a manuscript. Your request goes to the admin.') + '</span></div>';
 }
 function delDialog() {
   var d = S.del, m = mById(d.id); if (!m) return '';
@@ -3177,9 +3490,9 @@ function poll() {
     var fresh = r.notifications.filter(function (n) { return !known[n.id] && !n.read; });
     if (fresh.length) {
       S.boot.notifications = fresh.concat(S.boot.notifications).sort(function (a, b) { return a.ts < b.ts ? 1 : -1; });
-      var ball = fresh.filter(function (n) { return n.kind === 'ball_to_you'; });
-      toast((fresh.length > 1 ? fresh.length + ' new: ' : '') + fresh[0].text);
-      if (ball.length) chime();
+      var ball = fresh.filter(function (n) { return n.kind === 'ball_to_you'; }), ngN = fresh.filter(function (n) { return n.kind === 'nudge'; })[0];
+      if (ngN) { showNudge(ngN); chime(); } // 0.2.3: a nudge from the admin is a card, not a toast
+      else { toast((fresh.length > 1 ? fresh.length + ' new: ' : '') + fresh[0].text); if (ball.length) chime(); }
     }
     var delChanged = JSON.stringify(r.deletions) !== JSON.stringify(S.boot.deletions || []);
     S.boot.deletions = r.deletions;
@@ -3223,7 +3536,7 @@ function popover() {
     var ns = S.boot.notifications, due = remDue();
     var remItems = due.map(function (r) {
       var m = mById(r.mid);
-      return '<div class="nitem unread" style="cursor:default"><span class="ndot" style="background:var(--c-stale)" aria-hidden="true"></span><span style="flex:1;min-width:0"><span class="lbl" style="display:block">Reminder · ' + esc(niceShort(r.date)) + (r.time ? ' ' + esc(r.time) : '') + '</span><span>' + esc(r.note || 'Reminder') + '</span>' +
+      return '<div class="nitem unread" style="cursor:default"><span class="ndot" style="background:var(--c-stale)" aria-hidden="true"></span><span style="flex:1;min-width:0"><span class="lbl" style="display:block">' + (r.k === 't' ? 'To-do' : 'Reminder') + ' · ' + esc(niceShort(r.date)) + (r.time ? ' ' + esc(r.time) : '') + '</span><span>' + esc(r.note || 'Reminder') + '</span>' +
         (m ? '<span class="muted" style="display:block;font-size:12px">' + esc(short(m.title, 70)) + '</span>' : '') +
         '<span class="btns" style="margin-top:6px">' + (m ? '<button class="btn btn-s" style="min-height:30px" data-a="rem-go" data-v="' + esc(r.id) + '">Open</button>' : '') + '<button class="btn btn-s" style="min-height:30px" data-a="rem-done" data-v="' + esc(r.id) + '">' + ic('check') + 'Done</button></span></span></div>';
     }).join('');
@@ -3233,7 +3546,7 @@ function popover() {
     return '<div class="pop sbpop" role="dialog" aria-label="Notifications" data-pop><div class="pop-h"><b>For you</b><button class="btn btn-q" data-a="read-all"' + (relU || ns.some(function (n) { return !n.read; }) ? '' : ' disabled') + '>Mark all read</button></div>' + remItems + relItem +
       (ns.length ? ns.map(function (n) {
         return '<button class="nitem' + (n.read ? '' : ' unread') + '" data-a="notif-open" data-v="' + esc(n.id) + '"><span class="ndot" aria-hidden="true"></span><span><span class="lbl" style="display:block">' +
-          esc({ ball_to_you: 'Ball to you', changed: 'Changed', ai_update: 'AI update', ai_kept_edit: 'Morning check', deadline: 'Deadline', reminder: 'Reminder', inbox: 'Quick update', feedback: 'Feedback', inbox_reply: 'Quick update', feedback_reply: 'App feedback' }[n.kind] || n.kind) + ' · ' + esc(niceShort(n.ts)) + ' ' + esc(String(n.ts).slice(11, 16)) + '</span><span>' + esc(n.text) + '</span></span></button>';
+          esc({ nudge: 'Nudge', ball_to_you: 'Ball to you', changed: 'Changed', ai_update: 'AI update', ai_kept_edit: 'Morning check', deadline: 'Deadline', reminder: 'Reminder', inbox: 'Quick update', feedback: 'Feedback', inbox_reply: 'Quick update', feedback_reply: 'App feedback' }[n.kind] || n.kind) + ' · ' + esc(niceShort(n.ts)) + ' ' + esc(String(n.ts).slice(11, 16)) + '</span><span>' + esc(n.text) + '</span></span></button>';
       }).join('') : due.length || relItem ? '' : '<p class="empty" style="margin:0">Nothing yet. You will see here when the ball is passed to you or a manuscript you are on changes.</p>') +
       '<div style="padding:8px 6px"><button class="btn btn-q" data-a="set-tab" data-v="notifications">Choose what notifies you</button></div></div>';
   }
@@ -3326,14 +3639,50 @@ function applyDraft(out) {
 }
 function tourHtml() {
   if (S.tour < 0) return '';
-  if (S.tour === 0) return welcomeHtml();
-  var i = S.tour, st = COACH[i - 1], last = i === COACH.length;
+  if (S.tour === 0) return S.onb ? onbHtml() : S.tourSet === 'new' ? newIntroHtml() : welcomeHtml();
+  var C = CO(), i = S.tour, st = C[i - 1], last = i === C.length;
   return '<div class="coach"><div class="coach-block" aria-hidden="true"></div><div class="coach-spot" id="coach-spot" aria-hidden="true"></div>' +
     '<div class="coach-card" id="coach-card" role="dialog" aria-modal="true" aria-labelledby="coach-h" aria-describedby="coach-b"><span class="coach-arrow" aria-hidden="true"></span>' +
-    '<div class="coach-top"><span class="mono muted">Step ' + i + ' of ' + COACH.length + '</span><button class="btn btn-q" data-a="tour-end">Skip tour</button></div>' +
+    '<div class="coach-top"><span class="mono muted">Step ' + i + ' of ' + C.length + '</span><button class="btn btn-q" data-a="tour-end">Skip tour</button></div>' +
     '<h2 id="coach-h">' + esc(st.t) + '</h2><p id="coach-b">' + esc(st.b) + '</p>' +
-    '<div class="coach-nav"><div class="dots" aria-hidden="true">' + COACH.map(function (_, k) { return '<i class="' + (k === i - 1 ? 'on' : '') + '"></i>'; }).join('') + '</div><span style="margin-left:auto"></span>' +
+    '<div class="coach-nav"><div class="dots" aria-hidden="true">' + C.map(function (_, k) { return '<i class="' + (k === i - 1 ? 'on' : '') + '"></i>'; }).join('') + '</div><span style="margin-left:auto"></span>' +
     '<button class="btn btn-s" data-a="tour-back">Back</button><button class="btn btn-p" data-a="' + (last ? 'tour-end' : 'tour-next') + '">' + (last ? 'Done' : 'Next') + '</button></div></div></div>';
+}
+function appInstalled() { var W = window.VIBRA_WEB || {}; return !!(W.installed && W.installed()); }
+function needInstall() { var W = window.VIBRA_WEB || {}; return !!W.app && !appInstalled() && plat() !== 'firefox'; }
+function needNotify() { var d = S.dev, P = (S.boot && S.boot.pwa) || {}; return !!(P.push && d && d.supported && !d.paired && d.permission !== 'denied'); }
+function welFrame(inner) {
+  return '<div class="overlay tour-ov wel-ov"><div class="dialog tour-dlg wel" role="dialog" aria-modal="true" aria-labelledby="wel-h">' + inner +
+    '<p class="muted" style="margin:0;font-size:12px;text-align:center"><button class="btn btn-q" style="min-height:28px;font-size:12px" data-a="tour-end">Skip tour</button> You can replay it any time: Settings, Help.</p></div></div>';
+}
+/* 0.2.3 (admin): before the tour, install VIBRA on this device, then turn on notifications (each step is skipped when
+   already done or not possible here) */
+function onbHtml() {
+  var W = window.VIBRA_WEB || {}, body;
+  if (S.onb === 'install') {
+    var ins = appInstalled() || S.justInstalled, can = W.canInstall && W.canInstall();
+    body = '<div class="onb-ic">' + ic('desktop') + '</div><h2 id="wel-h">Install VIBRA on this device</h2>' +
+      '<p class="wel-lead">Its own icon and window, full screen on a phone, notifications when the ball comes to you, and your last data readable offline. Nothing to download from a store: it takes a few seconds.</p>' +
+      (ins ? '<div class="ga-ok">' + ic('check') + 'VIBRA is installed. Continue here, or in the VIBRA window.</div>' :
+        (can ? '<div class="btns" style="justify-content:center"><button class="btn btn-p" data-a="onb-install">' + ic('desktop') + 'Install VIBRA</button></div>' : '') + '<div class="onb-steps">' + gaSteps() + '</div>') +
+      '<p class="muted" style="margin:0;font-size:12.5px">For your other devices, open ' + esc(APP_ADDR) + ' there. <b>Get the app</b>, beside your name, also shows a QR code.</p>';
+  } else {
+    var d = S.dev || {};
+    body = '<div class="onb-ic">' + ic('bell') + '</div><h2 id="wel-h">Turn on notifications</h2>' +
+      '<p class="wel-lead">A notification when the ball comes to you, when a deadline is close, or when the admin nudges you. Each phone or computer is turned on separately; Settings, Notifications says what notifies you.</p>' +
+      (d.paired ? '<div class="ga-ok">' + ic('check') + 'Notifications are on for this device.</div>' :
+        '<div class="btns" style="justify-content:center"><button class="btn btn-p" data-a="onb-notif"' + (S.devBusy ? ' disabled' : '') + '>' + ic('bell') + (S.devBusy ? 'Turning on…' : 'Turn on notifications') + '</button></div>');
+  }
+  var ok = S.onb === 'install' ? appInstalled() || !!S.justInstalled : !!(S.dev && S.dev.paired);
+  return welFrame('<p class="mono muted" style="margin:0;font-size:11.5px;text-align:center;letter-spacing:.04em">BEFORE THE TOUR</p>' + body +
+    '<div class="wel-btns"><button class="btn ' + (ok ? 'btn-p' : 'btn-s') + '" data-a="onb-next">' + (ok ? 'Continue' : 'Later, continue the tour') + '</button></div>');
+}
+/* 0.2.3: members who saw the 0.2.0 tour get a short one with what was added since */
+function newIntroHtml() {
+  var n = CO().length;
+  return welFrame('<div class="wel-logo"><img src="' + LOGO_FULL + '" alt="VIBRA, Visionary International Board for Research and Analgesia"></div>' +
+    '<h2 id="wel-h">A few new things</h2><p class="wel-lead">Since your first tour, VIBRA installs on each device, keeps your changes when the connection drops, fills in author details and the author sheet, and takes your feedback. ' + (needInstall() ? 'First install it here, then ' : '') + n + ' short steps show where things are.</p>' +
+    '<div class="wel-btns"><button class="btn btn-p" data-a="onb-next">Show me (30 seconds)</button></div>');
 }
 function welcomeHtml() {
   var first = String(me().full_name || me().display || '').split(/\s+/)[0];
@@ -3345,7 +3694,7 @@ function welcomeHtml() {
     '<ul class="wel-points">' + pt('list', 'One list for the whole group. ', 'Today shows what needs attention; nothing is lost from the old workbook.') +
       pt('bolt', 'The ball shows who acts next. ', 'Alerts reach whoever has it, on the phone too.') +
       pt('spark', 'Quick update. ', 'Tell the tracker what happened, in any language; the AI fills in the fields.') + '</ul>' +
-    '<div class="wel-btns"><button class="btn btn-p" data-a="tour-next">Show me around (1 minute)</button><button class="btn btn-s" data-a="tour-end">Skip tour</button></div>' +
+    '<div class="wel-btns"><button class="btn btn-p" data-a="onb-next">Show me around (1 minute)</button><button class="btn btn-s" data-a="tour-end">Skip tour</button></div>' +
     '<p class="muted" style="margin:0;font-size:12px;text-align:center">You can replay it any time: Settings, Help.</p></div></div>';
 }
 /* the first visible element of the step (on screen, not hidden in a closed drawer) */
@@ -3364,7 +3713,7 @@ function coachTarget(st) {
 function placeCoach() {
   var c = document.getElementById('coach-card'), sp = document.getElementById('coach-spot');
   if (!c || !sp || S.tour < 1) return;
-  var st = COACH[S.tour - 1], el = coachTarget(st), vw = innerWidth, vh = innerHeight, cw = Math.min(380, vw - 24), gap = 14, pad = 8;
+  var st = CO()[S.tour - 1], el = coachTarget(st), vw = innerWidth, vh = innerHeight, cw = Math.min(380, vw - 24), gap = 14, pad = 8;
   c.style.width = cw + 'px';
   var clamp = function (v, lo, hi) { return Math.max(lo, Math.min(hi, v)); };
   if (!el) {
@@ -3396,7 +3745,7 @@ function placeCoach() {
 }
 /* opens or closes the example manuscript for the steps inside its details; always on Today */
 function tourPrepare(i) {
-  var st = COACH[i - 1];
+  var st = CO()[i - 1];
   S.pop = null; S.drawer = false; S.tip = null; S.pal = null;
   if (i >= 1 && S.view !== 'today' && !(st && st.open && S.sel)) { S.view = 'today'; }
   if (st && st.open) {
@@ -3408,15 +3757,16 @@ function tourPrepare(i) {
   } else if (S.tourOpened) { S.sel = null; S.draft = null; S.tourOpened = false; }
 }
 function tourGo(i) {
-  i = Math.max(0, Math.min(COACH.length, i));
+  var C = CO();
+  i = Math.max(0, Math.min(C.length, i));
   S.tour = i; tourPrepare(i); render();
-  if (COACH[i - 1] && COACH[i - 1].open) setTimeout(placeCoach, 380); // after the details slide in
+  if (C[i - 1] && C[i - 1].open) setTimeout(placeCoach, 380); // after the details slide in
   var nb = document.querySelector('.coach-nav .btn-p, .wel-btns .btn-p'); if (nb) nb.focus({ preventScroll: true });
 }
 function startTour() {
   if (dirty()) { toast('Save or discard your changes first.'); return; }
   if (S.sel) { S.sel = null; S.draft = null; }
-  S.view = 'today'; S.tour = 0; S.tourShown = true; S.coachRect = null; render();
+  S.view = 'today'; S.tour = 0; S.tourShown = true; S.coachRect = null; S.tourSet = 'full'; S.tourAuto = false; S.onb = null; render();
 }
 var toastTimer;
 function toast(text, isErr, ms) {
@@ -3480,7 +3830,12 @@ function openManuscript(id) {
   if (was !== id) S.fx.panel = true;
   render();
   loadHistory(id);
-  if (window.innerWidth >= 1024) { var row = document.querySelector('[data-a="open"][data-v="' + id + '"]'); if (row && row.focus) row.focus({ preventScroll: true }); }
+  if (window.innerWidth >= 1024) {
+    var row = document.querySelector('.main [data-a="open"][data-v="' + id + '"]') || document.querySelector('[data-a="open"][data-v="' + id + '"]');
+    if (row && row.focus) row.focus({ preventScroll: true });
+    // 0.2.3: the blocks moved to make room for the card; keep the chosen one in sight
+    if (row && row.classList.contains('block') && row.scrollIntoView) { var rr = row.getBoundingClientRect(); if (rr.top < 70 || rr.bottom > innerHeight - 20) row.scrollIntoView({ block: 'center' }); }
+  }
 }
 /* Recently opened manuscripts, per person and on every device (saved a few seconds after the last opening). */
 function noteRecent(id) {
@@ -3760,9 +4115,14 @@ function csv() {
 }
 function endTour() {
   if (S.tourOpened) { S.sel = null; S.draft = null; S.tourOpened = false; }
-  S.tour = -1; S.coachRect = null;
-  if (S.boot) { S.boot.prefs = S.boot.prefs || {}; S.boot.prefs.tourSeen = true; S.boot.prefs.tour2 = true; keepBoot(); }
-  render(); api('api_setPrefs', { tourSeen: true, tour2: true }).catch(function () { });
+  S.tour = -1; S.coachRect = null; S.onb = null;
+  var pp = { tourSeen: true, tour2: true, tour3: true };
+  // 0.2.3: a new member's first tour shows the app as it is now: the release notes up to now count as seen
+  if (S.tourSet === 'full' && S.tourAuto && RELEASES[0] && vcmp(relSeenV(), RELEASES[0].v) < 0) pp.relSeen = RELEASES[0].v;
+  S.tourSet = null; S.tourAuto = false;
+  if (S.boot) { S.boot.prefs = S.boot.prefs || {}; Object.keys(pp).forEach(function (k) { S.boot.prefs[k] = pp[k]; }); keepBoot(); }
+  render(); api('api_setPrefs', pp).catch(function () { });
+  waitingNudge();
 }
 
 /* 0.1.14: get, renew or stop a private calendar address */
@@ -3816,7 +4176,8 @@ var ACT = {
     sec.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
     sec.classList.remove('flash'); void sec.offsetWidth; sec.classList.add('flash');
   },
-  open: function (v) { openManuscript(Number(v)); },
+  // 0.2.3 (admin): clicking the manuscript that is open closes it (asks first if there are unsaved changes)
+  open: function (v) { var id = Number(v); if (S.sel === id && panelShown() && window.innerWidth >= 1024) closePanel(false); else openManuscript(id); },
   close: function () { closePanel(false); },
   discard: function () { var m = curM(); if (m) openDraft(m); S.confirmClose = false; render(); },
   save: save,
@@ -3970,7 +4331,7 @@ var ACT = {
   'del-approve': function (v) { decideDel(v, true); },
   'del-keep': function (v) { decideDel(v, false); },
   restore: function (v) {
-    api('api_restoreManuscript', Number(v)).then(function (r) { applyRow(r.row); S.desk = null; toast('Restored: ' + short(r.row.title, 60)); render(); }).catch(function (e) { toast(msg(e), true); });
+    api('api_restoreManuscript', Number(v)).then(function (r) { applyRow(r.row); S.desk = null; if (S.rev) { S.revLoading = false; loadReview(); } toast('Restored: ' + short(r.row.title, 60)); render(); }).catch(function (e) { toast(msg(e), true); });
   },
   'note-edit': function (v) { var h = (S.hist[S.sel] || []).filter(function (x) { return x.row === Number(v); })[0]; if (!h) return; S.ned = { row: h.row, text: String(h.new).replace(/^[^:]{4,20}:\s/, '') }; S.ndel = null; render(); var t = document.getElementById('ned-text'); if (t) t.focus(); },
   'note-cancel': function () { S.ned = null; render(); },
@@ -3997,13 +4358,13 @@ var ACT = {
   'rem-gcal': function (v, e) {
     var r = S.rem; if (!r || !r.date) { if (e) e.preventDefault(); toast('Choose a date first.'); return; }
     toast('Google Calendar opens in a new tab with the event filled in. Press Save there.');
-    setTimeout(function () { if (r.inApp) remSave(r); else { S.rem = null; render(); } }, 60);
+    setTimeout(function () { if (r.inApp || todoOn()) { r.cal = true; remSave(r); } else { S.rem = null; render(); } }, 60);
   },
   'rem-ics': function () {
     var r = S.rem, m = curM(); if (!r || !r.date || !m) { toast('Choose a date first.'); return; }
     download('VIBRA_reminder_' + m.id + '_' + r.date + '.ics', 'text/calendar', icsFile([icsEvent(r, m, 'r' + Date.now().toString(36))]));
     toast('Calendar file downloaded. Open it to add the event to Apple or Outlook calendar.');
-    if (r.inApp) remSave(r); else { S.rem = null; render(); }
+    if (r.inApp || todoOn()) { r.cal = true; remSave(r); } else { S.rem = null; render(); }
   },
   'rem-app': function () { var r = S.rem; if (!r || !r.date) { toast('Choose a date first.'); return; } remSave(r); },
   'rem-done': function (v) { persistRem(remList().map(function (r) { if (r.id === v) { r = clone(r); r.done = true; } return r; }), 'Marked done.'); },
@@ -4134,7 +4495,7 @@ function submitDel() {
 function decideDel(reqId, approve) {
   api('api_decideDeletion', reqId, approve).then(function (r) {
     var req = (S.boot.deletions || []).filter(function (x) { return x.id === reqId; })[0];
-    S.boot.deletions = r.deletions; S.desk = null;
+    S.boot.deletions = r.deletions; S.desk = null; if (S.rev) { S.revLoading = false; loadReview(); }
     if (approve && req) { S.boot.manuscripts = S.boot.manuscripts.filter(function (x) { return x.id !== req.manuscript_id; }); if (S.sel === req.manuscript_id) { S.sel = null; S.draft = null; } }
     toast(approve ? 'Deleted. The requester is told.' : 'Kept. The requester is told.'); render();
   }).catch(function (e) { toast(msg(e), true); });
@@ -4158,10 +4519,114 @@ function submitNew() {
 }
 
 /* ---------- events */
+/* 0.2.3 actions: changes to review, nudge, to-do, the steps before the tour */
+window.addEventListener('appinstalled', function () { S.justInstalled = true; if (S.boot) render(); });
+Object.assign(ACT, {
+  'onb-next': function () {
+    if (S.tour !== 0) return;
+    if (!S.onb && needInstall()) { S.onb = 'install'; render(); return; }
+    if (S.onb !== 'notify' && needNotify()) { S.onb = 'notify'; render(); return; }
+    S.onb = null; tourGo(1);
+  },
+  'onb-install': function () { ACT['ga-install'](); },
+  'onb-notif': function () { ACT['dev-on'](); },
+  'rev-ok': function (v) {
+    if (S.rev) { S.rev.items = S.rev.items.filter(function (g) { return g.key !== v; }); S.rev.total = Math.max(0, S.rev.total - 1); render(); }
+    api('api_reviewed', [v]).then(function (r) { S.rev = r; S.revAt = Date.now(); render(); }).catch(function (e) { toast(msg(e), true); });
+  },
+  'rev-all': function () { api('api_reviewed', 'all').then(function (r) { S.rev = r; S.revAt = Date.now(); render(); toast('All marked reviewed.'); }).catch(function (e) { toast(msg(e), true); }); },
+  'rev-undo': function (v) {
+    if (dirty()) { toast('Save or discard your changes first.', true); return; }
+    api('api_undo', Number(v)).then(function (r) {
+      if (r.error) toast(r.error, true); else toast('Undone. History says who undid it.');
+      if (r.row) { applyRow(r.row); if (S.sel === r.row.id) { openDraft(r.row); loadHistory(r.row.id); } }
+      S.revLoading = false; loadReview(); render();
+    }).catch(function (e) { toast(msg(e), true); });
+  },
+  'ng-open': function () {
+    var m = curM(); if (!m) return;
+    S.ng = S.ng && S.ng.mid === m.id ? null : { mid: m.id, note: '' }; render();
+    var t = document.getElementById('ng-note'); if (t) t.focus();
+  },
+  'ng-cancel': function () { S.ng = null; render(); },
+  'ng-send': function () {
+    var g = S.ng; if (!g || g.busy) return;
+    var t = document.getElementById('ng-note'); if (t) g.note = t.value;
+    g.busy = true; render();
+    api('api_nudge', g.mid, g.note || '').then(function (r) {
+      S.ng = null;
+      var nm = function (a) { return a.map(pName).join(', '); };
+      if (r.sent.length) toast('Nudge sent to ' + nm(r.sent) + '.' + (r.skipped.length ? ' ' + nm(r.skipped) + ' already had one today.' : ''));
+      else toast(r.skipped.length ? nm(r.skipped) + ' already had a nudge today for this manuscript.' : 'Nobody to nudge: no member with the ball has an e-mail on file.', true);
+      if (S.sel === g.mid) loadHistory(g.mid);
+      render();
+    }).catch(function (e) { if (S.ng) S.ng.busy = false; render(); toast(msg(e), true); });
+  },
+  'ngc-open': function () {
+    var n = S.ngCard; S.ngCard = null; if (!n) { render(); return; }
+    n.read = true; api('api_markRead', [n.id]).catch(function () { });
+    if (S.view === 'settings' || S.view === 'desk') S.view = 'today';
+    if (mById(n.manuscript_id)) openManuscript(n.manuscript_id); else render();
+    setBadge();
+  },
+  'ngc-later': function () { S.ngCard = null; render(); },
+  'td-mode': function (v) { S.tdMode = v === 'cal' ? 'cal' : 'list'; render(); },
+  'td-day': function (v) { S.tdDay = v && S.tdDay !== v ? v : null; S.td = S.td || { note: '', mid: '' }; S.td.date = S.tdDay || ''; S.tdMode = 'list'; render(); },
+  'td-mon': function (v) {
+    var T0 = S.boot.today, mk = S.tdMonth || T0.slice(0, 7);
+    if (v === '0') { S.tdMonth = T0.slice(0, 7); S.tdDay = null; }
+    else { var d = new Date(Number(mk.slice(0, 4)), Number(mk.slice(5, 7)) - 1 + Number(v), 1); S.tdMonth = d.getFullYear() + '-' + pad2(d.getMonth() + 1); }
+    render();
+  },
+  'td-done': function (v) {
+    var was = remList().filter(function (r) { return r.id === v; })[0]; if (!was) return;
+    persistRem(remList().map(function (r) { if (r.id === v) { r = clone(r); r.done = !r.done; r.dd = r.done ? S.boot.today : ''; } return r; }), was.done ? 'Back on your list.' : 'Done.');
+  },
+  'td-del': function (v) { if (S.tde && S.tde.id === v) S.tde = null; persistRem(remList().filter(function (r) { return r.id !== v; }), 'Deleted.'); },
+  'td-edit': function (v) {
+    var r = remList().filter(function (x) { return x.id === v; })[0]; if (!r) return;
+    S.tde = { id: r.id, note: tdText(r), date: r.date || '', time: r.time || '' }; render();
+    var t = document.getElementById('tde-note'); if (t) t.focus();
+  },
+  'tde-cancel': function () { S.tde = null; render(); },
+  'tde-save': function () {
+    var e = S.tde; if (!e) return;
+    if (!String(e.note || '').trim()) { toast('Write what is to be done.', true); return; }
+    S.tde = null;
+    persistRem(remList().map(function (r) {
+      if (r.id !== e.id) return r;
+      r = clone(r); r.note = String(e.note).trim(); r.date = e.date || ''; r.time = r.date && /^\d{2}:\d{2}$/.test(e.time || '') ? e.time : '';
+      if (!r.date) r.k = 't';
+      return r;
+    }), 'Saved.');
+  },
+  'td-gcal': function (v) {
+    toast('Google Calendar opens in a new tab with the event filled in. Press Save there.');
+    setTimeout(function () { persistRem(remList().map(function (r) { if (r.id === v && !r.cal) { r = clone(r); r.cal = true; } return r; })); }, 60);
+  },
+  'td-ics': function (v) {
+    var r = remList().filter(function (x) { return x.id === v; })[0]; if (!r || !r.date) return;
+    download('VIBRA_todo_' + r.date + '.ics', 'text/calendar', icsFile([icsEvent(r, tdM(r), 't' + r.id)]));
+    toast('Calendar file downloaded. Open it to add the event to Apple or Outlook calendar.');
+    persistRem(remList().map(function (x) { if (x.id === v && !x.cal) { x = clone(x); x.cal = true; } return x; }));
+  },
+  'tdx-open': function () {
+    var m = curM(); if (!m) return;
+    var first = String(m.next || '').split('\n')[0].replace(/^\s*\d+\.\s*/, '').trim();
+    S.tdx = S.tdx && S.tdx.mid === m.id ? null : { mid: m.id, note: first || 'Check ' + short(m.title, 70), date: '' }; render();
+    var t = document.getElementById('tdx-note'); if (t) { t.focus(); t.select(); }
+  },
+  'tdx-cancel': function () { S.tdx = null; render(); },
+  'tdx-save': function () {
+    var x = S.tdx; if (!x) return;
+    var n = String(x.note || '').trim(); if (!n) { toast('Write what is to be done.', true); return; }
+    S.tdx = null; tdAdd({ note: n, date: x.date || '', mid: x.mid });
+  }
+});
 document.addEventListener('click', function (e) {
   var el = e.target.closest('[data-a]');
   var a = el ? el.getAttribute('data-a') : null, v = el ? el.getAttribute('data-v') : null;
-  var closedPop = false;
+  var closedPop = false, hadTip = !!S.tip, hadCb = !!S.cb;
   // click outside closes popovers, tooltips and the people list
   if (S.pop && !e.target.closest('[data-pop]') && a !== 'pop') { S.pop = null; closedPop = true; }
   if (S.tip && !e.target.closest('.tip')) ACT.tip(S.tip);
@@ -4169,9 +4634,21 @@ document.addEventListener('click', function (e) {
   if (el && el.tagName === 'A' && el.getAttribute('href')) { if (a && ACT[a]) ACT[a](v, e); if (closedPop || S.pop) { S.pop = null; setTimeout(render, 0); } return; }
   if (S.ndel !== null && a !== 'note-del' && a !== 'note-ask') { S.ndel = null; if (!a) render(); }
   if (closedPop) render();
+  if (!a && !closedPop && !hadTip && !hadCb && emptyClick(e)) { closePanel(false); return; }
   if (a && ACT[a]) { if (['nf-bg', 'qu-bg', 'fb-bg', 'del-bg', 'ga-bg', 'ad-bg', 'wn-bg'].indexOf(a) < 0 && !(el.tagName === 'LABEL')) e.preventDefault(); ACT[a](v, e); }
 });
 document.addEventListener('mousedown', function (e) { if (e.target.closest && e.target.closest('.cbo')) e.preventDefault(); });
+/* 0.2.3 (admin): a click on empty space beside the floating card closes it (on a computer; unsaved changes are asked
+   about first). Not when the click started inside the card (selecting text) or on anything that does something. */
+var downIn = false;
+document.addEventListener('mousedown', function (e) { downIn = !!(e.target.closest && e.target.closest('.panel, #layer')); }, true);
+function emptyClick(e) {
+  var t = e.target;
+  if (!panelShown() || window.innerWidth < 1024 || S.tour >= 0 || downIn || !t.closest || !document.body.contains(t)) return false;
+  if (t.closest('.panel, #layer, #toast, .toast, .fabs, input, textarea, select, label, a, button, summary, [contenteditable="true"], [data-a], [role="button"], .tile, .chip')) return false;
+  if (window.getSelection && String(window.getSelection()).trim()) return false;
+  return !!t.closest('.shell');
+}
 document.addEventListener('focusout', function (e) {
   var t = e.target; if (!S.cb || !(t.closest && t.closest('.cbx'))) return;
   setTimeout(function () { var ae = document.activeElement; if (S.cb && !(ae && ae.closest && ae.closest('.cbx'))) { var k = S.cb.key; S.cb = null; cbRefresh(k); } }, 150);
@@ -4181,6 +4658,7 @@ document.addEventListener('submit', function (e) {
   if (e.target.id === 'qu-form') { e.preventDefault(); submitReq('qu'); }
   if (e.target.id === 'del-form') { e.preventDefault(); submitDel(); }
   if (e.target.id === 'fb-form') { e.preventDefault(); submitReq('fb'); }
+  if (e.target.id === 'td-form') { e.preventDefault(); tdSubmit(); }
 });
 document.addEventListener('paste', function (e) {
   var key = S.qu ? 'qu' : S.fb ? 'fb' : S.ad && S.adtp ? 'adtp' : S.nf && S.nfai && quickMode() === 'instant' ? 'nfai' : null; if (!key || !e.clipboardData) return;
@@ -4224,6 +4702,10 @@ document.addEventListener('input', function (e) {
   if (i === 'adtp' && S.adtp) { S.adtp.text = t.value; return; }
   if (i === 'myd' && S.myd) { S.myd[t.getAttribute('data-v')] = t.value; return; }
   if (i === 'del' && S.del) { S.del.reason = t.value; return; }
+  if (i === 'ng' && S.ng) { S.ng.note = t.value; return; }
+  if (i === 'td' && S.td) { S.td[t.getAttribute('data-v')] = t.value; return; }
+  if (i === 'tdx' && S.tdx) { S.tdx[t.getAttribute('data-v')] = t.value; return; }
+  if (i === 'tde' && S.tde) { S.tde[t.getAttribute('data-v')] = t.value; return; }
   if (i === 'ned' && S.ned) { S.ned.text = t.value; return; }
   if (i === 'ed-note' && S.ed) { var arr = S.ed.kind === 'ball' ? S.draft.people : S.draft.authors; arr[S.ed.i].note = t.value; updateSaveState(); return; }
 });
@@ -4250,7 +4732,7 @@ document.addEventListener('mousedown', function (e) { var t = e.target.closest &
 document.addEventListener('keydown', function (e) {
   var t = e.target, k = t.getAttribute && t.getAttribute('data-k');
   if (S.tour >= 0 && !/INPUT|TEXTAREA|SELECT/.test(t.tagName || '')) { // 0.2.0 tour: arrow keys step through it
-    if (e.key === 'ArrowRight') { e.preventDefault(); if (S.tour < COACH.length) tourGo(S.tour + 1); else endTour(); return; }
+    if (e.key === 'ArrowRight') { e.preventDefault(); if (S.tour === 0) ACT['onb-next'](); else if (S.tour < CO().length) tourGo(S.tour + 1); else endTour(); return; }
     if (e.key === 'ArrowLeft' && S.tour > 0) { e.preventDefault(); tourGo(S.tour - 1); return; }
   }
   if ((e.metaKey || e.ctrlKey) && !e.altKey && (e.key === 'k' || e.key === 'K')) { e.preventDefault(); if (S.pal) { S.pal = null; render(); } else if (S.boot) palOpen(); return; }
@@ -4277,6 +4759,10 @@ document.addEventListener('keydown', function (e) {
     if (S.tour >= 0) endTour(); else if (S.wn) ACT['wn-close'](); else if (S.ga) ACT['ga-close'](); else if (S.ad) ACT['ad-close'](); else if (S.del) ACT['del-close'](); else if (S.ned) ACT['note-cancel'](); else if (S.qu) ACT['qu-close'](); else if (S.fb) ACT['fb-close'](); else if (S.nf) ACT['nf-close'](); else if (S.pop) { S.pop = null; render(); } else if (S.tip) ACT.tip(S.tip); else if (S.ed) { S.ed = null; render(); } else if (S.sel) closePanel(false);
   }
   if (e.key === 'Enter' && t.id === 'f-note') { e.preventDefault(); ACT.note(); }
+  if (e.key === 'Enter' && t.id === 'ng-note') { e.preventDefault(); ACT['ng-send'](); }
+  if (e.key === 'Enter' && t.id === 'tdx-note') { e.preventDefault(); ACT['tdx-save'](); }
+  if (e.key === 'Enter' && t.id === 'tde-note') { e.preventDefault(); ACT['tde-save'](); }
+  if (e.key === 'Escape' && (t.id === 'ng-note' || t.id === 'tdx-note' || t.id === 'tde-note')) { S.ng = null; S.tdx = null; S.tde = null; render(); }
   if (e.key === 'Enter' && t.id === 'ned-text') { e.preventDefault(); ACT['note-save'](); }
 });
 
@@ -4311,9 +4797,10 @@ function openFromLink() {
 /* ---------- start (0.1.9): the copy kept from the last visit is shown at once (same person, same version), and the
    fresh data replaces it a few seconds later without losing the view, the open manuscript or unsaved changes. Other
    members' e-mail addresses and the editing locks are not kept. */
-var BOOT_KEY = window.__VIBRA_U ? 'vibra-boot-' + window.__VIBRA_U : '';
+/* 0.2.3: read when needed (the web page learns who signed in after it loaded: the first visit is kept too) */
+function bootKey() { return window.__VIBRA_U ? 'vibra-boot-' + window.__VIBRA_U : ''; }
 function keptBoot() {
-  if (!BOOT_KEY) return null;
+  var BOOT_KEY = bootKey(); if (!BOOT_KEY) return null;
   try {
     var c = JSON.parse(localStorage.getItem(BOOT_KEY) || 'null');
     // 0.2.2: a copy from any version since 0.2.0 is shown at once, also right after an update (the fresh data replaces it)
@@ -4321,7 +4808,7 @@ function keptBoot() {
   } catch (e) { return null; }
 }
 function keepBoot() {
-  if (!BOOT_KEY || !S.boot || S.stale) return;
+  var BOOT_KEY = bootKey(); if (!BOOT_KEY || !S.boot || S.stale) return;
   try {
     var c = JSON.parse(JSON.stringify(S.boot));
     (c.people || []).forEach(function (p) { if (!c.me || p.key !== c.me.key) delete p.email; });
@@ -4331,7 +4818,8 @@ function keepBoot() {
 }
 function started(b) {
   S.fx.list = true; applyTheme();
-  if (!b.prefs || !b.prefs.tour2) { S.tour = 0; S.tourShown = true; } // 0.2.0: everyone sees the new welcome and tour once
+  if (!b.prefs || !b.prefs.tour2) { S.tour = 0; S.tourShown = true; S.tourSet = 'full'; S.tourAuto = true; } // 0.2.0: everyone sees the welcome and tour once
+  else if (!b.prefs.tour3) { S.tour = 0; S.tourShown = true; S.tourSet = 'new'; } // 0.2.3: a short tour of what was added since
   maybeWhatsNew(); // 0.2.1: what changed since this member's last release (not after the tour: the bell keeps it)
   render();
   if (EMBED) toApp({ type: 'vibra-ready', version: b.version, kept: !!S.stale, head: window.__T0 || 0, t: Math.round(performance.now()) });
@@ -4339,7 +4827,7 @@ function started(b) {
   openFromLink();
 }
 function freshBoot(b) {
-  if (!S.boot) { S.boot = b; S.stale = false; started(b); keepBoot(); return; }
+  if (!S.boot) { S.boot = b; S.stale = false; started(b); keepBoot(); afterFresh(); return; }
   var keepDraft = dirty() ? S.draft : null, keepDesk = S.desk;
   S.boot = b; S.stale = false; S.staleErr = false; S.desk = keepDesk;
   if (S.sel) {
@@ -4349,7 +4837,7 @@ function freshBoot(b) {
     else openDraft(m);
     if (m) loadHistory(m.id);
   }
-  maybeWhatsNew(); applyTheme(); render(); keepBoot();
+  maybeWhatsNew(); applyTheme(); render(); keepBoot(); afterFresh();
 }
 function retryBoot() { if (S.stale) api('api_bootstrap').then(freshBoot).catch(function () { setTimeout(retryBoot, 30000); }); }
 document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'hidden') keepBoot(); });
@@ -4376,6 +4864,7 @@ if (window.__VIBRA_BLOCKED) {
 window.__vibra = S;
 window.__vibraTour = { steps: COACH, target: function (st) { return coachTarget(st); } }; // test hook
 window.__vibraPoll = poll;
+window.__vibra023 = { api: api, CO: CO, remList: remList, tourGo: tourGo, coachTarget: coachTarget, render: render, open: function (id) { openManuscript(id); } }; // test hook (0.2.3)
 window.__vibraDerived = function () { return allDerived(); };
 window.__vibraNames = { authorKey: authorKey, isMemberKey: isMemberKey, onMine: onMine, open: function (id) { openManuscript(id); }, close: function () { closePanel(true); }, render: render };
 window.__vibraReboot = function () { api('api_bootstrap').then(function (b) { S.boot = b; applyTheme(); S.sel = null; S.draft = null; S.pop = null; S.feed = null; S.pair = null; S.fx.list = true; render(); }).catch(function (e) { toast(msg(e), true); }); };
