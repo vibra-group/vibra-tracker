@@ -5,12 +5,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <script>
-/* VIBRA Tracker 0.2.0 on the group's own address (vibra-group.github.io), built by tools/build_web.py from app/Index.html.
+/* VIBRA Tracker 0.2.1 on the group's own address (vibra-group.github.io), built by tools/build_web.py from app/Index.html.
    This page is the VIBRA app: installable, with notifications and the last data readable offline.
    Google confirms who the member is ("Sign in with Google"), or a one-time code made on a signed-in device does; the
    admin's helper checks that once and gives a session; every server call then goes to the helper with that session
    and runs the tracker's own code as the member. */
-window.VIBRA_WEB = { helper: "https://script.google.com/macros/s/AKfycbzNE__5onOmvia3VaFHjybAJ5G35cnDJCN1ysuiNAYlgOC5xsbCi0xyDnmoJP7lEaFR3w/exec", clientId: "619243121375-pi18v7vjgvcue7qo6455uids4v28megi.apps.googleusercontent.com", classic: "https://script.google.com/macros/s/AKfycbzkG5eCrxQvQtJgfksL92G9vtl2I4LLEew-Az4qYlDxX6V1QfgtIrwGjYOGq9CQ0r3aWA/exec", built: "0.2.0" };
+window.VIBRA_WEB = { helper: "https://script.google.com/macros/s/AKfycbzNE__5onOmvia3VaFHjybAJ5G35cnDJCN1ysuiNAYlgOC5xsbCi0xyDnmoJP7lEaFR3w/exec", clientId: "619243121375-pi18v7vjgvcue7qo6455uids4v28megi.apps.googleusercontent.com", classic: "https://script.google.com/macros/s/AKfycbzkG5eCrxQvQtJgfksL92G9vtl2I4LLEew-Az4qYlDxX6V1QfgtIrwGjYOGq9CQ0r3aWA/exec", built: "0.2.1" };
 (function () {
   var W = window.VIBRA_WEB, KEY = 'vibra-web-session', S = null, queue = [], gisInit = false, tries = 0, gateOn = false;
   var ua = navigator.userAgent || '', IOS = /iPad|iPhone|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
@@ -133,6 +133,18 @@ window.VIBRA_WEB = { helper: "https://script.google.com/macros/s/AKfycbzNE__5onO
     if (s) post({ api: 'logout', session: s.session }).then(done, done); else done();
   };
   W.session = function () { return S ? { email: S.email, key: S.key, exp: S.exp } : null; };
+  /* 0.2.1: ORCID look-up and title pages, through the helper (the page never calls orcid.org or Gemini itself) */
+  function ask(body) {
+    if (!S) return Promise.reject(new Error('Sign in first.'));
+    body.session = S.session;
+    return post(body).then(function (x) {
+      if (x && x.ok) return x;
+      if (x && x.auth) { S = null; save(); gate(); }
+      throw new Error((x && x.error) || 'Something went wrong. Try again.');
+    }, function (e) { throw new Error(netMsg(e)); });
+  }
+  W.orcid = function (id) { return ask({ api: 'orcid', orcid: String(id || '') }); };
+  W.titlePage = function (id, images, text) { return ask({ api: 'titlepage', id: id, images: images || [], text: text || '' }); };
   W.newCode = function () {
     if (!S) return Promise.reject(new Error('Sign in first.'));
     return post({ api: 'code', session: S.session }).then(function (x) {
@@ -1047,6 +1059,46 @@ svg.ic2{fill:none!important;stroke:currentColor;stroke-width:1.6;stroke-linecap:
 .sb-me .who span{font-size:11.5px;color:var(--muted)}
 /* 0.2.0: Get the app, beside the name (as in desktop apps) */
 .sb-merow{display:flex;align-items:center;gap:2px}
+/* 0.2.1: feedback in the test phase, author details */
+.sb-test{margin-left:auto;font:650 9.5px/1 var(--sans);letter-spacing:.06em;text-transform:uppercase;padding:3px 6px;border-radius:999px;background:var(--accent-soft);color:var(--accent-text)}
+.shell.sbc .sb-test{display:none}
+.fb-ctx{margin:0;font-size:12.5px;line-height:1.5;color:var(--ink-2);background:var(--surface-2);border-radius:var(--r-sm);padding:9px 11px}
+.qu-fb{margin:0;font-size:12.5px;color:var(--muted)}
+.qu-fb button{border:0;background:none;padding:0;color:var(--accent-text);font:inherit;font-weight:600;cursor:pointer;text-decoration:underline}
+.au-det{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:6px}
+.au-det .aum{font-size:12.5px;color:var(--muted)}
+.au-det .aum.warn{color:var(--soon,#8A4B0F)}
+.ad{max-width:780px;gap:14px}
+.ad-tp{display:flex;flex-direction:column;gap:8px;padding:12px 14px;border-radius:var(--r-sm);background:var(--surface-2)}
+.ad-tp h3,.ad-sec h3{margin:0;font:600 13px/1.3 var(--sans);letter-spacing:.02em;text-transform:uppercase;color:var(--muted)}
+.ad-list{display:flex;flex-direction:column;gap:10px}
+.ad-a{border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:8px;background:var(--surface)}
+.ad-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ad-h b{font-size:14.5px}
+.ad-n{font:600 12px var(--mono);color:var(--muted)}
+.ad-miss{font-size:11.5px;padding:2px 8px;border-radius:999px;background:var(--soon-bg,#F8EBD3);color:var(--soon,#8A4B0F)}
+.ad-ok{font-size:11.5px;padding:2px 8px;border-radius:999px;background:var(--ok-bg,#DFF0E4);color:var(--ok,#1D6B44)}
+.ad-upd{margin-left:auto;font-size:11.5px;color:var(--muted)}
+.ad-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px}
+.ad-grid .full{grid-column:1/-1}
+.ad-f{display:flex;flex-direction:column;gap:4px;min-width:0}
+.ad-orc{display:flex;gap:6px}
+.ad-orc input{flex:1;min-width:0}
+.ad-src{font:650 10.5px/1 var(--sans);letter-spacing:.03em;color:var(--accent-text);background:var(--accent-soft);padding:2px 6px;border-radius:999px;margin-left:6px;text-transform:none}
+.ad-sug{font-size:12.5px;line-height:1.5;padding:8px 10px;border-radius:8px;background:var(--accent-soft);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.ad-sug span{flex:1;min-width:200px}
+.ad-warn{font-size:12.5px;color:var(--soon,#8A4B0F)}
+.wn{max-width:560px;gap:16px}
+.wn-rel{display:flex;flex-direction:column;gap:10px}
+.wn-h{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.wn-h b{font-size:15px}
+.wn-h .mono{font-size:12px}
+.wn-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.wn-list li{display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.55;color:var(--ink-2)}
+.wn-list li .ic{flex:none;width:18px;height:18px;margin-top:2px;color:var(--accent-text)}
+#whatsnew .wn-rel + .wn-rel{border-top:1px solid var(--line);padding-top:14px}
+@media (max-width:640px){.ad-grid{grid-template-columns:1fr}}
+
 .sb-merow .sb-me{flex:1;min-width:0}
 .sb-get{color:var(--muted)}
 .sb-get:hover{background:var(--hover);color:var(--ink)}
@@ -1272,6 +1324,7 @@ var TIPS = {
   perm: 'Google asked you for these two permissions the first time you opened the app. They cover only this database and your e-mail address. You can remove the access at any time in your Google account; the app then asks again next time.',
   requests: 'What you sent with Quick update or Feedback, and what happened to it. With the AI helper switched on, a quick update is applied within about a minute; anything that needs a closer look, and everything when the helper is off, is applied by the 06:00 check (Vietnam time).',
   pwa: 'The VIBRA app is a small page you install once (it lives on GitHub Pages and holds no group data). It opens this tracker, shows your own manuscripts when you are offline, and receives notifications. To pair a device, get a one-time code here and type it in the app. Turn notifications off in the app at any time.',
+  audet: 'Affiliations, e-mails and ORCID of this manuscript\'s authors, filled in together. Type them, look up an ORCID, or paste a screenshot of the title page and the AI proposes them (the name rules decide who is who; nothing is saved until you press Save). They are kept once per person, so every manuscript of that author benefits. Each change is logged with your name and can be undone. Members fill in their own in Settings, General.',
   auexp: 'An Excel file to fill in a journal submission quickly: every author in order with full name, given and family name, role (first, equal contribution, corresponding), numbered affiliations, e-mails and ORCID, plus a title page with the author line and affiliations. Details come from the Authors tab of the Sheet; anything missing is listed under To check. The file holds personal details: share it only for the submission.',
   att: 'Built from deadlines, journals silent for over 90 days, manuscripts ready but not yet submitted, and manuscripts where a guest holds the ball. Click a number to filter the list; the calendar button sets a private reminder.',
   strip: 'Days since the last recorded update of each open manuscript, grouped by status. A dot far to the right means nobody has logged news for a long time: a journal to chase or a draft that stalled. Hover or focus a dot for the title; click to open it. Manuscripts without any date are counted on the right.',
@@ -1282,6 +1335,47 @@ var TIPS = {
 /* 0.2.0 onboarding (admin's request): a welcome page, then each step points at the real control on the page.
    sel: the first visible match is highlighted (desktop selector first, phone fallback after); open: the step needs a
    manuscript's details open (the tour opens the first one on Today, read only, and closes it afterwards). */
+/* 0.2.1: What's new. Add a release at the top when members will see a difference (a feature, a change in how
+   something works, a bug they may have met); internal fixes need none. Each member sees the card once per release
+   (preference relSeen; the 0.2.0 tour stands for 0.2.0), never in a session that showed the tour; the bell keeps it. */
+var RELEASES = [
+  { v: '0.2.1', date: '2026-10-23', title: 'Feedback and author details', go: ['general', 'Fill in my details'], items: [
+    ['chat2', 'Send feedback now sits in the sidebar (on a phone: the speech bubble at the top) while we test the app. A bug report also sends the screen and device to help fix it; an idea sends nothing extra.'],
+    ['people', 'Author details, in each manuscript: fill in the authors\' affiliations, e-mails and ORCID together. Look up an ORCID, or paste a screenshot of the title page and the AI proposes the details; you check and save.'],
+    ['user', 'My details: add your own affiliation, e-mail and ORCID once (Settings, General); they serve every manuscript you are on.'],
+    ['spark', 'A quick update with a title page fills missing author details by itself, never overwriting what is there.'],
+    ['trash', 'Screenshots sent with a quick update or feedback are deleted after 10 days.']] },
+  { v: '0.2.0', date: '2026-10-23', title: 'One app for everyone', items: [
+    ['apps', 'One address for everyone: vibra-group.github.io/vibra-tracker/app. Install it with Get the app, beside your name.'],
+    ['phone', 'On an iPhone, sign in with a code made on your computer (Settings, General).'],
+    ['help', 'A welcome tour that points at each control (replay it in Settings, Help).'],
+    ['bell2', 'Notifications are turned on in Settings, Notifications, once on each device.'],
+    ['check', 'A manuscript stays Our move until its next action is really done: a response sent while the revision is not uploaded is not submitted.']] }
+];
+function vcmp(a, b) { var x = String(a).split('.').map(Number), y = String(b).split('.').map(Number); for (var i = 0; i < 3; i++) { var d = (x[i] || 0) - (y[i] || 0); if (d) return d; } return 0; }
+function relSeenV() { return (S.boot && S.boot.prefs && S.boot.prefs.relSeen) || '0.2.0'; }
+function relNew() { var v = relSeenV(); return RELEASES.filter(function (r) { return vcmp(r.v, v) > 0; }); }
+function maybeWhatsNew() {
+  if (!S.boot || S.stale || S.tour >= 0 || S.tourShown || S.wnShown || S.wn || S.ga || S.ad || S.del || S.qu || S.fb || S.nf || !relNew().length) return;
+  S.wn = { auto: true }; S.wnShown = true;
+}
+function wnSeen() {
+  var v = RELEASES[0].v; if (!S.boot || vcmp(v, relSeenV()) <= 0) return;
+  S.boot.prefs = S.boot.prefs || {}; S.boot.prefs.relSeen = v; keepBoot();
+  api('api_setPrefs', { relSeen: v }).catch(function () { });
+}
+function relBlock(r) {
+  return '<div class="wn-rel"><div class="wn-h"><b>' + esc(r.title) + '</b><span class="muted mono">' + esc(r.v) + ' · ' + esc(nice(r.date)) + '</span></div><ul class="wn-list">' +
+    r.items.map(function (it) { return '<li>' + ic(it[0]) + '<span>' + esc(it[1]) + '</span></li>'; }).join('') + '</ul></div>';
+}
+function wnDialog() {
+  var list = relNew(); if (!list.length) list = RELEASES.slice(0, 1);
+  var shown = list.slice(0, 3), go = shown[0].go;
+  return '<div class="overlay" data-a="wn-bg"><div class="dialog wn" role="dialog" aria-modal="true" aria-labelledby="wn-h">' +
+    '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h2 id="wn-h">What\'s new in VIBRA Tracker ' + esc(RELEASES[0].v) + '</h2><button type="button" class="ibtn" data-a="wn-close" aria-label="Close">' + ic('x') + '</button></div>' +
+    shown.map(relBlock).join('') + (list.length > 3 ? '<p class="muted" style="margin:0;font-size:12.5px">Earlier changes: Settings, Help, What\'s new.</p>' : '') +
+    '<div class="btns" style="justify-content:flex-end">' + (go ? '<button class="btn btn-s" data-a="wn-go" data-v="' + go[0] + '">' + esc(go[1]) + '</button>' : '') + '<button class="btn btn-p" data-a="wn-close">Got it</button></div></div></div>';
+}
 var COACH = [
   { sel: ['.sb nav [data-v="today"]', '.topbar [data-a="drawer-open"]'], t: 'Start with Today', b: 'Your daily view: what needs attention now. Deadlines first, then what the group must do, then journals to chase. On a phone the views are behind this menu button.' },
   { sel: ['.sb nav', '.topbar [data-a="drawer-open"]'], t: 'Three more views', b: 'Pipeline shows every manuscript by stage, like a board. All manuscripts keeps every paper ever tracked, finished ones too. Dashboard is the whole group at a glance.' },
@@ -1553,15 +1647,17 @@ function render() {
   // Animate only what is new (a view, filter or search result, or a layer that just opened); plain
   // re-renders (typing, toggles, saves, live refresh, tour steps) repaint without replaying animations.
   app.classList.toggle('calm', !S.fx.list && !!S.painted);
-  var pk = S.pop || '', dk = S.ga ? 'ga' : S.del ? 'del' : S.qu ? 'qu' : S.fb ? 'fb' : S.nf ? 'nf' : '', tk = S.tour >= 0 ? 'tour' + S.tour : '', sk = S.pal ? 'pal' : '';
+  var pk = S.pop || '', dk = S.wn ? 'wn' : S.ga ? 'ga' : S.ad ? 'ad' : S.del ? 'del' : S.qu ? 'qu' : S.fb ? 'fb' : S.nf ? 'nf' : '', tk = S.tour >= 0 ? 'tour' + S.tour : '', sk = S.pal ? 'pal' : '';
   layer.className = (pk && pk === S.lk[0] ? 'calm-pop ' : '') + (dk && dk === S.lk[1] ? 'calm-dlg ' : '') + (tk && tk === S.lk[2] ? 'calm-tour ' : '') + (sk && sk === S.lk[3] ? 'calm-pal' : '');
-  S.lk = [pk, dk, tk, sk]; S.painted = true;
+  var prevDk = S.lk[1]; S.lk = [pk, dk, tk, sk]; S.painted = true;
   var sbs = document.querySelector('.sb-scroll'), sbScroll = sbs ? sbs.scrollTop : 0;
   app.innerHTML = '<div class="shell' + (sbCollapsed() ? ' sbc' : '') + (S.drawer ? ' drawer' : '') + (panelShown() ? ' pshown' : '') + '">' + sidebar() + '<div class="scrim" data-a="drawer-close"></div>' +
     '<div class="mainwrap">' + topbar() + '<div class="wrap"><div class="cols"><div class="main">' + pageTools() + main + '</div>' + (panelShown() ? panel() : '') + '</div></div></div></div>' + fab();
   document.documentElement.style.setProperty('--sbw', sbCollapsed() ? '60px' : '264px');
   var sbs2 = document.querySelector('.sb-scroll'); if (sbs2) sbs2.scrollTop = sbScroll;
+  var ovl = layer.querySelector('.overlay'), ovTop = ovl && dk && dk === prevDk ? ovl.scrollTop : 0;
   layer.innerHTML = popover() + dialog() + palHtml() + tourHtml();
+  if (ovTop) { var ovl2 = layer.querySelector('.overlay'); if (ovl2) ovl2.scrollTop = ovTop; }
   if (S.tour > 0) requestAnimationFrame(placeCoach); // after the details' scroll position is restored below
   placeFab(); placePop();
   placeTip();
@@ -1604,7 +1700,7 @@ var PWA_ORIGIN = 'https://vibra-group.github.io';
 var EMBED = window.__VIBRA_EMBED || '';
 function prefs() { return (S.boot && S.boot.prefs) || {}; }
 function sbCollapsed() { return !!prefs().sbCollapsed && window.innerWidth >= 900; }
-function unreadCount() { return S.boot.notifications.filter(function (n) { return !n.read; }).length + remDue().length; }
+function unreadCount() { return S.boot.notifications.filter(function (n) { return !n.read; }).length + remDue().length + (relNew().length ? 1 : 0); }
 function pins() { return (prefs().pins || []).filter(function (id) { return mById(id); }); }
 function recents() { return (prefs().recent || []).filter(function (id) { return mById(id); }); }
 function myWork() {
@@ -1647,6 +1743,7 @@ function sidebar() {
     sec('Recent', 'clock', rec.map(function (d) { return sbM(d, ''); }), 'Manuscripts you open appear here.') +
     '</div>' +
     '<div class="sb-foot">' +
+    '<button class="sb-item sb-fb" data-a="fb-open"' + (sbCollapsed() ? tt('Send feedback (test phase)') : '') + '>' + ic('chat2') + '<span class="lab">Send feedback</span><span class="sb-test">Test</span></button>' +
     '<button class="sb-item" data-a="pop" data-v="notif" aria-expanded="' + (S.pop === 'notif') + '" aria-label="Notifications, ' + unread + ' unread"' + (sbCollapsed() ? tt('Notifications') : '') + '>' + ic('bell2') + '<span class="lab">Notifications</span>' + (unread ? '<span class="badge" aria-hidden="true">' + unread + '</span>' : '') + '</button>' +
     '<button class="sb-item" data-a="view" data-v="settings"' + (S.view === 'settings' ? ' aria-current="page"' : '') + (sbCollapsed() ? tt('Settings') : '') + '>' + ic('gear') + '<span class="lab">Settings</span></button>' +
     '<div class="sb-merow"><button class="sb-me" data-a="set-tab" data-v="general" aria-label="My account: ' + esc(me().display) + '"' + (sbCollapsed() ? tt(me().display) : '') + '><span class="av">' + esc(me().initials) + '</span><span class="who"><b>' + esc(me().full_name || me().display) + '</b><span>' + esc(me().role) + '</span></span></button>' +
@@ -1657,6 +1754,7 @@ function topbar() {
   var unread = unreadCount();
   return '<div class="topbar"><button class="sb-ib" data-a="drawer-open" aria-label="Open the sidebar">' + ic('menu') + '</button>' +
     '<button class="sb-brand" data-a="view" data-v="today" aria-label="VIBRA Tracker"><img src="' + LOGO_MARK + '" alt="" width="28" height="28"><b>VIBRA</b></button><span class="sp"></span>' +
+    '<button class="sb-ib" data-a="fb-open" aria-label="Send feedback on the app (test phase)">' + ic('chat2') + '</button>' +
     '<button class="sb-ib" data-a="pal-open" aria-label="Search">' + ic('find') + '</button>' +
     '<button class="sb-ib" data-a="pop" data-v="notif" aria-label="Notifications, ' + unread + ' unread">' + ic('bell2') + (unread ? '<span class="badge" aria-hidden="true">' + unread + '</span>' : '') + '</button></div>';
 }
@@ -1763,6 +1861,7 @@ function viewSettings() {
       '<p class="muted" style="margin:0;font-size:13px">Signed in with Google. Your name is recorded on every change you save.</p>' +
       (window.VIBRA_WEB ? '<div class="btns"><button class="btn btn-s" data-a="get-app">' + ic('apps') + 'Get the VIBRA app</button><button class="btn btn-s" data-a="web-code"' + (S.webCodeBusy ? ' disabled' : '') + '>' + ic('phone') + 'Sign in another device with a code</button><button class="btn btn-s" data-a="web-signout">Sign out on this device</button></div>' +
         (S.webCode ? '<div class="pairbox"><span class="lbl">Code for your other device</span><b class="paircode mono">' + esc(S.webCode.code) + '</b><span class="muted" style="font-size:12.5px">Valid ' + S.webCode.minutes + ' minutes, once. On the other device open VIBRA, choose <b>Sign in with a code</b> and type it. Useful for the app installed on an iPhone.</span></div>' : '') : '') + '</div>' +
+      myDetailsBox() +
       '<div class="box"><h2>Appearance</h2><div class="seg" role="group" aria-label="Appearance">' +
       [['light', 'Light', 'sun'], ['dark', 'Dark', 'moon'], ['system', 'Like my device', 'desktop']].map(function (o) { return '<button data-a="theme-set" data-v="' + o[0] + '" aria-pressed="' + (themePref() === o[0]) + '">' + ic(o[2]) + o[1] + '</button>'; }).join('') +
       '</div><div class="setrow"><div style="flex:1;min-width:0"><label for="p-sb" style="font-weight:500">Keep the sidebar hidden</label><div class="muted" style="font-size:12px">Only the icons stay on the left. The button at the top of the sidebar (or Ctrl + .) does the same.</div></div>' +
@@ -1798,6 +1897,7 @@ function viewSettings() {
       '<div>Quick update, bottom right: say what happened in any language; the AI updates the fields.</div>' +
       '<div>When you start changing a manuscript, the others see ' + ic('pen') + ' your name on it and can only read it until you save or discard (or 5 minutes after you stop). The page refreshes itself every 20 seconds.</div></div>' +
       '<div class="btns"><button class="btn btn-s" data-a="tour">' + ic('help') + 'Start the tour</button><button class="btn btn-s" data-a="fb-open">' + ic('chat') + 'Send feedback on the app</button></div></div>' +
+      '<div class="box" id="whatsnew"><h2>What\'s new</h2>' + RELEASES.map(relBlock).join('') + '</div>' +
       permBox() + '<div class="box"><h2>About</h2><p class="muted" style="margin:0;font-size:13px">VIBRA Tracker ' + esc(S.boot.version) + ', test release. Changes are logged with your name; the AI\'s changes are logged as "AI routine" and can be undone.' +
       ' One editor at a time: ' + (S.boot.locksOn === false ? 'not available right now (saves are still checked for clashes)' : 'on') + '.</p></div>';
   }
@@ -1861,6 +1961,98 @@ function gaDialog() {
     '<div class="ga-link"><input id="ga-url" readonly value="' + APP_ADDR + '" aria-label="VIBRA address" data-a="ga-sel"><button class="btn btn-s" data-a="ga-copy">Copy</button></div></div></div></div>' +
     '<div class="btns" style="justify-content:space-between"><button class="btn btn-s" data-a="ga-notif">' + ic('bell2') + 'Notifications on this device</button><button class="btn btn-p" data-a="ga-close">Done</button></div>' +
     '</div></div>';
+}
+/* ---------- 0.2.1: author details, filled in together (Editors; members keep their own in Settings, General) */
+function dirName(k) { var x = (S.boot.dir || []).filter(function (d) { return d.k === k; })[0]; return x ? x.n : k; }
+var AD_F = { affiliation: 'aff', email: 'email', orcid: 'orcid' }, AD_LAB = { affiliation: 'affiliation', email: 'e-mail', orcid: 'ORCID' };
+function adOpen(id) {
+  S.ad = { id: id, loading: true, ed: {}, sug: {}, orc: {}, unmatched: [], err: '' }; S.adtp = { images: [], text: '', busy: false }; S.pop = null; render();
+  api('api_authorDetails', id).then(function (r) {
+    if (!S.ad || S.ad.id !== id) return;
+    S.ad.loading = false; S.ad.title = r.title; S.ad.authors = r.authors;
+    r.authors.forEach(function (a) { if (a.key) S.ad.ed[a.key] = { aff: a.affiliations.join('\n'), email: a.email, orcid: a.orcid, src: {} }; });
+    render();
+  }).catch(function (e) { S.ad = null; render(); toast(msg(e), true); });
+}
+function adChanged() {
+  var out = [];
+  (S.ad.authors || []).forEach(function (a) {
+    var e = a.key && S.ad.ed[a.key]; if (!e) return;
+    var d = { key: a.key }, ch = false, affs = e.aff.split('\n').map(function (x) { return x.trim(); }).filter(Boolean);
+    if (affs.join('; ') !== a.affiliations.join('; ')) { d.affiliations = affs; ch = true; }
+    if (e.email.trim() !== a.email) { d.email = e.email.trim(); ch = true; }
+    if (e.orcid.trim() !== a.orcid) { d.orcid = e.orcid.trim(); ch = true; }
+    if (ch) out.push(d);
+  });
+  return out;
+}
+function adMissing(a, e) { return ['aff', 'email', 'orcid'].filter(function (f) { return !String(e[f] || '').trim(); }).map(function (f) { return f === 'aff' ? 'affiliation' : f === 'email' ? 'e-mail' : 'ORCID'; }); }
+function adCard(a, n) {
+  var e = a.key && S.ad.ed[a.key], role = [a.corr ? 'corresponding' : '', a.note, a.member ? 'member' : ''].filter(Boolean).join(', ');
+  var head = '<div class="ad-h"><span class="ad-n">' + n + '</span><b>' + esc(a.name) + '</b>' + (role ? '<span class="muted" style="font-size:12.5px">' + esc(role) + '</span>' : '');
+  if (!e) return '<div class="ad-a">' + head + '</div><p class="muted" style="margin:0;font-size:13px">This name is not settled yet (it waits under Names to confirm in the AI desk). Its details can be added once it is.</p></div>';
+  var miss = adMissing(a, e), src = function (f) { return e.src[f] ? '<span class="ad-src">' + (e.src[f] === 'tp' ? 'from the title page' : 'from ORCID') + '</span>' : ''; };
+  var sug = S.ad.sug[a.key] || {}, o = S.ad.orc[a.key];
+  head += (miss.length ? '<span class="ad-miss">Missing: ' + esc(miss.join(', ')) + '</span>' : '<span class="ad-ok">Complete</span>') +
+    (a.updated ? '<span class="ad-upd">Updated ' + esc(niceShort(a.updated.slice(0, 16))) + ' by ' + esc(a.updated.slice(17)) + '</span>' : '') + '</div>';
+  var sugs = Object.keys(sug).map(function (f) {
+    return '<div class="ad-sug"><span><b>The ' + esc(sug[f].from) + ' says</b> (' + AD_LAB[f] + '): ' + esc(sug[f].v) + '</span><button class="btn btn-s" data-a="ad-use" data-v="' + esc(a.key) + '|' + f + '">Use this</button><button class="btn btn-q" data-a="ad-skip" data-v="' + esc(a.key) + '|' + f + '">Keep mine</button></div>';
+  }).join('');
+  var id = 'ad-' + n;
+  return '<div class="ad-a" data-key="' + esc(a.key) + '">' + head + sugs +
+    (o && o.warn ? '<div class="ad-warn" role="status">' + esc(o.warn) + '</div>' : '') +
+    '<div class="ad-grid"><div class="ad-f full"><label class="lbl" for="' + id + '-aff">Affiliations, one per line' + src('aff') + '</label><textarea id="' + id + '-aff" class="in" rows="2" data-i="ad" data-v="' + esc(a.key) + '|aff" placeholder="Department, Institution, City, Country">' + esc(e.aff) + '</textarea></div>' +
+    '<div class="ad-f"><label class="lbl" for="' + id + '-email">E-mail' + src('email') + '</label><input id="' + id + '-email" class="in" type="email" data-i="ad" data-v="' + esc(a.key) + '|email" value="' + esc(e.email) + '" autocomplete="off"></div>' +
+    '<div class="ad-f"><label class="lbl" for="' + id + '-orcid">ORCID' + src('orcid') + '</label><div class="ad-orc"><input id="' + id + '-orcid" class="in mono" data-i="ad" data-v="' + esc(a.key) + '|orcid" value="' + esc(e.orcid) + '" placeholder="0000-0000-0000-0000" autocomplete="off">' +
+    (window.VIBRA_WEB && window.VIBRA_WEB.orcid ? '<button class="btn btn-s" data-a="ad-look" data-v="' + esc(a.key) + '"' + (o && o.busy ? ' disabled' : '') + '>' + (o && o.busy ? 'Looking up…' : 'Look up') + '</button>' : '') + '</div></div></div></div>';
+}
+function adDialog() {
+  var A = S.ad, T = S.adtp || { images: [] }, web = !!(window.VIBRA_WEB && window.VIBRA_WEB.titlePage);
+  var body = A.loading ? '<p class="muted" style="margin:0">Loading the authors…</p>' :
+    (web ? '<div class="ad-tp"><h3>Read from the title page</h3><p class="muted" style="margin:0;font-size:13px">Paste a screenshot of the manuscript\'s first page (authors and affiliations), or its text. The AI reads it; the name rules match each author; you check and save.</p>' +
+      imgZone(T, 'adtp') + '<textarea class="in" rows="2" data-i="adtp" placeholder="Or paste the author list and affiliations as text">' + esc(T.text || '') + '</textarea>' +
+      '<div class="btns"><button class="btn btn-s" data-a="ad-read"' + (T.busy ? ' disabled' : '') + '>' + ic('spark') + (T.busy ? 'Reading…' : 'Read the title page') + '</button>' +
+      (T.done ? '<span class="muted" style="font-size:12.5px">Read ' + T.done + ' author' + (T.done > 1 ? 's' : '') + '. Fields marked "from the title page" were empty and are filled in; differences are shown to choose.</span>' : '') + '</div>' +
+      (A.unmatched.length ? '<p class="ad-warn" style="margin:0">Not recognised among this manuscript\'s authors: ' + esc(A.unmatched.join(', ')) + '. Check the author list.</p>' : '') + '</div>' : '') +
+    '<div class="ad-list">' + (A.authors || []).map(function (a, i) { return adCard(a, i + 1); }).join('') + '</div>';
+  var n = A.authors ? adChanged().length : 0;
+  return '<div class="overlay" data-a="ad-bg"><div class="dialog ad" role="dialog" aria-modal="true" aria-labelledby="ad-h">' +
+    '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h2 id="ad-h">Author details</h2><button type="button" class="ibtn" data-a="ad-close" aria-label="Close">' + ic('x') + '</button></div>' +
+    '<p class="muted" style="margin:0;font-size:13.5px">' + (A.title ? '#' + A.id + ' ' + esc(short(A.title, 120)) + '. ' : '') + 'Kept once per person: what you add here also serves their other manuscripts and the Author sheet for submission. Every change is logged with your name and can be undone.</p>' +
+    body + (A.err ? '<p class="err" role="alert" style="margin:0">' + esc(A.err) + '</p>' : '') +
+    '<div class="btns" style="justify-content:flex-end"><button class="btn btn-s" data-a="ad-close">Cancel</button><button class="btn btn-p" data-a="ad-save"' + (A.busy || A.loading ? ' disabled' : '') + '>' + (A.busy ? 'Saving…' : 'Save') + '</button></div></div></div>';
+}
+function orcidUse(e, r, name) {
+  var w = '';
+  var last = function (x) { var t = fold(x).split(/\s+/).filter(Boolean); return t[t.length - 1] || ''; };
+  if (r.name && name && last(r.name) !== last(name) && fold(name).indexOf(last(r.name)) < 0) w = 'This ORCID belongs to ' + r.name + ': check that it is the same person.';
+  return w;
+}
+/* Settings, General: my details for author lists */
+function myDetailsBox() {
+  var M = S.myd;
+  if (!M) { if (!S.mydLoading) { S.mydLoading = true; api('api_myDetails').then(function (r) { S.mydLoading = false; S.myd = { aff: r.affiliations.join('\n'), email: r.email, orcid: r.orcid, updated: r.updated }; if (S.view === 'settings') render(); }).catch(function () { S.mydLoading = false; }); }
+    return '<div class="box"><h2>My details for author lists</h2><p class="muted" style="margin:0">Loading…</p></div>'; }
+  return '<div class="box" id="myd"><div class="frow"><h2>My details for author lists</h2>' + tip('audet', true) + '</div>' +
+    '<p class="muted" style="margin:0;font-size:13px">Your affiliation, e-mail and ORCID as they should appear in a submission. They fill the Author details and the Author sheet of every manuscript you are on.</p>' +
+    (M.warn ? '<div class="ad-warn">' + esc(M.warn) + '</div>' : '') + (M.sug ? '<div class="ad-sug"><span><b>ORCID says</b>: ' + esc(M.sug) + '</span><button class="btn btn-s" data-a="myd-use">Use this</button></div>' : '') +
+    '<div class="ad-grid"><div class="ad-f full"><label class="lbl" for="myd-aff">Affiliations, one per line</label><textarea id="myd-aff" class="in" rows="2" data-i="myd" data-v="aff" placeholder="Department, Institution, City, Country">' + esc(M.aff) + '</textarea></div>' +
+    '<div class="ad-f"><label class="lbl" for="myd-email">E-mail for publications</label><input id="myd-email" class="in" type="email" data-i="myd" data-v="email" value="' + esc(M.email) + '"></div>' +
+    '<div class="ad-f"><label class="lbl" for="myd-orcid">ORCID</label><div class="ad-orc"><input id="myd-orcid" class="in mono" data-i="myd" data-v="orcid" value="' + esc(M.orcid) + '" placeholder="0000-0000-0000-0000">' +
+    (window.VIBRA_WEB && window.VIBRA_WEB.orcid ? '<button class="btn btn-s" data-a="myd-look"' + (M.look ? ' disabled' : '') + '>' + (M.look ? 'Looking up…' : 'Look up') + '</button>' : '') + '</div></div></div>' +
+    '<div class="btns"><button class="btn btn-p" data-a="myd-save"' + (M.busy ? ' disabled' : '') + '>' + (M.busy ? 'Saving…' : 'Save my details') + '</button>' + (M.updated ? '<span class="muted" style="font-size:12px">Last changed ' + esc(niceShort(M.updated.slice(0, 16))) + '</span>' : '') + '</div></div>';
+}
+/* AI desk: open manuscripts whose authors still miss details */
+function deskAuthors(D) {
+  var L = D.auMissing || [];
+  var row = function (m) {
+    return '<div class="desk-item"><div><b>#' + m.id + ' ' + esc(short(m.title, 90)) + '</b> <span class="muted" style="font-size:12.5px">' + esc(m.status) + (m.deadline ? ' · deadline ' + esc(nice(m.deadline)) : '') + '</span></div>' +
+      '<div class="muted" style="font-size:12.5px">' + m.authors.map(function (a) { return esc(a.name) + ': ' + esc(a.missing.map(function (f) { return AD_LAB[f] || f; }).join(', ')); }).join(' · ') + '</div>' +
+      '<div class="btns"><button class="btn btn-s" data-a="ad-desk" data-v="' + m.id + '">' + ic('people') + 'Open author details</button></div></div>';
+  };
+  return '<div class="box" style="margin-top:12px" id="desk-authors"><div class="frow"><h2>Author details missing (' + L.length + ' manuscript' + (L.length === 1 ? '' : 's') + ')</h2>' + tip('audet') + '</div>' +
+    '<p class="muted" style="margin:0;font-size:13px">Open manuscripts, the closest to submission first. Members can complete their own in Settings, General.</p>' +
+    (L.length ? L.slice(0, 8).map(row).join('') + (L.length > 8 ? '<details><summary style="cursor:pointer;color:var(--accent-text)">' + (L.length - 8) + ' more</summary>' + L.slice(8).map(row).join('') + '</details>' : '') : '<p class="muted" style="margin:0">None: every open manuscript has its authors\' details.</p>') + '</div>';
 }
 function devBoxInner() {
   var d = S.dev, P = S.boot.pwa || {};
@@ -2293,19 +2485,20 @@ function shrink(file) {
     img.src = url;
   });
 }
+function imgMax(key) { return key === 'adtp' ? 3 : 4; } // the title page: the helper reads at most 3
 function addImages(key, files) {
   var o = S[key]; if (!o) return;
-  var list = Array.prototype.slice.call(files || []).filter(function (f) { return /^image\//.test(f.type); }).slice(0, Math.max(0, 4 - o.images.length));
+  var list = Array.prototype.slice.call(files || []).filter(function (f) { return /^image\//.test(f.type); }).slice(0, Math.max(0, imgMax(key) - o.images.length));
   if (!list.length) return false;
   list.forEach(function (f) {
-    shrink(f).then(function (u) { if (S[key] && S[key].images.length < 4) { S[key].images.push(u); render(); } }).catch(function () { toast('This image could not be read.', true); });
+    shrink(f).then(function (u) { if (S[key] && S[key].images.length < imgMax(key)) { S[key].images.push(u); render(); } }).catch(function () { toast('This image could not be read.', true); });
   });
   return true;
 }
 function imgZone(o, key) {
   return '<div class="thumbs">' + o.images.map(function (u, i) {
     return '<div class="thumb"><img alt="Screenshot ' + (i + 1) + '" src="' + esc(u) + '"><button type="button" data-a="img-del" data-v="' + key + ':' + i + '" aria-label="Remove screenshot ' + (i + 1) + '">' + ic('x') + '</button></div>';
-  }).join('') + '</div>' + (o.images.length < 4 ? '<label class="drop" data-drop="' + key + '">' + ic('img') + '<span><b>Paste a screenshot</b> (Ctrl+V or Cmd+V), drop it here, or click to choose</span><span style="font-size:11.5px">Up to 4 images. They are made smaller before sending.</span><input type="file" accept="image/*" multiple class="sr" data-file="' + key + '"></label>' : '');
+  }).join('') + '</div>' + (o.images.length < imgMax(key) ? '<label class="drop" data-drop="' + key + '">' + ic('img') + '<span><b>Paste a screenshot</b> (Ctrl+V or Cmd+V), drop it here, or click to choose</span><span style="font-size:11.5px">Up to ' + imgMax(key) + ' images, made smaller before sending. ' + (key === 'adtp' ? 'Read once by the AI, not kept.' : 'Deleted 10 days after they are read.') + '</span><input type="file" accept="image/*" multiple class="sr" data-file="' + key + '"></label>' : '');
 }
 function quDialog() {
   var q = S.qu, ms = allDerived(), inst = quickMode() === 'instant';
@@ -2320,6 +2513,7 @@ function quDialog() {
     '<p class="qu-hint">' + (q.pre && String(q.mid) === String(q.pre) ? 'The manuscript you have open is chosen. Change it if the news is about another one.' : q.mid ? 'Only this manuscript will be updated.' : 'Leave it on "Not sure, or several": the AI finds the manuscript from the title, journal or MS ID.') + '</p></div>' +
     '<div style="display:flex;flex-direction:column;gap:4px"><label class="lbl" for="qu-text">What happened</label><textarea id="qu-text" class="in" rows="5" data-i="qu" data-v="text" placeholder="Any language: English, Tiếng Việt, Italiano, Español… For example: reviews received today, revision due 15 November.">' + esc(q.text) + '</textarea></div>' +
     imgZone(q, 'qu') + (q.err ? '<p class="err" role="alert" style="margin:0">' + esc(q.err) + '</p>' : '') +
+    '<p class="qu-fb">About the app itself (a bug, an idea)? <button type="button" data-a="qu-to-fb">Send feedback instead</button>, so the AI does not read it as news about a manuscript.</p>' +
     '<p class="muted" style="margin:0;font-size:12px">' + (inst ? 'Saved with your name, then applied by the AI within about a minute. You get a note saying what changed, and you can undo any of it from the history. Anything unclear goes to the 06:00 check.' :
       'Saved with your name. The 06:00 check (Vietnam time) applies it and tells you what changed; you can undo any of it from the history.') + '</p>' +
     '<div style="display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap"><button type="button" class="btn btn-s" data-a="qu-close">Cancel</button><button type="submit" class="btn btn-p"' + (q.busy ? ' disabled' : '') + '>' + (q.busy ? 'Saving…' : 'Save') + '</button></div></form></div>';
@@ -2331,15 +2525,25 @@ function fbDialog() {
     '<p style="margin:0;color:var(--ink-2)">Something broken, confusing or missing? Tell us in any language. Small fixes are usually live the next morning; bigger changes are checked with the admin first. The answer appears under your bell.</p>' +
     '<div class="seg3" role="group" aria-label="Kind of feedback">' + ['Bug', 'Idea', 'Other'].map(function (k) { return '<button type="button" class="chip" data-a="fb-kind" data-v="' + k + '" aria-pressed="' + (f.kind === k) + '">' + k + '</button>'; }).join('') + '</div>' +
     '<div style="display:flex;flex-direction:column;gap:4px"><label class="lbl" for="fb-text">Your feedback</label><textarea id="fb-text" class="in" rows="5" data-i="fb" data-v="text" placeholder="What did you try, and what happened? Or: what would make your work easier?">' + esc(f.text) + '</textarea></div>' +
+    (f.kind === 'Bug' ? '<p class="fb-ctx">With a bug report the app also sends what helps to find it: the screen you are on, the manuscript open, the app version and your browser, device and screen size. These details and the screenshots are deleted once the bug is fixed.</p>' : '') +
     imgZone(f, 'fb') + (f.err ? '<p class="err" role="alert" style="margin:0">' + esc(f.err) + '</p>' : '') +
     '<div style="display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap"><button type="button" class="btn btn-s" data-a="fb-close">Cancel</button><button type="submit" class="btn btn-p"' + (f.busy ? ' disabled' : '') + '>' + (f.busy ? 'Sending…' : 'Send feedback') + '</button></div></form></div>';
+}
+/* 0.2.1: sent only with a bug report (and deleted once it is fixed) */
+function bugContext() {
+  var ua = navigator.userAgent || '', v = function (re) { var m = re.exec(ua); return m ? m[1] : ''; };
+  var br = /Edg\//.test(ua) ? 'Edge ' + v(/Edg\/(\d+)/) : /CriOS|Chrome\//.test(ua) ? 'Chrome ' + v(/(?:CriOS|Chrome)\/(\d+)/) : /FxiOS|Firefox\//.test(ua) ? 'Firefox ' + v(/(?:FxiOS|Firefox)\/(\d+)/) : /Safari\//.test(ua) ? 'Safari ' + v(/Version\/(\d+(?:\.\d+)?)/) : 'other browser';
+  var os = /iPad/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1) ? 'iPad' : /iPhone/.test(ua) ? 'iPhone' : /Android/.test(ua) ? 'Android' : /Mac/.test(ua) ? 'Mac' : /Windows/.test(ua) ? 'Windows' : /Linux/.test(ua) ? 'Linux' : 'other';
+  var W = window.VIBRA_WEB, inst = W && W.installed && W.installed();
+  return [S.view + (S.view === 'settings' ? '/' + (S.setTab || 'general') : ''), S.sel ? 'manuscript #' + S.sel : '', br + ' on ' + os,
+    'screen ' + screen.width + 'x' + screen.height + ', window ' + innerWidth + 'x' + innerHeight, inst ? 'installed app' : W ? 'browser' : 'classic link', navigator.onLine ? '' : 'offline'].filter(Boolean).join(' · ');
 }
 function submitReq(key) {
   var o = S[key]; if (!o || o.busy) return;
   if (!String(o.text || '').trim() && !o.images.length) { o.err = key === 'qu' ? 'Write what happened or add a screenshot first.' : 'Write your feedback or add a screenshot first.'; render(); return; }
   o.busy = true; o.err = ''; render();
   var call = key === 'qu' ? api('api_quickUpdate', { mid: o.mid || '', text: o.text, images: o.images }) :
-    api('api_feedback', { kind: o.kind, text: o.text, images: o.images, page: S.view + (S.sel ? ' #' + S.sel : '') });
+    api('api_feedback', { kind: o.kind, text: o.text, images: o.images, page: o.kind === 'Bug' ? bugContext() : '' });
   call.then(function (r) {
     S.boot.requests = r.requests; S[key] = null; render();
     if (key !== 'qu') { toast('Thank you. You will see the answer under your bell.'); return; }
@@ -2427,7 +2631,7 @@ function viewDesk() {
     '<div class="ogrid"><div class="box"><h2>Quick updates waiting (' + D.inbox.length + ')</h2><p class="muted" style="margin:0;font-size:12.5px">' +
     (D.quick && D.quick.mode === 'instant' ? 'Instant AI updates are on: the helper applies new quick updates within about a minute; what it cannot settle waits here.' : 'Instant AI updates are off (no helper in the Meta tab): every quick update waits here for this check.') + '</p>' + (D.inbox.map(function (x) { return item(x, true); }).join('') || '<p class="muted" style="margin:0">None.</p>') + '</div>' +
     '<div class="box"><h2>Feedback waiting (' + D.feedback.length + ')</h2>' + (D.feedback.map(function (x) { return item(x, false); }).join('') || '<p class="muted" style="margin:0">None.</p>') + '</div></div>' +
-    deskDeletions(D) + deskNames(D) +
+    deskDeletions(D) + deskNames(D) + deskAuthors(D) +
     '<div class="box" style="margin-top:12px"><h2>Excel workbook import</h2><p class="muted" style="margin:0;font-size:13px">One-time import of what the first migration left out of Manuscripts_tracker.xlsx: the IF and first-author columns, the full original row of every manuscript (read-only, under each manuscript), and the Authors tab in the Sheet (reference only, never shown in the app). Safe to run again: it never overwrites a value entered in the app.</p>' +
     '<div class="btns"><button class="btn btn-s" data-a="seed-xl"' + (S.seedBusy ? ' disabled' : '') + '>' + ic('sheet') + (S.seedBusy ? 'Importing…' : 'Run the Excel import') + '</button></div>' +
     (S.seedReport ? '<pre class="desk-pre">' + esc(JSON.stringify(S.seedReport, null, 2)) + '</pre>' : '') + '</div>' +
@@ -2603,7 +2807,9 @@ function panel() {
     '<textarea id="f-next" class="in" rows="3" data-i="d" data-v="next" data-k="num" placeholder="Type an action and press Enter: the list numbers itself"' + ro + '>' + esc(d.next) + '</textarea></div>' +
     '<div class="p-sec"><div class="frow"><span class="lbl" id="au-l">Authors, in order</span>' + tip('authors') + '<span class="mono muted" style="margin-left:auto;font-size:11px">' + (d.authors.length ? d.authors.length + ' authors' : '') + '</span></div>' +
     (d.authors.length ? tagsHtml('au', d.authors) + (ce ? editorHtml('au') + cbHtml('au') : '') +
-      (canEdit() && m.authors && m.authors.length ? '<div class="au-exp"><button class="btn btn-s" data-a="au-export" data-v="' + m.id + '">' + ic('down') + 'Author sheet for submission (Excel)</button>' + tip('auexp', true) + '</div>' : '') :
+      (canEdit() && m.authors && m.authors.length ? '<div class="au-det"><button class="btn btn-s" data-a="ad-open" data-v="' + m.id + '">' + ic('people') + 'Author details</button>' +
+        (m.au && m.au[0] ? '<span class="aum' + (m.au[1] < m.au[0] ? ' warn' : '') + '">' + (m.au[1] === m.au[0] ? 'Complete for all ' + m.au[0] + ' authors' : (m.au[0] - m.au[1]) + ' of ' + m.au[0] + ' authors still miss an affiliation, e-mail or ORCID') + '</span>' : '') + tip('audet', true) + '</div>' +
+        '<div class="au-exp"><button class="btn btn-s" data-a="au-export" data-v="' + m.id + '">' + ic('down') + 'Author sheet for submission (Excel)</button>' + tip('auexp', true) + '</div>' : '') :
       (ce ? '<label for="f-paste" class="muted" style="font-size:13px">No author list yet. Paste it once, separated by commas or semicolons, and it becomes tags.</label><textarea id="f-paste" class="in" rows="3" placeholder="Y Van Tran, Phong Van Pham, Giustino Varrassi"></textarea><button class="btn btn-s" style="align-self:flex-start" data-a="paste">Make tags</button>' : '<p class="muted" style="margin:0">No author list yet.</p>')) + '</div>' +
     '<details class="p-sec" data-keep="ids"' + (S.keep.ids ? ' open' : '') + '><summary style="cursor:pointer;font-weight:500;color:var(--accent-text)">Title, journal, IF and IDs</summary><div class="p-grid" style="margin-top:8px">' +
     '<div style="grid-column:1/-1;display:flex;flex-direction:column;gap:4px"><label class="lbl" for="f-title">Title</label><textarea id="f-title" class="in" rows="2" data-i="d" data-v="title"' + ro + '>' + esc(d.title) + '</textarea></div>' +
@@ -2735,10 +2941,11 @@ function histItem(h) {
   else if (h.field === 'deleted') val = '<b>Deleted</b> the manuscript.';
   else if (h.field === 'restored') val = '<b>Restored</b> it from the trash.';
   else if (h.field === 'people_json' || h.field === 'authors_json') val = '<b>' + lab + '</b>: ' + esc(short(listNames(h.new), 160));
+  else if (/^author:/.test(h.field)) val = '<b>Author details</b>: ' + esc(dirName(h.field.slice(7))) + ' <span class="muted">(' + esc(String(h.new || 'no change').replace(/\borcid\b/g, 'ORCID').replace(/\bemail\b/g, 'e-mail')) + ')</span>';
   else val = '<b>' + esc(lab) + '</b>: ' + (h.old ? '<span class="muted">' + esc(short(h.old, 80)) + '</span> → ' : '') + esc(short(h.new || '(empty)', 220));
   var acts = '';
   // 0.1.15: an admin may undo anyone's change (History names whose change it was)
-  if (canEdit() && EDITABLE.indexOf(h.field) >= 0 && !h.undo_of && (h.mine || aiAdmin || me().role === 'Admin'))
+  if (canEdit() && (EDITABLE.indexOf(h.field) >= 0 || /^author:/.test(h.field)) && !h.undo_of && (h.mine || aiAdmin || me().role === 'Admin'))
     acts += '<button class="btn btn-q" data-a="undo" data-v="' + h.row + '" aria-label="Undo this change"' + tt(h.mine ? 'Undo my change' : 'Undo this change (admin)') + '>' + ic('undo') + '</button>';
   var noteOk = canEdit() && h.field === 'note' && h.mine && !/deleted by its author/.test(h.new);
   if (noteOk && !(S.ned && S.ned.row === h.row)) {
@@ -2865,11 +3072,14 @@ function popover() {
         (m ? '<span class="muted" style="display:block;font-size:12px">' + esc(short(m.title, 70)) + '</span>' : '') +
         '<span class="btns" style="margin-top:6px">' + (m ? '<button class="btn btn-s" style="min-height:30px" data-a="rem-go" data-v="' + esc(r.id) + '">Open</button>' : '') + '<button class="btn btn-s" style="min-height:30px" data-a="rem-done" data-v="' + esc(r.id) + '">' + ic('check') + 'Done</button></span></span></div>';
     }).join('');
-    return '<div class="pop sbpop" role="dialog" aria-label="Notifications" data-pop><div class="pop-h"><b>For you</b><button class="btn btn-q" data-a="read-all"' + (ns.some(function (n) { return !n.read; }) ? '' : ' disabled') + '>Mark all read</button></div>' + remItems +
+    var rel = RELEASES[0], relU = relNew().length > 0, relItem = relU || (Date.now() - new Date(rel.date + 'T00:00:00').getTime()) < 14 * 86400000 ?
+      '<button class="nitem' + (relU ? ' unread' : '') + '" data-a="wn-open"><span class="ndot" aria-hidden="true"></span><span><span class="lbl" style="display:block">What\'s new · ' + esc(niceShort(rel.date)) + '</span>' +
+      'VIBRA Tracker ' + esc(rel.v) + ': ' + esc(rel.title) + '</span></button>' : '';
+    return '<div class="pop sbpop" role="dialog" aria-label="Notifications" data-pop><div class="pop-h"><b>For you</b><button class="btn btn-q" data-a="read-all"' + (relU || ns.some(function (n) { return !n.read; }) ? '' : ' disabled') + '>Mark all read</button></div>' + remItems + relItem +
       (ns.length ? ns.map(function (n) {
         return '<button class="nitem' + (n.read ? '' : ' unread') + '" data-a="notif-open" data-v="' + esc(n.id) + '"><span class="ndot" aria-hidden="true"></span><span><span class="lbl" style="display:block">' +
           esc({ ball_to_you: 'Ball to you', changed: 'Changed', ai_update: 'AI update', ai_kept_edit: 'Morning check', deadline: 'Deadline', reminder: 'Reminder', inbox: 'Quick update', feedback: 'Feedback', inbox_reply: 'Quick update', feedback_reply: 'App feedback' }[n.kind] || n.kind) + ' · ' + esc(niceShort(n.ts)) + ' ' + esc(String(n.ts).slice(11, 16)) + '</span><span>' + esc(n.text) + '</span></span></button>';
-      }).join('') : due.length ? '' : '<p class="empty" style="margin:0">Nothing yet. You will see here when the ball is passed to you or a manuscript you are on changes.</p>') +
+      }).join('') : due.length || relItem ? '' : '<p class="empty" style="margin:0">Nothing yet. You will see here when the ball is passed to you or a manuscript you are on changes.</p>') +
       '<div style="padding:8px 6px"><button class="btn btn-q" data-a="set-tab" data-v="notifications">Choose what notifies you</button></div></div>';
   }
   if (S.pop === 'dash') return dashPop();
@@ -2882,7 +3092,9 @@ function popover() {
   return '';
 }
 function dialog() {
+  if (S.wn) return wnDialog();
   if (S.ga) return gaDialog();
+  if (S.ad) return adDialog();
   if (S.del) return delDialog();
   if (S.qu) return quDialog();
   if (S.fb) return fbDialog();
@@ -3049,7 +3261,7 @@ function tourGo(i) {
 function startTour() {
   if (dirty()) { toast('Save or discard your changes first.'); return; }
   if (S.sel) { S.sel = null; S.draft = null; }
-  S.view = 'today'; S.tour = 0; S.coachRect = null; render();
+  S.view = 'today'; S.tour = 0; S.tourShown = true; S.coachRect = null; render();
 }
 var toastTimer;
 function toast(text, isErr, ms) {
@@ -3499,7 +3711,11 @@ var ACT = {
     window.open('mailto:' + to.map(function (pp) { return encodeURIComponent(pp.email); }).join(',') + '?subject=' + encodeURIComponent('VIBRA: ' + short(m.title, 80)) + '&body=' + encodeURIComponent(body), '_blank');
     toast('Your mail program opens with one draft to ' + names.join(', ') + (left.length ? ' (' + left.join(', ') + ': no e-mail on file, not included)' : '') + '. Nothing is sent until you press Send.', false, 8000);
   },
-  'read-all': function () { S.boot.notifications.forEach(function (n) { n.read = true; }); render(); api('api_markRead', 'all').catch(function (e) { toast(msg(e), true); }); },
+  'wn-open': function () { S.pop = null; S.wn = { from: 'bell' }; render(); },
+  'wn-close': function () { S.wn = null; wnSeen(); render(); },
+  'wn-bg': function (v, e) { if (e.target.classList && e.target.classList.contains('overlay')) ACT['wn-close'](); },
+  'wn-go': function (v) { ACT['wn-close'](); ACT['set-tab'](v); setTimeout(function () { var x = document.getElementById('myd'); if (x && x.scrollIntoView) x.scrollIntoView({ block: 'center' }); }, 80); },
+  'read-all': function () { wnSeen(); S.boot.notifications.forEach(function (n) { n.read = true; }); render(); api('api_markRead', 'all').catch(function (e) { toast(msg(e), true); }); },
   'notif-open': function (v) {
     var n = S.boot.notifications.filter(function (x) { return x.id === v; })[0]; if (!n) return;
     n.read = true; S.pop = null; api('api_markRead', [v]).catch(function () { });
@@ -3633,6 +3849,71 @@ var ACT = {
   'open-from-me': function (v) { S.view = 'today'; window.scrollTo(0, 0); openManuscript(Number(v)); },
   'qu-open': function (v) { var pre = v ? Number(v) : (panelShown() ? S.sel : ''); S.qu = { mid: pre, pre: pre, text: '', images: [], err: '' }; S.pop = null; S.tip = null; render(); var t = document.getElementById('qu-text'); if (t) t.focus(); },
   'au-export': function (v) { exportAuthors(Number(v)); },
+  'ad-open': function (v) { adOpen(Number(v)); },
+  'ad-desk': function (v) { var id = Number(v); if (mById(id)) { S.view = 'today'; openManuscript(id); } adOpen(id); },
+  'ad-close': function () { if (S.ad && !S.ad.loading && adChanged().length && !S.ad.ask) { S.ad.ask = true; S.ad.err = 'You have unsaved changes. Press Save, or Cancel again to drop them.'; render(); return; } S.ad = null; S.adtp = null; render(); },
+  'ad-bg': function (v, e) { if (e.target.classList && e.target.classList.contains('overlay')) ACT['ad-close'](); },
+  'ad-look': function (k) {
+    var e = S.ad && S.ad.ed[k]; if (!e) return;
+    S.ad.orc[k] = { busy: true }; render();
+    window.VIBRA_WEB.orcid(e.orcid).then(function (r) {
+      var a = S.ad.authors.filter(function (x) { return x.key === k; })[0];
+      S.ad.orc[k] = { warn: orcidUse(e, r, a && a.name) };
+      e.orcid = r.orcid; e.src.orcid = e.src.orcid || '';
+      var t = (r.affiliations || []).join('\n');
+      if (!t) S.ad.orc[k].warn = (S.ad.orc[k].warn ? S.ad.orc[k].warn + ' ' : '') + 'The ORCID record shows no current employment.';
+      else if (!e.aff.trim()) { e.aff = t; e.src.aff = 'orcid'; }
+      else if (t.replace(/\n/g, '; ') !== e.aff.replace(/\n/g, '; ')) { S.ad.sug[k] = S.ad.sug[k] || {}; S.ad.sug[k].affiliation = { v: t.replace(/\n/g, '; '), from: 'ORCID record' }; }
+      render();
+    }).catch(function (x) { S.ad.orc[k] = { warn: msg(x) }; render(); });
+  },
+  'ad-read': function () {
+    var T = S.adtp, A = S.ad; if (!T || !A || T.busy) return;
+    if (!T.images.length && !String(T.text || '').trim()) { A.err = 'Paste a screenshot of the title page, or its text, first.'; render(); return; }
+    T.busy = true; A.err = ''; render();
+    window.VIBRA_WEB.titlePage(A.id, T.images, T.text || '').then(function (r) {
+      T.busy = false; T.done = r.read; A.unmatched = r.unmatched || [];
+      (r.authors || []).forEach(function (p) {
+        var e = p.key && A.ed[p.key]; if (!e) return;
+        Object.keys(p.fill || {}).forEach(function (f) { var v = p.fill[f]; e[AD_F[f]] = f === 'affiliation' ? v.split('; ').join('\n') : v; e.src[AD_F[f]] = 'tp'; });
+        Object.keys(p.differs || {}).forEach(function (f) { A.sug[p.key] = A.sug[p.key] || {}; A.sug[p.key][f] = { v: p.differs[f], from: 'title page' }; });
+      });
+      render();
+    }).catch(function (x) { T.busy = false; A.err = msg(x); render(); });
+  },
+  'ad-use': function (v) {
+    var p = v.split('|'), k = p[0], f = p[1], s = S.ad.sug[k] && S.ad.sug[k][f], e = S.ad.ed[k]; if (!s || !e) return;
+    e[AD_F[f]] = f === 'affiliation' ? s.v.split('; ').join('\n') : s.v; e.src[AD_F[f]] = s.from === 'title page' ? 'tp' : 'orcid';
+    delete S.ad.sug[k][f]; render();
+  },
+  'ad-skip': function (v) { var p = v.split('|'); if (S.ad.sug[p[0]]) delete S.ad.sug[p[0]][p[1]]; render(); },
+  'ad-save': function () {
+    var A = S.ad; if (!A || A.busy) return;
+    var ch = adChanged(); if (!ch.length) { S.ad = null; S.adtp = null; render(); toast('Nothing changed.'); return; }
+    var how = 'manual';
+    ch.forEach(function (d) { var e = A.ed[d.key]; ['aff', 'email', 'orcid'].forEach(function (f) { if (e.src[f] === 'tp') how = 'titlepage'; else if (e.src[f] === 'orcid' && how === 'manual') how = 'orcid'; }); });
+    A.busy = true; A.err = ''; render();
+    api('api_saveAuthorDetails', A.id, ch, how).then(function (r) {
+      var sid = A.id; applyRow(r.row); S.ad = null; S.adtp = null; if (S.sel === sid) loadHistory(sid); render();
+      toast(r.saved.length ? 'Saved the details of ' + r.saved.map(function (x) { return x.name; }).join(', ') + '.' : 'Nothing changed.');
+    }).catch(function (x) { A.busy = false; A.err = msg(x); render(); });
+  },
+  'myd-look': function () {
+    var M = S.myd; if (!M) return; M.look = true; render();
+    window.VIBRA_WEB.orcid(M.orcid).then(function (r) {
+      M.look = false; M.orcid = r.orcid; M.warn = orcidUse(M, r, me().full_name || me().display);
+      var t = (r.affiliations || []).join('\n');
+      if (t && !M.aff.trim()) M.aff = t; else if (t && t !== M.aff) M.sug = t.replace(/\n/g, '; ');
+      render();
+    }).catch(function (x) { M.look = false; M.warn = msg(x); render(); });
+  },
+  'myd-use': function () { var M = S.myd; if (M && M.sug) { M.aff = M.sug.split('; ').join('\n'); M.sug = ''; render(); } },
+  'myd-save': function () {
+    var M = S.myd; if (!M || M.busy) return; M.busy = true; M.warn = ''; render();
+    api('api_saveMyDetails', { affiliations: M.aff.split('\n').map(function (x) { return x.trim(); }).filter(Boolean), email: M.email.trim(), orcid: M.orcid.trim() }).then(function (r) {
+      S.myd = { aff: r.affiliations.join('\n'), email: r.email, orcid: r.orcid, updated: r.updated }; render(); toast(r.changed.length ? 'Your details are saved.' : 'Nothing changed.');
+    }).catch(function (x) { M.busy = false; M.warn = msg(x); render(); });
+  },
   'pair-get': function () { S.pairBusy = true; render(); api('api_pushPair').then(function (r) { S.pairBusy = false; S.pair = r; render(); }).catch(function (e) { S.pairBusy = false; render(); toast(msg(e), true); }); },
   'feed-get': function (v) { feedCall(v, 'api_calendarLink', [v, false]); },
   'feed-new': function (v) { feedCall(v, 'api_calendarLink', [v, true], 'New link made. Add it to your calendar again; the old address has stopped.'); },
@@ -3653,6 +3934,7 @@ var ACT = {
   'qu-bg': function (v, e) { if (e.target.classList && e.target.classList.contains('overlay')) ACT['qu-close'](); },
   'fb-open': function () { S.fb = { kind: 'Idea', text: '', images: [], err: '' }; S.pop = null; render(); var t = document.getElementById('fb-text'); if (t) t.focus(); },
   'fb-close': function () { S.fb = null; render(); },
+  'qu-to-fb': function () { var q = S.qu || {}; S.qu = null; S.fb = { kind: 'Bug', text: q.text || '', images: q.images || [], err: '' }; render(); var t = document.getElementById('fb-text'); if (t) t.focus(); },
   'fb-bg': function (v, e) { if (e.target.classList && e.target.classList.contains('overlay')) ACT['fb-close'](); },
   'fb-kind': function (v) { if (S.fb) { S.fb.kind = v; render(); } },
   'img-del': function (v) { var p = v.split(':'); if (S[p[0]]) { S[p[0]].images.splice(+p[1], 1); render(); } },
@@ -3718,7 +4000,7 @@ document.addEventListener('click', function (e) {
   if (el && el.tagName === 'A' && el.getAttribute('href')) { if (a && ACT[a]) ACT[a](v, e); if (closedPop || S.pop) { S.pop = null; setTimeout(render, 0); } return; }
   if (S.ndel !== null && a !== 'note-del' && a !== 'note-ask') { S.ndel = null; if (!a) render(); }
   if (closedPop) render();
-  if (a && ACT[a]) { if (['nf-bg', 'qu-bg', 'fb-bg', 'del-bg'].indexOf(a) < 0 && !(el.tagName === 'LABEL')) e.preventDefault(); ACT[a](v, e); }
+  if (a && ACT[a]) { if (['nf-bg', 'qu-bg', 'fb-bg', 'del-bg', 'ga-bg', 'ad-bg', 'wn-bg'].indexOf(a) < 0 && !(el.tagName === 'LABEL')) e.preventDefault(); ACT[a](v, e); }
 });
 document.addEventListener('mousedown', function (e) { if (e.target.closest && e.target.closest('.cbo')) e.preventDefault(); });
 document.addEventListener('focusout', function (e) {
@@ -3732,7 +4014,7 @@ document.addEventListener('submit', function (e) {
   if (e.target.id === 'fb-form') { e.preventDefault(); submitReq('fb'); }
 });
 document.addEventListener('paste', function (e) {
-  var key = S.qu ? 'qu' : S.fb ? 'fb' : S.nf && S.nfai && quickMode() === 'instant' ? 'nfai' : null; if (!key || !e.clipboardData) return;
+  var key = S.qu ? 'qu' : S.fb ? 'fb' : S.ad && S.adtp ? 'adtp' : S.nf && S.nfai && quickMode() === 'instant' ? 'nfai' : null; if (!key || !e.clipboardData) return;
   var files = Array.prototype.slice.call(e.clipboardData.items || []).filter(function (it) { return it.kind === 'file' && /^image\//.test(it.type); }).map(function (it) { return it.getAsFile(); });
   if (files.length) { e.preventDefault(); addImages(key, files); }
 });
@@ -3769,6 +4051,9 @@ document.addEventListener('input', function (e) {
   if (i === 'rem' && S.rem) { S.rem[t.getAttribute('data-v')] = t.value; updateRemLink(); return; }
   if ((i === 'qu' || i === 'fb') && S[i]) { S[i][t.getAttribute('data-v')] = t.value; return; }
   if (i === 'desk') { S.deskBatch = t.value; return; }
+  if (i === 'ad' && S.ad) { var pv = t.getAttribute('data-v').split('|'), ae = S.ad.ed[pv[0]]; if (ae) { ae[pv[1]] = t.value; delete ae.src[pv[1]]; S.ad.ask = false; } return; }
+  if (i === 'adtp' && S.adtp) { S.adtp.text = t.value; return; }
+  if (i === 'myd' && S.myd) { S.myd[t.getAttribute('data-v')] = t.value; return; }
   if (i === 'del' && S.del) { S.del.reason = t.value; return; }
   if (i === 'ned' && S.ned) { S.ned.text = t.value; return; }
   if (i === 'ed-note' && S.ed) { var arr = S.ed.kind === 'ball' ? S.draft.people : S.draft.authors; arr[S.ed.i].note = t.value; updateSaveState(); return; }
@@ -3820,7 +4105,7 @@ document.addEventListener('keydown', function (e) {
   }
   if (t.classList && t.classList.contains('cbo') && (e.key === 'ArrowDown' || e.key === 'ArrowUp')) { e.preventDefault(); var sib = e.key === 'ArrowDown' ? t.nextElementSibling : t.previousElementSibling; if (sib) sib.focus(); return; }
   if (e.key === 'Escape') {
-    if (S.tour >= 0) endTour(); else if (S.ga) ACT['ga-close'](); else if (S.del) ACT['del-close'](); else if (S.ned) ACT['note-cancel'](); else if (S.qu) ACT['qu-close'](); else if (S.fb) ACT['fb-close'](); else if (S.nf) ACT['nf-close'](); else if (S.pop) { S.pop = null; render(); } else if (S.tip) ACT.tip(S.tip); else if (S.ed) { S.ed = null; render(); } else if (S.sel) closePanel(false);
+    if (S.tour >= 0) endTour(); else if (S.wn) ACT['wn-close'](); else if (S.ga) ACT['ga-close'](); else if (S.ad) ACT['ad-close'](); else if (S.del) ACT['del-close'](); else if (S.ned) ACT['note-cancel'](); else if (S.qu) ACT['qu-close'](); else if (S.fb) ACT['fb-close'](); else if (S.nf) ACT['nf-close'](); else if (S.pop) { S.pop = null; render(); } else if (S.tip) ACT.tip(S.tip); else if (S.ed) { S.ed = null; render(); } else if (S.sel) closePanel(false);
   }
   if (e.key === 'Enter' && t.id === 'f-note') { e.preventDefault(); ACT.note(); }
   if (e.key === 'Enter' && t.id === 'ned-text') { e.preventDefault(); ACT['note-save'](); }
@@ -3876,7 +4161,8 @@ function keepBoot() {
 }
 function started(b) {
   S.fx.list = true; applyTheme();
-  if (!b.prefs || !b.prefs.tour2) S.tour = 0; // 0.2.0: everyone sees the new welcome and tour once
+  if (!b.prefs || !b.prefs.tour2) { S.tour = 0; S.tourShown = true; } // 0.2.0: everyone sees the new welcome and tour once
+  maybeWhatsNew(); // 0.2.1: what changed since this member's last release (not after the tour: the bell keeps it)
   render();
   if (EMBED) toApp({ type: 'vibra-ready', version: b.version, kept: !!S.stale, head: window.__T0 || 0, t: Math.round(performance.now()) });
   if (EMBED || localApp()) toApp({ type: 'vibra-push-status' });
@@ -3893,7 +4179,7 @@ function freshBoot(b) {
     else openDraft(m);
     if (m) loadHistory(m.id);
   }
-  applyTheme(); render(); keepBoot();
+  maybeWhatsNew(); applyTheme(); render(); keepBoot();
 }
 function retryBoot() { if (S.stale) api('api_bootstrap').then(freshBoot).catch(function () { setTimeout(retryBoot, 30000); }); }
 document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'hidden') keepBoot(); });
