@@ -5,12 +5,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <script>
-/* VIBRA Tracker 0.2.3 on the group's own address (vibra-group.github.io), built by tools/build_web.py from app/Index.html.
+/* VIBRA Tracker 0.2.4 on the group's own address (vibra-group.github.io), built by tools/build_web.py from app/Index.html.
    This page is the VIBRA app: installable, with notifications and the last data readable offline.
    Google confirms who the member is ("Sign in with Google"), or a one-time code made on a signed-in device does; the
    admin's helper checks that once and gives a session; every server call then goes to the helper with that session
    and runs the tracker's own code as the member. */
-window.VIBRA_WEB = { helper: "https://script.google.com/macros/s/AKfycbzNE__5onOmvia3VaFHjybAJ5G35cnDJCN1ysuiNAYlgOC5xsbCi0xyDnmoJP7lEaFR3w/exec", clientId: "619243121375-pi18v7vjgvcue7qo6455uids4v28megi.apps.googleusercontent.com", classic: "https://script.google.com/macros/s/AKfycbzkG5eCrxQvQtJgfksL92G9vtl2I4LLEew-Az4qYlDxX6V1QfgtIrwGjYOGq9CQ0r3aWA/exec", built: "0.2.3" };
+window.VIBRA_WEB = { helper: "https://script.google.com/macros/s/AKfycbzNE__5onOmvia3VaFHjybAJ5G35cnDJCN1ysuiNAYlgOC5xsbCi0xyDnmoJP7lEaFR3w/exec", clientId: "619243121375-pi18v7vjgvcue7qo6455uids4v28megi.apps.googleusercontent.com", classic: "https://script.google.com/macros/s/AKfycbzkG5eCrxQvQtJgfksL92G9vtl2I4LLEew-Az4qYlDxX6V1QfgtIrwGjYOGq9CQ0r3aWA/exec", built: "0.2.4" };
 (function () {
   var W = window.VIBRA_WEB, KEY = 'vibra-web-session', S = null, queue = [], gisInit = false, tries = 0, gateOn = false;
   var ua = navigator.userAgent || '', IOS = /iPad|iPhone|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
@@ -269,7 +269,7 @@ window.VIBRA_WEB = { helper: "https://script.google.com/macros/s/AKfycbzNE__5onO
 <meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="VIBRA">
 <meta name="theme-color" content="#F1EEE6" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#1F1E1D" media="(prefers-color-scheme: dark)">
 <meta name="robots" content="noindex">
-<link rel="icon" type="image/png" sizes="32x32" href="../icons/favicon-32.png"><link rel="apple-touch-icon" href="../icons/apple-touch-icon.png"><link rel="preload" as="image" href="../icons/vibra-logo-full.jpg">
+<link rel="icon" type="image/png" sizes="32x32" href="../icons/app-favicon-32.png"><link rel="apple-touch-icon" href="../icons/app-apple-180.png"><link rel="preload" as="image" href="../icons/vibra-logo-full.jpg">
 <style>
 #vw-gate{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;padding:24px 16px;overflow:auto;background:var(--bg,#F5F5F2)}
 #vw-gate[hidden]{display:none}
@@ -913,7 +913,8 @@ html{transition:background-color .3s var(--ease)}
 .coach-card p{margin:0;font-size:14px;line-height:1.6;color:var(--ink-2)}
 .coach-top{display:flex;align-items:center;justify-content:space-between;font-size:12px}
 .coach-top .btn-q{min-height:28px;padding:0 4px;font-size:12.5px}
-.coach-nav{display:flex;align-items:center;gap:8px;margin-top:4px}
+.coach-nav{display:flex;align-items:center;gap:8px;margin-top:4px;flex-wrap:wrap}
+.coach-nav.many .dots{flex:1 0 100%;gap:5px;margin-bottom:4px}
 .coach-nav .dots i{width:6px;height:6px}
 .coach-nav .dots i.on{width:16px}
 .coach-arrow{position:absolute;width:16px;height:16px;background:var(--surface);border:1px solid var(--line);transform:rotate(45deg);display:none}
@@ -1002,14 +1003,22 @@ tr.closed td{background:color-mix(in srgb,var(--surface-2) 55%,transparent)}
   --t-wait-bg:#EFECE5;--t-wait-fg:#56524A;
 }
 :root[data-theme="dark"]{
-  /* 0.2.3 (admin): a darker page, the sidebar darker still, the cards and blocks keep their colour so they stand out */
-  --bg:#1A1A18;--side:#121211;--surface:#2E2E2B;--surface-2:#353532;--hover:rgba(255,255,255,.05);--sel:rgba(255,255,255,.09);
-  --line:rgba(255,255,255,.08);--line-2:rgba(255,255,255,.15);
-  --ink:#F2F0E8;--ink-2:#D5D2C8;--muted:#A3A097;
-  --accent:#4C7AC9;--accent-fg:#FFFFFF;--accent-text:#AFC6F0;--accent-soft:#2C3445;--accent-line:#4A6290;
-  --shadow-1:0 1px 2px rgba(0,0,0,.25);--shadow-2:0 1px 2px rgba(0,0,0,.3),0 24px 54px -26px rgba(0,0,0,.75);
-  --t-wait-bg:#3A3936;--t-wait-fg:#CFCBC0;
+  /* 0.2.3 (admin): a darker page, the sidebar darker still. 0.2.4: cards and popups a step darker, text, buttons and
+     tags with more contrast and colour (same hues); light mode unchanged */
+  --bg:#131312;--side:#0B0B0A;--surface:#242422;--surface-2:#2E2E2B;--hover:rgba(255,255,255,.06);--sel:rgba(255,255,255,.10);
+  --line:rgba(255,255,255,.10);--line-2:rgba(255,255,255,.20);
+  --ink:#F8F6F0;--ink-2:#E2DFD6;--muted:#B3B0A6;
+  --accent:#3B70D4;--accent-fg:#FFFFFF;--accent-text:#BCD2F8;--accent-soft:#263655;--accent-line:#5577B0;
+  --shadow-1:0 1px 2px rgba(0,0,0,.35);--shadow-2:0 1px 2px rgba(0,0,0,.4),0 24px 54px -26px rgba(0,0,0,.85);
+  --danger:#FFB0A2;--ok-bg:#1E3D28;--ok-fg:#B5E8C2;
+  --t-due-bg:#4D201A;--t-due-fg:#FFC0B4;--t-dl-bg:#463716;--t-dl-fg:#F7D78E;--t-act-bg:#203761;--t-act-fg:#C4D8FA;
+  --t-chase-bg:#382A5A;--t-chase-fg:#DDCCFF;--t-wait-bg:#3B3A36;--t-wait-fg:#E2DED3;--t-draft-bg:#1E3D28;--t-draft-fg:#B5E8C2;
 }
+:root[data-theme="dark"] .btn-s{background:var(--surface-2);border-color:rgba(255,255,255,.22);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.3)}
+:root[data-theme="dark"] .btn-s:hover:not([disabled]){background:#383834}
+:root[data-theme="dark"] .btn-s svg.ic{background:rgba(255,255,255,.08)}
+:root[data-theme="dark"] .btn-p:hover:not([disabled]){box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 10px 22px -10px rgba(59,112,212,.7)}
+:root[data-theme="dark"] .btn-q:hover{background:var(--accent-soft)}
 body::before,:root[data-theme="dark"] body::before{display:none}
 body{background:var(--bg)}
 svg.ic2{fill:none!important;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
@@ -1044,7 +1053,12 @@ svg.ic2{fill:none!important;stroke:currentColor;stroke-width:1.6;stroke-linecap:
 .sb-new .plus svg.ic{width:14px;height:14px;color:var(--accent-fg)}
 .sb-scroll{flex:1 1 auto;min-height:0;overflow-y:auto;overflow-x:hidden;margin:8px -4px 0;padding:0 4px;scrollbar-width:thin}
 .sb-sec{margin-top:14px}
-.sb-sec h3{display:flex;align-items:center;gap:6px;margin:0 10px 4px;font:500 12px/1.4 var(--sans);color:var(--muted)}
+.sb-sec h3{display:flex;align-items:center;gap:6px;margin:0 6px 4px;font:500 12px/1.4 var(--sans);color:var(--muted)}
+.sb-h{all:unset;display:flex;align-items:center;gap:6px;width:100%;padding:3px 4px;border-radius:6px;cursor:pointer;color:inherit;font:inherit}
+.sb-h:hover{color:var(--ink-2);background:var(--hover)}.sb-h:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.sb-h .ic{width:12px;height:12px;flex:none;transform:rotate(-90deg);transition:transform .2s var(--ease)}
+.sb-sec.shut .sb-h .ic{transform:rotate(180deg)}
+.sb-hn{margin-left:auto;font:500 11px var(--sans);color:var(--muted)}
 .sb-m{display:flex;align-items:center;gap:9px;width:100%;min-height:32px;padding:0 10px;border:0;border-radius:8px;background:none;color:var(--ink-2);font:400 13.5px/1.25 var(--sans);text-align:left;cursor:pointer}
 .sb-m:hover{background:var(--hover);color:var(--ink)}
 .sb-m[aria-current="true"]{background:var(--sel);color:var(--ink)}
@@ -1136,6 +1150,10 @@ svg.ic2{fill:none!important;stroke:currentColor;stroke-width:1.6;stroke-linecap:
 :root[data-theme="dark"] .shell.pshown .pscrim{background:rgba(0,0,0,.32)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .shell.pshown .pscrim{background:rgba(0,0,0,.32)}}
 @supports not selector(::-webkit-scrollbar){.shell.pshown .panel{scrollbar-width:thin}}
+/* 0.2.4: the card leaves as smoothly as it came */
+@media (min-width:1024px){.shell.pshown .panel.p-out{animation:panelOut .17s cubic-bezier(.4,0,1,1) both;pointer-events:none}.shell.pshown .pscrim.p-out{animation:fadeOut .17s ease-in both}}
+@keyframes panelOut{to{opacity:0;transform:translateX(28px)}}
+@keyframes fadeOut{to{opacity:0}}
 /* 0.2.3: Changes to review */
 .revlist{display:grid;gap:10px}
 .revitem{background:var(--surface);border-radius:var(--r-sm);box-shadow:var(--bezel);padding:12px 14px;display:grid;gap:6px}
@@ -1248,8 +1266,9 @@ svg.ic2{fill:none!important;stroke:currentColor;stroke-width:1.6;stroke-linecap:
 .shell.sbc .sb-top{flex-direction:column;height:auto;gap:4px;padding:0}
 .shell.sbc .sb-brand{flex:none;justify-content:center;padding:0;width:44px}
 .shell.sbc .sb-brand span,.shell.sbc .sb-brand b,.shell.sbc .sb-brand em,.shell.sbc .sb .lab,.shell.sbc .sb .cnt,.shell.sbc .sb-scroll,.shell.sbc .sb-me .who{display:none}
-.shell.sbc .sb-item{justify-content:center;padding:0;width:44px;margin:0 auto}
-.shell.sbc .sb-item .badge{position:absolute;top:2px;right:2px;min-width:16px;height:16px;padding:0 4px;font-size:10px;line-height:16px}
+.shell.sbc .sb .sb-item{justify-content:center;padding:0;width:44px;margin:0 auto}
+.shell.sbc .sb-brand{display:none}
+.shell.sbc .sb .sb-item .badge{position:absolute;top:2px;right:2px;min-width:16px;height:16px;padding:0 4px;font-size:10px;line-height:16px}
 .shell.sbc .sb-me{justify-content:center;padding:6px 0}
 .shell.sbc .sb-foot{margin-top:auto}
 /* phone: drawer + slim top bar */
@@ -1478,6 +1497,12 @@ var TIPS = {
    something works, a bug they may have met); internal fixes need none. Each member sees the card once per release
    (preference relSeen; the 0.2.0 tour stands for 0.2.0), never in a session that showed the tour; the bell keeps it. */
 var RELEASES = [
+  { v: '0.2.4', date: '2026-10-23', title: 'Smoother, clearer at night, a new icon', items: [
+    ['list', 'Closing a manuscript card is smooth now: the card slides away and the blocks glide back into place.'],
+    ['sidebar', 'Pinned, Waiting on me and Recent in the sidebar can be folded shut (click the heading); each person\'s choice is kept.'],
+    ['moon', 'Dark mode: darker cards and popups, clearer text, buttons and tags.'],
+    ['phone', 'A new VIBRA icon for the installed app. On a phone it may only change after removing and adding VIBRA again.'],
+    ['gear', 'Fixed: with the sidebar hidden, the Settings sections were squeezed; the tour\'s Next button no longer slips out of its card.']] },
   { v: '0.2.3', date: '2026-10-23', title: 'Easier details, nudges, a short tour', items: [
     ['list', 'On a computer, click a manuscript to open its card; click it again, or any empty space, to close it; click another title to switch. With Today as blocks, the blocks move aside so none is hidden.'],
     ['bell', 'Nudges: the admin can nudge whoever has the ball. You see it in the bell, on your phone or computer where notifications are on, and as a card when VIBRA is open. The app icon shows how many things are unread.'],
@@ -1799,6 +1824,7 @@ function render() {
   if (S.draft) keepDraftSoon();
   var ae = document.activeElement, keep = ae && ae.id ? { id: ae.id, s: ae.selectionStart, e: ae.selectionEnd } : null;
   var panelEl = document.querySelector('.panel'), pScroll = panelEl ? panelEl.scrollTop : 0;
+  var wasShown = !!document.querySelector('.shell.pshown'), glideFrom = S.boot && wasShown !== panelShown() ? blockRects() : null; // 0.2.4
   if (S.err) { app.innerHTML = errorPage(); return; }
   if (!S.boot) return;
   var all = allDerived();
@@ -1828,6 +1854,7 @@ function render() {
   if (keep) { var el = document.getElementById(keep.id); if (el) { el.focus({ preventScroll: true }); try { if (keep.s !== null && el.setSelectionRange) el.setSelectionRange(keep.s, keep.e); } catch (x) { } } }
   S.fx = {};
   setBadge();
+  if (glideFrom) glideBlocks(glideFrom);
   syncLock();
 }
 /* On narrow screens an open tip is pinned to the screen width under its "i", so it never pushes the page sideways. */
@@ -1892,19 +1919,24 @@ function sidebar() {
   var pinned = pins().map(function (id) { return byId[id]; }).filter(Boolean);
   var mine = myWork().filter(function (d) { return pins().indexOf(d.m.id) < 0; }).slice(0, 6);
   var rec = recents().filter(function (id) { return pins().indexOf(id) < 0; }).map(function (id) { return byId[id]; }).filter(Boolean).slice(0, 6);
-  var sec = function (title, icon, items, empty) {
-    return '<div class="sb-sec"><h3>' + esc(title) + '</h3>' + (items.length ? items.join('') : '<p class="sb-empty">' + esc(empty) + '</p>') + '</div>';
+  // 0.2.4 (admin): each group opens and closes; kept per member (preference sbFold)
+  var folds = prefs().sbFold || [];
+  var sec = function (id, title, items, empty) {
+    var shut = folds.indexOf(id) >= 0;
+    return '<div class="sb-sec' + (shut ? ' shut' : '') + '"><h3><button class="sb-h" data-a="sb-fold" data-v="' + id + '" aria-expanded="' + !shut + '">' + ic('back') + '<span>' + esc(title) + '</span>' +
+      (shut && items.length ? '<span class="sb-hn">' + items.length + '</span>' : '') + '</button></h3>' +
+      (shut ? '' : items.length ? items.join('') : '<p class="sb-empty">' + esc(empty) + '</p>') + '</div>';
   };
   var unread = unreadCount();
   return '<aside class="sb" aria-label="Sidebar">' +
-    '<div class="sb-top"><button class="sb-brand" data-a="view" data-v="today" aria-label="VIBRA Tracker, go to Today" title="VIBRA Tracker ' + esc(S.boot.version) + '"><img src="' + LOGO_MARK + '" alt="" width="28" height="28"><b>VIBRA</b><span>Tracker</span></button>' +
+    '<div class="sb-top"><button class="sb-brand" data-a="view" data-v="today" aria-label="VIBRA Tracker, go to Today" title="VIBRA Tracker ' + esc(S.boot.version) + '"><b>VIBRA</b><span>Tracker</span></button>' +
     '<button class="sb-ib sb-hide" data-a="sb-toggle" aria-label="' + (S.drawer ? 'Close the sidebar' : sbCollapsed() ? 'Show the sidebar' : 'Hide the sidebar') + '"' + tt(sbCollapsed() ? 'Show the sidebar' : 'Hide the sidebar', 'Ctrl .') + '>' + ic('sidebar') + '</button></div>' +
     (canEdit() ? '<button class="sb-item sb-new" data-a="nf-open"' + (sbCollapsed() ? tt('New manuscript') : '') + '><span class="plus">' + ic('plus') + '</span><span class="lab">New manuscript</span></button>' : '') +
     '<nav aria-label="Views">' + navHtml + '</nav>' +
     '<div class="sb-scroll">' +
-    (pinned.length ? sec('Pinned', 'pin', pinned.map(function (d) { return sbM(d, dlText(d)); }), '') : '') +
-    sec('Waiting on me', 'ball', mine.map(function (d) { return sbM(d, dlText(d)); }), 'Nothing waits on you. Well done.') +
-    sec('Recent', 'clock', rec.map(function (d) { return sbM(d, ''); }), 'Manuscripts you open appear here.') +
+    (pinned.length ? sec('pin', 'Pinned', pinned.map(function (d) { return sbM(d, dlText(d)); }), '') : '') +
+    sec('mine', 'Waiting on me', mine.map(function (d) { return sbM(d, dlText(d)); }), 'Nothing waits on you. Well done.') +
+    sec('recent', 'Recent', rec.map(function (d) { return sbM(d, ''); }), 'Manuscripts you open appear here.') +
     '</div>' +
     '<div class="sb-foot">' +
     '<button class="sb-item sb-fb" data-a="fb-open"' + (sbCollapsed() ? tt('Send feedback (test phase)') : '') + '>' + ic('chat2') + '<span class="lab">Send feedback</span><span class="sb-test">Test</span></button>' +
@@ -3645,7 +3677,7 @@ function tourHtml() {
     '<div class="coach-card" id="coach-card" role="dialog" aria-modal="true" aria-labelledby="coach-h" aria-describedby="coach-b"><span class="coach-arrow" aria-hidden="true"></span>' +
     '<div class="coach-top"><span class="mono muted">Step ' + i + ' of ' + C.length + '</span><button class="btn btn-q" data-a="tour-end">Skip tour</button></div>' +
     '<h2 id="coach-h">' + esc(st.t) + '</h2><p id="coach-b">' + esc(st.b) + '</p>' +
-    '<div class="coach-nav"><div class="dots" aria-hidden="true">' + C.map(function (_, k) { return '<i class="' + (k === i - 1 ? 'on' : '') + '"></i>'; }).join('') + '</div><span style="margin-left:auto"></span>' +
+    '<div class="coach-nav' + (C.length > 9 ? ' many' : '') + '"><div class="dots" aria-hidden="true">' + C.map(function (_, k) { return '<i class="' + (k === i - 1 ? 'on' : '') + '"></i>'; }).join('') + '</div><span style="margin-left:auto"></span>' +
     '<button class="btn btn-s" data-a="tour-back">Back</button><button class="btn btn-p" data-a="' + (last ? 'tour-end' : 'tour-next') + '">' + (last ? 'Done' : 'Next') + '</button></div></div></div>';
 }
 function appInstalled() { var W = window.VIBRA_WEB || {}; return !!(W.installed && W.installed()); }
@@ -3849,7 +3881,43 @@ function loadHistory(id) {
 function closePanel(force) {
   if (!force && dirty()) { S.confirmClose = true; render(); return; }
   if (S.draft && dirty() && !S.offline) dropDraft(S.draft.id); // closed without saving on purpose (offline it stays kept)
-  S.sel = null; S.draft = null; S.ed = null; S.cb = null; S.rem = null; S.confirmClose = false; render();
+  var done = function () { S.closing = false; S.sel = null; S.draft = null; S.ed = null; S.cb = null; S.rem = null; S.confirmClose = false; render(); };
+  // 0.2.4 (admin): on a computer the card slides out first (0.17 s), then the list or the blocks settle smoothly
+  var pn = document.querySelector('.shell.pshown .panel');
+  if (pn && window.innerWidth >= 1024 && !reduceMotion() && !S.closing) {
+    S.closing = true; pn.classList.add('p-out');
+    var sc = document.querySelector('.pscrim'); if (sc) sc.classList.add('p-out');
+    setTimeout(done, 170); return;
+  }
+  if (!S.closing) done();
+}
+function reduceMotion() { try { return window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return false; } }
+/* 0.2.4 (admin): when the card opens or closes over Today as blocks, the blocks glide to their new places instead of
+   jumping (each block starts where it was and moves to where it now is: FLIP) */
+function blockRects() {
+  var out = {}; if (S.view !== 'today' || todayView() !== 'blocks' || window.innerWidth < 1024) return out;
+  Array.prototype.forEach.call(document.querySelectorAll('.main .block[data-v]'), function (el) { var r = el.getBoundingClientRect(); out[el.getAttribute('data-v') + '|' + (el.closest('.sec') ? Array.prototype.indexOf.call(document.querySelectorAll('.main .sec'), el.closest('.sec')) : 0)] = r; });
+  return out;
+}
+function glideBlocks(before) {
+  if (!before || reduceMotion()) return;
+  var secs = document.querySelectorAll('.main .sec'), moved = 0;
+  Array.prototype.forEach.call(document.querySelectorAll('.main .block[data-v]'), function (el) {
+    var key = el.getAttribute('data-v') + '|' + (el.closest('.sec') ? Array.prototype.indexOf.call(secs, el.closest('.sec')) : 0), a = before[key]; if (!a) return;
+    var b = el.getBoundingClientRect(), dx = a.left - b.left, dy = a.top - b.top, sx = a.width / (b.width || 1);
+    if (Math.abs(dx) < 1 && Math.abs(dy) < 1 && Math.abs(sx - 1) < 0.01) return;
+    if (b.bottom < -200 || b.top > innerHeight + 200) return; // off screen: no need
+    el.style.transformOrigin = '0 0'; el.style.transition = 'none';
+    el.style.transform = 'translate(' + dx + 'px,' + dy + 'px) scaleX(' + sx + ')';
+    moved++;
+  });
+  if (!moved) return;
+  document.body.offsetWidth; // apply the starting point, then let it go
+  Array.prototype.forEach.call(document.querySelectorAll('.main .block[data-v]'), function (el) {
+    if (!el.style.transform) return;
+    el.style.transition = 'transform .32s cubic-bezier(.2,.8,.2,1)'; el.style.transform = '';
+    setTimeout(function () { el.style.transition = ''; el.style.transformOrigin = ''; }, 360);
+  });
 }
 function applyRow(row) {
   var list = S.boot.manuscripts, i = list.map(function (m) { return m.id; }).indexOf(row.id);
@@ -4143,6 +4211,11 @@ var ACT = {
   },
   'set-tab': function (v) { S.setTab = v; ACT.view('settings'); },
   'open-sb': function (v) { S.drawer = false; if (S.view === 'settings' || S.view === 'desk') S.view = 'today'; openManuscript(Number(v)); },
+  'sb-fold': function (v) { // 0.2.4: open or close a sidebar group (kept per member)
+    var p = S.boot.prefs = S.boot.prefs || {}, f = (p.sbFold || []).slice(), i = f.indexOf(v);
+    if (i >= 0) f.splice(i, 1); else f.push(v);
+    p.sbFold = f; keepBoot(); render(); api('api_setPrefs', { sbFold: f }).catch(function () { });
+  },
   'sb-toggle': function () {
     if (window.innerWidth < 900) { S.drawer = !S.drawer; render(); return; }
     var p = S.boot.prefs = S.boot.prefs || {}; p.sbCollapsed = !p.sbCollapsed; render();

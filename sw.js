@@ -2,11 +2,12 @@
    2.2.0: the app page opens from this device at once and is refreshed in the background; when a newer page arrived,
    open windows are told ("New version · Reload") and the next opening uses it.
    2.3.0: a push also sets the number on the app icon (badge) and tells open windows to fetch the news at once.
+   2.4.0: the new VIBRA app icons (app-*.png).
    A push carries no content: on each push the worker asks the admin's helper for the text, with this device's
    own secret, and shows it. Nothing else leaves the device. */
-var CACHE = 'vibra-app-2.3.0';
-var SHELL = ['./', './app/', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png', './icons/maskable-512.png',
-  './icons/apple-touch-icon.png', './icons/badge-96.png', './icons/favicon-32.png', './icons/vibra-logo-full.jpg'];
+var CACHE = 'vibra-app-2.4.0';
+var SHELL = ['./', './app/', './manifest.webmanifest', './icons/app-192.png', './icons/app-512.png', './icons/app-maskable-512.png',
+  './icons/app-apple-180.png', './icons/app-badge-96.png', './icons/app-favicon-32.png', './icons/vibra-logo-full.jpg'];
 var LABEL = { nudge: 'Nudge', ball_to_you: 'Ball to you', changed: 'Manuscript changed', ai_update: 'AI update', inbox_reply: 'Quick update', deadline: 'Deadline',
   delete_request: 'Deletion request', delete_reply: 'Deletion', feedback_reply: 'App feedback', inbox: 'Quick update', test: 'VIBRA Tracker' };
 
@@ -80,7 +81,7 @@ function b64ToU8(s) {
 
 self.addEventListener('push', function (e) { e.waitUntil(onPush()); });
 function onPush() {
-  var opts = { icon: './icons/icon-192.png', badge: './icons/badge-96.png' };
+  var opts = { icon: './icons/app-192.png', badge: './icons/app-badge-96.png' };
   return kv('get', 'device').catch(function () { return null; }).then(function (d) {
     if (!d || !d.helper) return { items: [], more: 0 };
     return post(d.helper, { action: 'pending', dev: d.dev, k: d.k }).then(function (j) { return j && j.ok ? j : { items: [], more: 0 }; })
