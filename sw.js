@@ -1,7 +1,9 @@
 /* VIBRA app service worker (2.0.0: the tracker itself is the app, at ./app/): works offline, receives notifications.
+   2.2.0: the app page opens from this device at once and is refreshed in the background; when a newer page arrived,
+   open windows are told ("New version · Reload") and the next opening uses it.
    A push carries no content: on each push the worker asks the admin's helper for the text, with this device's
    own secret, and shows it. Nothing else leaves the device. */
-var CACHE = 'vibra-app-2.0.0';
+var CACHE = 'vibra-app-2.2.0';
 var SHELL = ['./', './app/', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png', './icons/maskable-512.png',
   './icons/apple-touch-icon.png', './icons/badge-96.png', './icons/favicon-32.png', './icons/vibra-logo-full.jpg'];
 var LABEL = { ball_to_you: 'Ball to you', changed: 'Manuscript changed', ai_update: 'AI update', inbox_reply: 'Quick update', deadline: 'Deadline',
@@ -19,13 +21,24 @@ self.addEventListener('fetch', function (e) {
   var req = e.request, url = new URL(req.url);
   if (req.method !== 'GET' || url.origin !== self.location.origin) return;
   if (req.mode === 'navigate') {
-    // network first; each page (the app at ./app/, the address ./ that leads to it) is kept under its own address
-    // for offline use, without its ?query (the manuscript number)
+    // 2.2.0: the copy kept on this device first (each page under its own address, without its ?query), refreshed from the
+    // network in the background; with no copy yet, the network (and the app page as the offline fallback)
     var key = url.origin + url.pathname.replace(/index\.html$/, '');
-    e.respondWith(fetch(req).then(function (r) {
-      if (r.ok) { var c = r.clone(); caches.open(CACHE).then(function (x) { x.put(key, c); }); }
-      return r;
-    }).catch(function () { return caches.match(key).then(function (r) { return r || caches.match('./app/'); }); }));
+    var fresh = fetch(url.origin + url.pathname, { cache: 'no-cache', credentials: 'same-origin' }).then(function (r) {
+      if (!r.ok) return r;
+      var keep = r.clone(), look = r.clone();
+      return caches.open(CACHE).then(function (x) {
+        return x.match(key).then(function (old) {
+          return Promise.all([old ? old.text() : Promise.resolve(null), look.text()]).then(function (t) {
+            return x.put(key, keep).then(function () { if (t[0] !== null && t[0] !== t[1]) tellNewVersion(); });
+          });
+        });
+      }).then(function () { return r; });
+    });
+    e.respondWith(caches.match(key).then(function (hit) {
+      if (hit) { e.waitUntil(fresh.catch(function () { })); return hit; }
+      return fresh.catch(function () { return caches.match('./app/').then(function (r) { return r || Response.error(); }); });
+    }));
     return;
   }
   e.respondWith(caches.match(req, { ignoreSearch: true }).then(function (hit) {
@@ -36,6 +49,10 @@ self.addEventListener('fetch', function (e) {
     return hit || net;
   }));
 });
+
+function tellNewVersion() {
+  return self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function (cs) { cs.forEach(function (c) { c.postMessage({ type: 'update' }); }); });
+}
 
 /* tiny key-value store shared with the page (IndexedDB "vibra") */
 function kv(op, key, val) {

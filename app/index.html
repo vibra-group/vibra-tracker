@@ -5,12 +5,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <script>
-/* VIBRA Tracker 0.2.1 on the group's own address (vibra-group.github.io), built by tools/build_web.py from app/Index.html.
+/* VIBRA Tracker 0.2.2 on the group's own address (vibra-group.github.io), built by tools/build_web.py from app/Index.html.
    This page is the VIBRA app: installable, with notifications and the last data readable offline.
    Google confirms who the member is ("Sign in with Google"), or a one-time code made on a signed-in device does; the
    admin's helper checks that once and gives a session; every server call then goes to the helper with that session
    and runs the tracker's own code as the member. */
-window.VIBRA_WEB = { helper: "https://script.google.com/macros/s/AKfycbzNE__5onOmvia3VaFHjybAJ5G35cnDJCN1ysuiNAYlgOC5xsbCi0xyDnmoJP7lEaFR3w/exec", clientId: "619243121375-pi18v7vjgvcue7qo6455uids4v28megi.apps.googleusercontent.com", classic: "https://script.google.com/macros/s/AKfycbzkG5eCrxQvQtJgfksL92G9vtl2I4LLEew-Az4qYlDxX6V1QfgtIrwGjYOGq9CQ0r3aWA/exec", built: "0.2.1" };
+window.VIBRA_WEB = { helper: "https://script.google.com/macros/s/AKfycbzNE__5onOmvia3VaFHjybAJ5G35cnDJCN1ysuiNAYlgOC5xsbCi0xyDnmoJP7lEaFR3w/exec", clientId: "619243121375-pi18v7vjgvcue7qo6455uids4v28megi.apps.googleusercontent.com", classic: "https://script.google.com/macros/s/AKfycbzkG5eCrxQvQtJgfksL92G9vtl2I4LLEew-Az4qYlDxX6V1QfgtIrwGjYOGq9CQ0r3aWA/exec", built: "0.2.2" };
 (function () {
   var W = window.VIBRA_WEB, KEY = 'vibra-web-session', S = null, queue = [], gisInit = false, tries = 0, gateOn = false;
   var ua = navigator.userAgent || '', IOS = /iPad|iPhone|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
@@ -257,6 +257,7 @@ window.VIBRA_WEB = { helper: "https://script.google.com/macros/s/AKfycbzNE__5onO
     navigator.serviceWorker.register('../sw.js', { scope: '../' }).catch(function () { });
     navigator.serviceWorker.addEventListener('message', function (e) {
       var d = e.data; if (d && d.type === 'open' && Number(d.m) && window.__vibraAppMsg) window.__vibraAppMsg({ type: 'vibra-open', m: Number(d.m) });
+      if (d && d.type === 'update' && window.__vibraUpdate) window.__vibraUpdate(); // 2.2.0: a newer page is ready
     });
   }
 })();
@@ -1088,6 +1089,40 @@ svg.ic2{fill:none!important;stroke:currentColor;stroke-width:1.6;stroke-linecap:
 .ad-sug{font-size:12.5px;line-height:1.5;padding:8px 10px;border-radius:8px;background:var(--accent-soft);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .ad-sug span{flex:1;min-width:200px}
 .ad-warn{font-size:12.5px;color:var(--soon,#8A4B0F)}
+.seg-s{padding:3px}.seg-s button{padding:5px 11px;font-size:13px}
+.blocks{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+.block{display:flex;flex-direction:column;gap:6px;min-width:0;text-align:left;padding:12px 14px 11px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;cursor:pointer;transition:border-color .15s var(--ease),box-shadow .15s var(--ease),transform .15s var(--ease)}
+.block:hover{border-color:color-mix(in srgb,var(--accent) 45%,var(--line));box-shadow:var(--shadow-1,0 1px 3px rgba(16,24,40,.08))}
+.block[aria-current="true"]{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.block:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.bl-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.bl-top .meta{font-size:12px;white-space:nowrap}
+.bl-t{font-weight:600;font-size:14.5px;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.bl-j{font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bl-p{display:flex;align-items:center;gap:5px;font-size:12.5px;color:var(--ink-2);min-width:0}
+.bl-p .ic{width:14px;height:14px;flex:none;color:var(--muted)}.bl-p span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bl-n{font-size:12.5px;line-height:1.4;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.bl-prog{display:flex;flex-direction:column;gap:4px;margin-top:auto;padding-top:4px}
+.prog{display:block;height:6px;border-radius:999px;background:var(--surface-2);box-shadow:inset 0 0 0 1px var(--line);overflow:hidden}
+.prog i{display:block;height:100%;border-radius:999px;background:var(--accent)}
+.prog i.pg-prep{background:var(--pg-prep,#D69E1C)}.prog i.pg-jour{background:var(--pg-jour,#2F6FD0)}.prog i.pg-done{background:var(--pg-done,#2E8B57)}.prog i.pg-off{background:var(--muted)}
+.bl-st{font-size:11.5px;color:var(--muted)}
+@media (max-width:599px){.blocks{grid-template-columns:1fr 1fr;gap:8px}.block{padding:10px 11px 9px}.bl-t{font-size:13.5px;-webkit-line-clamp:3}.bl-n,.bl-p{display:none}.seg-s .lab{display:none}}
+/* 0.2.2 (admin): on a computer the details open as a card floating on the right; the list keeps its full width under a
+   light dim, so the titles stay readable and another manuscript is one click away (the dim does not catch clicks) */
+.pscrim{display:none}
+@media (min-width:1024px){
+  .shell{--pw:min(640px,calc(100vw - var(--sbw) - 400px))}
+  .shell.pshown .panel{position:fixed;top:14px;right:14px;bottom:14px;width:var(--pw);max-height:none;z-index:50;flex:none;border-radius:18px;
+    box-shadow:0 0 0 1px var(--line),0 28px 70px -14px rgba(15,20,32,.38),0 10px 24px -10px rgba(15,20,32,.2)}
+  .shell.pshown .pscrim{display:block;position:fixed;inset:0;z-index:40;pointer-events:none;background:rgba(15,20,32,.13);animation:fadeIn .25s var(--ease) both}
+  .shell.pshown .main [aria-current="true"],.shell.pshown .sb [aria-current="true"]{position:relative;z-index:45}
+  .shell.pshown .main .row[aria-current="true"],.shell.pshown .main .block[aria-current="true"],.shell.pshown .main .card[aria-current="true"]{background:var(--surface);box-shadow:0 0 0 2px var(--accent),0 8px 24px -10px rgba(15,20,32,.35);border-radius:12px}
+  .shell.pshown ~ .fabs{right:calc(var(--pw) + 30px)}
+}
+:root[data-theme="dark"] .shell.pshown .pscrim{background:rgba(0,0,0,.32)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .shell.pshown .pscrim{background:rgba(0,0,0,.32)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
 .wn{max-width:560px;gap:16px}
 .wn-rel{display:flex;flex-direction:column;gap:10px}
 .wn-h{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap}
@@ -1257,8 +1292,15 @@ button.kpi:hover:not([disabled]),.tile:hover:not([disabled]){transform:none;box-
 .aib{display:inline-flex;align-items:center;margin-left:6px;padding:0 6px;border-radius:999px;background:var(--accent-soft);color:var(--accent-text);font:600 10px/16px var(--sans);letter-spacing:.04em;vertical-align:1px}
 .linkbtn{all:unset;cursor:pointer;color:var(--accent-text);font-weight:600;text-decoration:underline;text-underline-offset:2px}
 .nf-more summary{cursor:pointer;font-weight:500;color:var(--accent-text)}
-.stale-pill{display:inline-flex;align-items:center;gap:7px;height:30px;padding:0 11px;border-radius:999px;background:var(--surface-2);color:var(--muted);font:500 12px var(--sans);box-shadow:inset 0 0 0 1px var(--line)}
-.stale-pill i{width:8px;height:8px;border-radius:999px;background:var(--accent);animation:stalePulse 1s ease-in-out infinite alternate}
+.stale-pill{display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 15px;border-radius:999px;background:var(--accent-soft);color:var(--accent-text);font:650 14px var(--sans);border:0;box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--accent) 30%,transparent);white-space:nowrap}
+.stale-pill.off{background:var(--soon-bg,#F8EBD3);color:var(--soon,#8A4B0F);box-shadow:inset 0 0 0 1px color-mix(in srgb,currentColor 30%,transparent)}
+.stale-pill.upd{cursor:pointer}
+.stale-pill .ic{width:17px;height:17px}
+.draft-bar{clear:both;display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 14px;padding:10px 14px;border-radius:12px;background:var(--soon-bg,#F8EBD3);color:var(--ink);font-size:14px;line-height:1.45}
+.draft-bar>.ic{color:var(--soon,#8A4B0F);flex:none}
+.draft-bar>span:first-of-type{flex:1;min-width:220px}
+.draft-bar .btns{margin:0}
+.stale-pill i{width:11px;height:11px;border-radius:999px;background:var(--accent);animation:stalePulse 1s ease-in-out infinite alternate}
 @keyframes stalePulse{from{opacity:.25}to{opacity:1}}
 @media (prefers-reduced-motion:reduce){.stale-pill i{animation:none}}
 .blocked{max-width:560px;margin:12vh auto;padding:0 20px;text-align:center}
@@ -1266,10 +1308,17 @@ button.kpi:hover:not([disabled]),.tile:hover:not([disabled]){transform:none;box-
 </head>
 <body>
 <div id="app" aria-live="polite">
-  <div class="wrap" style="max-width:960px;padding-top:48px">
-    <div class="skel" style="width:180px;height:22px;margin-bottom:24px"></div>
-    <div class="skel" style="width:60%;margin-bottom:10px"></div>
-    <div class="skel" style="width:40%;margin-bottom:28px"></div>
+  <div class="wrap" style="max-width:960px;padding-top:40px">
+    <!-- 0.2.2: something to read while the first data of a new device loads (later visits open at once) -->
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:22px">
+      <h1 class="h1" style="margin:0">Today</h1>
+      <span class="stale-pill" role="status"><i aria-hidden="true"></i>Loading your manuscripts…</span>
+    </div>
+    <p class="sub" style="margin:0 0 22px">The first opening on a device takes a few seconds. After that VIBRA opens at once with your last data and brings it up to date by itself.</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin-bottom:26px">
+      <div class="skel" style="height:74px;border-radius:12px"></div><div class="skel" style="height:74px;border-radius:12px"></div><div class="skel" style="height:74px;border-radius:12px"></div>
+      <div class="skel" style="height:74px;border-radius:12px"></div><div class="skel" style="height:74px;border-radius:12px"></div><div class="skel" style="height:74px;border-radius:12px"></div>
+    </div>
     <div class="skel" style="height:72px;margin-bottom:12px;border-radius:10px"></div>
     <div class="skel" style="height:72px;margin-bottom:12px;border-radius:10px"></div>
     <div class="skel" style="height:72px;border-radius:10px"></div>
@@ -1324,7 +1373,7 @@ var TIPS = {
   perm: 'Google asked you for these two permissions the first time you opened the app. They cover only this database and your e-mail address. You can remove the access at any time in your Google account; the app then asks again next time.',
   requests: 'What you sent with Quick update or Feedback, and what happened to it. With the AI helper switched on, a quick update is applied within about a minute; anything that needs a closer look, and everything when the helper is off, is applied by the 06:00 check (Vietnam time).',
   pwa: 'The VIBRA app is a small page you install once (it lives on GitHub Pages and holds no group data). It opens this tracker, shows your own manuscripts when you are offline, and receives notifications. To pair a device, get a one-time code here and type it in the app. Turn notifications off in the app at any time.',
-  audet: 'Affiliations, e-mails and ORCID of this manuscript\'s authors, filled in together. Type them, look up an ORCID, or paste a screenshot of the title page and the AI proposes them (the name rules decide who is who; nothing is saved until you press Save). They are kept once per person, so every manuscript of that author benefits. Each change is logged with your name and can be undone. Members fill in their own in Settings, General.',
+  audet: 'Affiliations, e-mails and ORCID of this manuscript\'s authors, filled in together. Type them, look up an ORCID, or paste a screenshot of the title page and the AI proposes them (the name rules decide who is who; nothing is saved until you press Save). They are kept once per person, so every manuscript of that author benefits. Each change is logged with your name and can be undone. Members fill in their own in Settings, General. Author sheet downloads an Excel file for the journal submission: the authors in order with numbered affiliations, e-mails and ORCID, and a title page; it holds personal details, so share it only for the submission.',
   auexp: 'An Excel file to fill in a journal submission quickly: every author in order with full name, given and family name, role (first, equal contribution, corresponding), numbered affiliations, e-mails and ORCID, plus a title page with the author line and affiliations. Details come from the Authors tab of the Sheet; anything missing is listed under To check. The file holds personal details: share it only for the submission.',
   att: 'Built from deadlines, journals silent for over 90 days, manuscripts ready but not yet submitted, and manuscripts where a guest holds the ball. Click a number to filter the list; the calendar button sets a private reminder.',
   strip: 'Days since the last recorded update of each open manuscript, grouped by status. A dot far to the right means nobody has logged news for a long time: a journal to chase or a draft that stalled. Hover or focus a dot for the title; click to open it. Manuscripts without any date are counted on the right.',
@@ -1339,6 +1388,12 @@ var TIPS = {
    something works, a bug they may have met); internal fixes need none. Each member sees the card once per release
    (preference relSeen; the 0.2.0 tour stands for 0.2.0), never in a session that showed the tour; the bell keeps it. */
 var RELEASES = [
+  { v: '0.2.2', date: '2026-10-23', title: 'Opens faster, works offline', items: [
+    ['bolt', 'VIBRA opens at once with the data from your last visit, even right after an update; the latest data follows a few seconds later (the blue "Updating" label). The server also answers faster.'],
+    ['restore', 'No connection? You can still read everything. What you change is kept on this device until you are back online; then press Save. Nothing is sent by itself, and nothing overwrites a colleague\'s newer change.'],
+    ['apps', 'Today can be shown as blocks instead of a list: the switch is at the top right, and your choice is kept. Each block has a bar showing how far the manuscript has come.'],
+    ['list', 'On a computer, a manuscript\'s details open as a card on the right: the list stays readable behind it, so you can click another title to switch.'],
+    ['down', 'Author sheet for submission now sits next to Author details, and inside it: fill in the details, then download.']] },
   { v: '0.2.1', date: '2026-10-23', title: 'Feedback and author details', go: ['general', 'Fill in my details'], items: [
     ['chat2', 'Send feedback now sits in the sidebar (on a phone: the speech bubble at the top) while we test the app. A bug report also sends the screen and device to help fix it; an idea sends nothing extra.'],
     ['people', 'Author details, in each manuscript: fill in the authors\' affiliations, e-mails and ORCID together. Look up an ORCID, or paste a screenshot of the title page and the AI proposes the details; you check and save.'],
@@ -1370,7 +1425,7 @@ function relBlock(r) {
 }
 function wnDialog() {
   var list = relNew(); if (!list.length) list = RELEASES.slice(0, 1);
-  var shown = list.slice(0, 3), go = shown[0].go;
+  var shown = list.slice(0, 3), go = (shown.filter(function (r) { return r.go; })[0] || {}).go;
   return '<div class="overlay" data-a="wn-bg"><div class="dialog wn" role="dialog" aria-modal="true" aria-labelledby="wn-h">' +
     '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h2 id="wn-h">What\'s new in VIBRA Tracker ' + esc(RELEASES[0].v) + '</h2><button type="button" class="ibtn" data-a="wn-close" aria-label="Close">' + ic('x') + '</button></div>' +
     shown.map(relBlock).join('') + (list.length > 3 ? '<p class="muted" style="margin:0;font-size:12.5px">Earlier changes: Settings, Help, What\'s new.</p>' : '') +
@@ -1636,6 +1691,7 @@ function metaHtml(d) { return d.idle === null ? 'no update' : d.idle === 0 ? 'up
 /* ---------- render */
 var app = document.getElementById('app'), layer = document.getElementById('layer');
 function render() {
+  if (S.draft) keepDraftSoon();
   var ae = document.activeElement, keep = ae && ae.id ? { id: ae.id, s: ae.selectionStart, e: ae.selectionEnd } : null;
   var panelEl = document.querySelector('.panel'), pScroll = panelEl ? panelEl.scrollTop : 0;
   if (S.err) { app.innerHTML = errorPage(); return; }
@@ -1651,8 +1707,8 @@ function render() {
   layer.className = (pk && pk === S.lk[0] ? 'calm-pop ' : '') + (dk && dk === S.lk[1] ? 'calm-dlg ' : '') + (tk && tk === S.lk[2] ? 'calm-tour ' : '') + (sk && sk === S.lk[3] ? 'calm-pal' : '');
   var prevDk = S.lk[1]; S.lk = [pk, dk, tk, sk]; S.painted = true;
   var sbs = document.querySelector('.sb-scroll'), sbScroll = sbs ? sbs.scrollTop : 0;
-  app.innerHTML = '<div class="shell' + (sbCollapsed() ? ' sbc' : '') + (S.drawer ? ' drawer' : '') + (panelShown() ? ' pshown' : '') + '">' + sidebar() + '<div class="scrim" data-a="drawer-close"></div>' +
-    '<div class="mainwrap">' + topbar() + '<div class="wrap"><div class="cols"><div class="main">' + pageTools() + main + '</div>' + (panelShown() ? panel() : '') + '</div></div></div></div>' + fab();
+  app.innerHTML = '<div class="shell' + (sbCollapsed() ? ' sbc' : '') + (S.drawer ? ' drawer' : '') + (panelShown() ? ' pshown' : '') + '">' + sidebar() + '<div class="scrim" data-a="drawer-close"></div>' + (panelShown() ? '<div class="pscrim" aria-hidden="true"></div>' : '') +
+    '<div class="mainwrap">' + topbar() + '<div class="wrap"><div class="cols"><div class="main">' + pageTools() + draftBar() + main + '</div>' + (panelShown() ? panel() : '') + '</div></div></div></div>' + fab();
   document.documentElement.style.setProperty('--sbw', sbCollapsed() ? '60px' : '264px');
   var sbs2 = document.querySelector('.sb-scroll'); if (sbs2) sbs2.scrollTop = sbScroll;
   var ovl = layer.querySelector('.overlay'), ovTop = ovl && dk && dk === prevDk ? ovl.scrollTop : 0;
@@ -1758,9 +1814,73 @@ function topbar() {
     '<button class="sb-ib" data-a="pal-open" aria-label="Search">' + ic('find') + '</button>' +
     '<button class="sb-ib" data-a="pop" data-v="notif" aria-label="Notifications, ' + unread + ' unread">' + ic('bell2') + (unread ? '<span class="badge" aria-hidden="true">' + unread + '</span>' : '') + '</button></div>';
 }
+/* 0.2.2: what the page is showing, large enough to notice: the latest data on its way, offline, a new version ready */
+function statusChip() {
+  var x = '', when = S.boot && S.boot.keptAt ? keptWhen(S.boot.keptAt) : '';
+  if (S.offline) x = '<span class="stale-pill off" role="status" title="No internet connection. You can read; changes are kept on this device until you save them online.">' + ic('warn') + 'Offline' + (S.stale && when ? ' · data from ' + esc(when) : '') + '</span>';
+  else if (S.stale && S.staleErr) x = '<span class="stale-pill off" role="status" title="The latest data could not be loaded; it is tried again by itself.">' + ic('warn') + 'Not up to date' + (when ? ' · data from ' + esc(when) : '') + '</span>';
+  else if (S.stale) x = '<span class="stale-pill" role="status" title="Shown from your last visit while the latest data loads"><i aria-hidden="true"></i>Updating…</span>';
+  if (S.updReady) x += '<button class="stale-pill upd" data-a="reload" title="A new version of VIBRA Tracker is ready">' + ic('restore') + 'New version · Reload</button>';
+  return x;
+}
+function keptWhen(t) { var d = new Date(t), p = function (n) { return ('0' + n).slice(-2); }; var day = d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()); return (S.boot && day === S.boot.today ? '' : niceShort(day) + ' ') + p(d.getHours()) + ':' + p(d.getMinutes()); }
+/* 0.2.2: unsent changes kept on this device (manuscript fields, quick update, feedback), until they are saved online */
+function draftKey() { return typeof BOOT_KEY === 'string' && BOOT_KEY ? BOOT_KEY + '-drafts' : null; }
+function lsGet(k, d) { try { return k ? JSON.parse(localStorage.getItem(k) || 'null') || d : d; } catch (e) { return d; } }
+function lsSet(k, v) { try { if (!k) return false; if (v === null) localStorage.removeItem(k); else localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } }
+function drafts() { var o = lsGet(draftKey(), {}); return o && typeof o === 'object' ? o : {}; }
+function setDrafts(o) { return lsSet(draftKey(), Object.keys(o.m || {}).length || Object.keys(o.r || {}).length ? o : null); }
+function keepDraftNow() {
+  if (!draftKey() || !S.boot || !S.draft) return;
+  var d = S.draft, all = drafts(); all.m = all.m || {};
+  if (dirty()) {
+    var orig = JSON.parse(d.orig), f = {}, m = curM();
+    DRAFT_F.forEach(function (k) { if (JSON.stringify(d[k]) !== JSON.stringify(orig[DRAFT_PK[k] || k])) f[k] = d[k]; });
+    all.m[d.id] = { id: d.id, base: d.base, orig: d.orig, f: f, at: (all.m[d.id] && all.m[d.id].at) || Date.now(), title: m ? m.title : '' };
+  } else if (all.m[d.id]) delete all.m[d.id];
+  else return;
+  setDrafts(all);
+}
+var draftT = null;
+function keepDraftSoon() { clearTimeout(draftT); draftT = setTimeout(keepDraftNow, 300); }
+function dropDraft(id) { var all = drafts(); if (all.m && all.m[id]) { delete all.m[id]; setDrafts(all); } }
+/* Puts kept changes back into the boxes of a manuscript just opened; someone else's newer save is merged as usual and a
+   clash on the same field is left to the server's version check (it asks which to keep). */
+function restoreDraft(id) {
+  var k = (drafts().m || {})[id]; if (!k || !S.draft || S.draft.id !== id) return false;
+  Object.keys(k.f || {}).forEach(function (f) { S.draft[f] = clone(k.f[f]); });
+  S.draft.orig = k.orig; S.draft.base = k.base;
+  var m = curM(); if (m && m.version !== k.base) rebaseDraft(m, true);
+  toast('Your unsaved changes from ' + keptWhen(k.at) + ' are back in the boxes. Check them and press Save.', false, 9000);
+  return true;
+}
+function keptReq(key) { return ((drafts().r || {})[key]) || null; }
+function keepReq(key, o) {
+  var all = drafts(); all.r = all.r || {};
+  if (o) all.r[key] = { mid: o.mid || '', kind: o.kind || '', text: o.text || '', images: o.images || [], at: Date.now() }; else delete all.r[key];
+  if (!setDrafts(all) && o) { all.r[key].images = []; all.r[key].noImg = true; setDrafts(all); } // too big for this device's storage: keep the text
+}
+function isNetErr(e) { return S.offline || /No connection|fetch|network|load failed/i.test(msg(e)); }
+function draftBar() {
+  if (!S.boot || S.view === 'settings' || S.view === 'desk') return '';
+  var ms = drafts().m || {}, ids = Object.keys(ms).map(Number).filter(function (id) { return mById(id) && S.sel !== id; });
+  return ids.map(function (id) {
+    var k = ms[id];
+    return '<div class="draft-bar" role="status">' + ic('pen') + '<span><b>Unsaved changes to #' + id + '</b> ' + esc(short(k.title || mById(id).title, 70)) + ' <span class="muted">· kept on this device since ' + esc(keptWhen(k.at)) + '</span></span>' +
+      '<span class="btns"><button class="btn btn-s" data-a="draft-open" data-v="' + id + '">Review and save</button><button class="btn btn-q" data-a="draft-drop" data-v="' + id + '">Discard</button></span></div>';
+  }).join('');
+}
+function backOnline() {
+  var all = drafts(), ms = Object.keys(all.m || {}), r = all.r || {}, parts = [];
+  if (ms.length) parts.push('unsaved changes to #' + ms.join(', #') + ' are kept: open and press Save');
+  if (r.qu) parts.push('your quick update is not sent yet: open Quick update and press Send');
+  if (r.fb) parts.push('your feedback is not sent yet: open Send feedback and press Send');
+  if (parts.length) toast('You are back online. ' + parts.join('; ') + '.', false, 12000);
+}
 function pageTools() {
   if (S.view === 'settings' || S.view === 'desk') return '';
-  return '<div class="ptools">' + (S.stale ? '<span class="stale-pill" role="status" title="Shown from your last visit while the latest data loads">' + (S.staleErr ? 'Copy from your last visit' : '<i aria-hidden="true"></i>Updating…') + '</span>' : '') + (S.q ? '<button class="fchip" data-a="q-clear" aria-label="Remove the filter ' + esc(S.q) + '">Filter: ' + esc(short(S.q, 24)) + ic('x') + '</button>' : '') +
+  return '<div class="ptools">' + statusChip() + (S.view === 'today' ? '<div class="seg seg-s" role="group" aria-label="Layout of Today">' +
+    [['list', 'List', 'list'], ['blocks', 'Blocks', 'apps']].map(function (o) { return '<button data-a="tview" data-v="' + o[0] + '" aria-pressed="' + (todayView() === o[0]) + '" title="Show Today as ' + o[1].toLowerCase() + '">' + ic(o[2]) + '<span class="lab">' + o[1] + '</span></button>'; }).join('') + '</div>' : '') + (S.q ? '<button class="fchip" data-a="q-clear" aria-label="Remove the filter ' + esc(S.q) + '">Filter: ' + esc(short(S.q, 24)) + ic('x') + '</button>' : '') +
     (S.view !== 'dash' ? '<button class="btn btn-s" data-a="pop" data-v="export" aria-expanded="' + (S.pop === 'export') + '">' + ic('down') + 'Export</button>' : '') + '</div>';
 }
 
@@ -2020,7 +2140,7 @@ function adDialog() {
     '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h2 id="ad-h">Author details</h2><button type="button" class="ibtn" data-a="ad-close" aria-label="Close">' + ic('x') + '</button></div>' +
     '<p class="muted" style="margin:0;font-size:13.5px">' + (A.title ? '#' + A.id + ' ' + esc(short(A.title, 120)) + '. ' : '') + 'Kept once per person: what you add here also serves their other manuscripts and the Author sheet for submission. Every change is logged with your name and can be undone.</p>' +
     body + (A.err ? '<p class="err" role="alert" style="margin:0">' + esc(A.err) + '</p>' : '') +
-    '<div class="btns" style="justify-content:flex-end"><button class="btn btn-s" data-a="ad-close">Cancel</button><button class="btn btn-p" data-a="ad-save"' + (A.busy || A.loading ? ' disabled' : '') + '>' + (A.busy ? 'Saving…' : 'Save') + '</button></div></div></div>';
+    '<div class="btns" style="justify-content:flex-end"><button class="btn btn-s" data-a="ad-sheet" style="margin-right:auto"' + (A.loading ? ' disabled' : '') + '>' + ic('down') + 'Download author sheet</button><button class="btn btn-s" data-a="ad-close">Cancel</button><button class="btn btn-p" data-a="ad-save"' + (A.busy || A.loading ? ' disabled' : '') + '>' + (A.busy ? 'Saving…' : 'Save') + '</button></div></div></div>';
 }
 function orcidUse(e, r, name) {
   var w = '';
@@ -2083,12 +2203,14 @@ function tip(key, right) {
 function involves(d, k, withAuthors) {
   return d.m.people.some(function (p) { return p.name === k; }) || (!!withAuthors && (d.m.authors || []).some(function (a) { return authorKey(a) === k; }));
 }
+/* 0.2.2 (admin: no initials for Prof. Varrassi): a member whose key is only initials (GV) is shown with the full name */
+function chipName(k) { var p = person(k); return p && /^[A-Z]{2,3}$/.test(k) && p.full_name ? p.full_name : k; }
 function chips(base) {
   var all = base || S.boot.manuscripts.map(derive).filter(function (d) { return d.tier !== 'closed'; });
   var keys = ['all'].concat(S.boot.people.map(function (p) { return p.key; })), au = S.view === 'list';
   return '<div class="chips"><span class="frow"><span class="lbl">' + (au ? 'Whose manuscripts' : 'Whose work') + '</span>' + tip(au ? 'whoseAll' : 'whose') + '</span>' + keys.map(function (k) {
     var n = k === 'all' ? all.length : all.filter(function (d) { return involves(d, k, au); }).length;
-    var label = k === 'all' ? 'Everyone' : (k === me().key ? 'Me' : k);
+    var label = k === 'all' ? 'Everyone' : (k === me().key ? 'Me' : chipName(k));
     return '<button class="chip" data-a="who" data-v="' + esc(k) + '" aria-pressed="' + (S.who === k) + '">' + esc(label) + ' <span class="n">' + n + '</span></button>';
   }).join('') + '</div>';
 }
@@ -2100,6 +2222,32 @@ function rowHtml(d, i) {
     '<span class="who">' + esc(peopleText(d.m.people)) + rolesHtml(d.m) + '</span><span class="nx">' + esc(d.m.next || '-') + '</span><span class="meta">' + metaHtml(d) + '</span></button>';
 }
 
+/* 0.2.2: Today as blocks (each person's choice, preference todayView). The bar at the bottom shows how far the
+   manuscript has come: preparing (amber), at the journal (blue, rounds of review move it on), accepted (green). */
+var PROG_STAGE = { 'Returned to authors': 0.44, 'Awaiting editor': 0.46, 'Authors confirming': 0.47, 'With editor': 0.5, 'No response': 0.52, 'Review R1': 0.56,
+  'Reviews back R1': 0.6, 'Major rev R1': 0.62, 'Minor rev R1': 0.63, 'Revising': 0.65, 'Resubmitted R1': 0.67, 'Review R2': 0.72, 'Reviews back R2': 0.75,
+  'Major rev R2': 0.76, 'Minor rev R2': 0.77, 'Resubmitted R2': 0.8, 'Review R3': 0.83 };
+function progress(m) {
+  var st = m.status;
+  if (st === 'Drafting') return [0.12, 'prep', 'Drafting'];
+  if (st === 'Internal review') return [0.24, 'prep', 'Internal review'];
+  if (st === 'Ready to Submit') return [0.36, 'prep', 'Ready to submit'];
+  if (st === 'Submitted' || st === 'Under Review') return [PROG_STAGE[m.stage] || (st === 'Submitted' ? 0.46 : 0.56), 'jour', m.stage || st];
+  if (st === 'Accepted') return [0.92, 'done', 'Accepted'];
+  if (st === 'Published') return [1, 'done', 'Published'];
+  return [1, 'off', st];
+}
+function todayView() { var v = prefs().todayView; return v === 'blocks' ? 'blocks' : 'list'; }
+function blockHtml(d, i) {
+  var m = d.m, p = progress(m), anim = S.fx.list ? ' fx-in" style="--i:' + Math.min(i, 14) : '';
+  return '<button class="block' + anim + '" data-a="open" data-v="' + m.id + '"' + (S.sel === m.id ? ' aria-current="true"' : '') + '>' +
+    '<span class="bl-top">' + tagHtml(d) + '<span class="meta">' + metaHtml(d) + '</span></span>' +
+    '<span class="bl-t">' + esc(m.title) + '</span>' + lockChip(m.id) +
+    '<span class="bl-j">' + esc(m.journal || 'Journal not chosen') + '</span>' +
+    '<span class="bl-p">' + ic('ball') + '<span>' + esc(peopleText(m.people)) + '</span></span>' +
+    (m.next ? '<span class="bl-n">' + esc(String(m.next).split('\n')[0]) + '</span>' : '') +
+    '<span class="bl-prog" aria-label="Progress: ' + esc(p[1] === 'prep' ? 'preparing, ' : p[1] === 'jour' ? 'at the journal, ' : '') + esc(p[2]) + '"><span class="prog"><i class="pg-' + p[1] + '" style="width:' + Math.round(p[0] * 100) + '%"></i></span><span class="bl-st">' + esc(p[2]) + '</span></span></button>';
+}
 function viewToday(list) {
   var count = function (t) { return list.filter(function (d) { return d.tier === t; }).length; };
   var due = count('due');
@@ -2112,7 +2260,8 @@ function viewToday(list) {
     var items = list.filter(function (d) { return s.tiers.indexOf(d.tier) >= 0; });
     if (!items.length && (s.id === 'chase' || s.id === 'drafting')) return '';
     return '<section class="sec" id="sec-' + s.id + '"><div class="sec-h"><h2>' + esc(s.title) + '</h2><span class="mono">' + items.length + (s.hint ? ' · ' + esc(s.hint) : '') + '</span></div>' +
-      '<div class="list">' + (items.length ? items.map(rowHtml).join('') : '<div class="empty">Nothing here' + (S.who !== 'all' ? ' for ' + esc(S.who === me().key ? 'you' : S.who) : '') + '.</div>') + '</div></section>';
+      (items.length ? (todayView() === 'blocks' ? '<div class="blocks">' + items.map(blockHtml).join('') + '</div>' : '<div class="list">' + items.map(rowHtml).join('') + '</div>') :
+        '<div class="list"><div class="empty">Nothing here' + (S.who !== 'all' ? ' for ' + esc(S.who === me().key ? 'you' : S.who) : '') + '.</div></div>') + '</section>';
   }).join('');
   return '<h1 class="h1">Today</h1><p class="sub"><span class="mono">' + esc(longDay(S.boot.today)) + '</span>. ' +
     due + (due === 1 ? ' manuscript is' : ' manuscripts are') + ' due or overdue this week, ' + count('action') + ' wait on the group, ' + count('chase') + ' need a journal chased.</p>' +
@@ -2545,13 +2694,18 @@ function submitReq(key) {
   var call = key === 'qu' ? api('api_quickUpdate', { mid: o.mid || '', text: o.text, images: o.images }) :
     api('api_feedback', { kind: o.kind, text: o.text, images: o.images, page: o.kind === 'Bug' ? bugContext() : '' });
   call.then(function (r) {
-    S.boot.requests = r.requests; S[key] = null; render();
+    keepReq(key, null); S.boot.requests = r.requests; S[key] = null; render();
     if (key !== 'qu') { toast('Thank you. You will see the answer under your bell.'); return; }
     if (r.mode) S.boot.quick = { mode: r.mode };
     toast(r.helper ? 'Saved. Your update was received: the tracker will be updated within about a minute.' :
       'Saved. Your update was received: the tracker will be updated at the 06:00 check (Vietnam time).', false, 8000);
     if (r.helper) runHelper(r.helper, r.id);
-  }).catch(function (e) { o.busy = false; o.err = msg(e); render(); });
+  }).catch(function (e) {
+    o.busy = false;
+    if (isNetErr(e)) { keepReq(key, o); o.err = 'No connection. ' + (key === 'qu' ? 'Your update' : 'Your feedback') + ' is kept on this device: press Send again when you are back online.'; }
+    else o.err = msg(e);
+    render();
+  });
 }
 /* Instant Quick update: the browser hands the saved item to the admin's helper (Gemini). If that fails, the helper's
    5-minute timer or the 06:00 check applies it anyway; nothing is lost because the item is already saved. */
@@ -2790,7 +2944,8 @@ function panel() {
   return '<aside class="panel' + (S.fx.panel ? ' fx-panel' : '') + '" aria-label="Manuscript details">' +
     '<div class="p-top"><button class="btn btn-q back" data-a="close">' + ic('back') + 'Back</button>' + tagHtml(dd) + '<span class="mono muted" style="font-size:12px">#' + m.id + '</span>' +
     '<span style="margin-left:auto"></span><button class="ibtn p-qu" data-a="qu-open" aria-label="Quick update on this manuscript">' + ic('spark') + '</button><button class="ibtn" data-a="pin" data-v="' + m.id + '" aria-pressed="' + (pins().indexOf(m.id) >= 0) + '" aria-label="' + (pins().indexOf(m.id) >= 0 ? 'Unpin from the sidebar' : 'Pin to the sidebar') + '"' + tt(pins().indexOf(m.id) >= 0 ? 'Unpin from the sidebar' : 'Pin to the sidebar') + '>' + ic('pin') + '</button><button class="ibtn close" data-a="close" aria-label="Close details">' + ic('x') + '</button></div>' +
-    (S.confirmClose ? '<div class="warn" style="margin-top:12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center">You have unsaved changes.<span style="margin-left:auto"></span><button class="btn btn-s" data-a="discard">Discard</button><button class="btn btn-p" data-a="save">Save</button></div>' : '') +
+    (S.confirmClose ? '<div class="warn" style="margin-top:12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center">' + (S.offline ? 'You are offline. Keep your changes on this device and save them later?' : 'You have unsaved changes.') + '<span style="margin-left:auto"></span>' +
+      (S.offline ? '<button class="btn btn-p" data-a="close-keep">Keep for later</button><button class="btn btn-s" data-a="discard">Discard</button>' : '<button class="btn btn-s" data-a="discard">Discard</button><button class="btn btn-p" data-a="save">Save</button>') + '</div>' : '') +
     lockBanner(m) + delNote(m) + '<h2 class="p-title">' + esc(m.title) + '</h2><div class="muted" style="font-size:13px">' + esc([m.type, m.journal || 'Journal not chosen', m.ms_id].filter(Boolean).join(' · ')) + '</div>' +
     '<div class="p-roles">' + (corrName(m) ? '<span><i>Corresponding</i>' + esc(corrName(m)) + '</span>' : '<span class="none"><i>Corresponding</i>not marked yet</span>') + (firstName(m) ? '<span><i>First author</i>' + esc(firstName(m)) + '</span>' : '') + tip('aroles', true) + '</div>' +
     '<div class="p-grid">' +
@@ -2808,8 +2963,8 @@ function panel() {
     '<div class="p-sec"><div class="frow"><span class="lbl" id="au-l">Authors, in order</span>' + tip('authors') + '<span class="mono muted" style="margin-left:auto;font-size:11px">' + (d.authors.length ? d.authors.length + ' authors' : '') + '</span></div>' +
     (d.authors.length ? tagsHtml('au', d.authors) + (ce ? editorHtml('au') + cbHtml('au') : '') +
       (canEdit() && m.authors && m.authors.length ? '<div class="au-det"><button class="btn btn-s" data-a="ad-open" data-v="' + m.id + '">' + ic('people') + 'Author details</button>' +
-        (m.au && m.au[0] ? '<span class="aum' + (m.au[1] < m.au[0] ? ' warn' : '') + '">' + (m.au[1] === m.au[0] ? 'Complete for all ' + m.au[0] + ' authors' : (m.au[0] - m.au[1]) + ' of ' + m.au[0] + ' authors still miss an affiliation, e-mail or ORCID') + '</span>' : '') + tip('audet', true) + '</div>' +
-        '<div class="au-exp"><button class="btn btn-s" data-a="au-export" data-v="' + m.id + '">' + ic('down') + 'Author sheet for submission (Excel)</button>' + tip('auexp', true) + '</div>' : '') :
+        '<button class="btn btn-s" data-a="au-export" data-v="' + m.id + '" title="Author sheet for submission (Excel)">' + ic('down') + 'Author sheet</button>' + tip('audet', true) +
+        (m.au && m.au[0] ? '<span class="aum' + (m.au[1] < m.au[0] ? ' warn' : '') + '">' + (m.au[1] === m.au[0] ? 'Complete for all ' + m.au[0] + ' authors' : (m.au[0] - m.au[1]) + ' of ' + m.au[0] + ' authors still miss an affiliation, e-mail or ORCID') + '</span>' : '') + '</div>' : '') :
       (ce ? '<label for="f-paste" class="muted" style="font-size:13px">No author list yet. Paste it once, separated by commas or semicolons, and it becomes tags.</label><textarea id="f-paste" class="in" rows="3" placeholder="Y Van Tran, Phong Van Pham, Giustino Varrassi"></textarea><button class="btn btn-s" style="align-self:flex-start" data-a="paste">Make tags</button>' : '<p class="muted" style="margin:0">No author list yet.</p>')) + '</div>' +
     '<details class="p-sec" data-keep="ids"' + (S.keep.ids ? ' open' : '') + '><summary style="cursor:pointer;font-weight:500;color:var(--accent-text)">Title, journal, IF and IDs</summary><div class="p-grid" style="margin-top:8px">' +
     '<div style="grid-column:1/-1;display:flex;flex-direction:column;gap:4px"><label class="lbl" for="f-title">Title</label><textarea id="f-title" class="in" rows="2" data-i="d" data-v="title"' + ro + '>' + esc(d.title) + '</textarea></div>' +
@@ -3310,6 +3465,7 @@ function parsePaste(t) {
 }
 function saveStateText() { var l = S.sel && lockOther(S.sel); return l ? lockWho(l) + ' is editing' : dirty() ? 'Unsaved changes' : 'All changes saved'; }
 function updateSaveState() {
+  keepDraftSoon();
   var d = dirty(), b = document.getElementById('b-save'), x = document.getElementById('b-discard'), s = document.getElementById('savestate');
   if (b) b.disabled = !d || S.saving || !!(S.sel && lockOther(S.sel)); if (x) x.disabled = !d; if (s) s.textContent = saveStateText();
   syncLock();
@@ -3319,7 +3475,7 @@ function updateSaveState() {
 function openManuscript(id) {
   var m = S.boot.manuscripts.filter(function (x) { return x.id === id; })[0]; if (!m) return;
   if (S.sel && S.sel !== id && dirty()) { S.confirmClose = true; render(); toast('Save or discard your changes first.'); return; }
-  var was = S.sel; S.sel = id; openDraft(m); S.pop = null; S.drawer = false; if (S.rem && S.rem.mid !== id) S.rem = null;
+  var was = S.sel; S.sel = id; openDraft(m); restoreDraft(id); S.pop = null; S.drawer = false; if (S.rem && S.rem.mid !== id) S.rem = null;
   noteRecent(id);
   if (was !== id) S.fx.panel = true;
   render();
@@ -3337,6 +3493,7 @@ function loadHistory(id) {
 }
 function closePanel(force) {
   if (!force && dirty()) { S.confirmClose = true; render(); return; }
+  if (S.draft && dirty() && !S.offline) dropDraft(S.draft.id); // closed without saving on purpose (offline it stays kept)
   S.sel = null; S.draft = null; S.ed = null; S.cb = null; S.rem = null; S.confirmClose = false; render();
 }
 function applyRow(row) {
@@ -3353,6 +3510,9 @@ function save() {
     S.saving = false;
     if (r.locked) { gotLocks(r); S.myLock = null; render(); toast(lockWho(r.holder) + ' is editing this manuscript. Your changes stay in the boxes; save them when ' + lockWho(r.holder) + ' has saved.', true, 9000); return; }
     if (r.conflict) {
+      // 0.2.2: my own save went through but its answer was lost (connection dropped): it is saved, not a clash
+      var fr = makeDraft(r.row), mineAlready = r.by === me().key && DRAFT_F.every(function (f) { return JSON.stringify(fr[f]) === JSON.stringify(d[f]); });
+      if (mineAlready) { applyRow(r.row); openDraft(r.row); S.confirmClose = false; render(); loadHistory(r.row.id); toast('Saved. Everyone sees it now.'); return; }
       applyRow(r.row); var clash = rebaseDraft(r.row, false); var who = (person(r.by) || {}).display || r.by || 'Someone', at = String(r.at || '').slice(11, 16) || 'the same time';
       render(); toast(clash ? who + ' saved this manuscript at ' + at + ' and changed some of the same fields. Your version is in the boxes: press Save to keep it, or Discard to take theirs.' :
         who + ' saved this manuscript at ' + at + '. Their changes are in, and yours are still in the boxes: press Save again to add yours.', true, 10000);
@@ -3361,7 +3521,11 @@ function save() {
     if (S.myLock === r.row.id) S.myLock = null; // the server let go of it with the save
     applyRow(r.row); openDraft(r.row); S.confirmClose = false; render(); loadHistory(r.row.id);
     toast(r.changed ? 'Saved. Everyone sees it now.' : 'Nothing to save.');
-  }).catch(function (e) { S.saving = false; updateSaveState(); toast(msg(e), true); });
+  }).catch(function (e) {
+    S.saving = false; updateSaveState();
+    if (isNetErr(e)) { keepDraftNow(); toast('No connection. Your changes are kept on this device: press Save again when you are back online.', true, 10000); }
+    else toast(msg(e), true);
+  });
 }
 /* ---------- VIBRA logo, and branded exports (logo on top, VIBRA watermark) made in the browser: no extra permission */
 var LOGO_MARK = 'data:image/webp;base64,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';
@@ -3673,6 +3837,10 @@ var ACT = {
   tip: function (v) { S.tip = S.tip === v ? null : v; document.querySelectorAll('.tip').forEach(function (t) { var b = t.querySelector('[data-v]'); var on = b && b.getAttribute('data-v') === S.tip; t.classList.toggle('open', on); if (b) b.setAttribute('aria-expanded', on); var bx = t.querySelector('.tipbox'); if (bx && !on) bx.removeAttribute('style'); }); placeTip(); },
   tour: function () { S.pop = null; startTour(); },
   'tour-next': function () { tourGo(S.tour + 1); }, 'tour-back': function () { tourGo(S.tour - 1); }, 'tour-end': endTour,
+  tview: function (v) { var p = S.boot.prefs = S.boot.prefs || {}; if (p.todayView === v) return; p.todayView = v; S.fx.list = true; keepBoot(); render(); api('api_setPrefs', { todayView: v }).catch(function () { }); },
+  'close-keep': function () { keepDraftNow(); closePanel(true); toast('Kept on this device. When you are back online, open the manuscript and press Save.', false, 8000); },
+  'draft-open': function (v) { var id = Number(v); if (S.view === 'settings' || S.view === 'desk') S.view = 'today'; openManuscript(id); },
+  'draft-drop': function (v) { dropDraft(Number(v)); render(); toast('Your kept changes were discarded.'); },
   'toast-x': function () { var el = document.getElementById('toast'); if (el) el.innerHTML = ''; },
   reload: function () { location.reload(); },
   ed: function (v) { var p = v.split(':'); S.ed = (S.ed && S.ed.kind === p[0] && S.ed.i === +p[1]) ? null : { kind: p[0], i: +p[1] }; S.cb = null; render(); var n = document.getElementById('ed-note'); if (n) n.focus({ preventScroll: true }); },
@@ -3847,9 +4015,10 @@ var ACT = {
     toast(ms.length + ' deadline' + (ms.length === 1 ? '' : 's') + ' in one calendar file. Open it to import them.');
   },
   'open-from-me': function (v) { S.view = 'today'; window.scrollTo(0, 0); openManuscript(Number(v)); },
-  'qu-open': function (v) { var pre = v ? Number(v) : (panelShown() ? S.sel : ''); S.qu = { mid: pre, pre: pre, text: '', images: [], err: '' }; S.pop = null; S.tip = null; render(); var t = document.getElementById('qu-text'); if (t) t.focus(); },
+  'qu-open': function (v) { var pre = v ? Number(v) : (panelShown() ? S.sel : ''), kq = keptReq('qu'); S.qu = kq ? { mid: kq.mid || pre, pre: pre, text: kq.text, images: kq.images || [], err: 'Not sent yet: kept on this device since ' + keptWhen(kq.at) + (kq.noImg ? ' (without its screenshots: too big to keep)' : '') + '. Press Send, or clear the text to drop it.' } : { mid: pre, pre: pre, text: '', images: [], err: '' }; S.pop = null; S.tip = null; render(); var t = document.getElementById('qu-text'); if (t) t.focus(); },
   'au-export': function (v) { exportAuthors(Number(v)); },
   'ad-open': function (v) { adOpen(Number(v)); },
+  'ad-sheet': function () { var A = S.ad; if (!A || A.loading) return; if (adChanged().length) { A.err = 'Save first: the author sheet is made from the saved details.'; render(); return; } exportAuthors(A.id); },
   'ad-desk': function (v) { var id = Number(v); if (mById(id)) { S.view = 'today'; openManuscript(id); } adOpen(id); },
   'ad-close': function () { if (S.ad && !S.ad.loading && adChanged().length && !S.ad.ask) { S.ad.ask = true; S.ad.err = 'You have unsaved changes. Press Save, or Cancel again to drop them.'; render(); return; } S.ad = null; S.adtp = null; render(); },
   'ad-bg': function (v, e) { if (e.target.classList && e.target.classList.contains('overlay')) ACT['ad-close'](); },
@@ -3930,10 +4099,10 @@ var ACT = {
     api('api_setDigestMode', v).then(function (r) { S.digestBusy = false; S.boot.digest.mode = r.mode; render(); toast(r.mode === 'all' ? 'The digest goes to every member who has it on.' : r.mode === 'admin' ? 'Trial: only you receive the digest.' : 'The digest is paused.'); })
       .catch(function (e) { S.digestBusy = false; render(); toast(msg(e), true); });
   },
-  'qu-close': function () { S.qu = null; render(); },
+  'qu-close': function () { var q = S.qu; if (q && keptReq('qu') && !String(q.text || '').trim() && !q.images.length) keepReq('qu', null); S.qu = null; render(); },
   'qu-bg': function (v, e) { if (e.target.classList && e.target.classList.contains('overlay')) ACT['qu-close'](); },
-  'fb-open': function () { S.fb = { kind: 'Idea', text: '', images: [], err: '' }; S.pop = null; render(); var t = document.getElementById('fb-text'); if (t) t.focus(); },
-  'fb-close': function () { S.fb = null; render(); },
+  'fb-open': function () { var kf = keptReq('fb'); S.fb = kf ? { kind: kf.kind || 'Idea', text: kf.text, images: kf.images || [], err: 'Not sent yet: kept on this device since ' + keptWhen(kf.at) + '. Press Send, or clear the text to drop it.' } : { kind: 'Idea', text: '', images: [], err: '' }; S.pop = null; render(); var t = document.getElementById('fb-text'); if (t) t.focus(); },
+  'fb-close': function () { var f = S.fb; if (f && keptReq('fb') && !String(f.text || '').trim() && !f.images.length) keepReq('fb', null); S.fb = null; render(); },
   'qu-to-fb': function () { var q = S.qu || {}; S.qu = null; S.fb = { kind: 'Bug', text: q.text || '', images: q.images || [], err: '' }; render(); var t = document.getElementById('fb-text'); if (t) t.focus(); },
   'fb-bg': function (v, e) { if (e.target.classList && e.target.classList.contains('overlay')) ACT['fb-close'](); },
   'fb-kind': function (v) { if (S.fb) { S.fb.kind = v; render(); } },
@@ -4147,7 +4316,8 @@ function keptBoot() {
   if (!BOOT_KEY) return null;
   try {
     var c = JSON.parse(localStorage.getItem(BOOT_KEY) || 'null');
-    return c && c.version === window.__VIBRA_V && Date.now() - (c.keptAt || 0) < 14 * 86400000 && Array.isArray(c.manuscripts) ? c : null;
+    // 0.2.2: a copy from any version since 0.2.0 is shown at once, also right after an update (the fresh data replaces it)
+    return c && vcmp(c.version || '0', '0.2.0') >= 0 && Date.now() - (c.keptAt || 0) < 14 * 86400000 && Array.isArray(c.manuscripts) ? c : null;
   } catch (e) { return null; }
 }
 function keepBoot() {
@@ -4184,6 +4354,12 @@ function freshBoot(b) {
 function retryBoot() { if (S.stale) api('api_bootstrap').then(freshBoot).catch(function () { setTimeout(retryBoot, 30000); }); }
 document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'hidden') keepBoot(); });
 window.addEventListener('pagehide', keepBoot);
+// 0.2.2: online and offline
+S.offline = navigator.onLine === false;
+window.addEventListener('offline', function () { S.offline = true; if (S.boot) render(); });
+window.addEventListener('online', function () { S.offline = false; if (!S.boot) return; render(); if (S.stale) retryBoot(); else poll(); backOnline(); });
+window.addEventListener('pagehide', function () { if (S.draft) keepDraftNow(); });
+window.__vibraUpdate = function () { S.updReady = true; if (S.boot) render(); }; // the service worker has a newer page
 if (EMBED) { var baseEl = document.querySelector('base'); if (baseEl) baseEl.setAttribute('target', '_blank'); } // links leave the app window, never replace it
 if (window.__VIBRA_BLOCKED) {
   app.innerHTML = '<div class="blocked"><img src="' + LOGO_MARK + '" alt="" width="48" height="48"><h1 class="h1" style="margin-top:14px">Open VIBRA Tracker directly</h1>' +
