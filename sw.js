@@ -6,22 +6,42 @@
    2.5.0: page 0.2.5 (one-call quick updates through the helper, undo in one go, links, preprint).
    2.6.0: page 0.2.6 (each quick update read once with its screenshots, Paste in the text box, the dialog above the keyboard).
    2.7.0: page 0.2.7 (compact notifications page by page, floating buttons over the details on a phone, urgency scrubber, text size in 6 steps).
+   2.8.0: page 0.2.8 (cards that grow and shrink, swipe and Back to close, Search and Quick update stacked, a searchable Manuscript box);
+   a new version moves in by itself: open windows are reloaded (older pages) or reload themselves when nothing would be lost.
+   2.9.0: page 0.2.9 (navigation in three layers for the members switched on, the paper stack depth, five colour sets, dialogs as sheets on a phone); ships with 2.8.0 as one update.
    A push carries no content: on each push the worker asks the admin's helper for the text, with this device's
    own secret, and shows it. Nothing else leaves the device. */
-var CACHE = 'vibra-app-2.7.0';
+var CACHE = 'vibra-app-2.9.0';
 var SHELL = ['./', './app/', './manifest.webmanifest', './icons/app-192.png', './icons/app-512.png', './icons/app-maskable-512.png',
   './icons/app-apple-180.png', './icons/app-badge-96.png', './icons/app-favicon-32.png', './icons/vibra-logo-full.jpg'];
 var LABEL = { nudge: 'Nudge', ball_to_you: 'Ball to you', changed: 'Manuscript changed', ai_update: 'AI update', inbox_reply: 'Quick update', deadline: 'Deadline',
   delete_request: 'Deletion request', delete_reply: 'Deletion', feedback_reply: 'App feedback', inbox: 'Quick update', test: 'VIBRA Tracker' };
 
 self.addEventListener('install', function (e) {
-  e.waitUntil(caches.open(CACHE).then(function (c) { return c.addAll(SHELL); }).then(function () { return self.skipWaiting(); }));
+  // 2.8.0: straight from the network (not the browser's own cache), so the new page is really the new one
+  e.waitUntil(caches.open(CACHE).then(function (c) { return c.addAll(SHELL.map(function (u) { return new Request(u, { cache: 'reload' }); })); }).then(function () { return self.skipWaiting(); }));
 });
 self.addEventListener('activate', function (e) {
+  var upgrade = false;
   e.waitUntil(caches.keys().then(function (ks) {
+    upgrade = ks.some(function (k) { return k !== CACHE && /^vibra-app-/.test(k); });
     return Promise.all(ks.filter(function (k) { return k !== CACHE; }).map(function (k) { return caches.delete(k); }));
-  }).then(function () { return self.clients.claim(); }));
+  }).then(function () { return self.clients.claim(); }).then(function () { if (upgrade) upgradeWindows(); }));
 });
+/* 2.8.0 (admin, 24 Oct 2026: "khi mở app (cũ) ra có thể yêu cầu phải cập nhật luôn không, không phải ấn nút là cập nhật
+   nữa"): after an update every open VIBRA window moves to the new version by itself. A page from 0.2.8 on answers and
+   reloads as soon as nothing would be lost (an unsaved change is saved or discarded first); an older page, which cannot
+   answer, is reloaded by the worker (its unsaved manuscript changes are kept on the device and come back). */
+var PONG = {};
+self.addEventListener('message', function (e) { if (e.data && e.data.type === 'pong' && e.source) PONG[e.source.id] = 1; });
+function upgradeWindows() {
+  return self.clients.matchAll({ type: 'window' }).then(function (cs) {
+    cs.forEach(function (c) { c.postMessage({ type: 'update', force: true }); });
+    setTimeout(function () {
+      cs.forEach(function (c) { if (!PONG[c.id] && 'navigate' in c) c.navigate(c.url).catch(function () { }); });
+    }, 1500);
+  });
+}
 self.addEventListener('fetch', function (e) {
   var req = e.request, url = new URL(req.url);
   if (req.method !== 'GET' || url.origin !== self.location.origin) return;
