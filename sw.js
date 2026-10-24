@@ -9,13 +9,21 @@
    2.8.0: page 0.2.8 (cards that grow and shrink, swipe and Back to close, Search and Quick update stacked, a searchable Manuscript box);
    a new version moves in by itself: open windows are reloaded (older pages) or reload themselves when nothing would be lost.
    2.9.0: page 0.2.9 (navigation in three layers for the members switched on, the paper stack depth, five colour sets, dialogs as sheets on a phone); ships with 2.8.0 as one update.
+   3.0.0: page 0.3.0 (Batch 3), the sign-in logo without its white box (light and dark): a nudge or a deadline alert opens the Reply sheet; on Android and computers its notification
+   also has two buttons, Reply and On it (On it answers without opening the app); links of three kinds; the to-do for everyone.
    A push carries no content: on each push the worker asks the admin's helper for the text, with this device's
    own secret, and shows it. Nothing else leaves the device. */
-var CACHE = 'vibra-app-2.9.0';
+var CACHE = 'vibra-app-3.0.0';
 var SHELL = ['./', './app/', './manifest.webmanifest', './icons/app-192.png', './icons/app-512.png', './icons/app-maskable-512.png',
-  './icons/app-apple-180.png', './icons/app-badge-96.png', './icons/app-favicon-32.png', './icons/vibra-logo-full.jpg'];
+  './icons/app-apple-180.png', './icons/app-badge-96.png', './icons/app-favicon-32.png', './icons/vibra-logo-full.jpg',
+  './icons/vibra-logo-light.webp', './icons/vibra-logo-dark.webp']; // 3.0.0: the sign-in logo without its white box, one for each theme
 var LABEL = { nudge: 'Nudge', ball_to_you: 'Ball to you', changed: 'Manuscript changed', ai_update: 'AI update', inbox_reply: 'Quick update', deadline: 'Deadline',
-  delete_request: 'Deletion request', delete_reply: 'Deletion', feedback_reply: 'App feedback', inbox: 'Quick update', test: 'VIBRA Tracker' };
+  delete_request: 'Deletion request', delete_reply: 'Deletion', feedback_reply: 'App feedback', inbox: 'Quick update', test: 'VIBRA Tracker',
+  nudge_reply: 'Reply to your nudge' };
+/* 3.0.0 (BACKLOG 6): reminders (nudges and deadline alerts) can be answered. Browsers that show buttons on a notification
+   (Chrome, Edge, Firefox on Android and computers; at most two) get Reply and On it; iPhone shows none and a tap opens
+   the Reply sheet. */
+var REMIND = { nudge: 1, deadline: 1 };
 
 self.addEventListener('install', function (e) {
   // 2.8.0: straight from the network (not the browser's own cache), so the new page is really the new one
@@ -120,7 +128,9 @@ function onPush() {
     }
     return Promise.resolve().then(function () {
       var shown = items.slice(0, 3).map(function (n) {
-        return self.registration.showNotification(LABEL[n.kind] || 'VIBRA Tracker', Object.assign({ body: n.text, tag: 'vibra-' + n.id, data: { url: n.mid ? './app/?m=' + encodeURIComponent(n.mid) : './app/', m: Number(n.mid) || 0 } }, opts));
+        var rem = REMIND[n.kind] && n.mid, o = { body: n.text, tag: 'vibra-' + n.id, data: { url: n.mid ? './app/?m=' + encodeURIComponent(n.mid) + (rem ? '&r=' + encodeURIComponent(n.id) : '') : './app/', m: Number(n.mid) || 0, n: rem ? String(n.id) : '' } };
+        if (rem) o.actions = [{ action: 'reply', title: 'Reply' }, { action: 'onit', title: 'On it' }];
+        return self.registration.showNotification(LABEL[n.kind] || 'VIBRA Tracker', Object.assign(o, opts));
       });
       var extra = Math.max(0, items.length - 3) + (j.more || 0);
       if (extra) shown.push(self.registration.showNotification('VIBRA Tracker', Object.assign({ body: 'and ' + extra + ' more update' + (extra > 1 ? 's' : '') + '.', tag: 'vibra-more', data: { url: './app/' } }, opts)));
@@ -133,12 +143,24 @@ function onPush() {
 self.addEventListener('notificationclick', function (e) {
   e.notification.close();
   var data = e.notification.data || {}, target = new URL(data.url || './app/', self.registration.scope).href;
-  e.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function (cs) {
-    for (var i = 0; i < cs.length; i++) {
-      if (cs[i].url.indexOf(self.registration.scope) === 0 && 'focus' in cs[i]) { cs[i].postMessage({ type: 'open', m: data.m || 0 }); return cs[i].focus(); }
-    }
-    return self.clients.openWindow(target);
-  }));
+  var open = function () {
+    return self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function (cs) {
+      for (var i = 0; i < cs.length; i++) {
+        if (cs[i].url.indexOf(self.registration.scope) === 0 && 'focus' in cs[i]) { cs[i].postMessage({ type: 'open', m: data.m || 0, n: data.n || '' }); return cs[i].focus(); }
+      }
+      return self.clients.openWindow(target);
+    });
+  };
+  // 3.0.0: On it answers the reminder through the admin's helper with this device's own secret, without opening VIBRA;
+  // if that fails, VIBRA opens on the Reply sheet instead
+  if (e.action === 'onit' && data.n) {
+    e.waitUntil(kv('get', 'device').then(function (d) {
+      if (!d || !d.helper) throw new Error('no device');
+      return post(d.helper, { action: 'onit', dev: d.dev, k: d.k, n: data.n });
+    }).then(function (j) { if (!j || !j.ok) throw new Error('refused'); }).catch(open));
+    return;
+  }
+  e.waitUntil(open());
 });
 
 /* the browser renewed the subscription: tell the helper, with this device's own secret (no code needed) */
