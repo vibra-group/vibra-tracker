@@ -5,12 +5,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <script>
-/* VIBRA Tracker 0.3.0 on the group's own address (vibra-group.github.io), built by tools/build_web.py from app/Index.html.
+/* VIBRA Tracker 0.3.1 on the group's own address (vibra-group.github.io), built by tools/build_web.py from app/Index.html.
    This page is the VIBRA app: installable, with notifications and the last data readable offline.
    Google confirms who the member is ("Sign in with Google"), or a one-time code made on a signed-in device does; the
    admin's helper checks that once and gives a session; every server call then goes to the helper with that session
    and runs the tracker's own code as the member. */
-window.VIBRA_WEB = { helper: "https://script.google.com/macros/s/AKfycbzNE__5onOmvia3VaFHjybAJ5G35cnDJCN1ysuiNAYlgOC5xsbCi0xyDnmoJP7lEaFR3w/exec", clientId: "619243121375-pi18v7vjgvcue7qo6455uids4v28megi.apps.googleusercontent.com", classic: "https://script.google.com/macros/s/AKfycbzkG5eCrxQvQtJgfksL92G9vtl2I4LLEew-Az4qYlDxX6V1QfgtIrwGjYOGq9CQ0r3aWA/exec", built: "0.3.0" };
+window.VIBRA_WEB = { helper: "https://script.google.com/macros/s/AKfycbzNE__5onOmvia3VaFHjybAJ5G35cnDJCN1ysuiNAYlgOC5xsbCi0xyDnmoJP7lEaFR3w/exec", clientId: "619243121375-pi18v7vjgvcue7qo6455uids4v28megi.apps.googleusercontent.com", classic: "https://script.google.com/macros/s/AKfycbzkG5eCrxQvQtJgfksL92G9vtl2I4LLEew-Az4qYlDxX6V1QfgtIrwGjYOGq9CQ0r3aWA/exec", built: "0.3.1" };
 (function () {
   var W = window.VIBRA_WEB, KEY = 'vibra-web-session', S = null, queue = [], gisInit = false, tries = 0, gateOn = false;
   var ua = navigator.userAgent || '', IOS = /iPad|iPhone|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
@@ -27,7 +27,7 @@ window.VIBRA_WEB = { helper: "https://script.google.com/macros/s/AKfycbzNE__5onO
   function setAccs(a) { try { localStorage.setItem(ACC, JSON.stringify(a.slice(0, 6))); } catch (e) { } }
   function remember(x, extra) {
     var a = accs(), i = a.map(function (y) { return y.email; }).indexOf(x.email), o = i >= 0 ? a[i] : {};
-    ['session', 'exp', 'email', 'key', 'u', 'v'].forEach(function (k) { if (x[k] !== undefined) o[k] = x[k]; });
+    ['session', 'exp', 'email', 'key', 'u', 'v', 'pic'].forEach(function (k) { if (x[k] !== undefined) o[k] = x[k]; });
     if (extra) { if (extra.name) o.name = String(extra.name).slice(0, 80); if (extra.ini) o.ini = String(extra.ini).slice(0, 4); }
     if (i >= 0) a[i] = o; else a.unshift(o);
     setAccs(a);
@@ -117,14 +117,33 @@ window.VIBRA_WEB = { helper: "https://script.google.com/macros/s/AKfycbzNE__5onO
       if (acc) { msg(acc === 'choose' ? 'Choose an account.' : 'Sign in again as ' + acc + '.'); try { history.replaceState(null, '', location.pathname); } catch (e) { } }
       gisInit = true;
     }
-    var b = $('vw-btn');
-    // 0.3.0 (admin: "nút sign in with google sao không là nút quen thuộc của google nữa"; then "bản giờ là nút màu xanh"):
-    // Google's current blue button (white G on blue), the same in both themes
-    if (b && !b.childNodes.length) id.renderButton(b, { type: 'standard', theme: 'filled_blue', size: 'large', shape: 'rectangular', text: 'signin_with', logo_alignment: 'left', width: 280 });
+    gbtn();
     try { id.prompt(); } catch (e) { }
   }
-  function signedIn(x) {
-    S = { session: x.session, exp: x.exp, email: x.email, key: x.key, u: x.u, v: x.v }; save();
+  /* 0.3.1 (admin: "Bo tròn hẳn. Cứ theo thương hiệu nha"): Google's own button, pill-shaped, as Google shows it now:
+     outlined (white) in light mode, filled black in dark mode; Google itself turns it into "Continue as ..." with the
+     account's photo when it can. Drawn again when the theme changes. */
+  var gTheme = '';
+  function gbtn() {
+    var id = window.google && google.accounts && google.accounts.id, b = $('vw-btn');
+    if (!id || !b || !gisInit) return;
+    var th = document.documentElement.getAttribute('data-theme') === 'dark' ? 'filled_black' : 'outline';
+    if (b.childNodes.length && th === gTheme) return;
+    gTheme = th; b.innerHTML = ''; b.setAttribute('data-theme', th);
+    id.renderButton(b, { type: 'standard', theme: th, size: 'large', shape: 'pill', text: 'signin_with', logo_alignment: 'left', width: 280 });
+  }
+  try { new MutationObserver(function () { if (gateOn) gbtn(); }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] }); } catch (e) { }
+  /* 0.3.1 (BACKLOG 25): the photo of the Google account, as Google's sign-in names it (only a Google photo address) */
+  function picOf(tok) {
+    try {
+      var p = String(tok || '').split('.')[1].replace(/-/g, '+').replace(/_/g, '/'); while (p.length % 4) p += '=';
+      var u = String(JSON.parse(decodeURIComponent(escape(atob(p)))).picture || '');
+      return /^https:\/\/lh[3-6]\.googleusercontent\.com\/[A-Za-z0-9_\-\/=.~]{8,600}$/.test(u) ? u : '';
+    } catch (e) { return ''; }
+  }
+  function signedIn(x, pic) {
+    var was = accs().filter(function (y) { return y.email === x.email; })[0];
+    S = { session: x.session, exp: x.exp, email: x.email, key: x.key, u: x.u, v: x.v, pic: pic !== undefined ? pic : (was && was.pic) || '' }; save();
     window.__VIBRA_U = x.u; window.__VIBRA_V = x.v;
     var el = $('vw-gate'); if (el) el.hidden = true; gateOn = false; msg('');
     var q = queue; queue = []; q.forEach(function (c) { run(c[0], c[1], c[2], c[3]); });
@@ -133,7 +152,7 @@ window.VIBRA_WEB = { helper: "https://script.google.com/macros/s/AKfycbzNE__5onO
     msg('Checking your sign-in…');
     post({ api: 'login', idToken: resp && resp.credential }).then(function (x) {
       if (!x || !x.ok) { msg((x && x.error) || 'Sign-in failed. Try again.', true); try { google.accounts.id.disableAutoSelect(); } catch (e) { } return; }
-      signedIn(x);
+      signedIn(x, picOf(resp && resp.credential));
     }).catch(function (e) { msg(netMsg(e), true); });
   }
   function codeLogin() {
@@ -147,12 +166,12 @@ window.VIBRA_WEB = { helper: "https://script.google.com/macros/s/AKfycbzNE__5onO
     }).catch(function (e) { go.disabled = false; msg(netMsg(e), true); });
   }
   W.accounts = function () { // without the sessions themselves
-    return accs().map(function (y) { return { email: y.email, key: y.key, name: y.name || y.key || y.email, ini: y.ini || '', current: !!(S && S.email === y.email), live: y.exp > Date.now() + 60000 }; });
+    return accs().map(function (y) { return { email: y.email, key: y.key, name: y.name || y.key || y.email, ini: y.ini || '', pic: y.pic || '', current: !!(S && S.email === y.email), live: y.exp > Date.now() + 60000 }; });
   };
   W.noteMe = function (name, ini) { if (S) remember(S, { name: name, ini: ini }); };
   W.switchTo = function (email) {
     var y = accs().filter(function (z) { return z.email === email; })[0]; if (!y) return;
-    if (y.exp > Date.now() + 60000 && y.session) { S = { session: y.session, exp: y.exp, email: y.email, key: y.key, u: y.u, v: y.v }; save(); location.replace(location.pathname); return; }
+    if (y.exp > Date.now() + 60000 && y.session) { S = { session: y.session, exp: y.exp, email: y.email, key: y.key, u: y.u, v: y.v, pic: y.pic || '' }; save(); location.replace(location.pathname); return; }
     S = null; save(); location.replace(location.pathname + '?account=' + encodeURIComponent(email)); // that session ended: sign in again, with that account offered
   };
   W.addAccount = function () { S = null; save(); try { google.accounts.id.disableAutoSelect(); } catch (e) { } location.replace(location.pathname + '?account=choose'); };
@@ -162,7 +181,23 @@ window.VIBRA_WEB = { helper: "https://script.google.com/macros/s/AKfycbzNE__5onO
     var done = function () { location.replace(location.pathname + (other ? '?account=choose' : '')); };
     if (s) post({ api: 'logout', session: s.session }).then(done, done); else done();
   };
-  W.session = function () { return S ? { email: S.email, key: S.key, exp: S.exp } : null; };
+  W.session = function () { return S ? { email: S.email, key: S.key, exp: S.exp, pic: S.pic || '' } : null; };
+  /* 0.3.1: members signed in before the photo came (sessions last 14 days) ask Google for it once, from Settings; Google may
+     answer at once (an account already used here) or show its own small sign-in card; only the photo is taken */
+  W.googlePhoto = function (done) {
+    var id = window.google && google.accounts && google.accounts.id, fin = false, end = function (ok) { if (!fin) { fin = true; done(ok); } };
+    if (!id || !S) return end(false);
+    gisInit = false; // the sign-in screen sets its own answer again when it is needed
+    id.initialize({ client_id: W.clientId, auto_select: true, itp_support: true, use_fedcm_for_prompt: true, context: 'use', login_hint: S.email, callback: function (r) {
+      var tok = r && r.credential, em = '';
+      try { var p = String(tok).split('.')[1].replace(/-/g, '+').replace(/_/g, '/'); while (p.length % 4) p += '='; em = String(JSON.parse(atob(p)).email || '').toLowerCase(); } catch (e) { }
+      var pic = em && S && em === S.email ? picOf(tok) : '';
+      if (pic) { S.pic = pic; save(); }
+      end(!!pic);
+    } });
+    try { id.prompt(); } catch (e) { end(false); }
+    setTimeout(function () { end(false); }, 45000);
+  };
   /* 0.2.1: ORCID look-up and title pages, through the helper (the page never calls orcid.org or Gemini itself) */
   function ask(body) {
     if (!S) return Promise.reject(new Error('Sign in first.'));
@@ -414,6 +449,9 @@ svg.ic{width:18px;height:18px;flex:none;stroke:currentColor;fill:none;stroke-wid
 .search input{width:100%;height:40px;padding:0 10px 0 34px;border:1px solid var(--line);border-radius:var(--r-sm);background:var(--surface)}
 .avatar{width:40px;height:40px;border-radius:999px;border:0;cursor:pointer;background:var(--accent-soft);color:var(--accent-text);font:600 calc(13px*var(--fz,1)) var(--sans);transition:transform .12s var(--ease)}
 .avatar:active{transform:scale(.96)}
+/* 0.3.1: the member's Google photo over the initials (BACKLOG 25) */
+.av,.avatar{position:relative;overflow:hidden}
+.avp{position:absolute;left:0;top:0;width:100%;height:100%;object-fit:cover;border-radius:inherit;display:block;background:var(--surface-2)}
 /* Export is icon-only (tooltip) so the four tabs always fit beside the tools */
 .exp-label{display:none}.tabs{min-width:max-content}.search{min-width:120px}
 @media (max-width:1420px){.hdr-in{grid-template-columns:1fr auto;grid-template-areas:"brand icons" "tabs tabs" "tools tools"}.tools{justify-content:flex-start}.search{max-width:none}}
@@ -1138,6 +1176,7 @@ svg.ic2{fill:none!important;stroke:currentColor;stroke-width:1.6;stroke-linecap:
 .sb .sb-new .plus{width:26px;height:26px;margin-left:0;background:linear-gradient(135deg,var(--accent),#7C6CF0);color:#fff}
 .sb .sb-new .plus svg.ic{color:#fff;stroke-width:2.4}
 .shell.sbc .sb .sb-new{width:40px;height:40px;min-height:40px;padding:0;border-radius:999px}
+.shell.sbc .sb .sb-item.sb-new{margin:0 auto 8px} /* 0.3.1: the same gap under New as in the full sidebar, so the items keep their places */
 .sb-scroll{flex:1 1 auto;min-height:0;overflow-y:auto;overflow-x:hidden;margin:8px -4px 0;padding:0 4px;scrollbar-width:thin}
 .sb-sec{margin-top:14px}
 .sb-sec h3{display:flex;align-items:center;gap:6px;margin:0 6px 4px;font:500 calc(12px*var(--fz,1))/1.4 var(--sans);color:var(--muted)}
@@ -1399,7 +1438,9 @@ html.dragging,html.dragging *{cursor:grabbing!important;-webkit-user-select:none
 .sc-bub b{display:flex;align-items:center;gap:6px;font-weight:650;font-size:calc(13px*var(--fz,1))}
 .sc-bub b i{width:9px;height:9px;border-radius:999px;flex:none}
 .sc-bub span{display:block;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-@media (min-width:900px){#scrub{display:none}}
+/* 0.3.1: computers too (the media rule that hid it from 900 px is gone); finished manuscripts in quiet colours */
+.sc-acc{background:color-mix(in srgb,var(--sc-action) 45%,transparent)}.sc-pub{background:color-mix(in srgb,var(--sc-drafting) 45%,transparent)}.sc-rej,.sc-closed{background:color-mix(in srgb,var(--sc-waiting) 50%,transparent)}
+@media (hover:hover) and (pointer:fine){.sc-rail{cursor:pointer}#scrub{width:48px}.sc-rail{width:36px}}
 @media (prefers-reduced-motion:reduce){#scrub,.sc-n,.sc-thumb{transition:none}}
 /* 0.2.7: a frame of fixed height, the releases scroll inside it */
 .wn-ov{align-items:center}
@@ -1442,7 +1483,7 @@ html.dragging,html.dragging *{cursor:grabbing!important;-webkit-user-select:none
 /* collapsed rail */
 .shell.sbc{--sbw:60px}
 .shell.sbc .sb{padding:10px 8px 12px}
-.shell.sbc .sb-top{flex-direction:column;height:auto;gap:4px;padding:0}
+.shell.sbc .sb-top{justify-content:center;padding:0} /* 0.3.1: the same height as the full sidebar's top row: New and every item keep their places in the rail */
 .shell.sbc .sb-brand{flex:none;justify-content:center;padding:0;width:44px}
 .shell.sbc .sb-brand span,.shell.sbc .sb-brand b,.shell.sbc .sb-brand em,.shell.sbc .sb .lab,.shell.sbc .sb .cnt,.shell.sbc .sb-scroll,.shell.sbc .sb-me .who{display:none}
 .shell.sbc .sb .sb-item{justify-content:center;padding:0;width:44px;margin:0 auto}
@@ -1529,9 +1570,9 @@ button.kpi:hover:not([disabled]),.tile:hover:not([disabled]){transform:none;box-
 :root[data-theme="dark"] .np-dim{background:rgba(0,0,0,.45)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .np-dim{background:rgba(0,0,0,.45)}}
 .npop .np-scroll{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;background:var(--surface)}
-.np-foot{flex:none;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:2px 8px;padding:4px 6px;border-top:1px solid var(--line);background:var(--surface)}
-.np-foot .nmore{flex:1 1 auto;width:auto;min-height:40px;border:0;justify-content:flex-start;padding:8px 10px;border-radius:10px}
-.np-foot .nmore.none{color:var(--muted);font-weight:500;cursor:default}
+.np-end{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:2px 8px;padding:4px 6px}
+.np-end .nmore{flex:1 1 auto;width:auto;min-height:40px;border:0;justify-content:flex-start;padding:8px 10px;border-radius:10px}
+.np-end .nmore.none{color:var(--muted);font-weight:500;cursor:default}
 .np-set{flex:none;border:0;background:none;padding:8px 10px;border-radius:10px;color:var(--muted);font:500 calc(12.5px*var(--fz,1)) var(--sans);cursor:pointer}
 .np-set:hover{background:var(--surface-2);color:var(--ink)}
 @media (max-width:899px){
@@ -1785,9 +1826,18 @@ html.nav3[data-lay="rail"] .shell.pshown .panel{left:60px!important}
 /* from 840 px without the free column (under 1200 px), the card is a little narrower than with it */
 html.nav3[data-lay="side"] .shell{--pw:clamp(340px,calc(100vw - var(--sbw) - var(--fcol) - 360px),640px)}
 html.nav3[data-lay="side"] .shell.tvb{--pw:clamp(340px,calc(100vw - var(--sbw) - var(--fcol) - 520px),560px)}
+/* 0.3.1 (BACKLOG 19 and 21; admin's choice A, full blocks at every width): Today as blocks beside the card. The blocks keep
+   the width they had (--blw); only the number of columns drops, and the card takes the room the columns leave (--pwA, both
+   set when the card opens). (Written for 1024 px: with the new navigation the style sheet
+   moves it to 840 px, where the card floats beside the list.) */
+@media (min-width:1024px){
+  .shell.pshown.tvb.blkA .blocks{grid-template-columns:repeat(auto-fill,min(var(--blw,250px),100%));justify-content:start}
+  .shell.pshown.tvb.blkA,html.nav3[data-lay] .shell.pshown.tvb.blkA{--pw:var(--pwA,clamp(340px,calc(100vw - var(--sbw) - var(--fcol) - 520px),560px))}
+}
 /* Whose work folded: Everyone, Me and the chosen person; the others behind "N more" */
 .chips.folded .chip.opt:not([aria-pressed="true"]){display:none}
 .chip.more{border-style:dashed;color:var(--accent-text);gap:4px}
+.chip.more[hidden]{display:none} /* 0.3.1: when every chip fits on one row, no empty chip at its end (since 0.2.9) */
 .chip.more[aria-expanded="true"]{color:var(--muted)}
 .chip.more svg.ic{width:15px;height:15px;transition:transform .25s var(--ease)}
 .chip.more[aria-expanded="true"] svg.ic{transform:rotate(180deg)}
@@ -1822,6 +1872,9 @@ html.nav3[data-lay="stack"] .shell.drawer .mainwrap{transform:translateX(min(320
 html.nav3[data-lay="stack"] .shell::before{content:"";position:fixed;inset:0;z-index:0;background:var(--side);pointer-events:none}
 html.nav3[data-lay="stack"] .sb{border-right:0}
 html.nav3[data-lay="stack"] .mainwrap{min-height:100vh;min-height:100dvh}
+/* 0.3.1 (BACKLOG 22): the three moving parts keep their own layer at rest, so the hand-off from the movement to the resting
+   style repaints nothing (the flash at the end of a slide on iPhone Safari) */
+html.nav3[data-lay="stack"] .mainwrap,html.nav3[data-lay="stack"] .sb,html.nav3[data-lay="stack"] .drshade{will-change:transform}
 /* the colour sets */
 :root[data-pal="navy"]{--side:#16305A} :root[data-pal="navy"][data-theme="dark"]{--side:#0B1730}
 :root[data-pal="teal"]{--side:#123F3C} :root[data-pal="teal"][data-theme="dark"]{--side:#082725}
@@ -1848,8 +1901,27 @@ html.nav3[data-lay="stack"] .mainwrap{min-height:100vh;min-height:100dvh}
 @media (max-width:599px){
   html:not(.kb-open) .overlay:not(.pal-ov){padding:max(24px,env(safe-area-inset-top)) 0 0}
   html:not(.kb-open) .overlay:not(.pal-ov) > .dialog{margin:auto 0 0;max-width:none;border-radius:22px 22px 0 0;padding-top:30px;padding-bottom:max(24px,env(safe-area-inset-bottom));position:relative;animation:none}
-  html:not(.kb-open) .overlay:not(.pal-ov) > .dialog::before{content:"";position:absolute;top:9px;left:50%;width:38px;height:5px;margin-left:-19px;border-radius:3px;background:var(--line-2)}
+  html:not(.kb-open) .overlay:not(.pal-ov) > .dialog::before{top:9px}
 }
+/* 0.3.1 (BACKLOG 30, admin: "phía trên cùng của pop up có thanh rất nhỏ ngắn ... để người ta biết hướng kéo"; "Màu xám như
+   iPhone"): every layer that can be dragged away shows a small grey bar on the side it leaves by: at the top of what goes
+   down (dialogs and sheets, Search, the account sheet), at the bottom of what goes up (the notifications list on a phone),
+   at the left edge of what goes sideways (the card; the page lying over a hidden sidebar). Only a sign: the layer can be
+   dragged from the bar or from anywhere on it that does not scroll that way. */
+:root{--dbar:color-mix(in srgb,var(--ink) 22%,transparent)}
+.overlay:not(.pal-ov) > .dialog{position:relative}
+.overlay:not(.pal-ov) > .dialog::before,.pal::before,.pop.acct.sheet::before{content:"";position:absolute;top:7px;left:50%;width:38px;height:5px;margin-left:-19px;border-radius:3px;background:var(--line-2);background:var(--dbar);z-index:2;pointer-events:none}
+.pal{position:relative}
+.dbar-x{display:block;position:sticky;top:calc(50% - 28px);height:0;z-index:6;pointer-events:none}
+.dbar-x::before{content:"";position:absolute;left:-14px;top:0;width:5px;height:56px;border-radius:3px;background:var(--line-2);background:var(--dbar)}
+@media (max-width:599px){.dbar-x::before{left:-11px}}
+@media (max-width:899px){
+  .pop.npop{padding-bottom:16px}
+  .pop.npop::after{content:"";position:absolute;bottom:6px;left:50%;width:38px;height:5px;margin-left:-19px;border-radius:3px;background:var(--line-2);background:var(--dbar);pointer-events:none}
+  .pop.acct.sheet{padding-top:14px}
+}
+html.nav3[data-lay="side"] .shell.sbc:not(.pshown) .mainwrap::before{content:"";position:fixed;left:calc(var(--sbw) + 6px);top:calc(50% - 28px);width:5px;height:56px;border-radius:3px;background:var(--line-2);background:var(--dbar);z-index:40;pointer-events:none}
+html.ldrag,html.ldrag *{cursor:grabbing!important;user-select:none!important;-webkit-user-select:none!important}
 /* the choice in Settings: a small picture of each set (menu, page, card) */
 .cs-row{display:flex;flex-direction:column;gap:8px}
 .cs-opts{display:flex;flex-wrap:wrap;gap:10px}
@@ -2007,6 +2079,13 @@ var TIPS = {
    something works, a bug they may have met); internal fixes need none. Each member sees the card once per release
    (preference relSeen; the 0.2.0 tour stands for 0.2.0), never in a session that showed the tour; the bell keeps it. */
 var RELEASES = [
+  { v: '0.3.1', date: '2026-10-25', title: 'Close by hand, your photo, steadier blocks', items: [
+    ['spark', 'One rule for closing by hand: what came in from the side goes back to the side, what rose from the bottom goes down. Search closes with a pull down, the notifications list with a swipe up. A small grey bar shows the way.'],
+    ['desktop', 'On a laptop, a two-finger swipe on the trackpad moves the top layer: the card to the right, a dialog or Search down, and with the sidebar hidden the page off the sidebar and back (that also changes Keep the sidebar hidden). A mouse can press and drag them; its wheel only scrolls.'],
+    ['user', 'Your Google photo on your round avatar, for everyone in the group. It comes when you sign in with Google (or Settings, Use my Google photo). Google\'s own rounded sign-in button.'],
+    ['apps', 'Blocks beside the card keep their size and every line; only the number of columns changes, and the block you chose stays in sight, also when you close the card.'],
+    ['sliders', 'The coloured notches for quick scrolling are on All manuscripts too, and on computers. The phone menu can be caught mid-way, without a stop or a flash, and the page no longer jumps when a card closes.'],
+    ['bell2', 'Earlier notifications load by themselves when you reach the end of the list.']] },
   { v: '0.3.0', date: '2026-10-24', title: 'Answer a reminder, links that know their place, your to-do fills itself', items: [
     ['bell', 'A nudge or a deadline alert now opens a Reply sheet: say what happened in one line (any language, or dictate it) and the AI updates the manuscript; or press On it. Whoever nudged you sees your answer. On Android and on a computer the notification itself has Reply and On it.'],
     ['check', 'Everyone has a To-do now. "Ball with me" lines come by themselves for every manuscript where you have the ball (its next step, its deadline) and leave when the step is done or the ball moves on. Tick one and the AI marks the step done. Your own lines stay private, as before.'],
@@ -2255,6 +2334,21 @@ function syncLock() {
   }).catch(function () { S.lockPending = false; });
 }
 function person(key) { return S.boot.people.filter(function (p) { return p.key === key; })[0]; }
+/* 0.3.1 (BACKLOG 25, admin: "Trong account có thể hiện avatar (google)"; "Đồng ý bỏ tải lên"): the round avatars show the
+   photo of the member's Google account (People, photo, sent after a Google sign-in on the VIBRA app); the initials where
+   there is none, and while it cannot load (offline). Nothing to set up: a member changes it in their Google account. */
+var PHOTO_BAD = {};
+function photoOk(u) { return u && !PHOTO_BAD[u] ? u : ''; }
+function photoOf(key) { var p = key && S.boot && person(key); return photoOk(p && p.photo); }
+function myPhoto() { var W = window.VIBRA_WEB, w = W && W.session && W.session(); return photoOf(me().key) || photoOk(w && w.pic); }
+function avImg(u) { return u ? '<img class="avp" src="' + esc(u) + '" alt="" referrerpolicy="no-referrer" draggable="false">' : ''; }
+document.addEventListener('error', function (e) { var t = e.target; if (t && t.classList && t.classList.contains('avp')) { PHOTO_BAD[t.getAttribute('src')] = 1; t.remove(); } }, true);
+function syncPhoto() {
+  var W = window.VIBRA_WEB, w = W && W.session && W.session(), p = S.boot && !S.stale && person(me().key);
+  if (!w || !w.pic || !p || p.photo === w.pic || S.photoSent === w.pic) return;
+  S.photoSent = w.pic;
+  api('api_setPhoto', w.pic).then(function (r) { if (r && r.ok) { p.photo = r.photo; render(); } }).catch(function () { });
+}
 /* 0.1.12: who an author is. The same fixed rules as the server (no AI): accents, punctuation and hyphens ignored,
    initials stand for given names ("M.L.G. Leoni", "Matteo LG Leoni"), Vietnamese family-first order accepted
    ("Pham Van Phong"). S.boot.dir holds names and keys only: {k, n (full name), a (other spellings), m (member)}. */
@@ -2384,10 +2478,14 @@ function metaHtml(d) { return d.idle === null ? 'no update' : d.idle === 0 ? 'up
 /* ---------- render */
 var app = document.getElementById('app'), layer = document.getElementById('layer');
 function render() {
+  S.nr = (S.nr || 0) + 1; // 0.3.1: redraws counted (the tests check that a movement's end redraws nothing)
   if (S.draft) keepDraftSoon();
   var ae = document.activeElement, keep = ae && ae.id ? { id: ae.id, s: ae.selectionStart, e: ae.selectionEnd } : null;
   var panelEl = app.querySelector('.panel'), pScroll = panelEl ? panelEl.scrollTop : 0; // 0.3.0: in the page only (a card leaving is a copy outside it)
   var wasShown = !!document.querySelector('.shell.pshown'), glideFrom = S.boot && wasShown !== panelShown() ? blockRects() : null; // 0.2.4
+  var blkChg = !!S.boot && wasShown !== panelShown() && blkOn(), blkA = blkChg ? blkAnchor() : null; // 0.3.1
+  if (blkChg && panelShown()) blkWidth();
+  if (S.boot && panelShown() && blkOn()) blkFit();
   if (S.err) { app.innerHTML = errorPage(); return; }
   if (!S.boot) return;
   applyNav3(); // 0.2.9
@@ -2405,7 +2503,7 @@ function render() {
   var sbs = document.querySelector('.sb-scroll'), sbScroll = sbs ? sbs.scrollTop : 0, sbm = document.querySelector('.sb-mid'), sbMid = sbm ? sbm.scrollTop : 0;
   var shell0 = app.querySelector('.shell'), drWas = !!(shell0 && shell0.classList.contains('drawer')); // 0.2.9
   var sbOver = sbCollapsed() && N3() && (S.sbPeek || S.sbSlide); // the full sidebar over (peek) or under (slide) the rail
-  morph(app, '<div class="shell' + (sbCollapsed() && !sbOver ? ' sbc' : '') + (sbOver ? (S.sbSlide ? ' sbslide' : ' sbpeek') : '') + (S.sbShow ? ' sbshow' : '') + (S.drawer ? ' drawer' : '') + (panelShown() ? ' pshown' : '') + (S.view === 'today' && todayView() === 'blocks' ? ' tvb' : '') + '">' + sidebar() + '<div class="scrim" data-a="drawer-close"></div><div class="drshade" aria-hidden="true"></div>' + (panelShown() ? '<div class="pscrim" aria-hidden="true"></div>' : '') +
+  morph(app, '<div class="shell' + (sbCollapsed() && !sbOver ? ' sbc' : '') + (sbOver ? (S.sbSlide ? ' sbslide' : ' sbpeek') : '') + (S.sbShow ? ' sbshow' : '') + (S.drawer ? ' drawer' : '') + (panelShown() ? ' pshown' : '') + (S.view === 'today' && todayView() === 'blocks' ? ' tvb blkA' : '') + '">' + sidebar() + '<div class="scrim" data-a="drawer-close"></div><div class="drshade" aria-hidden="true"></div>' + (panelShown() ? '<div class="pscrim" aria-hidden="true"></div>' : '') +
     '<div class="mainwrap">' + topbar() + '<div class="wrap"><div class="cols"><div class="main">' + pageTools() + draftBar() + main + '</div></div></div></div>' + (panelShown() ? panel() : '') + // 0.2.9: the card is its own layer
     '<div class="fstat' + fsNew() + '" aria-live="polite">' + statusChip() + '</div></div>' + fab()); // 0.2.8: only what changed is touched
   document.documentElement.style.setProperty('--sbw', sbCollapsed() ? '60px' : '264px');
@@ -2430,7 +2528,10 @@ function render() {
   if (keep) { var el = document.getElementById(keep.id); if (el) { el.focus({ preventScroll: true }); try { if (keep.s !== null && el.setSelectionRange) el.setSelectionRange(keep.s, keep.e); } catch (x) { } } }
   S.fx = {};
   setBadge();
-  if (glideFrom) glideBlocks(glideFrom);
+  if (glideFrom || blkA) chipsFit(); // 0.3.1: the Whose work chips fold to one row first, so what is measured below is the final layout
+  var blkDy = blkA ? blkKeep(blkA) || 0 : 0; // 0.3.1: before the movement is measured, so the scroll is part of it
+  if (blkDy) blkLift(blkDy);
+  if (glideFrom) glideBlocks(glideFrom, 0, blkChg);
   segSlide(segB);
   if (p2 && p2 !== panelEl) cardIn(p2); // 0.2.8: the card grows out of the row or block that was tapped
   layersAfter(drWas); // 0.2.9
@@ -2487,6 +2588,12 @@ function allNotes() {
 }
 function notesMore() { return S.nOld && S.nOld.loaded ? S.nOld.more : !!(S.boot && S.boot.notifMore); }
 function notesUnreadMore() { return S.nOld && S.nOld.loaded ? S.nOld.unreadMore || 0 : (S.boot && S.boot.notifUnreadMore) || 0; }
+/* 0.3.1: the list's end row coming into view (scrolled to within 48 px of it) loads the next page by itself, not while
+   the list is being swiped away */
+document.addEventListener('scroll', function (e) {
+  var sc = e.target; if (!sc.classList || !sc.classList.contains('np-scroll') || S.pop !== 'notif' || (PG && PG.on) || (S.nOld && S.nOld.busy) || !notesMore()) return;
+  if (sc.scrollTop > 0 && sc.scrollTop + sc.clientHeight >= sc.scrollHeight - 48) loadOlderNotes();
+}, true);
 function loadOlderNotes() {
   if (S.nOld && S.nOld.busy) return;
   var all = allNotes(), last = all.length ? all[all.length - 1] : null;
@@ -2549,7 +2656,7 @@ function sidebar() {
     '<button class="sb-item sb-fb" data-a="fb-open"' + (sbCollapsed() ? tt('Send feedback (test phase)') : '') + '>' + ic('chat2') + '<span class="lab">Send feedback</span><span class="sb-test">Test</span></button>' +
     '<button class="sb-item" data-a="pop" data-v="notif" aria-expanded="' + (S.pop === 'notif') + '" aria-label="Notifications, ' + unread + ' unread"' + (sbCollapsed() ? tt('Notifications') : '') + '>' + ic('bell2') + '<span class="lab">Notifications</span>' + (unread ? '<span class="badge" aria-hidden="true">' + unread + '</span>' : '') + '</button>' +
     '<button class="sb-item" data-a="view" data-v="settings"' + (S.view === 'settings' ? ' aria-current="page"' : '') + (sbCollapsed() ? tt('Settings') : '') + '>' + ic('gear') + '<span class="lab">Settings</span></button>' +
-    '<div class="sb-merow"><button class="sb-me" data-a="pop" data-v="acct" aria-haspopup="menu" aria-expanded="' + (S.pop === 'acct') + '" aria-label="Account: ' + esc(me().display) + '"' + (sbCollapsed() ? tt(me().display) : '') + '><span class="av">' + esc(me().initials) + '</span><span class="who"><b>' + esc(me().full_name || me().display) + '</b><span>' + esc(me().role) + '</span></span></button>' +
+    '<div class="sb-merow"><button class="sb-me" data-a="pop" data-v="acct" aria-haspopup="menu" aria-expanded="' + (S.pop === 'acct') + '" aria-label="Account: ' + esc(me().display) + '"' + (sbCollapsed() ? tt(me().display) : '') + '><span class="av">' + esc(me().initials) + avImg(myPhoto()) + '</span><span class="who"><b>' + esc(me().full_name || me().display) + '</b><span>' + esc(me().role) + '</span></span></button>' +
     '<button class="sb-ib sb-get" data-a="get-app" aria-label="Get the VIBRA app"' + tt('Get the app') + '>' + ic('apps') + '</button></div>' +
     '</div></aside>';
 }
@@ -2753,9 +2860,10 @@ function viewSettings() {
   };
   var body;
   if (tab === 'general') {
-    body = '<div class="box"><div style="display:flex;align-items:center;gap:14px"><div class="avatar" style="width:52px;height:52px;display:flex;align-items:center;justify-content:center;font-size:calc(16px*var(--fz,1))">' + esc(u.initials) + '</div>' +
+    body = '<div class="box"><div style="display:flex;align-items:center;gap:14px"><div class="avatar" style="width:52px;height:52px;display:flex;align-items:center;justify-content:center;font-size:calc(16px*var(--fz,1))">' + esc(u.initials) + avImg(myPhoto()) + '</div>' +
       '<div style="min-width:0"><div style="font-weight:600;font-size:calc(16px*var(--fz,1))">' + esc(u.full_name || u.display) + '</div><div class="mono muted" style="font-size:calc(12px*var(--fz,1))">' + esc(u.email) + '</div></div><span class="tag t-action" style="margin-left:auto">' + esc(u.role) + '</span></div>' +
       '<p class="muted" style="margin:0;font-size:calc(13px*var(--fz,1))">Your name goes on every change you save.</p>' +
+      (window.VIBRA_WEB && window.VIBRA_WEB.googlePhoto && !myPhoto() ? '<div class="btns"><button class="btn btn-s" data-a="g-photo"' + (S.gPhoto ? ' disabled' : '') + '>' + ic('user') + 'Use my Google photo</button></div>' : '') + // 0.3.1 (BACKLOG 25)
       (window.VIBRA_WEB ? '<div class="btns"><button class="btn btn-s" data-a="get-app">' + ic('apps') + 'Get the VIBRA app</button><button class="btn btn-s" data-a="web-code"' + (S.webCodeBusy ? ' disabled' : '') + '>' + ic('phone') + 'Sign in another device with a code</button><button class="btn btn-s" data-a="web-signout">Sign out on this device</button></div>' +
         (S.webCode ? '<div class="pairbox"><span class="lbl">Code for your other device</span><b class="paircode mono">' + esc(S.webCode.code) + '</b><span class="muted" style="font-size:calc(12.5px*var(--fz,1))">Valid ' + S.webCode.minutes + ' minutes, once. On the other device choose <b>Sign in with a code</b>.</span></div>' : '') : '') + '</div>' +
       myDetailsBox() +
@@ -2994,19 +3102,21 @@ function chipName(k) { var p = person(k); return p && /^[A-Z]{2,3}$/.test(k) && 
 function chips(base) {
   var all = base || S.boot.manuscripts.map(derive).filter(function (d) { return d.tier !== 'closed'; });
   var keys = ['all'].concat(S.boot.people.map(function (p) { return p.key; })), au = S.view === 'list';
-  return '<div class="chips"><span class="frow"><span class="lbl">' + (au ? 'Whose manuscripts' : 'Whose work') + '</span>' + tip(au ? 'whoseAll' : 'whose') + '</span>' + keys.map(function (k) {
+  var cf = S.chipF || {}; // 0.3.1: drawn as they were last fitted, so a redraw does not unfold them for a moment (the page jumped)
+  return '<div class="chips' + (cf.f ? ' folded' : '') + '"><span class="frow"><span class="lbl">' + (au ? 'Whose manuscripts' : 'Whose work') + '</span>' + tip(au ? 'whoseAll' : 'whose') + '</span>' + keys.map(function (k) {
     var n = k === 'all' ? all.length : all.filter(function (d) { return involves(d, k, au); }).length;
     var label = k === 'all' ? 'Everyone' : (k === me().key ? 'Me' : chipName(k));
     return '<button class="chip' + (k === 'all' || k === me().key ? '' : ' opt') + '" data-a="who" data-v="' + esc(k) + '" aria-pressed="' + (S.who === k) + '">' + esc(label) + ' <span class="n">' + n + '</span></button>';
-  }).join('') + '<button class="chip more" data-a="who-more" aria-expanded="' + !!prefs().whoOpen + '" hidden></button></div>';
+  }).join('') + '<button class="chip more" data-a="who-more" aria-expanded="' + !!prefs().whoOpen + '"' + (cf.m ? ' aria-label="' + esc(cf.a) + '">' + cf.m : ' hidden>') + '</button></div>';
 }
 /* 0.2.9 (admin: "whose work không cần hiện hết mọi người, nó có nút sổ ra"; "ngang mà đủ 1 hàng thì hiện hết"): when the
    chips would take more than one row, only Everyone, Me and the chosen person stay, and "N more" shows the others in
    place ("Fewer" folds them again; the choice is kept per member). When they all fit on one row, all show. */
 function chipsFit() {
+  var y = window.scrollY;
   Array.prototype.forEach.call(document.querySelectorAll('.main .chips'), function (c) {
     var more = c.querySelector('.chip.more'); if (!more) return;
-    c.classList.remove('folded'); more.hidden = true;
+    c.classList.remove('folded'); more.hidden = true; S.chipF = {};
     var ch = Array.prototype.filter.call(c.querySelectorAll('.chip:not(.more)'), function (x) { return x.offsetParent; });
     if (!ch.length || ch[ch.length - 1].offsetTop === ch[0].offsetTop) return; // one row: everyone in view
     var open = !!prefs().whoOpen;
@@ -3014,7 +3124,9 @@ function chipsFit() {
     var hid = c.querySelectorAll('.chip.opt:not([aria-pressed="true"])').length;
     more.innerHTML = open ? 'Fewer' + ic('chev') : hid + ' more' + ic('chev');
     more.setAttribute('aria-label', open ? 'Show fewer people' : 'Show ' + hid + ' more people'); more.hidden = false;
+    S.chipF = { f: !open, m: more.innerHTML, a: more.getAttribute('aria-label') };
   });
+  if (Math.abs(window.scrollY - y) > 0.5) window.scrollTo({ top: y, behavior: 'instant' }); // 0.3.1: measuring them never moves the page
 }
 
 function rowHtml(d, i) {
@@ -3704,6 +3816,7 @@ function ngCardHtml() {
 /* after fresh data: the review count, a nudge still waiting, the badge on the app icon */
 function afterFresh() {
   if (isSup()) { S.revLoading = false; loadReview(); }
+  syncPhoto();
   waitingNudge();
   setBadge();
 }
@@ -3978,9 +4091,9 @@ function tdBallGo(mid) {
 function acctPop() {
   var W = window.VIBRA_WEB || {}, web = !!(W.signOut && W.accounts), m = me(), list = web ? W.accounts() : [], cur = list.filter(function (a) { return a.current; })[0];
   var others = list.filter(function (a) { return !a.current; }), sw = !!S.acctSw;
-  var row = function (a) { return '<button class="mi acc" role="menuitem" data-a="acct-to" data-v="' + esc(a.email) + '"><span class="av">' + esc(a.ini || String(a.name || '?').slice(0, 2).toUpperCase()) + '</span><span>' + esc(a.name) + '<small>' + esc(a.email) + '</small></span></button>'; };
-  return '<div class="np-dim full" aria-hidden="true"></div><div class="pop sbpop menu acct" role="menu" aria-label="Account" data-pop>' +
-    '<div class="acct-h"><span class="av">' + esc(m.initials) + '</span><span class="who"><b>' + esc(m.full_name || m.display) + '</b><span>' + esc(cur ? cur.email : m.role) + '</span></span></div>' +
+  var row = function (a) { return '<button class="mi acc" role="menuitem" data-a="acct-to" data-v="' + esc(a.email) + '"><span class="av">' + esc(a.ini || String(a.name || '?').slice(0, 2).toUpperCase()) + avImg(photoOk(a.pic)) + '</span><span>' + esc(a.name) + '<small>' + esc(a.email) + '</small></span></button>'; };
+  return '<div class="np-dim full" aria-hidden="true"></div><div class="pop sbpop menu acct' + (window.innerWidth < 900 ? ' sheet' : '') + '" role="menu" aria-label="Account" data-pop>' + // 0.3.1: sheet = from the bottom, with its bar
+    '<div class="acct-h"><span class="av">' + esc(m.initials) + avImg(myPhoto()) + '</span><span class="who"><b>' + esc(m.full_name || m.display) + '</b><span>' + esc(cur ? cur.email : m.role) + '</span></span></div>' +
     '<button class="mi" role="menuitem" data-a="set-tab" data-v="general">' + ic('user') + '<span>My account</span></button>' +
     (web ? '<button class="mi" role="menuitem" data-a="acct-sw" aria-expanded="' + sw + '">' + ic('people') + '<span>Switch account</span>' + ic('chev') + '</button>' +
       (sw ? '<div class="acct-list">' + others.map(row).join('') + '<button class="mi acc" role="menuitem" data-a="acct-add"><span class="av add">' + ic('plus') + '</span><span>Add account</span></button></div>' : '') +
@@ -4189,7 +4302,7 @@ function panel() {
   var histHtml = !hist ? '<div class="skel" style="width:70%"></div><div class="skel" style="width:50%;margin-top:8px"></div>' :
     !hist.length ? '<p class="muted" style="margin:0">No history yet.</p>' : histGroups(hist);
   var stageOk = d.status === 'Submitted' || d.status === 'Under Review';
-  return '<aside class="panel' + (S.fx.panel ? ' fx-panel' : '') + '" aria-label="Manuscript details">' +
+  return '<aside class="panel' + (S.fx.panel ? ' fx-panel' : '') + '" aria-label="Manuscript details"><i class="dbar-x" aria-hidden="true"></i>' + // 0.3.1: the bar of a layer that leaves sideways
     '<div class="p-top"><button class="btn btn-q back" data-a="close">' + ic('back') + 'Back</button>' + tagHtml(dd) + '<span class="mono muted" style="font-size:calc(12px*var(--fz,1))">#' + m.id + '</span>' +
     '<span style="margin-left:auto"></span>' + trackBtn(m) + '<button class="ibtn" data-a="pin" data-v="' + m.id + '" aria-pressed="' + (pins().indexOf(m.id) >= 0) + '" aria-label="' + (pins().indexOf(m.id) >= 0 ? 'Unpin from the sidebar' : 'Pin to the sidebar') + '"' + tt(pins().indexOf(m.id) >= 0 ? 'Unpin from the sidebar' : 'Pin to the sidebar') + '>' + ic('pin') + '</button><button class="ibtn close" data-a="close" aria-label="Close details">' + ic('x') + '</button></div>' +
     (S.confirmClose ? '<div class="warn" style="margin-top:12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center">' + (S.offline ? 'You are offline. Keep your changes on this device and save them later?' : 'You have unsaved changes.') + '<span style="margin-left:auto"></span>' +
@@ -4293,7 +4406,7 @@ function tagsHtml(kind, arr) {
     var how = isAu && p.written ? 'Written “' + p.written + '” in this list; shown with the full name on file.' : unsure ? 'Not sure who this is yet: the admin confirms it in the AI desk.' : '';
     return '<button type="button" class="ptag' + (member ? '' : ' guest') + (unsure ? ' unsure' : '') + (on ? ' on' : '') + (S.fx.tag === kind + i ? ' fx-tag' : '') + '" data-a="ed" data-v="' + kind + ':' + i + '"' + (editable() ? '' : ' disabled') + (how ? ' title="' + esc(how) + '"' : '') +
       ' aria-label="' + esc(p.name + (notes.length ? ', ' + notes.join(', ') : '') + (member ? ', member' : ', guest') + (unsure ? ', not sure who this is' : '') + '. Edit tag') + '">' +
-      '<span class="av" aria-hidden="true">' + (isAu ? i + 1 : esc(initials(p.name))) + '</span>' + esc(lab) + (notes.length ? '<span class="nt">· ' + esc(notes.join(', ')) + '</span>' : '') + '</button>';
+      '<span class="av" aria-hidden="true">' + (isAu ? i + 1 : esc(initials(p.name)) + avImg(member ? photoOf(p.key || p.name) : '')) + '</span>' + esc(lab) + (notes.length ? '<span class="nt">· ' + esc(notes.join(', ')) + '</span>' : '') + '</button>';
   }).join('') + '</div>';
 }
 function editorHtml(kind) {
@@ -4347,7 +4460,7 @@ function cbList(key) {
   var o = cbOptions(key);
   if (!o.length) return '';
   return '<div class="cbl" role="listbox">' + o.map(function (x, i) {
-    return '<button type="button" class="cbo" role="option" data-a="cb-pick" data-v="' + key + ':' + i + '"' + (x.disabled ? ' disabled aria-disabled="true"' : '') + '><span class="av' + (x.guest ? ' g' : '') + '" aria-hidden="true">' + esc(x.ini) + '</span><span><span>' + esc(x.label) + '</span><small>' + esc(x.sub) + '</small></span></button>';
+    return '<button type="button" class="cbo" role="option" data-a="cb-pick" data-v="' + key + ':' + i + '"' + (x.disabled ? ' disabled aria-disabled="true"' : '') + '><span class="av' + (x.guest ? ' g' : '') + '" aria-hidden="true">' + esc(x.ini) + avImg(x.member ? photoOf(x.key) : '') + '</span><span><span>' + esc(x.label) + '</span><small>' + esc(x.sub) + '</small></span></button>';
   }).join('') + '</div>';
 }
 /* 0.1.11: while typing, the open list keeps its element and only its options change, so it does not pop in again on each key. */
@@ -4580,22 +4693,28 @@ setInterval(function () {
 document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') poll(); });
 ['keydown', 'pointerdown', 'input'].forEach(function (t) { document.addEventListener(t, function () { S.lastAct = Date.now(); }, true); });
 
-/* ---------- 0.2.7: the urgency scrubber (phones, Today); see the CSS of #scrub */
+/* ---------- 0.2.7: the urgency scrubber (phones, Today); see the CSS of #scrub. 0.3.1 (BACKLOG 20, admin: "nút cuộn nhanh
+   cũng áp dụng cho all manuscripts nha", "Máy tính có cũng tốt"): All manuscripts too, in the order of its table (the open
+   ones by urgency, then Accepted, Published, Rejected), and on computers (shown while the page scrolls, or with the mouse
+   at the right edge; their own scroll bar stays) */
 var SC = { el: null, items: [], u: 1, cur: -1, drag: false, hideT: 0 };
-function scOn() { return phoneW() && !!S.boot && S.view === 'today' && !panelShown() && !S.pop && !S.drawer && !S.pal && !(S.tour >= 0) && !layer.querySelector('.overlay'); }
+var SC_CLOSED = { Accepted: 'acc', Published: 'pub', Rejected: 'rej' }, SC_LABEL = { acc: 'Accepted', pub: 'Published', rej: 'Rejected', closed: 'Finished' };
+function scOn() { return !!S.boot && (S.view === 'today' || S.view === 'list') && !panelShown() && !S.pop && !S.drawer && !S.pal && !(S.tour >= 0) && !layer.querySelector('.overlay'); }
 function scSync() {
   if (!SC.el) {
     SC.el = document.createElement('div'); SC.el.id = 'scrub'; SC.el.setAttribute('aria-hidden', 'true');
     SC.el.innerHTML = '<div class="sc-rail"><b class="sc-thumb"></b></div><div class="sc-bub"></div>'; document.body.appendChild(SC.el); scBind();
   }
   if (SC.drag) return;
-  var items = scOn() ? Array.prototype.map.call(document.querySelectorAll('.main .sec .list > [data-a="open"][data-v], .main .sec .blocks > [data-a="open"][data-v]'), function (el) {
-    var tg = el.querySelector('.tag'), m = /\bt-(due|deadline|action|chase|waiting|drafting)\b/.exec(tg ? tg.className : ''), t = el.querySelector('.t');
-    return { el: el, tier: m ? m[1] : 'waiting', label: tg ? tg.textContent : '', title: t ? t.textContent : '' };
+  var tbl = S.view === 'list';
+  var items = scOn() ? Array.prototype.map.call(document.querySelectorAll(tbl ? '.main .tbox tbody tr[data-a="open"][data-v]' : '.main .sec .list > [data-a="open"][data-v], .main .sec .blocks > [data-a="open"][data-v]'), function (el) {
+    var tg = el.querySelector('.tag'), m = /\bt-(due|deadline|action|chase|waiting|drafting)\b/.exec(tg ? tg.className : ''), t = el.querySelector(tbl ? '.sr-btn' : '.t');
+    var tier = tbl && el.classList.contains('closed') ? SC_CLOSED[tg ? tg.textContent : ''] || 'closed' : m ? m[1] : 'waiting';
+    return { el: el, tier: tier, label: tg ? tg.textContent : '', title: t ? t.textContent : '' };
   }) : [];
-  var rail = SC.el.querySelector('.sc-rail'), key = items.map(function (x) { return x.tier; }).join(',');
+  var rail = SC.el.querySelector('.sc-rail'), key = S.view + ':' + items.map(function (x) { return x.tier; }).join(',');
   SC.items = items.length >= 6 ? items : [];
-  document.documentElement.classList.toggle('sc-sys', !!SC.items.length); // the phone's own scroll indicator steps aside
+  document.documentElement.classList.toggle('sc-sys', !!SC.items.length && phoneW()); // the phone's own scroll indicator steps aside (a computer keeps its bar)
   if (!SC.items.length) { SC.el.classList.remove('show'); SC.key = ''; return; }
   if (key !== SC.key) {
     SC.key = key;
@@ -4624,6 +4743,11 @@ window.addEventListener('scroll', function () {
   SC.el.classList.add('show'); scThumb(); clearTimeout(SC.hideT); if (!SC.drag) SC.hideT = setTimeout(scHide, 1100);
 }, { passive: true });
 window.addEventListener('resize', function () { if (SC.el) { SC.key = ''; scSync(); } });
+document.addEventListener('mousemove', function (e) { // 0.3.1: computers: the mouse near the right edge brings it, without scrolling first
+  if (!SC.el || !SC.items.length || SC.drag) return;
+  var r = SC.el.getBoundingClientRect(), near = e.clientX >= window.innerWidth - 56 && e.clientY >= r.top - 8 && e.clientY <= r.bottom + 8;
+  if (near) { if (!SC.el.classList.contains('show')) { SC.el.classList.add('show'); scThumb(); } clearTimeout(SC.hideT); SC.hideT = setTimeout(scHide, 1600); }
+}, { passive: true });
 function scBind() {
   var rail = SC.el.querySelector('.sc-rail');
   rail.addEventListener('pointerdown', function (e) {
@@ -4651,7 +4775,8 @@ function scMove(e) {
   var prev = SC.cur, it = SC.items[best]; SC.cur = best;
   if (navigator.vibrate) try { navigator.vibrate(prev >= 0 && SC.items[prev].tier !== it.tier ? 14 : 4); } catch (x) { }
   var same = SC.items.filter(function (x) { return x.tier === it.tier; }), pos = same.indexOf(it) + 1;
-  bub.innerHTML = '<b><i class="sc-' + it.tier + '"></i>' + esc(TIER_LABEL[it.tier]) + ' · ' + pos + ' of ' + same.length + '</b><span>' + (it.label && it.label !== TIER_LABEL[it.tier] ? esc(it.label) + ' · ' : '') + esc(short(it.title, 60)) + '</span>';
+  var tl = TIER_LABEL[it.tier] || SC_LABEL[it.tier];
+  bub.innerHTML = '<b><i class="sc-' + it.tier + '"></i>' + esc(tl) + ' · ' + pos + ' of ' + same.length + '</b><span>' + (it.label && it.label !== tl ? esc(it.label) + ' · ' : '') + esc(short(it.title, 60)) + '</span>';
   var hdr = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--hdr-h')) || 56;
   window.scrollTo(0, Math.max(0, it.el.getBoundingClientRect().top + window.scrollY - hdr - 12));
 }
@@ -4674,8 +4799,10 @@ function popover() {
         return '<button class="nitem' + (n.read ? '' : ' unread') + (n.undone ? ' undone' : '') + '" data-a="notif-open" data-v="' + esc(n.id) + '"' + (n.undone ? ' title="This change was undone"' : '') + '><span class="ndot" aria-hidden="true"></span><span><span class="lbl" style="display:block">' + (isReminder(n) ? '<i class="n-rp">' + (n.ack ? 'Answered' : 'Reply') + '</i>' : '') +
           esc({ nudge: 'Nudge', ball_to_you: 'Ball to you', changed: 'Changed', ai_update: 'AI update', ai_kept_edit: 'Morning check', deadline: 'Deadline', reminder: 'Reminder', inbox: 'Quick update', feedback: 'Feedback', inbox_reply: 'Quick update', feedback_reply: 'App feedback', undone: 'Undone', nudge_reply: 'Reply to your nudge' }[n.kind] || n.kind) + (n.undone ? ' · undone' : '') + ' · ' + esc(niceShort(n.ts)) + ' ' + esc(String(n.ts).slice(11, 16)) + '</span><span>' + esc(n.text) + '</span></span></button>';
       }).join('') : due.length || relItem ? '' : '<p class="empty" style="margin:0">Nothing yet. You will see here when the ball is passed to you or a manuscript you are on changes.</p>') +
-      '</div><div class="np-foot">' + (nm ? '<button class="nmore" data-a="notif-more"' + (nb ? ' disabled' : '') + '>' + (nb ? '<i aria-hidden="true"></i>Loading earlier notifications…' : 'See earlier notifications' + (nu ? ' · ' + nu + ' unread' : '')) + '</button>' :
-        '<span class="nmore none">No earlier notifications</span>') + '<button class="np-set" data-a="set-tab" data-v="notifications">Choose what notifies you</button></div></div>';
+      // 0.3.1 (BACKLOG 29, admin: "see earlier noti phải hiện khi vuốt tới noti cuối"): the last row of the list, not a footer always
+      // in view; reaching it loads the next page by itself (npEnd), so fewer come with the data (10)
+      '<div class="np-end">' + (nm ? '<button class="nmore" data-a="notif-more"' + (nb ? ' disabled' : '') + '>' + (nb ? '<i aria-hidden="true"></i>Loading earlier notifications…' : 'See earlier notifications' + (nu ? ' · ' + nu + ' unread' : '')) + '</button>' :
+        ns.length ? '<span class="nmore none">No earlier notifications</span>' : '<span class="nmore none"></span>') + '<button class="np-set" data-a="set-tab" data-v="notifications">Choose what notifies you</button></div></div></div>';
   }
   if (S.pop === 'acct') return acctPop(); // 0.3.0
   if (S.pop === 'dash') return dashPop();
@@ -4715,7 +4842,7 @@ function dialog() {
     col(lab('nf-journal', 'Target journal', 'journal') + '<input id="nf-journal" class="in" data-i="nf" data-v="journal" value="' + esc(f.journal) + '" placeholder="Leave empty if not chosen">') +
     col(lab('nf-dl', 'Deadline', 'deadline') + '<input id="nf-dl" class="in" type="date" data-i="nf" data-v="deadline" value="' + esc(f.deadline) + '">') + '</div>' +
     '<div style="display:flex;flex-direction:column;gap:6px"><span class="lbl" id="nf-l">Ball is with' + mk('people') + '</span><div class="tags" role="group" aria-labelledby="nf-l">' + f.people.map(function (p, i) {
-      return '<button type="button" class="ptag' + (p.member ? '' : ' guest') + (S.fx.tag === 'nf' + i ? ' fx-tag' : '') + '" data-a="nf-del" data-v="' + i + '" aria-label="' + esc(p.name) + '. Remove"><span class="av" aria-hidden="true">' + esc(initials(p.name)) + '</span>' + esc(p.name) + (p.note ? '<span class="nt">· ' + esc(p.note) + '</span>' : '') + '<span class="nt" aria-hidden="true">×</span></button>';
+      return '<button type="button" class="ptag' + (p.member ? '' : ' guest') + (S.fx.tag === 'nf' + i ? ' fx-tag' : '') + '" data-a="nf-del" data-v="' + i + '" aria-label="' + esc(p.name) + '. Remove"><span class="av" aria-hidden="true">' + esc(initials(p.name)) + avImg(p.member ? photoOf(p.key || p.name) : '') + '</span>' + esc(p.name) + (p.note ? '<span class="nt">· ' + esc(p.note) + '</span>' : '') + '<span class="nt" aria-hidden="true">×</span></button>';
     }).join('') + '</div>' + cbHtml('nf') + '</div>' +
     col(lab('nf-next', 'Next actions', 'next') + '<textarea id="nf-next" class="in" rows="3" data-i="nf" data-v="next" data-k="num" placeholder="Type an action and press Enter: the list numbers itself">' + esc(f.next) + '</textarea>') +
     col(lab('nf-au', 'Authors (optional)', 'authors') + '<textarea id="nf-au" class="in" rows="2" data-i="nf" data-v="authors" placeholder="Paste the author list, separated by commas or semicolons; add (corr.) after the corresponding author">' + esc(f.authors) + '</textarea>') +
@@ -5035,21 +5162,62 @@ function blockRects(any) {
   Array.prototype.forEach.call(document.querySelectorAll('.main .sec-h'), function (el, i) { out['h|' + i] = el.getBoundingClientRect(); }); // 0.3.0: the group headings move with them
   return out;
 }
-function glideBlocks(before, shift) { // 0.3.0: on the navigation spring (shift: how far the page itself moves meanwhile)
+function glideBlocks(before, shift, keep) { // 0.3.0: on the navigation spring (shift: how far the page itself moves meanwhile)
   if (!before || reduceMotion()) return;
-  var secs = document.querySelectorAll('.main .sec'), sp = spring(SPR.nav), sh = shift || 0;
+  var secs = document.querySelectorAll('.main .sec'), sp = spring(SPR.nav), sh = shift || 0, moves = [], far = 1;
   Array.prototype.forEach.call(document.querySelectorAll('.main .block[data-v]'), function (el) {
     var key = el.getAttribute('data-v') + '|' + (el.closest('.sec') ? Array.prototype.indexOf.call(secs, el.closest('.sec')) : 0), a = before[key]; if (!a) return;
-    var b = el.getBoundingClientRect(), dx = a.left - b.left - sh, dy = a.top - b.top, sx = a.width / (b.width || 1);
+    var b = el.getBoundingClientRect(), dx = a.left - b.left - sh, dy = a.top - b.top, sx = keep ? 1 : a.width / (b.width || 1);
     if (Math.abs(dx) < 1 && Math.abs(dy) < 1 && Math.abs(sx - 1) < 0.01) return;
     if ((b.bottom < -200 || b.top > innerHeight + 200) && (a.bottom < -200 || a.top > innerHeight + 200)) return; // off screen before and after
-    el.animate([{ transformOrigin: '0 0', transform: 'translate(' + dx.toFixed(1) + 'px,' + dy.toFixed(1) + 'px) scaleX(' + sx.toFixed(4) + ')' }, { transformOrigin: '0 0', transform: 'none' }], { duration: sp.d, easing: sp.e });
+    var d = Math.sqrt(dx * dx + dy * dy); if (d > far) far = d; moves.push({ el: el, dx: dx, dy: dy, sx: sx, d: d });
+  });
+  // 0.3.1 (BACKLOG 21 A: "nội dung trong block vẫn nắm bắt đc"): keep = each block moves as a whole, never stretched, and
+  // the blocks that go furthest start a little later, so the eye can follow them in reading order
+  moves.forEach(function (m) {
+    m.el.animate([{ transformOrigin: '0 0', transform: 'translate(' + m.dx.toFixed(1) + 'px,' + m.dy.toFixed(1) + 'px)' + (keep ? '' : ' scaleX(' + m.sx.toFixed(4) + ')') }, { transformOrigin: '0 0', transform: 'none' }],
+      { duration: sp.d, easing: sp.e, delay: keep ? Math.round(70 * m.d / far) : 0, fill: 'backwards' });
   });
   Array.prototype.forEach.call(document.querySelectorAll('.main .sec-h'), function (el, i) {
     var a = before['h|' + i]; if (!a) return; var b = el.getBoundingClientRect(), dx = a.left - b.left - sh, dy = a.top - b.top;
     if (Math.abs(dx) < 1 && Math.abs(dy) < 1) return;
     el.animate([{ transform: 'translate(' + dx.toFixed(1) + 'px,' + dy.toFixed(1) + 'px)' }, { transform: 'none' }], { duration: sp.d, easing: sp.e });
   });
+}
+/* 0.3.1 (BACKLOG 19, admin: "mục đang chọn lại chạy xuống dưới, đáng ra thì phải tự scroll để block được chọn luôn hiện ra
+   trước mắt"; 21: samples A and B). Today as blocks beside the card: which sample, and the chosen block kept in sight. */
+// admin, 25 Oct 2026: "tôi chọn phương án A"; then, after a try with flat blocks where few columns fit: "Block lớn thôi, block
+// dẹt bị thiếu thông tin kìa, nói chung là đảm bảo thông tin không bị mất quá nhiều thôi": always the full blocks
+function blkOn() { return S.view === 'today' && todayView() === 'blocks' && cardSide(); }
+function blkAnchor() { // the chosen block (the one being opened, or the one whose card is closing) and where it is on screen
+  var id = S.sel, el = id && document.querySelector('.main .block[data-v="' + id + '"]');
+  if (!el) { el = document.querySelector('.main .block[aria-current="true"]'); id = el && el.getAttribute('data-v'); }
+  return el ? { id: id, top: el.getBoundingClientRect().top } : null;
+}
+function blkKeep(a) { // it ends where it was on screen (the page scrolls in the same movement), or else fully in sight
+  var el = document.querySelector('.main .block[data-v="' + a.id + '"]'); if (!el) return;
+  var r = el.getBoundingClientRect(), lo = 70, hi = window.innerHeight - 20, dy = Math.abs(r.top - a.top) < 24 ? 0 : r.top - a.top, t = r.top - dy;
+  if (t < lo) dy -= lo - t; else if (t + r.height > hi) dy += Math.min(t + r.height - hi, t - lo);
+  var y0 = window.scrollY;
+  if (dy) window.scrollBy(0, dy);
+  r = el.getBoundingClientRect(); // the page may not scroll that far
+  if (r.top < lo || r.bottom > hi) window.scrollBy(0, r.top < lo ? r.top - lo : Math.min(r.bottom - hi, r.top - lo));
+  return window.scrollY - y0;
+}
+function blkLift(dy, heads) { // what the blocks' movement does not carry (the title, the tiles, and in B the headings) glides by the scroll instead of jumping
+  if (!dy || reduceMotion()) return;
+  var sp = spring(SPR.nav);
+  Array.prototype.forEach.call(document.querySelectorAll('.main > :not(.sec)' + (heads ? ', .main .sec-h' : '')), function (el) {
+    el.animate([{ transform: 'translateY(' + dy.toFixed(1) + 'px)' }, { transform: 'none' }], { duration: sp.d, easing: sp.e });
+  });
+}
+function blkWidth() { var b = document.querySelector('.main .blocks > .block'); if (b) S.blkW = b.getBoundingClientRect().width; } // A: before the card opens
+function blkFit() { // A: as many columns of that width as leave the card at least 400 px; the card takes the rest (up to 640)
+  var mw = document.querySelector('.mainwrap'), wrap = document.querySelector('.wrap'), bl = document.querySelector('.main .blocks'); if (!mw || !wrap) return;
+  var W = S.blkW || 255, fcol = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--fcol')) || 0, gap = bl ? parseFloat(getComputedStyle(bl).columnGap) || 16 : 16;
+  var M = mw.clientWidth - (parseFloat(getComputedStyle(wrap).paddingLeft) || 0) - (fcol ? fcol + 16 : 30), k = Math.floor((M - 400 + gap) / (W + gap)), pw;
+  if (k >= 1) pw = Math.min(640, M - k * W - (k - 1) * gap); else { pw = Math.max(340, M - W); W = Math.min(W, M - pw); } // too narrow: the blocks give a little
+  document.documentElement.style.setProperty('--blw', W.toFixed(1) + 'px'); document.documentElement.style.setProperty('--pwA', Math.floor(pw) + 'px');
 }
 /* ---------- 0.2.8 motion (admin: "chuyển động trượt ra trượt vào mang lại trải nghiệm rất quan trọng ... apple làm cái
    này giỏi nhất"). One motion system: springs (as SwiftUI describes them: the time of one swing, and a damping where 1
@@ -5134,7 +5302,10 @@ function moNow() { var r = MO.run; if (!r || !r.a) return MO.p || 0; var t = r.a
 function moClear() { Array.prototype.forEach.call(app.querySelectorAll('.main, .pscrim, .panel'), function (el) { if (el.__mo) { el.__mo.cancel(); el.__mo = null; } }); MO.run = null; MO.p = 0; }
 function underParts() {
   var full = !cardSide(), m = full && document.querySelector('.main'), sc = document.querySelector('.pscrim'), oy = 0;
-  if (m) { var r = m.getBoundingClientRect(); oy = Math.round(innerHeight / 2 - r.top); }
+  // 0.3.1 (BACKLOG 23, admin: "khi popup thoát ra ngoài thì khung hình bị giật lên"): the point the page steps back about is
+  // measured once, while the page is at rest; measured again on the page already stepped back it moved, and the whole page
+  // jumped up when the card left (6 px in the middle of Today, more further down)
+  if (m) { if (m.__mo && MO.oy !== undefined) oy = MO.oy; else { var r = m.getBoundingClientRect(); oy = MO.oy = Math.round(innerHeight / 2 - r.top); } }
   return [{ el: sc, f: function (p) { return { opacity: 1 - p }; } },
     { el: m, f: function (p) { return { transformOrigin: '50% ' + oy + 'px', transform: 'scale(' + (0.94 + 0.06 * p).toFixed(4) + ')' }; } }];
 }
@@ -5175,7 +5346,7 @@ function shapeRects() {
   });
   return o;
 }
-function shapeShift(o) {
+function shapeShift(o, same) {
   if (!o || reduceMotion()) return;
   if (o.a) { var ae = document.querySelector('.main .sec [data-a="open"][data-v="' + o.a.id + '"]'); if (ae) window.scrollBy(0, ae.getBoundingClientRect().top - o.a.top); }
   var s = spring(SPR.nav), blocks = todayView() === 'blocks';
@@ -5189,7 +5360,7 @@ function shapeShift(o) {
       c.animate([{ opacity: 1 }, { opacity: 0 }], { duration: Math.round(s.d * 0.22), fill: 'forwards' }); }
     document.body.appendChild(g);
     var k = function (r, rad) { return { left: r.left + 'px', top: r.top + 'px', width: r.width + 'px', height: r.height + 'px', borderRadius: rad + 'px' }; };
-    g.animate([k(a, blocks ? 6 : 12), k(b, blocks ? 12 : 6)], { duration: s.d, easing: s.e, fill: 'forwards' });
+    g.animate([k(a, same ? 12 : blocks ? 6 : 12), k(b, same || blocks ? 12 : 6)], { duration: s.d, easing: s.e, fill: 'forwards' });
     g.animate([{ opacity: 1 }, { opacity: 1, offset: 0.55 }, { opacity: 0 }], { duration: Math.round(s.d * 0.75), fill: 'forwards' }).onfinish = function () { g.remove(); };
   });
 }
@@ -5220,7 +5391,8 @@ function drawerVars() { // 0.2.9 paper stack: the part of the page on the screen
   // from the top of the page (100% minus what lies above the screen's bottom), so a page that grows or shrinks after the
   // menu opened can no longer cut the sheet shorter than its shadow
   var t = Math.max(0, window.scrollY - mw.offsetTop), h = window.innerHeight, b = 'calc(100% - ' + (t + h) + 'px)', r = document.documentElement.style;
-  r.setProperty('--drt', t + 'px'); r.setProperty('--drb', b); r.setProperty('--dro', (t + h / 2) + 'px');
+  // 0.3.1 (BACKLOG 22): written only when they change; each write restyles the whole page (46 to 59 ms at the start of a swipe)
+  if (DR.vk !== t + '|' + h) { DR.vk = t + '|' + h; r.setProperty('--drt', t + 'px'); r.setProperty('--drb', b); r.setProperty('--dro', (t + h / 2) + 'px'); }
   return { t: t, b: b };
 }
 window.addEventListener('scroll', function () { if (S.drawer && N3() && phoneW() && !DR.busy) drawerVars(); }, { passive: true });
@@ -5241,20 +5413,50 @@ function layersAfter(drWas) {
   if (stack && S.drawer && !DR.busy) drawerVars(); // the sheet is the part of the page on screen, also after a redraw
   if (!stack || DR.busy || drWas === !!S.drawer) return;
   if (reduceMotion()) return;
-  var parts = drawerParts(); DR.busy = true;
-  moGo(parts, drWas ? 1 : 0, S.drawer ? 1 : 0, SPR.nav, 0, function () { partsClear(parts); DR.busy = false; });
+  drawerRun(drawerParts(), drWas ? 1 : 0, S.drawer ? 1 : 0, SPR.nav, 0);
 }
-function drawerTo(open, p0, v) { // after a swipe: finish the movement, then settle the state
-  var parts = drawerParts(); DR.busy = true;
-  moGo(parts, p0, open ? 1 : 0, open ? SPR.nav : SPR.exit, v, function () {
-    if (!!S.drawer !== open) { S.drawer = open; render(); if (open) { var f = document.querySelector('.sb .sb-item'); if (f) f.focus({ preventScroll: true }); } }
-    partsClear(parts); DR.busy = false;
+/* 0.3.1 (BACKLOG 22, admin: "hiện tượng khựng và chớp khi trượt ra trượt vào giữa lớp 1 và 2"): a moving page can be caught
+   by the finger where it is (a quick swipe back reverses it at once, as on iOS), and the end of a movement redraws nothing:
+   the state is set on the elements already there */
+function drawerRun(parts, p0, p1, sp, v, done) {
+  DR.busy = true; var run = DR.run = { parts: parts, p0: p0, p1: p1 };
+  moGo(parts, p0, p1, sp, v, function () { if (DR.run !== run) return; DR.run = null; if (done) done(); partsClear(parts); DR.busy = false; });
+}
+function drawerCatch() { // stops the running movement where it is; tells where, and where it was going
+  var r = DR.run; if (!r) return null;
+  var a = null; r.parts.forEach(function (x) { if (x.el && x.el.__mo) a = x.el.__mo; });
+  var t = a && a.effect ? a.effect.getComputedTiming().progress : 1, p = r.p0 + (r.p1 - r.p0) * (t === null ? 1 : t);
+  moSet(r.parts, p); DR.run = null; DR.busy = false;
+  return { p: p, to: r.p1 === 1, parts: r.parts };
+}
+function drawerSet(open) { // the state, without redrawing the page (a phone on its side changes its rail: redrawn)
+  S.drawer = open;
+  var sh = app.querySelector('.shell');
+  if (!sh || layName() !== 'stack') { render(); return; }
+  sh.classList.toggle('drawer', open);
+  var hb = sh.querySelector('.sb-top .sb-hide'); if (hb) hb.setAttribute('aria-label', open ? 'Close the sidebar' : sbCollapsed() ? 'Show the sidebar' : 'Hide the sidebar');
+  var fb = document.querySelector('.fabs .fab'); if (fb) fb.classList.toggle('round', panelShown() || fcolOn() || open);
+  // the rest after the next frame, so the frame that ends the movement carries only the class change (inert restyles the page)
+  requestAnimationFrame(function () { setTimeout(function () { if (!!S.drawer === open) { layersAfter(open); scSync(); histSync(); } }, 0); });
+}
+function drawerTo(open, p0, v, parts) { // after a swipe: finish the movement, then settle the state
+  drawerRun(parts || drawerParts(), p0, open ? 1 : 0, open ? SPR.nav : SPR.exit, v, function () {
+    if (!!S.drawer !== open) { drawerSet(open); if (open) { var f = document.querySelector('.sb .sb-item'); if (f) f.focus({ preventScroll: true }); } }
   });
+}
+function drawerGo(open) { // the menu button, the strip, Esc and Back: the same movement, the state set at its start
+  if (!N3() || layName() !== 'stack' || reduceMotion() || !app.querySelector('.shell')) { S.drawer = open; render(); return open; }
+  var k = DR.busy ? drawerCatch() : null, p0 = k ? k.p : S.drawer ? 1 : 0;
+  if (!k && !!S.drawer === open) return open;
+  var parts = k ? k.parts : drawerParts();
+  moSet(parts, p0); DR.busy = true; drawerSet(open); // held where it is while the classes change under it
+  drawerTo(open, p0, 0, parts);
+  return open;
 }
 /* 0.2.9 layers come and go with springs (BACKLOG 3): a dialog or a menu grows out of the button that opened it and
    shrinks back into it; on a phone a dialog is a sheet from the bottom that a pull down closes. What closes leaves as a
    ghost: a copy without ids, actions or the classes the app looks for, removed when its movement ends. */
-var LM = { src: null, pull: null };
+var LM = { src: null, pull: null, out: null };
 document.addEventListener('pointerdown', function (e) { var b = e.target.closest && e.target.closest('button, [data-a]'); if (b && !b.closest('#layer')) LM.src = b; }, true);
 document.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { var t = e.target; if (t && t.closest && !t.closest('#layer')) LM.src = t; } }, true);
 function lmSrc() {
@@ -5268,7 +5470,8 @@ function lmTake(closing) { // before the layer is redrawn: what is closing, meas
   closing.forEach(function (kind) {
     var box = lmBox(kind); if (!box) return;
     var top = kind === 'pop' ? box : box.closest('.overlay'), extra = kind === 'pop' ? layer.querySelector('.np-dim') : null;
-    var cs = getComputedStyle(box), r = box.getBoundingClientRect(), keep = {};
+    var tf = box.style.transform; box.style.transform = ''; // 0.3.1: measured at rest; a layer pulled by hand leaves from where the hand left it (LM.pull, LM.out)
+    var cs = getComputedStyle(box), r = box.getBoundingClientRect(), keep = {}; box.style.transform = tf;
     ['display', 'flexDirection', 'gap', 'padding', 'backgroundColor', 'borderRadius', 'boxShadow', 'border', 'color', 'font', 'boxSizing'].forEach(function (k) { keep[k] = cs[k]; });
     out.push({ kind: kind, top: top, box: box, extra: extra, r: r, keep: keep, bg: top !== box ? getComputedStyle(top).backgroundColor : '' });
   });
@@ -5281,7 +5484,7 @@ function lmGhost(el) {
 }
 function lmOut(list) {
   list.forEach(function (g) {
-    var box = g.box, r = g.r, src = g.kind !== 'pal' && lmSrc(), sheet = (g.kind === 'dlg' && lmSheet()) || (g.kind === 'pop' && box.classList.contains('acct') && window.innerWidth < 900), s = spring(sheet ? SPR.exit : SPR.pop), wrap = document.createElement('div');
+    var box = g.box, r = g.r, src = g.kind !== 'pal' && lmSrc(), sheet = (g.kind === 'dlg' && (lmSheet() || LM.pull)) || (g.kind === 'pop' && box.classList.contains('acct') && window.innerWidth < 900), s = spring(sheet ? SPR.exit : SPR.pop), wrap = document.createElement('div');
     wrap.className = 'mo-ghost'; lmGhost(box);
     box.className = 'mo-gbox'; box.removeAttribute('style'); Object.keys(g.keep).forEach(function (k) { box.style[k] = g.keep[k]; });
     box.style.cssText += ';position:fixed;margin:0;overflow:hidden;left:' + r.left + 'px;top:' + r.top + 'px;width:' + r.width + 'px;height:' + r.height + 'px';
@@ -5289,8 +5492,9 @@ function lmOut(list) {
     else if (g.extra) { var d2 = document.createElement('div'); d2.className = 'mo-gdim'; d2.style.background = getComputedStyle(g.extra).backgroundColor; wrap.appendChild(d2); d2.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 200, fill: 'forwards' }); }
     wrap.appendChild(box); document.body.appendChild(wrap);
     var to = sheet ? { transform: 'translateY(' + (window.innerHeight - r.top + 8) + 'px)', opacity: 1 } : src ? lmToward(r, src, 0) : { transform: 'scale(.96)', opacity: 0 };
-    if (reduceMotion()) to = { opacity: 0 };
     var from = LM.pull && sheet ? { transform: 'translateY(' + LM.pull + 'px)', opacity: 1 } : { transform: 'none', opacity: 1 }; LM.pull = null;
+    if ((g.kind === 'pal' || g.kind === 'pop') && LM.out) { to = { transform: 'translate(' + (LM.out.dx * 1.6).toFixed(1) + 'px,' + (LM.out.dy * 1.6).toFixed(1) + 'px)', opacity: 0 }; from = { transform: 'translate(' + LM.out.dx + 'px,' + LM.out.dy + 'px)', opacity: 1 }; LM.out = null; } // 0.3.1: on in the direction it was swiped
+    if (reduceMotion()) to = { opacity: 0 };
     var a = box.animate([from, to], { duration: sheet || src ? s.d : 180, easing: sheet || src ? s.e : 'ease-in', fill: 'forwards' });
     a.onfinish = a.oncancel = function () { wrap.remove(); };
   });
@@ -5319,27 +5523,106 @@ function lmIn(kind) {
 /* the phone sheet follows a pull down from its top (or from anywhere when its content is at the top) and closes past
    a third of its height or on a quick flick */
 document.addEventListener('touchstart', function (e) {
-  var d = e.target.closest && e.target.closest('#layer .overlay:not(.pal-ov) > .dialog'); LM.drag = null;
-  if (!d || !lmSheet() || e.touches.length !== 1 || /INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return;
-  var ov = d.closest('.overlay'), t = e.touches[0];
+  var d = e.target.closest && e.target.closest('#layer .overlay:not(.pal-ov) > .dialog'), acct = false; LM.drag = null;
+  // 0.3.1 (admin: "cái gì chạy ngang qua thì thao tác kéo ngang quay về, mọc từ dưới lên thì vuốt xuống"): the account menu,
+  // a sheet from the bottom on a phone and a tablet, closes by a pull down too
+  if (!d && e.target.closest && window.innerWidth < 900) { d = e.target.closest('#layer .pop.acct'); acct = !!d; }
+  if (!d || (!acct && !lmSheet()) || e.touches.length !== 1 || /INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return;
+  var ov = acct ? d : d.closest('.overlay'), t = e.touches[0];
   LM.drag = { d: d, ov: ov, y0: t.clientY, x0: t.clientX, on: false, last: [[t.clientY, e.timeStamp]], top: ov.scrollTop <= 0 };
 }, { passive: true });
 document.addEventListener('touchmove', function (e) {
   var g = LM.drag; if (!g) return; var t = e.touches[0], dy = t.clientY - g.y0;
-  if (!g.on) { if (Math.abs(t.clientX - g.x0) > 12 && Math.abs(t.clientX - g.x0) > Math.abs(dy)) { LM.drag = null; return; } if (dy > 10 && g.top && g.ov.scrollTop <= 0) g.on = true; else if (Math.abs(dy) > 10) { LM.drag = null; return; } else return; }
-  e.preventDefault(); g.dy = Math.max(0, dy - 10); g.d.style.transform = 'translateY(' + g.dy + 'px)'; g.d.style.transition = 'none';
+  if (!g.on) {
+    if (g.scroll) { if (g.ov.scrollTop > 0 || dy <= 0) return; g.on = true; g.noFlick = true; g.y0 = t.clientY - 10; dy = 10; } // 0.3.1: scrolled to the top, the pull goes on
+    else if (Math.abs(t.clientX - g.x0) > 12 && Math.abs(t.clientX - g.x0) > Math.abs(dy)) { LM.drag = null; return; }
+    else if (dy > 10 && g.top && g.ov.scrollTop <= 0) g.on = true; else if (dy > 10 && !g.top) { g.scroll = true; return; } else if (Math.abs(dy) > 10) { LM.drag = null; return; } else return;
+  }
+  if (e.cancelable) e.preventDefault(); g.dy = Math.max(0, dy - 10); g.d.style.transform = 'translateY(' + g.dy + 'px)'; g.d.style.transition = 'none';
   g.last.push([t.clientY, e.timeStamp]); if (g.last.length > 5) g.last.shift();
 }, { passive: false });
 document.addEventListener('touchend', function (e) {
   var g = LM.drag; LM.drag = null; if (!g || !g.on) return;
   var a = g.last[0], b = g.last[g.last.length - 1], v = b[1] > a[1] && e.timeStamp - b[1] < 80 ? (b[0] - a[0]) / (b[1] - a[1]) : 0, h = Math.min(g.d.offsetHeight, window.innerHeight);
-  if (g.dy > h / 3 || (v > 0.5 && g.dy > 40)) { LM.pull = g.dy; if (closeTop()) return; LM.pull = null; }
+  if (g.dy > h / 3 || (v > 0.5 && g.dy > 40 && !g.noFlick)) { LM.pull = g.dy; if (closeTop()) return; LM.pull = null; }
   var s = spring(SPR.snap, 0); g.d.animate([{ transform: 'translateY(' + g.dy + 'px)' }, { transform: 'none' }], { duration: s.d, easing: s.e }); g.d.style.transform = '';
 });
+/* 0.3.1 (BACKLOG 27 and 28; admin: "Search phải kéo xuống chứ ... search chỉ cho kéo xuống thôi", and for the notifications list
+   "Ok" to a swipe up): on a touch screen the Search box follows a pull down and the notifications list (it drops from under
+   the top bar) a swipe up; past a third of the way, or on a quick flick, it leaves that way; let go early and it settles
+   back. Where its list scrolls that way, the list scrolls first and the pull goes on once it reaches its end; a flick that
+   started on a scrolled list only scrolls it. (The sideways swipe that closed Search earlier in 0.3.1 is gone.) */
+var PG = null;
+function scrollsOn(t, stop, axis, back) { // something under t (up to stop) can still scroll that way (back: toward its start)
+  for (var e = t; e && e.nodeType === 1; e = e.parentElement) {
+    var cs = getComputedStyle(e), o = axis === 'y' ? cs.overflowY : cs.overflowX, y = axis === 'y';
+    if ((o === 'auto' || o === 'scroll') && (y ? e.scrollHeight > e.clientHeight + 1 : e.scrollWidth > e.clientWidth + 1)) {
+      var pos = Math.abs(y ? e.scrollTop : e.scrollLeft), max = y ? e.scrollHeight - e.clientHeight : e.scrollWidth - e.clientWidth;
+      if (back ? pos > 0.5 : pos < max - 0.5) return true;
+    }
+    if (e === stop) break;
+  }
+  return false;
+}
+function vLayer(t) { // the layer under t that leaves downward or upward: {el, up, stop (where its scrolling parts end), close(d)}
+  if (!t || !t.closest || S.tour >= 0) return null;
+  var ov = t.closest('#layer .overlay'), ovs = layer.querySelectorAll('.overlay');
+  if (ov && ov === ovs[ovs.length - 1]) {
+    if (ov.classList.contains('pal-ov')) { var pb = ov.querySelector('.pal'); return pb && S.pal ? { el: pb, stop: ov, close: function (d) { LM.out = { dx: 0, dy: d }; S.pal = null; render(); return true; } } : null; }
+    var dg = ov.querySelector(':scope > .dialog'); if (!dg || ov.querySelector('.overlay')) return null;
+    return { el: dg, stop: ov, close: function (d) { LM.pull = d; if (closeTop()) return true; LM.pull = null; return false; } };
+  }
+  if (ov || window.innerWidth >= 900) return null;
+  var np = S.pop === 'notif' && t.closest('#layer .pop.npop');
+  if (np) return { el: np, up: true, stop: np, close: function (d) { LM.out = { dx: 0, dy: -d }; S.pop = null; render(); return true; } };
+  return null;
+}
+function vMove(L, d) { L.el.style.transition = 'none'; L.el.style.transform = 'translateY(' + (L.up ? -d : d) + 'px)'; }
+function vBack(L, d) {
+  var s = spring(SPR.snap, 0); L.el.animate([{ transform: 'translateY(' + (L.up ? -d : d) + 'px)' }, { transform: 'none' }], { duration: s.d, easing: s.e });
+  L.el.style.transform = ''; L.el.style.transition = '';
+}
+function vFar(L, d) { return d > Math.min(160, L.el.offsetHeight / 3); }
+function npAtEnd(t) { var sc = t.closest && t.closest('.np-scroll'); return !sc || ((!scrollsOn(t, sc, 'y', false)) && !notesMore()); } // the list at its end with nothing more to load
+document.addEventListener('touchstart', function (e) {
+  PG = null; if (e.touches.length !== 1) return;
+  var t = e.target, L = vLayer(t); if (!L || L.el.matches('.dialog')) return; // the sheets have their own pull (above)
+  var c = e.touches[0];
+  PG = { L: L, x: c.clientX, y: c.clientY, on: false, scroll: L.up ? !npAtEnd(t) : scrollsOn(t, L.stop, 'y', true), t: t, pts: [[c.clientY, e.timeStamp]] };
+}, { passive: true });
+document.addEventListener('touchmove', function (e) {
+  var g = PG; if (!g) return; var c = e.touches[0], dx = c.clientX - g.x, dy = (c.clientY - g.y) * (g.L.up ? -1 : 1);
+  if (!g.on) {
+    if (g.moving) { // the list scrolls first; the pull goes on from where it reached its end
+      if (dy <= 0 || (g.L.up ? !npAtEnd(g.t) : scrollsOn(g.t, g.L.stop, 'y', true))) return;
+      g.on = true; g.noFlick = true; g.y = c.clientY; dy = 0;
+    } else {
+      if (Math.abs(dx) < 10 && Math.abs(dy) < 10) return;
+      if (dy > 0 && dy > 1.5 * Math.abs(dx)) { if (g.scroll) { g.moving = true; return; } g.on = true; g.y = c.clientY; dy = 0; }
+      else { PG = null; return; }
+    }
+  }
+  if (e.cancelable) e.preventDefault();
+  g.d = Math.max(0, dy); vMove(g.L, g.d);
+  g.pts.push([c.clientY, e.timeStamp]); if (g.pts.length > 5) g.pts.shift();
+}, { passive: false });
+function pgEnd(e) {
+  var g = PG; PG = null; if (!g || !g.on) return;
+  var a = g.pts[0], b = g.pts[g.pts.length - 1], v = b[1] > a[1] && e.timeStamp - b[1] < 80 ? (b[0] - a[0]) / (b[1] - a[1]) * (g.L.up ? -1 : 1) : 0;
+  if ((vFar(g.L, g.d) || (v > 0.5 && g.d > 30 && !g.noFlick)) && g.L.close(g.d)) return;
+  vBack(g.L, g.d || 0);
+}
+document.addEventListener('touchend', pgEnd); document.addEventListener('touchcancel', pgEnd);
 document.addEventListener('touchstart', function (e) {
   DR.g = null;
-  if (!N3() || !phoneW() || e.touches.length !== 1 || panelShown() || DR.busy || S.pop || S.pal || S.tour >= 0 || layer.querySelector('.overlay')) return;
+  if (!N3() || !phoneW() || e.touches.length !== 1 || panelShown() || S.pop || S.pal || S.tour >= 0 || layer.querySelector('.overlay')) return;
   var t = e.target, c = e.touches[0], fld = t.closest && t.closest('input, textarea, select, [contenteditable="true"]');
+  if (DR.busy) { // 0.3.1: the finger takes the moving page from where it is
+    if (!DR.run || !(t.closest && t.closest('.shell'))) return;
+    var k = drawerCatch(); if (!k) return;
+    DR.g = { x: c.clientX, y: c.clientY, p0: k.p, w: drawerW() - (layName() === 'short' ? 60 : 0), lock: 0, pts: [[c.clientX, Date.now()]], caught: k.to, parts: k.parts };
+    return;
+  }
   if (fld && (fld === document.activeElement || fld.type === 'range')) return;
   if (!S.drawer) { var mw = t.closest && t.closest('.mainwrap'); if (!mw || (c.clientX > 24 && hScroll(t, mw))) return; } // where the page scrolls sideways itself: from the left edge
   else if (!(t.closest && t.closest('.sb, .scrim'))) return;
@@ -5350,7 +5633,8 @@ document.addEventListener('touchmove', function (e) {
   var c = e.touches[0], dx = c.clientX - g.x, dy = c.clientY - g.y;
   if (!g.lock) {
     if (Math.abs(dx) < 12 && Math.abs(dy) < 12) return;
-    if (Math.abs(dx) > 1.5 * Math.abs(dy) && (g.p0 ? dx < 0 : dx > 0)) { g.lock = 1; g.parts = drawerParts(); } else { DR.g = null; return; }
+    if (Math.abs(dx) > 1.5 * Math.abs(dy) && (g.caught !== undefined ? (g.p0 < 0.999 || dx < 0) && (g.p0 > 0.001 || dx > 0) : g.p0 ? dx < 0 : dx > 0)) { g.lock = 1; if (!g.parts) g.parts = drawerParts(); }
+    else { DR.g = null; if (g.caught !== undefined) drawerTo(g.caught, g.p0, 0, g.parts); return; } // caught but not swiped: it goes on
   }
   if (e.cancelable) e.preventDefault();
   g.p = Math.max(0, Math.min(1, g.p0 + dx / g.w)); // back and forth with the finger
@@ -5358,12 +5642,14 @@ document.addEventListener('touchmove', function (e) {
   moSet(g.parts, g.p);
 }, { passive: false });
 function drEnd() {
-  var g = DR.g; DR.g = null; if (!g || !g.lock) return;
+  var g = DR.g; DR.g = null; if (!g) return;
+  if (!g.lock) { if (g.caught !== undefined) { DR.eat = Date.now() + 450; drawerTo(g.caught, g.p0, 0, g.parts); } return; } // a tap on a moving page only lets it go on
   var a = g.pts[0], b = g.pts[g.pts.length - 1], v = b[1] > a[1] && Date.now() - b[1] < 80 ? (b[0] - a[0]) / (b[1] - a[1]) * 1000 / g.w : 0;
   var open = v > 0.8 ? true : v < -0.8 ? false : g.p > 0.5;
-  drawerTo(open, g.p, open ? v / Math.max(0.05, 1 - g.p) : -v / Math.max(0.05, g.p));
+  drawerTo(open, g.p, open ? v / Math.max(0.05, 1 - g.p) : -v / Math.max(0.05, g.p), g.parts);
 }
 document.addEventListener('touchend', drEnd); document.addEventListener('touchcancel', drEnd);
+window.addEventListener('click', function (e) { if (DR.eat && Date.now() < DR.eat) { DR.eat = 0; e.stopPropagation(); e.preventDefault(); } }, true); // that tap opens nothing
 /* 0.2.9 (admin, after the first build: "khi thanh bên cũng bị thu lại chỉ hiện icon của sidebar thì cũng như là kéo tờ giấy sát
    lại thôi, khi di chuột lại thì chỉ hiện tên của nút chứ không chạy ra cả sidebar"): hovering the rail shows each
    button's name (its tip), never the full sidebar; the full sidebar comes only from its button */
@@ -5386,15 +5672,73 @@ function peekTo(open) {
 /* 0.3.0 (admin: "hiệu ứng của sidebar khi hidden cũng dị, tự ngưng khựng 1 cái ... các bài trong block cũng phải được sắp xếp"):
    the page takes its new width at once and the blocks glide from where they were to where they go, in the same spring
    as the page's edge, so nothing jumps at the start or at the end */
+/* 0.3.1 (admin: "Sao từ sidebar trượt vô để giấu sidebar chỉ có icon lại khựng vậy ta ... chỉ mất các chữ thôi mà"; then
+   "chỉ cần giữ icon không hiện mấy chữ thôi mà. Còn phía dưới khi chuyển động vô thì 3 icon từ dưới đi lên, icon install app
+   đẩy vô vị trí đó"): while the page slides over the sidebar (or off it), the sidebar folds into its rail of icons in the
+   same movement: q = 0 is the full sidebar, q = 1 looks exactly like the rail. The icons stay where they are (the rail
+   keeps them in the same places), the words fade, New manuscript and the chosen item shrink to their icon, and the parts
+   that have another place in the rail glide there: the sidebar's button and Get the app ride beside the page's edge, the
+   buttons at the bottom move up. At q = 1 the swap to the rail itself shows nothing. */
+var SB_ANCH = 'svg.ic, .plus, .av';
+function sbBtns(sb) { return Array.prototype.filter.call(sb.querySelectorAll('button'), function (b) { return !b.closest('.sb-scroll'); }); }
+function sbCtr(el) { var r = el.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2, t: r.top, w: r.width, h: r.height }; }
+function sbRailPos(sb) { // where each part sits in the rail, measured on a hidden copy drawn as the rail
+  var w = document.createElement('div'), c = sb.cloneNode(true);
+  w.className = sb.parentNode.className.replace(/\b(sbslide|sbshow|sbpeek|drawer|pshown)\b/g, '') + ' sbc'; w.setAttribute('aria-hidden', 'true');
+  w.style.cssText = 'position:fixed;left:0;top:0;width:60px;height:100vh;height:100dvh;min-height:0;visibility:hidden;pointer-events:none;overflow:hidden';
+  lmGhost(c); w.appendChild(c); document.body.appendChild(w);
+  var ft = c.querySelector('.sb-foot'), out = { foot: ft && ft.offsetParent ? sbCtr(ft) : null, btns: sbBtns(c).map(function (b) {
+    if (!b.offsetParent) return null; var a = b.querySelector(SB_ANCH) || b, bd = b.querySelector('.badge');
+    return { a: sbCtr(a), b: sbCtr(b), badge: bd && bd.offsetParent ? sbCtr(bd) : null };
+  }) };
+  w.remove(); return out;
+}
+function sbParts(sb) { // the parts of the full sidebar (as drawn now) and how each one reaches the rail's look
+  if (!sb) return [];
+  var R = sbRailPos(sb), parts = [], ft = sb.querySelector('.sb-foot'), fdy = 0, ix = function (v) { return v.toFixed(1); };
+  if (ft && R.foot) {
+    var f0 = sbCtr(ft), fcut = Math.max(0, f0.w - R.foot.w); fdy = R.foot.t - f0.t;
+    parts.push({ el: ft, f: function (q) { return { transform: 'translateY(' + ix(fdy * q) + 'px)', clipPath: 'inset(0 ' + ix(fcut * q) + 'px 0 0)' }; } });
+  }
+  sbBtns(sb).forEach(function (b, i) {
+    var t = R.btns[i]; if (!t || !b.offsetParent) return;
+    var a = sbCtr(b.querySelector(SB_ANCH) || b), bb = sbCtr(b), inF = ft && ft.contains(b) && R.foot ? fdy : 0;
+    var dx = t.a.x - a.x, dy = t.a.y - a.y - inF, cut = Math.max(0, bb.w - t.b.w), rd = b.classList.contains('sb-new') ? 999 : 10;
+    parts.push({ el: b, f: function (q) { return { transform: 'translate(' + ix(dx * q) + 'px,' + ix(dy * q) + 'px)', clipPath: 'inset(0 ' + ix(cut * q) + 'px 0 0 round ' + rd + 'px)' }; } });
+    var bd = b.querySelector('.badge');
+    if (bd && t.badge) { var c0 = sbCtr(bd), bx = t.badge.x - c0.x - dx, by = t.badge.y - c0.y - dy - inF, k = t.badge.h / Math.max(1, c0.h);
+      parts.push({ el: bd, f: function (q) { return { transform: 'translate(' + ix(bx * q) + 'px,' + ix(by * q) + 'px) scale(' + (1 + (k - 1) * q).toFixed(3) + ')' }; } }); }
+  });
+  Array.prototype.forEach.call(sb.querySelectorAll('.sb-brand, .lab, .cnt, .who, .sb-test, .sb-scroll'), function (el) {
+    parts.push({ el: el, fade: true, f: function (q) { return { opacity: String(1 - q) }; } });
+  });
+  return parts;
+}
+function sbHold(parts, q) { // the look at q, held (a hand moves the page)
+  parts.forEach(function (x) { if (x.el.__sb) x.el.__sb.cancel(); var k = x.f(x.fade ? Math.min(1, q * 2.2) : q); x.el.__sb = x.el.animate([k, k], { duration: 1, fill: 'forwards' }); });
+}
+function sbRun(parts, q0, q1, s) { // from q0 to q1 on the page's spring; the words fade in the first part of the way out, the last part of the way in
+  parts.forEach(function (x) {
+    if (x.el.__sb) x.el.__sb.cancel();
+    var o = { duration: s.d, easing: s.e, fill: 'forwards' }, a = x.fade ? Math.min(1, q0 * 2.2) : q0, b = x.fade ? Math.min(1, q1 * 2.2) : q1;
+    if (x.fade) o = q1 > q0 ? { duration: s.d * 0.4, easing: 'ease-out', fill: 'forwards' } : { duration: s.d * 0.45, delay: s.d * 0.55, easing: 'ease-in', fill: 'both' };
+    x.el.__sb = x.el.animate([x.f(a), x.f(b)], o);
+  });
+}
+function sbClear(parts) { parts.forEach(function (x) { if (x.el.__sb) { x.el.__sb.cancel(); x.el.__sb = null; } }); }
+function sbSettled() { S.sbSlide = false; S.sbShow = false; var sh = app.querySelector('.shell'); if (sh) sh.classList.remove('sbslide', 'sbshow'); }
 function sbSlide(hide) {
   var p = S.boot.prefs = S.boot.prefs || {};
   if (reduceMotion() || !N3()) { p.sbCollapsed = hide; render(); return; }
   var before = blockRects(true);
-  if (hide) { p.sbCollapsed = true; S.sbSlide = true; render(); }
-  else { p.sbCollapsed = false; S.sbSlide = false; S.sbShow = true; render(); } // the final layout at once, the page slides off the sidebar
+  // hiding: the full sidebar stays under the page while it folds (sbslide), the page takes its new width at once; showing:
+  // the final layout at once (sbshow: the page above the full sidebar), the sidebar unfolding from the rail's look
+  p.sbCollapsed = hide; S.sbSlide = hide; S.sbShow = !hide; render();
   var mw = document.querySelector('.mainwrap'); if (!mw) return;
+  var parts = sbParts(app.querySelector('.shell > .sb'));
   glideBlocks(before, hide ? 204 : -204);
-  sheetSlide([mw], hide ? 204 : -204, 0, function () { S.sbSlide = false; S.sbShow = false; render(); });
+  sbRun(parts, hide ? 0 : 1, hide ? 1 : 0, spring(SPR.nav));
+  sheetSlide([mw], hide ? 204 : -204, 0, function () { sbClear(parts); if (hide) { S.sbSlide = false; render(); } else sbSettled(); }); // hidden: the rail, which looks the same
 }
 
 /* swipe right on the card to close it, following the finger (touch screens): the direction is locked after 12 px, and
@@ -5440,8 +5784,11 @@ document.addEventListener('wheel', function (e) {
   if (!WH || now - WH.t > 160) {
     if (WH && WH.over && now - WH.t < 400) { e.preventDefault(); WH.t = now; return; } // the trackpad's glide after a close
     if (!(dx > 2 && Math.abs(dx) > 1.5 * Math.abs(dy))) { WH = null; return; }
+    // 0.3.1 (BACKLOG 30): a mouse wheel (and Shift + wheel) only scrolls; a part of the card that scrolls sideways scrolls first
+    if (wheelMouse(e) || scrollsOn(e.target, pn, 'x', true)) { WH = { no: true, t: now }; return; }
     WH = { d: 0, t: now, w: pn.getBoundingClientRect().width + 40, parts: cardParts(), pts: [] };
   }
+  if (WH.no) { WH.t = now; return; } // this gesture scrolls
   if (WH.over) { e.preventDefault(); WH.t = now; return; }
   e.preventDefault(); WH.d = Math.max(0, WH.d + dx); WH.t = now; WH.pts.push([WH.d, now]); if (WH.pts.length > 6) WH.pts.shift();
   var p = WH.d / WH.w; moSet(WH.parts, p);
@@ -5450,10 +5797,136 @@ document.addEventListener('wheel', function (e) {
     if ((p > 0.4 && v > -0.3) || v > 1.4) closePanel(false, { p: MO.p || p, v: Math.max(0, v) }); else cardBack(v); };
   if (p > 0.55) rel(); else WH.end = setTimeout(rel, 120);
 }, { passive: false });
+/* 0.3.1 (BACKLOG 30, admin: "nếu pop up (lớp 3) hiện lên thì kéo ngang là trượt lớp 3 khỏi lớp 2, tương tự, khi đang hide sidebar,
+   thì kéo là trượt 2 lớp"; "cuộn chuột thì không như vuốt được, chỉ scroll thôi"): on a computer a two-finger swipe moves the
+   top layer the way the content would move (so each person's natural-scrolling setting is followed): a dialog or Search
+   down, the card to the right (above), and with no card the page off a hidden sidebar and back. A mouse can press and drag
+   a layer (from its bar or from a spot without text); its wheel only scrolls. Where a part of the layer scrolls that way,
+   a gesture that starts there scrolls it, even once it reaches its end. A web page sees a trackpad only as scrolling:
+   a pause ends the gesture; the trackpad's glide after a release is ignored. */
+function wheelMouse(e) { // a mouse wheel's steps (and Shift + wheel), not a trackpad's small continuous ones
+  if (e.shiftKey || e.ctrlKey || e.deltaMode !== 0) return true;
+  var wy = e.wheelDeltaY, wx = e.wheelDeltaX;
+  if (wy === undefined || wy === null) return false;
+  if ((wy && wy === -3 * e.deltaY) || (wx && wx === -3 * e.deltaX)) return false; // Chrome, Edge and Safari on a Mac: a trackpad
+  // a wheel moves by notches: 120 for the old measure, and 50 px or more each (100 on Windows, more with display scaling)
+  return !!(wy || wx) && Math.abs(wy || 0) % 120 === 0 && Math.abs(wx || 0) % 120 === 0 && Math.max(Math.abs(e.deltaX), Math.abs(e.deltaY)) >= 50;
+}
+var WV = null;
+document.addEventListener('wheel', function (e) {
+  var now = Date.now(), dy = -e.deltaY * (e.deltaMode === 1 ? 16 : 1), dx = -e.deltaX * (e.deltaMode === 1 ? 16 : 1), g = WV;
+  if (g && now - g.t < 160) { g.t = now; if (g.no) return; e.preventDefault(); if (g.over) return; }
+  else {
+    WV = null; var L = vLayer(e.target); if (!L || L.up || Math.abs(dy) < 1.5 * Math.abs(dx) || !dy) return;
+    if (dy < 0 || wheelMouse(e) || scrollsOn(e.target, L.stop, 'y', true)) { WV = { no: true, t: now }; return; } // up, a wheel, or a part that scrolls first
+    e.preventDefault(); g = WV = { L: L, d: 0, t: now, pts: [] };
+  }
+  g.d = Math.max(0, g.d + dy); vMove(g.L, g.d); g.pts.push([g.d, now]); if (g.pts.length > 6) g.pts.shift();
+  clearTimeout(g.end);
+  var rel = function () {
+    var a = g.pts[0], b = g.pts[g.pts.length - 1], v = b[1] > a[1] ? (b[0] - a[0]) / (b[1] - a[1]) : 0; g.over = true;
+    if ((vFar(g.L, g.d) || (v > 0.6 && g.d > 30)) && g.L.close(g.d)) return;
+    vBack(g.L, g.d);
+  };
+  if (g.d > g.L.el.offsetHeight * 0.6) rel(); else g.end = setTimeout(rel, 120);
+}, { passive: false });
+/* the page over a hidden sidebar (computers, the sidebar beside the page): it slides off the sidebar and back with the
+   hand, and where it is let go decides "Keep the sidebar hidden", like the sidebar's button (admin: "1. A") */
+function psOk() { return N3() && layName() === 'side' && !panelShown() && !S.pop && !S.pal && !S.drawer && !S.sbSlide && !S.sbShow && !S.sbPeek && S.tour < 0 && !layer.querySelector('.overlay'); }
+function psStart(hide) { // hide: the page goes over the sidebar; else it slides off it
+  var p = S.boot.prefs = S.boot.prefs || {}, before = hide ? blockRects(true) : null;
+  if (hide) p.sbCollapsed = true; S.sbSlide = true; render(); // the full sidebar under the page; hiding, the page takes its new width at once
+  var mw = document.querySelector('.mainwrap'); if (before) glideBlocks(before, 204);
+  var g = { hide: hide, was: !hide, mw: mw, d: 0, parts: sbParts(app.querySelector('.shell > .sb')) };
+  sbHold(g.parts, hide ? 0 : 1); // revealing, it starts with the rail's look and unfolds with the hand
+  return g;
+}
+function psSet(g, d) { // d: px toward where the hand goes
+  g.d = Math.max(0, Math.min(204, d)); var x = g.hide ? 204 - g.d : g.d; g.x = x;
+  if (g.mw.__ps) g.mw.__ps.cancel(); g.mw.__ps = g.mw.animate([{ transform: 'translateX(' + x.toFixed(1) + 'px)' }, { transform: 'translateX(' + x.toFixed(1) + 'px)' }], { duration: 1, fill: 'forwards' });
+  sbHold(g.parts, g.hide ? g.d / 204 : 1 - g.d / 204);
+}
+function psEnd(g, v) { // v: px per ms toward the goal
+  var go = g.d > 82 || v > 0.6 ? g.hide : !g.hide, p = S.boot.prefs, x = g.x || 0, hold = g.mw.__ps, before = null, s = spring(SPR.nav); // go: hidden at the end
+  var q = g.hide ? g.d / 204 : 1 - g.d / 204, parts = g.parts;
+  if (!go) { sbClear(parts); before = blockRects(true); p.sbCollapsed = false; S.sbSlide = false; S.sbShow = true; render(); x -= 204; parts = sbParts(app.querySelector('.shell > .sb')); } // the page lies 204 px further right
+  var mw = document.querySelector('.mainwrap'); if (before) glideBlocks(before, x);
+  sbRun(parts, q, go ? 1 : 0, s);
+  sheetSlide([mw], x, 0, function () { sbClear(parts); if (go) { S.sbSlide = false; render(); } else sbSettled(); });
+  if (hold) hold.cancel(); g.mw.__ps = null;
+  if (go !== g.was) { keepBoot(); api('api_setPrefs', { sbCollapsed: go }).catch(function () { }); }
+}
+var WP = null;
+document.addEventListener('wheel', function (e) {
+  var now = Date.now(), dx = -e.deltaX * (e.deltaMode === 1 ? 16 : 1), dy = -e.deltaY * (e.deltaMode === 1 ? 16 : 1), g = WP;
+  if (g && now - g.t < 160) { g.t = now; if (g.no) return; e.preventDefault(); if (g.over) return; }
+  else {
+    WP = null; if (!dx || Math.abs(dx) < 1.5 * Math.abs(dy) || !psOk() || !(e.target.closest && e.target.closest('.mainwrap, .shell.sbc .sb'))) return;
+    var hidden = !!prefs().sbCollapsed;
+    if ((hidden ? dx < 0 : dx > 0) || wheelMouse(e) || scrollsOn(e.target, document.querySelector('.mainwrap'), 'x', dx > 0)) { WP = { no: true, t: now }; return; }
+    e.preventDefault(); g = WP = { t: now, ps: psStart(!hidden), d: 0, pts: [] };
+  }
+  g.d += g.ps.hide ? -dx : dx; psSet(g.ps, g.d); g.pts.push([g.ps.d, now]); if (g.pts.length > 6) g.pts.shift();
+  clearTimeout(g.end);
+  var rel = function () { var a = g.pts[0], b = g.pts[g.pts.length - 1]; g.over = true; psEnd(g.ps, b[1] > a[1] ? (b[0] - a[0]) / (b[1] - a[1]) : 0); };
+  if (g.ps.d >= 190) rel(); else g.end = setTimeout(rel, 120);
+}, { passive: false });
+/* a mouse: press and drag a layer, from its bar or a spot without text (dragging over text still selects it) */
+function onText(x, y) {
+  var n = null, r;
+  if (document.caretRangeFromPoint) { r = document.caretRangeFromPoint(x, y); n = r && r.startContainer; }
+  else if (document.caretPositionFromPoint) { r = document.caretPositionFromPoint(x, y); n = r && r.offsetNode; }
+  if (!n || n.nodeType !== 3 || !n.textContent.trim()) return false;
+  var rg = document.createRange(); rg.selectNodeContents(n); var rs = rg.getClientRects();
+  for (var i = 0; i < rs.length; i++) if (x >= rs[i].left - 2 && x <= rs[i].right + 2 && y >= rs[i].top - 2 && y <= rs[i].bottom + 2) return true;
+  return false;
+}
+var MD = null;
+document.addEventListener('pointerdown', function (e) {
+  MD = null; if (e.pointerType !== 'mouse' || e.button !== 0) return;
+  var t = e.target, L = vLayer(t), k = L ? 'v' : '';
+  if (!L && panelShown() && !S.closing && !layer.querySelector('.overlay') && S.tour < 0 && t.closest && t.closest('.shell.pshown .panel')) { L = { el: t.closest('.panel') }; k = 'card'; }
+  if (!L && psOk() && t.closest && t.closest('.mainwrap, .shell.sbc .sb')) { L = { el: t.closest('.mainwrap, .sb') }; k = 'page'; }
+  if (!L || L.up) return;
+  var hit = t.closest('input, textarea, select, button, a, label, summary, [contenteditable="true"], [data-a], [data-i], [role="slider"], .sc-rail, #scrub');
+  if ((hit && L.el.contains(hit)) || onText(e.clientX, e.clientY)) return;
+  MD = { L: L, k: k, x: e.clientX, y: e.clientY, lock: false, pts: [] };
+}, true);
+document.addEventListener('pointermove', function (e) {
+  var g = MD; if (!g || e.pointerType !== 'mouse') return;
+  if (!(e.buttons & 1)) { mdEnd(e); return; }
+  var dx = e.clientX - g.x, dy = e.clientY - g.y;
+  if (!g.lock) {
+    if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
+    var hidden = !!prefs().sbCollapsed;
+    var okDir = g.k === 'v' ? dy > 0 && dy > 1.5 * Math.abs(dx) : Math.abs(dx) > 1.5 * Math.abs(dy) && (g.k === 'card' ? dx > 0 : hidden ? dx > 0 : dx < 0);
+    if (!okDir) { MD = null; return; }
+    g.lock = true; document.documentElement.classList.add('ldrag'); try { window.getSelection().removeAllRanges(); } catch (x) { }
+    if (g.k === 'card') g.parts = cardParts(); else if (g.k === 'page') g.ps = psStart(!hidden);
+    g.x = e.clientX; g.y = e.clientY; dx = dy = 0;
+  }
+  e.preventDefault();
+  var d = g.k === 'v' ? dy : g.k === 'card' ? dx : g.ps.hide ? -dx : dx; g.d = Math.max(0, d);
+  if (g.k === 'v') vMove(g.L, g.d); else if (g.k === 'card') { g.w = g.w || g.L.el.getBoundingClientRect().width + (cardSide() ? 40 : 0); moSet(g.parts, g.d / g.w); } else psSet(g.ps, g.d);
+  g.pts.push([g.d, e.timeStamp]); if (g.pts.length > 6) g.pts.shift();
+}, true);
+function mdEnd(e) {
+  var g = MD; MD = null; if (!g || !g.lock) return;
+  document.documentElement.classList.remove('ldrag'); DR.eat = Date.now() + 300; // the release is not a click on what is under it
+  var a = g.pts[0] || [0, 0], b = g.pts[g.pts.length - 1] || [0, 0], v = b[1] > a[1] && e.timeStamp - b[1] < 80 ? (b[0] - a[0]) / (b[1] - a[1]) : 0; // px per ms
+  if (g.k === 'v') { if ((vFar(g.L, g.d) || (v > 0.6 && g.d > 30)) && g.L.close(g.d)) return; vBack(g.L, g.d); }
+  else if (g.k === 'card') { var p = MO.p || 0, vw = v * 1000 / g.w; if ((p > 0.4 && vw > -0.3) || vw > 1.4) closePanel(false, { p: p, v: Math.max(0, vw) }); else cardBack(vw); }
+  else psEnd(g.ps, v);
+}
+document.addEventListener('pointerup', mdEnd, true); document.addEventListener('pointercancel', mdEnd, true);
 
 /* Back (the browser's, Android's, Alt + Left, a mouse's back button) closes one layer, like Esc: each layer that opens
    (the card, the phone menu, a dialog, a list, Search) adds a step to the browser's history */
 var HB = { n: 0, skip: 0, on: (function () { try { return window.top === window && !!history.pushState; } catch (e) { return false; } })() };
+// 0.3.1 (admin: "khi không chọn nữa và quay về danh sách thì cái tôi đang chọn lại nhảy về chỗ khác"): a layer's step back in the
+// browser's history must not move the page: the browser restored the scroll position it had kept for that step, after the
+// app had kept the chosen block in sight (Esc, Back, and sometimes the close button)
+try { if (HB.on && 'scrollRestoration' in history) history.scrollRestoration = 'manual'; } catch (e) { }
 function layerN() { return (panelShown() && !S.closing ? 1 : 0) + (S.drawer || S.sbPeek ? 1 : 0) + (S.pop ? 1 : 0) + (S.pal ? 1 : 0) + (S.wn || S.ga || S.ad || S.del || S.rp || S.qu || S.fb || S.nf ? 1 : 0); }
 function histSync() {
   if (!HB.on || !S.boot || HB.skip) return; // a step back still on its way: wait for it (the browser does it later)
@@ -5468,7 +5941,7 @@ try { if (HB.on && history.state && history.state.vibra) history.replaceState(nu
 function closeTop() {
   if (S.tour >= 0) endTour(); else if (S.wn) ACT['wn-close'](); else if (S.ga) ACT['ga-close'](); else if (S.ad) ACT['ad-close'](); else if (S.del) ACT['del-close'](); else if (S.ned) ACT['note-cancel']();
   else if (S.rp) ACT['rp-close'](); else if (S.qu) ACT['qu-close'](); else if (S.fb) ACT['fb-close'](); else if (S.nf) ACT['nf-close'](); else if (S.pal) { S.pal = null; render(); } else if (S.pop) { S.pop = null; render(); } else if (S.tip) ACT.tip(S.tip);
-  else if (S.ed) { S.ed = null; render(); } else if (S.drawer) { S.drawer = false; render(); } else if (S.sbPeek) { peekTo(false); } else if (S.sel) closePanel(false); else return false;
+  else if (S.ed) { S.ed = null; render(); } else if (S.drawer) { drawerGo(false); } else if (S.sbPeek) { peekTo(false); } else if (S.sel) closePanel(false); else return false;
   return true;
 }
 window.addEventListener('popstate', function (e) {
@@ -5814,13 +6287,13 @@ var ACT = {
     p.sbFold = f; keepBoot(); render(); api('api_setPrefs', { sbFold: f }).catch(function () { });
   },
   'sb-toggle': function () {
-    if (phoneW()) { S.drawer = !S.drawer; render(); return; }
+    if (phoneW()) { drawerGo(!S.drawer); return; }
     if (railForced()) { peekTo(!S.sbPeek); return; } // 0.2.9: the sheet slides aside to show the full sidebar, the setting unchanged
     var p = S.boot.prefs = S.boot.prefs || {}, hide = !p.sbCollapsed; sbSlide(hide); // 0.2.9: the page slides over the sidebar
     api('api_setPrefs', { sbCollapsed: hide }).catch(function () { });
   },
-  'drawer-open': function () { S.drawer = true; render(); var f = document.querySelector('.sb .sb-item'); if (f) f.focus(); },
-  'drawer-close': function () { S.drawer = false; render(); },
+  'drawer-open': function () { drawerGo(true); var f = document.querySelector('.sb .sb-item'); if (f) f.focus({ preventScroll: true }); },
+  'drawer-close': function () { drawerGo(false); },
   'pal-open': function () { palOpen(); },
   'pal-go': function (v) { palRun(Number(v)); },
   'pal-bg': function (v, e) { if (e.target.classList && e.target.classList.contains('overlay')) { S.pal = null; render(); } },
@@ -6012,6 +6485,14 @@ var ACT = {
   'acct-add': function () { S.pop = null; render(); if (window.VIBRA_WEB && window.VIBRA_WEB.addAccount) window.VIBRA_WEB.addAccount(); },
   'acct-proj': function (v) { S.pop = null; render(); if (v === 'add') toast('Other projects: coming soon.'); },
   'web-signout': function () { S.pop = null; if (window.VIBRA_WEB && window.VIBRA_WEB.signOut) window.VIBRA_WEB.signOut(); },
+  'g-photo': function () { // 0.3.1 (BACKLOG 25): the photo of the Google account signed in here, for a session from before 0.3.1
+    S.gPhoto = true; render();
+    window.VIBRA_WEB.googlePhoto(function (ok) {
+      S.gPhoto = false; S.photoSent = null;
+      if (ok) syncPhoto(); else toast('Google did not give the photo here. It comes the next time you sign in with Google.', true, 7000);
+      render();
+    });
+  },
   'web-code': function () {
     if (!window.VIBRA_WEB || !window.VIBRA_WEB.newCode) return;
     S.webCodeBusy = true; render();
@@ -6591,7 +7072,7 @@ document.addEventListener('keydown', function (e) {
     return;
   }
   if (e.key === '/' && S.boot && !S.pal && !/INPUT|TEXTAREA|SELECT/.test(t.tagName || '') && !t.isContentEditable && !S.nf && !S.qu && !S.fb && !S.del && S.tour < 0) { e.preventDefault(); palOpen(); return; }
-  if (e.key === 'Escape' && S.drawer) { S.drawer = false; render(); return; }
+  if (e.key === 'Escape' && S.drawer) { drawerGo(false); return; }
   if (k === 'num') { if (numEnter(e)) { if (S.nf && t.id === 'nf-next') S.nf.next = t.value; else if (S.draft) { S.draft.next = t.value; updateSaveState(); } } return; }
   if (k === 'cb') {
     var key = t.getAttribute('data-cb');
@@ -6890,6 +7371,7 @@ window.__vibra026 = { vvFit: vvFit, keepReq: keepReq, keptReq: keptReq, settle: 
 (function () { var sp = spring(SPR.nav), r = document.documentElement.style; r.setProperty('--spr', sp.e); r.setProperty('--spr-d', sp.d + 'ms'); })(); // 0.2.9: CSS movements use the navigation spring
 window.__vibra028 = { setPal: setPal, LM: LM, HB: HB, MO: MO, spring: spring, morph: morph, closeTop: closeTop, render: render }; // test hook (0.2.8)
 window.__vibra030 = { ic: ic, esc: esc, tagHtml: tagHtml, allDerived: allDerived, myWork: myWork, short: short, nice: nice, niceShort: niceShort, render: render }; // test hook (0.3.0)
+window.__vibra031 = { render: render }; // test hook (0.3.1)
 window.__vibraNames = { authorKey: authorKey, isMemberKey: isMemberKey, onMine: onMine, open: function (id) { openManuscript(id); }, close: function () { closePanel(true); }, render: render };
 window.__vibraReboot = function () { api('api_bootstrap').then(function (b) { S.boot = b; applyTheme(); S.sel = null; S.draft = null; S.pop = null; S.feed = null; S.pair = null; S.fx.list = true; render(); }).catch(function (e) { toast(msg(e), true); }); };
 })();
