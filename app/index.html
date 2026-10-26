@@ -5,12 +5,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <script>
-/* VIBRA Tracker 0.3.1 on the group's own address (vibra-group.github.io), built by tools/build_web.py from app/Index.html.
+/* VIBRA Tracker 0.3.2 on the group's own address (vibra-group.github.io), built by tools/build_web.py from app/Index.html.
    This page is the VIBRA app: installable, with notifications and the last data readable offline.
    Google confirms who the member is ("Sign in with Google"), or a one-time code made on a signed-in device does; the
    admin's helper checks that once and gives a session; every server call then goes to the helper with that session
    and runs the tracker's own code as the member. */
-window.VIBRA_WEB = { helper: "https://script.google.com/macros/s/AKfycbzNE__5onOmvia3VaFHjybAJ5G35cnDJCN1ysuiNAYlgOC5xsbCi0xyDnmoJP7lEaFR3w/exec", clientId: "619243121375-pi18v7vjgvcue7qo6455uids4v28megi.apps.googleusercontent.com", classic: "https://script.google.com/macros/s/AKfycbzkG5eCrxQvQtJgfksL92G9vtl2I4LLEew-Az4qYlDxX6V1QfgtIrwGjYOGq9CQ0r3aWA/exec", built: "0.3.1" };
+window.VIBRA_WEB = { helper: "https://script.google.com/macros/s/AKfycbzNE__5onOmvia3VaFHjybAJ5G35cnDJCN1ysuiNAYlgOC5xsbCi0xyDnmoJP7lEaFR3w/exec", clientId: "619243121375-pi18v7vjgvcue7qo6455uids4v28megi.apps.googleusercontent.com", classic: "https://script.google.com/macros/s/AKfycbzkG5eCrxQvQtJgfksL92G9vtl2I4LLEew-Az4qYlDxX6V1QfgtIrwGjYOGq9CQ0r3aWA/exec", built: "0.3.2" };
 (function () {
   var W = window.VIBRA_WEB, KEY = 'vibra-web-session', S = null, queue = [], gisInit = false, tries = 0, gateOn = false;
   var ua = navigator.userAgent || '', IOS = /iPad|iPhone|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
@@ -1515,6 +1515,10 @@ html.dragging,html.dragging *{cursor:grabbing!important;-webkit-user-select:none
 .sub{font-size:calc(15px*var(--fz,1));color:var(--muted);margin-top:8px}
 .dsec h2{font:500 calc(22px*var(--fz,1))/1.25 var(--serif);letter-spacing:-.005em}
 .p-title{font:500 calc(21px*var(--fz,1))/1.3 var(--serif);letter-spacing:-.005em}
+/* 0.3.2 (BACKLOG 44, admin: "chỉ cần cái nút edits bên cạnh, ấn và mở phần title, Journal, If... ra"): a small pencil after the title */
+.p-tedit{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;margin:-3px 0 0 6px;vertical-align:middle;border:0;border-radius:999px;background:transparent;color:var(--muted);cursor:pointer}
+.p-tedit svg.ic{width:15px;height:15px}
+.p-tedit:hover,.p-tedit:focus-visible{background:var(--hover);color:var(--ink)}
 .dialog h2{font:500 calc(24px*var(--fz,1))/1.2 var(--serif);letter-spacing:-.005em}
 .ptools{float:right;position:relative;z-index:3;display:flex;align-items:center;gap:8px;margin:4px 0 8px 16px}
 .fchip{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 6px 0 12px;border-radius:999px;background:var(--accent-soft);color:var(--accent-text);font-size:calc(13px*var(--fz,1));border:0;cursor:pointer}
@@ -1596,8 +1600,6 @@ button.kpi:hover:not([disabled]),.tile:hover:not([disabled]){transform:none;box-
 .fab-s:hover{transform:translateY(-2px)}
 .fab-s svg.ic{width:21px;height:21px}
 .fab{box-shadow:0 12px 28px -10px rgba(23,64,127,.6),0 2px 6px rgba(0,0,0,.12)}
-.fabs.up{bottom:calc(max(20px,env(safe-area-inset-bottom)) + 72px)}
-@media (min-width:900px){.fabs.up{bottom:max(20px,env(safe-area-inset-bottom))}}
 @media (max-width:359px){.fab-s{width:48px;height:48px}}
 @media print{.fabs,.sb,.topbar{display:none}}
 
@@ -1698,7 +1700,6 @@ html,body{overscroll-behavior-x:none} /* the browser's own two-finger back swipe
 .fabs{flex-direction:column;align-items:flex-end;gap:12px;z-index:66;right:max(16px,env(safe-area-inset-right));bottom:max(30px,calc(env(safe-area-inset-bottom) + 12px))} /* admin: "lên trên xíu" */
 .fabs .fab-s{width:46px;height:46px;margin-right:4px}
 .fabs .fab-s svg.ic{width:19px;height:19px}
-.fabs.up{bottom:calc(max(30px,calc(env(safe-area-inset-bottom) + 12px)) + 64px)} /* over an open manuscript on a phone: above Save */
 /* admin, 24 Oct 2026 ("Discard và save của pop up ra gần giữa để không chạm vào nút save"): on a phone the card's
    Discard and Save sit in the middle, under their state line, away from the floating buttons at the right edge */
 @media (max-width:839px){
@@ -1706,13 +1707,24 @@ html,body{overscroll-behavior-x:none} /* the browser's own two-finger back swipe
   .panel .savebar .state{flex-basis:100%;margin:0;text-align:center;font-size:calc(11.5px*var(--fz,1))}
   .panel .savebar .btn{min-width:112px;justify-content:center}
 }
+/* 0.3.2 (admin: "Discard và save đưa lại giữa vẫn không chạm á"): in the middle; only under 375 px wide, where the round ⚡
+   would cover Save, they keep to the room left of it */
+@media (max-width:374px){.panel .savebar{padding-right:calc(78px + env(safe-area-inset-right))}}
 .fabs .fab{min-width:54px;height:54px;gap:0;overflow:hidden;white-space:nowrap;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;transition:padding .42s var(--spr,cubic-bezier(.2,.9,.25,1)),transform .18s var(--ease),box-shadow .2s}
 .fabs .fab span{display:inline-block;max-width:140px;opacity:1;margin-left:8px;transition:max-width .42s var(--spr,cubic-bezier(.2,.9,.25,1)),opacity .2s,margin-left .42s var(--spr,cubic-bezier(.2,.9,.25,1))}
 .fabs .fab.round:not(.peek){padding:0 16px}
 .fabs .fab.round:not(.peek) span{max-width:0;opacity:0;margin-left:0;transition:max-width .36s var(--spr,cubic-bezier(.2,.9,.25,1)),opacity .12s,margin-left .36s var(--spr,cubic-bezier(.2,.9,.25,1))}
+/* 0.3.2 (BACKLOG 38, admin: "nút quick update cũng thiết kế lại cho giống new manuscript đi, cho nổi bật tí"; B first, then
+   "phương án B cho nút nhìn khó chịu quá, đổi qua A đi"): New manuscript's look: a light pill with the blue-violet-green
+   outline, the ⚡ in a blue-violet disc, the name in ink; round, the disc inside the outline */
+.fabs .fab{background:linear-gradient(var(--surface),var(--surface)) padding-box,linear-gradient(120deg,var(--accent),#7C6CF0 55%,#1BAF7A) border-box;border:2px solid transparent;color:var(--ink);padding-left:6px;box-shadow:0 10px 26px -10px rgba(42,120,214,.75),0 2px 6px rgba(0,0,0,.1)}
+.fabs .fab svg.ic{width:40px;height:40px;padding:10px;border-radius:999px;background:linear-gradient(135deg,var(--accent),#7C6CF0);color:#fff;box-sizing:border-box;flex:none}
+.fabs .fab span{font-weight:650}
+.fabs .fab.round:not(.peek),.shell.pshown ~ .fabs .fab:not(.peek){padding:0 5px} /* also over an open manuscript (the rule of 0.2.7 above gave it 16 px) */
+@media (min-width:840px){html .fabs .fab.round:not(.peek):hover,html .fabs .fab.round:not(.peek):focus-visible{padding:0 20px 0 6px}}
 @media (min-width:840px){
   :root{--fcol:84px}
-  .fabs,.fabs.up{right:max(16px,env(safe-area-inset-right));bottom:max(30px,calc(env(safe-area-inset-bottom) + 12px))}
+  .fabs{right:max(16px,env(safe-area-inset-right));bottom:max(30px,calc(env(safe-area-inset-bottom) + 12px))}
   .wrap{padding-right:max(16px,calc(var(--fcol) - max(0px,(100vw - var(--sbw) - 1400px) / 2)))}
   .shell.pshown .panel{right:var(--fcol)!important}
   .shell.pshown.tvb .wrap{padding-right:calc(var(--pw) + var(--fcol) + 16px)}
@@ -1792,31 +1804,32 @@ html.touring .fabs,html.touring .fabs .fab,html.touring .fabs .fab span{transiti
 /* ===== 0.2.9 navigation in three layers (html.nav3; data-lay: stack, short, rail, side). The page is a layer of its own
    (opaque, above the sidebar), so it can slide over the sidebar or off it. */
 html.nav3 .mainwrap{position:relative;z-index:31;background:var(--bg)}
-html.nav3[data-lay="stack"] .sb,html.nav3[data-lay="short"] .sb{z-index:1;width:min(320px,calc(100vw - 64px));box-shadow:none;transition:none;transform:translateX(calc(min(320px,100vw - 64px) * -.25));opacity:.55}
-html.nav3[data-lay="stack"] .shell.drawer .sb{transform:none;opacity:1}
-html.nav3[data-lay="stack"] .shell.drawer .mainwrap{transform:translateX(min(320px,calc(100vw - 64px)));box-shadow:-16px 0 36px -12px rgba(0,0,0,.35)}
-html.nav3[data-lay="stack"] .shell.drawer .scrim,html.nav3[data-lay="short"] .shell.drawer .scrim{display:block;position:fixed;top:0;bottom:0;right:0;left:auto;width:64px;background:transparent;z-index:40}
+/* 0.3.2 (BACKLOG 42, admin: "nếu lớp table là lớp base, lớp sidebar là lớp trượt trên đó, tương tự popup, mọi chuyện có dễ hơn
+   không?"; "Làm luôn đi"): the page is the base and never moves; the sidebar is a layer that slides over it from the left
+   edge (or, with a rail, grows out of the rail), and the page dims under it (.drshade); a tap or a swipe on the dimmed page
+   (.scrim) closes it */
+html.nav3[data-lay="stack"] .sb,html.nav3[data-lay="short"] .sb{z-index:85;width:min(320px,calc(100vw - 64px));transition:none;box-shadow:var(--d-top)}
+html.nav3[data-lay="stack"] .sb{transform:translateX(calc(-100% - 40px))}
+html.nav3[data-lay="stack"] .shell.drawer .sb{transform:none}
+html.nav3[data-lay="stack"] .shell.drawer .scrim,html.nav3[data-lay="short"] .shell.drawer .scrim{display:block;position:fixed;inset:0;background:transparent;z-index:84}
 html.nav3[data-lay="stack"] .sb-top .sb-ib.sb-hide,html.nav3[data-lay="short"] .sb-top .sb-ib.sb-hide{display:none}
 /* a phone on its side: the sidebar's icons stay in view as a rail; a slimmer top bar */
 html.nav3[data-lay="short"]{--hdr-h:44px}
 html.nav3[data-lay="short"] .sb{transform:none;opacity:1}
 html.nav3[data-lay="short"] .mainwrap{margin-left:60px}
-html.nav3[data-lay="short"] .shell.drawer .mainwrap{transform:translateX(calc(min(320px,100vw - 64px) - 60px));box-shadow:-16px 0 36px -12px rgba(0,0,0,.35)}
-html.nav3[data-lay="short"] .shell.drawer .scrim{width:auto;left:min(320px,calc(100vw - 64px))}
 html.nav3[data-lay="short"] .topbar{height:44px}
 /* wider: the full sidebar over the rail (peek), or under the page while it slides (slide) */
 html.nav3 .sb{transition:none}
 html.nav3 .shell.sbpeek .sb,html.nav3 .shell.sbslide .sb{position:fixed;left:0;top:0;bottom:0;width:264px;flex:none}
-html.nav3 .shell.sbpeek .sb{z-index:30;box-shadow:none}
-/* 0.2.9 (admin: "hiệu ứng khi ấn nút ẩn hiện sidebar như là kéo tờ giấy ra vô á"): beside the sidebar the page is a sheet
-   lying on it (a soft shadow at its left edge instead of a line); the sidebar's button slides the sheet in or out */
-:root{--d-edge:-1px 0 0 rgba(31,30,27,.07),-14px 0 30px -18px rgba(31,30,27,.38);--d-edge-up:-1px 0 0 rgba(31,30,27,.08),-26px 0 50px -16px rgba(31,30,27,.42)}
-:root[data-theme="dark"]{--d-edge:-1px 0 0 rgba(255,255,255,.07),-16px 0 34px -16px rgba(0,0,0,.85);--d-edge-up:-1px 0 0 rgba(255,255,255,.09),-28px 0 56px -14px rgba(0,0,0,.95)}
-html.nav3:not([data-lay="stack"]) .mainwrap{box-shadow:var(--d-edge)}
-html.nav3:not([data-lay="stack"]) .sb{border-right-color:transparent}
-html.nav3 .shell.sbpeek .mainwrap,html.nav3 .shell.sbpeek .panel{transform:translateX(204px)}
-html.nav3 .shell.sbslide .sb{z-index:30}
-html.nav3 .shell.sbshow .sb{z-index:1}html.nav3 .shell.sbshow .mainwrap{z-index:31} /* 0.3.0: the page slides off the sidebar, over it */
+html.nav3 .shell.sbpeek .sb,html.nav3:not([data-lay="stack"]):not([data-lay="short"]) .shell.sbpeek .sb{z-index:85;box-shadow:var(--d-top)} /* 0.3.2: over the page, which stays where it is */
+/* 0.3.2 (BACKLOG 43, admin: "vì side bar h nổi lên trên nên đâu cần hiệu ứng trượt lớp table vào lớp sidebar khi hidden, nó chỉ
+   là chuyển 1 dạng của sidebar"): the sidebar is the upper layer: its soft edge lies on the page (it was the page's edge lying
+   on the sidebar), and hiding or showing it only changes its form; the page's content follows beneath it */
+:root{--d-side:1px 0 0 rgba(31,30,27,.07),14px 0 30px -18px rgba(31,30,27,.38)}
+:root[data-theme="dark"]{--d-side:1px 0 0 rgba(255,255,255,.07),16px 0 34px -16px rgba(0,0,0,.85)}
+html.nav3:not([data-lay="stack"]):not([data-lay="short"]) .sb{z-index:32;box-shadow:var(--d-side);border-right-color:transparent}
+html.nav3[data-lay="side"] .shell.pshown .sb{z-index:45} /* the card dims the page, not the menu beside it (as before) */
+html.nav3 .shell.sbslide .sb,html.nav3 .shell.sbshow .sb{z-index:32} /* 0.3.2: the sidebar folds or unfolds over the page's edge */
 html.nav3 .shell.sbpeek .mainwrap,html.nav3 .shell.sbslide .mainwrap{margin-left:60px}
 html.nav3[data-lay="short"] .shell.sbc .sb{width:60px;padding:10px 8px 12px}
 /* the floating buttons stay in their corner (0.2.7 moved them beside the card) */
@@ -1826,12 +1839,13 @@ html.nav3[data-lay="rail"] .shell.pshown .panel{left:60px!important}
 /* from 840 px without the free column (under 1200 px), the card is a little narrower than with it */
 html.nav3[data-lay="side"] .shell{--pw:clamp(340px,calc(100vw - var(--sbw) - var(--fcol) - 360px),640px)}
 html.nav3[data-lay="side"] .shell.tvb{--pw:clamp(340px,calc(100vw - var(--sbw) - var(--fcol) - 520px),560px)}
-/* 0.3.1 (BACKLOG 19 and 21; admin's choice A, full blocks at every width): Today as blocks beside the card. The blocks keep
-   the width they had (--blw); only the number of columns drops, and the card takes the room the columns leave (--pwA, both
-   set when the card opens). (Written for 1024 px: with the new navigation the style sheet
+/* 0.3.1 (BACKLOG 19 and 21; admin's choice A, full blocks at every width): Today as blocks beside the card. Only the number
+   of columns drops (--blk), worked out from the width the blocks had; the card takes the room they leave up to 640 px
+   (--pwA, both set when the card opens). 0.3.2 (BACKLOG 36, admin: "các block đâu có cố định kích thước đâu, cũng phải co
+   giãn để khớp khoảng trống chứ"): the columns stretch over the rest, so no empty band is left before the card. (Written for 1024 px: with the new navigation the style sheet
    moves it to 840 px, where the card floats beside the list.) */
 @media (min-width:1024px){
-  .shell.pshown.tvb.blkA .blocks{grid-template-columns:repeat(auto-fill,min(var(--blw,250px),100%));justify-content:start}
+  .shell.pshown.tvb.blkA .blocks{grid-template-columns:repeat(var(--blk,1),minmax(0,1fr))}
   .shell.pshown.tvb.blkA,html.nav3[data-lay] .shell.pshown.tvb.blkA{--pw:var(--pwA,clamp(340px,calc(100vw - var(--sbw) - var(--fcol) - 520px),560px))}
 }
 /* Whose work folded: Everyone, Me and the chosen person; the others behind "N more" */
@@ -1862,19 +1876,15 @@ html.nav3[data-lay="side"] .shell.tvb{--pw:clamp(340px,calc(100vw - var(--sbw) -
 /* 0.3.0 (admin: "hiệu ứng block được chọn vẫn nổi sáng hơn các block xung quanh sao mất rồi"): beside the card the page is no
    layer of its own, so the chosen row or block rises above the dim again */
 html.nav3[data-lay="side"] .shell.pshown:not(.sbslide):not(.sbpeek) .mainwrap{z-index:auto}
-/* the phone menu: the page is a sheet that steps back, rounded, with its shadow (.drshade) under it */
+/* 0.3.2 (BACKLOG 42): the dim over the page while the sidebar lies over it (the phone menu, or the full sidebar out of its rail) */
 .drshade{display:none}
-html.nav3[data-lay="stack"] .drshade{display:block;position:fixed;inset:0;z-index:30;pointer-events:none;border-radius:26px;box-shadow:var(--d-top);opacity:0;transform-origin:0 50%}
-html.nav3[data-lay="stack"] .shell.drawer .drshade{opacity:1;transform:translateX(min(320px,calc(100vw - 64px))) scale(.9)}
-html.nav3[data-lay="stack"] .shell.drawer .mainwrap{transform:translateX(min(320px,calc(100vw - 64px))) scale(.9);transform-origin:0 var(--dro,50vh);clip-path:inset(var(--drt,0px) 0 var(--drb,0px) 0 round 29px);box-shadow:none}
-/* (admin: "nếu kéo qua mà lớp 2 thu nhỏ lại, thì sao cái nền không là màu của lớp 1 luôn") everything behind the page is the
-   menu's layer: its colour fills the whole screen, above and below the sheet too, with no line at the menu's edge */
-html.nav3[data-lay="stack"] .shell::before{content:"";position:fixed;inset:0;z-index:0;background:var(--side);pointer-events:none}
+html.nav3[data-lay="stack"] .drshade,html.nav3[data-lay="short"] .drshade,html.nav3 .shell.sbpeek .drshade{display:block;position:fixed;inset:0;z-index:84;pointer-events:none;background:rgba(20,19,17,.32);opacity:0}
+:root[data-theme="dark"] .drshade{background:rgba(0,0,0,.5)}
+html.nav3 .shell.drawer .drshade,html.nav3 .shell.sbpeek .drshade{opacity:1}
 html.nav3[data-lay="stack"] .sb{border-right:0}
-html.nav3[data-lay="stack"] .mainwrap{min-height:100vh;min-height:100dvh}
-/* 0.3.1 (BACKLOG 22): the three moving parts keep their own layer at rest, so the hand-off from the movement to the resting
-   style repaints nothing (the flash at the end of a slide on iPhone Safari) */
-html.nav3[data-lay="stack"] .mainwrap,html.nav3[data-lay="stack"] .sb,html.nav3[data-lay="stack"] .drshade{will-change:transform}
+/* 0.3.1 (BACKLOG 22): the moving parts keep their own layer at rest, so the hand-off from the movement to the resting style
+   repaints nothing (the flash at the end of a slide on iPhone Safari); 0.3.2: only the sidebar and the dim move */
+html.nav3[data-lay="stack"] .sb,html.nav3[data-lay="stack"] .drshade{will-change:transform,opacity}
 /* the colour sets */
 :root[data-pal="navy"]{--side:#16305A} :root[data-pal="navy"][data-theme="dark"]{--side:#0B1730}
 :root[data-pal="teal"]{--side:#123F3C} :root[data-pal="teal"][data-theme="dark"]{--side:#082725}
@@ -2079,6 +2089,11 @@ var TIPS = {
    something works, a bug they may have met); internal fixes need none. Each member sees the card once per release
    (preference relSeen; the 0.2.0 tour stands for 0.2.0), never in a session that showed the tour; the bell keeps it. */
 var RELEASES = [
+  { v: '0.3.2', date: '2026-10-25', title: 'Steadier buttons and sheets on the iPhone', items: [
+    ['spark', 'Search and Quick update stay in one place. Quick update, now in New manuscript\'s style, shows its name for a few seconds when the app opens, then stays a round ⚡; Save on an open manuscript stays clear of it.'],
+    ['check', 'iPhone: with the keyboard open, a pull down on Feedback or Quick update closes the keyboard first; the next pull closes the sheet. After Search is closed by a pull, the two buttons come back. The page behind a closing sheet no longer flashes.'],
+    ['arrow', 'Quick update and Search grow out of their button and, when you pull them down, slide back into it.'],
+    ['sidebar', 'The page stays still: the menu slides over it from the left and the page dims (swipe it back, or tap the page); an open manuscript or a dialog only dims it too. A pencil after a manuscript\'s title opens its title, journal and IDs. With the sidebar hidden on a laptop, two fingers to the right bring it out over the page; its button keeps it there.']] },
   { v: '0.3.1', date: '2026-10-25', title: 'Close by hand, your photo, steadier blocks', items: [
     ['spark', 'One rule for closing by hand: what came in from the side goes back to the side, what rose from the bottom goes down. Search closes with a pull down, the notifications list with a swipe up. A small grey bar shows the way.'],
     ['desktop', 'On a laptop, a two-finger swipe on the trackpad moves the top layer: the card to the right, a dialog or Search down, and with the sidebar hidden the page off the sidebar and back (that also changes Keep the sidebar hidden). A mouse can press and drag them; its wheel only scrolls.'],
@@ -2512,8 +2527,12 @@ function render() {
   var ovl = layer.querySelector('.overlay'), ovTop = ovl && dk && dk === prevDk ? ovl.scrollTop : 0;
   var nps = layer.querySelector('.np-scroll'), npTop = nps ? nps.scrollTop : 0; // 0.2.7
   var lmGo = S.painted && S.boot ? lmTake([prevDk && dk !== prevDk ? 'dlg' : '', prevPk && pk !== prevPk ? 'pop' : '', prevSk && sk !== prevSk ? 'pal' : ''].filter(Boolean)) : []; // 0.2.9
+  // 0.3.2 (BACKLOG 32, admin: "tìm kiếm kéo xuống mất luôn 2 icon"): a closing layer gives up the focus first; Safari sends no
+  // focusout for a focused box that is removed, so the floating buttons stayed hidden as if a box were still typed in
+  var fa = document.activeElement; if (lmGo.length && fa && fa !== document.body && layer.contains(fa)) try { fa.blur(); } catch (x) { }
   layer.innerHTML = popover() + dialog() + palHtml() + tourHtml() + ngCardHtml();
   if (lmGo.length) lmOut(lmGo);
+  if (dk !== prevDk) LM.fab.dlg = dk ? lmFabNew() : null; if (sk !== prevSk) LM.fab.pal = sk ? lmFabNew() : null; // 0.3.2 (BACKLOG 37): which floating button opened it
   if (npTop) { var nps2 = layer.querySelector('.np-scroll'); if (nps2) nps2.scrollTop = npTop; }
   if (ovTop) { var ovl2 = layer.querySelector('.overlay'); if (ovl2) ovl2.scrollTop = ovTop; }
   document.documentElement.classList.toggle('touring', S.tour >= 0); // 0.2.8: nothing the tour points at moves under it
@@ -2537,6 +2556,7 @@ function render() {
   layersAfter(drWas); // 0.2.9
   chipsFit(); // 0.2.9
   focusBack(); // 0.2.9
+  fldSync(); // 0.3.2: the typing state follows the focus as it is after the redraw
   syncLock();
   scSync(); // 0.2.7
   histSync(); // 0.2.8
@@ -2838,7 +2858,12 @@ function palMove(i) {
   if (o) { o.classList.add('on'); o.setAttribute('aria-selected', 'true'); o.scrollIntoView({ block: 'nearest' }); }
   if (inp) inp.setAttribute('aria-activedescendant', 'pal-o-' + i);
 }
-function palOpen() { S.pal = { q: '', i: 0 }; S.pop = null; S.drawer = false; render(); var t = document.getElementById('pal-q'); if (t) t.focus(); }
+function palOpen() {
+  S.pal = { q: '', i: 0 }; S.pop = null; S.drawer = false; render();
+  var bx = layer.querySelector('.pal'), fb = bx && !reduceMotion() && lmFab('pal'); // 0.3.2 (BACKLOG 37): out of the Search button
+  if (fb) { var r = bx.getBoundingClientRect(), k0 = lmToward(r, fb, 0), sp = spring(SPR.pop); delete k0.opacity; bx.animate([k0, { transform: 'none' }], { duration: sp.d, easing: sp.e }); bx.animate([{ opacity: 0 }, { opacity: 1 }], { duration: Math.round(sp.d * 0.35), easing: 'linear' }); }
+  var t = document.getElementById('pal-q'); if (t) t.focus();
+}
 function palRun(k) {
   var e = palEntries(S.pal.q)[k]; if (!e) return;
   S.pal = null;
@@ -3081,10 +3106,17 @@ function devBoxInner() {
 
 /* Quick update is the strongest shortcut in the app: one button, bottom right, on every screen. */
 function panelShown() { return !!(S.sel && S.view !== 'settings' && S.view !== 'desk' && curM()); }
+/* 0.3.2 (BACKLOG 35, admin: "cái icon cứ đứng đó thu lại thôi, chỉ xuất hiện full vài giây đầu, vị trí thì không đổi, sau mấy giây
+   thì thu lại luôn, ở vị trí không che nút save là được"): the two buttons never move. Quick update shows its name for the
+   first seconds after the app opens, then stays a round ⚡ (its name still slides out while it is pressed and held). Over
+   an open manuscript the card's Discard and Save keep clear of it. */
+var FAB_FULL_MS = 4000, fabFolded = false;
+function fabRound() { return fabFolded || panelShown() || fcolOn() || !!(S.drawer && N3()); }
+function fabFold() { if (fabFolded) return; fabFolded = true; var f = document.querySelector('.fabs .fab'); if (f) f.classList.add('round'); }
 function fab() {
-  var open = panelShown();
-  return '<div class="fabs' + (open && canEdit() ? ' up' : '') + '"><button type="button" class="fab-s" data-a="pal-open" aria-label="Search manuscripts, people and commands (Ctrl+K)"' + tt('Search manuscripts, people, journals and commands', 'Ctrl K') + '>' + ic('find') + '</button>' +
-    '<button type="button" class="fab' + (open || fcolOn() || (S.drawer && N3()) ? ' round' : '') + (S.fabPeek ? ' peek' : '') + '" data-a="qu-open" aria-label="Quick update: tell the tracker what happened"' +
+  if (!fabFolded && S.boot && !fab.t) fab.t = setTimeout(fabFold, FAB_FULL_MS);
+  return '<div class="fabs"><button type="button" class="fab-s" data-a="pal-open" aria-label="Search manuscripts, people and commands (Ctrl+K)"' + tt('Search manuscripts, people, journals and commands', 'Ctrl K') + '>' + ic('find') + '</button>' +
+    '<button type="button" class="fab' + (fabRound() ? ' round' : '') + (S.fabPeek ? ' peek' : '') + '" data-a="qu-open" aria-label="Quick update: tell the tracker what happened"' +
     tt('Tell the tracker what happened, in any language: the AI updates the fields') + '>' + ic('spark') + '<span>Quick update</span></button></div>';
 }
 
@@ -4307,7 +4339,7 @@ function panel() {
     '<span style="margin-left:auto"></span>' + trackBtn(m) + '<button class="ibtn" data-a="pin" data-v="' + m.id + '" aria-pressed="' + (pins().indexOf(m.id) >= 0) + '" aria-label="' + (pins().indexOf(m.id) >= 0 ? 'Unpin from the sidebar' : 'Pin to the sidebar') + '"' + tt(pins().indexOf(m.id) >= 0 ? 'Unpin from the sidebar' : 'Pin to the sidebar') + '>' + ic('pin') + '</button><button class="ibtn close" data-a="close" aria-label="Close details">' + ic('x') + '</button></div>' +
     (S.confirmClose ? '<div class="warn" style="margin-top:12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center">' + (S.offline ? 'You are offline. Keep your changes on this device and save them later?' : 'You have unsaved changes.') + '<span style="margin-left:auto"></span>' +
       (S.offline ? '<button class="btn btn-p" data-a="close-keep">Keep for later</button><button class="btn btn-s" data-a="discard">Discard</button>' : '<button class="btn btn-s" data-a="discard">Discard</button><button class="btn btn-p" data-a="save">Save</button>') + '</div>' : '') +
-    lockBanner(m) + delNote(m) + '<h2 class="p-title">' + esc(m.title) + '</h2><div class="muted" style="font-size:calc(13px*var(--fz,1))">' + esc([m.type, m.journal || 'Journal not chosen', m.ms_id].filter(Boolean).join(' · ')) + '</div>' +
+    lockBanner(m) + delNote(m) + '<h2 class="p-title">' + esc(m.title) + (ce ? '<button type="button" class="p-tedit" data-a="title-edit" aria-label="Edit the title, journal, IF and IDs"' + tt('Edit the title, journal, IF and IDs') + '>' + ic('pencil') + '</button>' : '') + '</h2><div class="muted" style="font-size:calc(13px*var(--fz,1))">' + esc([m.type, m.journal || 'Journal not chosen', m.ms_id].filter(Boolean).join(' · ')) + '</div>' +
     '<div class="p-roles">' + (corrName(m) ? '<span><i>Corresponding</i>' + esc(corrName(m)) + '</span>' : '<span class="none"><i>Corresponding</i>not marked yet</span>') + (firstName(m) ? '<span><i>First author</i>' + esc(firstName(m)) + '</span>' : '') + tip('aroles', true) + '</div>' +
     '<div class="p-grid">' +
     field('Status', 'status', '<select id="f-status" class="in" data-i="d" data-v="status"' + ro + '>' + st.statuses.map(function (s) { return '<option' + (d.status === s ? ' selected' : '') + '>' + s + '</option>'; }).join('') + '</select>') +
@@ -5046,7 +5078,7 @@ function toast(text, isErr, ms, acts) {
     '<button class="ibtn" data-a="toast-x" aria-label="Dismiss">' + ic('x') + '</button></div>';
   // on narrow screens the toast sits just above the floating Quick update button
   var f = document.querySelector('.fabs'), tEl = el.firstChild;
-  if (f && tEl && !cardSide()) tEl.style.bottom = (!f.offsetHeight ? (app.querySelector('.panel') ? 92 : 20) : (f.classList.contains('up') ? 92 : 20) + f.offsetHeight + 10) + 'px';
+  if (f && tEl && !cardSide()) tEl.style.bottom = (!f.offsetHeight ? (app.querySelector('.panel') ? 92 : 20) : 20 + f.offsetHeight + 10) + 'px';
   if (tEl && !reduceMotion()) { var ts = spring(SPR.snap); tEl.animate([{ opacity: 0, translate: '0 24px', scale: '.96' }, { opacity: 1, translate: '0 0', scale: '1' }], { duration: ts.d, easing: ts.e }); } // 0.2.9
   clearTimeout(toastTimer); toastTimer = setTimeout(function () { toastOut(); }, ms || (isErr ? 9000 : 4500));
 }
@@ -5212,12 +5244,12 @@ function blkLift(dy, heads) { // what the blocks' movement does not carry (the t
   });
 }
 function blkWidth() { var b = document.querySelector('.main .blocks > .block'); if (b) S.blkW = b.getBoundingClientRect().width; } // A: before the card opens
-function blkFit() { // A: as many columns of that width as leave the card at least 400 px; the card takes the rest (up to 640)
+function blkFit() { // A: as many columns of that width as leave the card at least 400 px; the card takes the rest (up to 640), the columns stretch over what is left
   var mw = document.querySelector('.mainwrap'), wrap = document.querySelector('.wrap'), bl = document.querySelector('.main .blocks'); if (!mw || !wrap) return;
   var W = S.blkW || 255, fcol = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--fcol')) || 0, gap = bl ? parseFloat(getComputedStyle(bl).columnGap) || 16 : 16;
   var M = mw.clientWidth - (parseFloat(getComputedStyle(wrap).paddingLeft) || 0) - (fcol ? fcol + 16 : 30), k = Math.floor((M - 400 + gap) / (W + gap)), pw;
-  if (k >= 1) pw = Math.min(640, M - k * W - (k - 1) * gap); else { pw = Math.max(340, M - W); W = Math.min(W, M - pw); } // too narrow: the blocks give a little
-  document.documentElement.style.setProperty('--blw', W.toFixed(1) + 'px'); document.documentElement.style.setProperty('--pwA', Math.floor(pw) + 'px');
+  if (k >= 1) pw = Math.min(640, M - k * W - (k - 1) * gap); else { pw = Math.max(340, M - W); k = 1; } // too narrow: one column that gives a little
+  document.documentElement.style.setProperty('--blk', String(k)); document.documentElement.style.setProperty('--pwA', Math.floor(pw) + 'px');
 }
 /* ---------- 0.2.8 motion (admin: "chuyển động trượt ra trượt vào mang lại trải nghiệm rất quan trọng ... apple làm cái
    này giỏi nhất"). One motion system: springs (as SwiftUI describes them: the time of one swing, and a damping where 1
@@ -5301,13 +5333,11 @@ function moGo(list, p0, p1, sp, v, done) {
 function moNow() { var r = MO.run; if (!r || !r.a) return MO.p || 0; var t = r.a.effect.getComputedTiming(); return r.p0 + (r.p1 - r.p0) * (t.progress === null ? 1 : t.progress); }
 function moClear() { Array.prototype.forEach.call(app.querySelectorAll('.main, .pscrim, .panel'), function (el) { if (el.__mo) { el.__mo.cancel(); el.__mo = null; } }); MO.run = null; MO.p = 0; }
 function underParts() {
-  var full = !cardSide(), m = full && document.querySelector('.main'), sc = document.querySelector('.pscrim'), oy = 0;
-  // 0.3.1 (BACKLOG 23, admin: "khi popup thoát ra ngoài thì khung hình bị giật lên"): the point the page steps back about is
-  // measured once, while the page is at rest; measured again on the page already stepped back it moved, and the whole page
-  // jumped up when the card left (6 px in the middle of Today, more further down)
-  if (m) { if (m.__mo && MO.oy !== undefined) oy = MO.oy; else { var r = m.getBoundingClientRect(); oy = MO.oy = Math.round(innerHeight / 2 - r.top); } }
-  return [{ el: sc, f: function (p) { return { opacity: 1 - p }; } },
-    { el: m, f: function (p) { return { transformOrigin: '50% ' + oy + 'px', transform: 'scale(' + (0.94 + 0.06 * p).toFixed(4) + ')' }; } }];
+  // 0.3.2 (BACKLOG 43, admin: "khi chọn vào notification hay bất kì dạng popup mở ra thì cũng đâu cần phải thay đổi lớp ở dưới,
+  // đâu vẫn ở đấy, chỉ là làm mờ nền lại"): the page under the card only dims; it no longer steps back (it shrank to 0.94 on
+  // phones, which also made it jump when the card left: item 23)
+  var sc = document.querySelector('.pscrim');
+  return [{ el: sc, f: function (p) { return { opacity: 1 - p }; } }];
 }
 /* the card itself, swiped: p = how far it has gone to the right */
 function cardParts(p0) {
@@ -5320,7 +5350,7 @@ function cardIn(pn) {
   if (reduceMotion() || S.tour >= 0) { pn.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 180 }); return; } // the tour points at fields in place
   // 0.3.0 (admin, 24 Oct 2026: "pop up bài là lớp 3, thì nó cứ trượt vô thôi, khi nào tắt thì trượt ra ... mở ra thì thu phóng
   // mà back là trượt thì rất khó chịu"): the card always slides in from the right edge and leaves the same way, on phones
-  // and computers alike; the layer underneath dims and steps back as it comes
+  // and computers alike; the layer underneath dims as it comes (0.3.2: and stays where it is)
   var s = spring(SPR.nav), off = full ? r.width : window.innerWidth - r.left + 24;
   pn.animate([{ transform: 'translateX(' + off.toFixed(1) + 'px)' }, { transform: 'translateX(0px)' }], { duration: s.d, easing: s.e });
   moGo(underParts(), 1, 0, SPR.nav);
@@ -5377,40 +5407,25 @@ function segSlide(before) {
   });
 }
 
-/* ---------- 0.2.9: navigation in three layers (Meta nav3_users). Phones: the sidebar (layer 1) lies under the page
-   (layer 2); the page slides aside, following the finger, and 64 px of it stay at the right edge (admin: "64"); a swipe to
-   the left, a tap on that strip, Back or Esc bring it back; one movement each way, and the finger can go back and forth.
-   Search and Quick update stay above, Quick update round (admin's choice B). On a phone on its side the sidebar's icons
-   stay in view as a rail. Wider: the full sidebar over the rail (600 to 839 px, or a half-second hover on any rail with a
-   mouse), and "Keep the sidebar hidden" slides the page over the sidebar instead of changing its width. */
-var DR = { g: null, busy: false };
+/* ---------- 0.2.9: navigation in three layers (Meta nav3_users). 0.3.2 (BACKLOG 42, admin: "nếu lớp table là lớp base, lớp
+   sidebar là lớp trượt trên đó, tương tự popup"): the page is the base and never moves. Phones: the sidebar slides over the
+   page from the left edge, following the finger, and the page dims under it; a swipe to the left, a tap on the dimmed page,
+   Back or Esc close it; one movement each way, and the finger can go back and forth. On a phone on its side the sidebar's
+   icons stay in view as a rail and the full sidebar grows out of it over the page. Wider: the full sidebar over the rail
+   (600 to 839 px, or "Keep the sidebar hidden" on a computer, by its button or two fingers on a trackpad). */
+var DR = { g: null, busy: false, peek: false };
 function drawerW() { return Math.min(320, window.innerWidth - 64); }
-function drawerVars() { // 0.2.9 paper stack: the part of the page on the screen becomes the sheet that steps back
-  var mw = document.querySelector('.mainwrap'); if (!mw) return null;
-  // 0.3.0 (admin, 24 Oct 2026: the page "bị lẹm màu" on a narrow Mac window and on the iPhone): the bottom edge is measured
-  // from the top of the page (100% minus what lies above the screen's bottom), so a page that grows or shrinks after the
-  // menu opened can no longer cut the sheet shorter than its shadow
-  var t = Math.max(0, window.scrollY - mw.offsetTop), h = window.innerHeight, b = 'calc(100% - ' + (t + h) + 'px)', r = document.documentElement.style;
-  // 0.3.1 (BACKLOG 22): written only when they change; each write restyles the whole page (46 to 59 ms at the start of a swipe)
-  if (DR.vk !== t + '|' + h) { DR.vk = t + '|' + h; r.setProperty('--drt', t + 'px'); r.setProperty('--drb', b); r.setProperty('--dro', (t + h / 2) + 'px'); }
-  return { t: t, b: b };
-}
-window.addEventListener('scroll', function () { if (S.drawer && N3() && phoneW() && !DR.busy) drawerVars(); }, { passive: true });
-function drawerParts() {
-  var mw = document.querySelector('.mainwrap'), sb = document.querySelector('.sb'), sh = document.querySelector('.drshade'), w = drawerW(), rest = layName() === 'short' ? 60 : 0;
-  if (rest) return [{ el: mw, f: function (p) { return { transform: 'translateX(' + ((w - rest) * p).toFixed(1) + 'px)', boxShadow: p > 0.001 ? '-16px 0 36px -12px rgba(0,0,0,.35)' : '0 0 0 0 transparent' }; } },
-    { el: sb, f: function () { return { transform: 'none', opacity: 1 }; } }];
-  var v = drawerVars() || { t: 0, b: '0px' }, tf = function (p) { return 'translateX(' + (w * p).toFixed(1) + 'px) scale(' + (1 - 0.1 * p).toFixed(4) + ')'; };
-  return [{ el: mw, f: function (p) { return { transformOrigin: '0 ' + (v.t + window.innerHeight / 2) + 'px', transform: tf(p), clipPath: 'inset(' + v.t + 'px 0 ' + v.b + ' 0 round ' + (29 * p).toFixed(1) + 'px)' }; } },
-    { el: sh, f: function (p) { return { transform: tf(p), opacity: Math.min(1, p * 3).toFixed(3) }; } },
-    { el: sb, f: function (p) { return { transform: 'translateX(' + (-0.25 * w * (1 - p)).toFixed(1) + 'px)', opacity: (0.55 + 0.45 * p).toFixed(3) }; } }];
+function drawerParts() { // p = 0 closed, 1 open: the sidebar (from off the left edge, or from its rail) and the dim
+  var sb = document.querySelector('.sb'), dim = document.querySelector('.drshade'), w = drawerW(), rest = layName() === 'short' ? 60 : 0;
+  return [{ el: sb, f: rest ? function (p) { return { clipPath: 'inset(0 ' + ((w - rest) * (1 - p)).toFixed(1) + 'px 0 0)' }; }
+    : function (p) { return { transform: 'translateX(' + (-(w + 40) * (1 - p)).toFixed(1) + 'px)' }; } },
+    { el: dim, f: function (p) { return { opacity: p.toFixed(3) }; } }];
 }
 function partsClear(list) { list.forEach(function (x) { if (x.el && x.el.__mo) { x.el.__mo.cancel(); x.el.__mo = null; } }); }
 function layersAfter(drWas) {
   var stack = N3() && phoneW(), sb = document.querySelector('.sb'), mw = document.querySelector('.mainwrap');
   if (sb) sb.inert = stack && !S.drawer && layName() !== 'short'; // the layer underneath is out of reach (keys, screen readers)
   if (mw) mw.inert = stack && !!S.drawer;
-  if (stack && S.drawer && !DR.busy) drawerVars(); // the sheet is the part of the page on screen, also after a redraw
   if (!stack || DR.busy || drWas === !!S.drawer) return;
   if (reduceMotion()) return;
   drawerRun(drawerParts(), drWas ? 1 : 0, S.drawer ? 1 : 0, SPR.nav, 0);
@@ -5435,7 +5450,7 @@ function drawerSet(open) { // the state, without redrawing the page (a phone on 
   if (!sh || layName() !== 'stack') { render(); return; }
   sh.classList.toggle('drawer', open);
   var hb = sh.querySelector('.sb-top .sb-hide'); if (hb) hb.setAttribute('aria-label', open ? 'Close the sidebar' : sbCollapsed() ? 'Show the sidebar' : 'Hide the sidebar');
-  var fb = document.querySelector('.fabs .fab'); if (fb) fb.classList.toggle('round', panelShown() || fcolOn() || open);
+  var fb = document.querySelector('.fabs .fab'); if (fb) fb.classList.toggle('round', fabRound());
   // the rest after the next frame, so the frame that ends the movement carries only the class change (inert restyles the page)
   requestAnimationFrame(function () { setTimeout(function () { if (!!S.drawer === open) { layersAfter(open); scSync(); histSync(); } }, 0); });
 }
@@ -5445,10 +5460,12 @@ function drawerTo(open, p0, v, parts) { // after a swipe: finish the movement, t
   });
 }
 function drawerGo(open) { // the menu button, the strip, Esc and Back: the same movement, the state set at its start
-  if (!N3() || layName() !== 'stack' || reduceMotion() || !app.querySelector('.shell')) { S.drawer = open; render(); return open; }
+  var lay = layName();
+  if (!N3() || (lay !== 'stack' && lay !== 'short') || reduceMotion() || !app.querySelector('.shell')) { S.drawer = open; render(); return open; }
   var k = DR.busy ? drawerCatch() : null, p0 = k ? k.p : S.drawer ? 1 : 0;
   if (!k && !!S.drawer === open) return open;
   var parts = k ? k.parts : drawerParts();
+  if (lay === 'short' && !open) { drawerTo(false, p0, 0, parts); return open; } // 0.3.2: on its side the full sidebar stays drawn until it is back in its rail
   moSet(parts, p0); DR.busy = true; drawerSet(open); // held where it is while the classes change under it
   drawerTo(open, p0, 0, parts);
   return open;
@@ -5456,14 +5473,19 @@ function drawerGo(open) { // the menu button, the strip, Esc and Back: the same 
 /* 0.2.9 layers come and go with springs (BACKLOG 3): a dialog or a menu grows out of the button that opened it and
    shrinks back into it; on a phone a dialog is a sheet from the bottom that a pull down closes. What closes leaves as a
    ghost: a copy without ids, actions or the classes the app looks for, removed when its movement ends. */
-var LM = { src: null, pull: null, out: null };
-document.addEventListener('pointerdown', function (e) { var b = e.target.closest && e.target.closest('button, [data-a]'); if (b && !b.closest('#layer')) LM.src = b; }, true);
-document.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { var t = e.target; if (t && t.closest && !t.closest('#layer')) LM.src = t; } }, true);
+var LM = { src: null, pull: null, out: null, t: 0, fab: {} };
+document.addEventListener('pointerdown', function (e) { var b = e.target.closest && e.target.closest('button, [data-a]'); if (b && !b.closest('#layer')) { LM.src = b; LM.t = performance.now(); } }, true);
+document.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { var t = e.target; if (t && t.closest && !t.closest('#layer')) { LM.src = t; LM.t = performance.now(); } } }, true);
 function lmSrc() {
   var s = LM.src; if (!s || !document.body.contains(s) || !s.getClientRects().length) return null;
   var r = s.getBoundingClientRect(); return r.width && r.bottom > 0 && r.top < window.innerHeight ? r : null;
 }
 function lmSheet() { return window.innerWidth < 600 && !document.documentElement.classList.contains('kb-open'); }
+/* 0.3.2 (BACKLOG 37, admin: "các popup của nút, khi kéo xuống thì popup trượt xuống và đồng thời thu nhỏ vào vị trí của nút chính
+   và ngược lại"; "pop up co giãn được"): what one of the two floating buttons opened (Quick update, Search) grows out of
+   that button and goes back into it, also when it is pulled down (it slides on from where the hand left it while it shrinks) */
+function lmFabNew() { var b = LM.src; return b && b.closest && b.closest('.fabs') && performance.now() - (LM.t || 0) < 1500 ? b : null; } // the button just pressed, when it is one of them
+function lmFab(kind) { var b = LM.fab[kind]; if (!b || !document.body.contains(b) || !b.getClientRects().length) return null; var r = b.getBoundingClientRect(); return r.width ? r : null; }
 function lmBox(kind) { return kind === 'dlg' ? layer.querySelector('.overlay:not(.pal-ov) > .dialog') : kind === 'pop' ? layer.querySelector('.pop') : layer.querySelector('.pal'); }
 function lmTake(closing) { // before the layer is redrawn: what is closing, measured while it is still there
   var out = [];
@@ -5473,7 +5495,8 @@ function lmTake(closing) { // before the layer is redrawn: what is closing, meas
     var tf = box.style.transform; box.style.transform = ''; // 0.3.1: measured at rest; a layer pulled by hand leaves from where the hand left it (LM.pull, LM.out)
     var cs = getComputedStyle(box), r = box.getBoundingClientRect(), keep = {}; box.style.transform = tf;
     ['display', 'flexDirection', 'gap', 'padding', 'backgroundColor', 'borderRadius', 'boxShadow', 'border', 'color', 'font', 'boxSizing'].forEach(function (k) { keep[k] = cs[k]; });
-    out.push({ kind: kind, top: top, box: box, extra: extra, r: r, keep: keep, bg: top !== box ? getComputedStyle(top).backgroundColor : '' });
+    var tc = top !== box ? getComputedStyle(top) : null;
+    out.push({ kind: kind, top: top, box: box, extra: extra, r: r, keep: keep, bg: tc ? tc.backgroundColor : '', bf: tc ? tc.backdropFilter || tc.webkitBackdropFilter || '' : '' });
   });
   return out;
 }
@@ -5488,14 +5511,17 @@ function lmOut(list) {
     wrap.className = 'mo-ghost'; lmGhost(box);
     box.className = 'mo-gbox'; box.removeAttribute('style'); Object.keys(g.keep).forEach(function (k) { box.style[k] = g.keep[k]; });
     box.style.cssText += ';position:fixed;margin:0;overflow:hidden;left:' + r.left + 'px;top:' + r.top + 'px;width:' + r.width + 'px;height:' + r.height + 'px';
-    if (g.bg) { var dim = document.createElement('div'); dim.className = 'mo-gdim'; dim.style.background = g.bg; wrap.appendChild(dim); dim.animate([{ opacity: 1 }, { opacity: 0 }], { duration: Math.min(260, s.d), fill: 'forwards' }); }
-    else if (g.extra) { var d2 = document.createElement('div'); d2.className = 'mo-gdim'; d2.style.background = getComputedStyle(g.extra).backgroundColor; wrap.appendChild(d2); d2.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 200, fill: 'forwards' }); }
+    // 0.3.2 (BACKLOG 34, admin: "Khi popup kéo xuống gần cuối thì table chớp 1 cái lúc đổi màu"): the dim also keeps the blur over
+    // the page and fades it with its colour (the page behind became sharp in one frame)
+    if (g.bg) { var dim = document.createElement('div'); dim.className = 'mo-gdim'; dim.style.background = g.bg; if (g.bf && g.bf !== 'none') { dim.style.backdropFilter = g.bf; dim.style.webkitBackdropFilter = g.bf; } wrap.appendChild(dim); dim.animate([{ opacity: 1 }, { opacity: 0 }], { duration: Math.min(260, s.d), fill: 'forwards' }); }
+    else if (g.extra) { var d2 = document.createElement('div'), xc = getComputedStyle(g.extra), xf = xc.backdropFilter || xc.webkitBackdropFilter || ''; d2.className = 'mo-gdim'; d2.style.background = xc.backgroundColor; if (xf && xf !== 'none') { d2.style.backdropFilter = xf; d2.style.webkitBackdropFilter = xf; } wrap.appendChild(d2); d2.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 200, fill: 'forwards' }); }
     wrap.appendChild(box); document.body.appendChild(wrap);
-    var to = sheet ? { transform: 'translateY(' + (window.innerHeight - r.top + 8) + 'px)', opacity: 1 } : src ? lmToward(r, src, 0) : { transform: 'scale(.96)', opacity: 0 };
+    var fb = lmFab(g.kind), to = fb ? lmToward(r, fb, 0) : sheet ? { transform: 'translateY(' + (window.innerHeight - r.top + 8) + 'px)', opacity: 1 } : src ? lmToward(r, src, 0) : { transform: 'scale(.96)', opacity: 0 };
     var from = LM.pull && sheet ? { transform: 'translateY(' + LM.pull + 'px)', opacity: 1 } : { transform: 'none', opacity: 1 }; LM.pull = null;
-    if ((g.kind === 'pal' || g.kind === 'pop') && LM.out) { to = { transform: 'translate(' + (LM.out.dx * 1.6).toFixed(1) + 'px,' + (LM.out.dy * 1.6).toFixed(1) + 'px)', opacity: 0 }; from = { transform: 'translate(' + LM.out.dx + 'px,' + LM.out.dy + 'px)', opacity: 1 }; LM.out = null; } // 0.3.1: on in the direction it was swiped
+    if ((g.kind === 'pal' || g.kind === 'pop') && LM.out) { to = fb ? to : { transform: 'translate(' + (LM.out.dx * 1.6).toFixed(1) + 'px,' + (LM.out.dy * 1.6).toFixed(1) + 'px)', opacity: 0 }; from = { transform: 'translate(' + LM.out.dx + 'px,' + LM.out.dy + 'px)', opacity: 1 }; LM.out = null; } // 0.3.1: on in the direction it was swiped
     if (reduceMotion()) to = { opacity: 0 };
-    var a = box.animate([from, to], { duration: sheet || src ? s.d : 180, easing: sheet || src ? s.e : 'ease-in', fill: 'forwards' });
+    if (fb) s = spring(SPR.exit);
+    var a = box.animate([from, to], { duration: sheet || src || fb ? s.d : 180, easing: sheet || src || fb ? s.e : 'ease-in', fill: 'forwards' });
     a.onfinish = a.oncancel = function () { wrap.remove(); };
   });
 }
@@ -5507,9 +5533,10 @@ function lmIn(kind) {
   var box = lmBox(kind); if (!box || reduceMotion()) return;
   var s = spring(kind === 'dlg' && lmSheet() ? SPR.sheet : SPR.pop), r = box.getBoundingClientRect(), src = lmSrc();
   if (kind === 'dlg' && lmSheet()) { // the field that takes the focus must not scroll the sheet while it rises
-    var ov = box.parentNode, st = ov.scrollTop, hold = function () { ov.scrollTop = st; };
+    var ov = box.parentNode, st = ov.scrollTop, hold = function () { ov.scrollTop = st; }, fb = lmFab('dlg'), k1 = fb ? lmToward(r, fb, 0) : null;
     ov.addEventListener('scroll', hold);
-    box.animate([{ transform: 'translateY(' + (window.innerHeight - r.top + 8) + 'px)' }, { transform: 'none' }], { duration: s.d, easing: s.e }).onfinish = function () { ov.removeEventListener('scroll', hold); };
+    if (k1) { delete k1.opacity; box.animate([{ opacity: 0 }, { opacity: 1 }], { duration: Math.round(s.d * 0.35), easing: 'linear' }); } // 0.3.2: out of the ⚡
+    box.animate([k1 || { transform: 'translateY(' + (window.innerHeight - r.top + 8) + 'px)' }, { transform: 'none' }], { duration: s.d, easing: s.e }).onfinish = function () { ov.removeEventListener('scroll', hold); };
     return;
   }
   if (kind === 'pop' && box.classList.contains('acct') && window.innerWidth < 900) { // 0.3.0: a sheet from the bottom
@@ -5527,12 +5554,31 @@ document.addEventListener('touchstart', function (e) {
   // 0.3.1 (admin: "cái gì chạy ngang qua thì thao tác kéo ngang quay về, mọc từ dưới lên thì vuốt xuống"): the account menu,
   // a sheet from the bottom on a phone and a tablet, closes by a pull down too
   if (!d && e.target.closest && window.innerWidth < 900) { d = e.target.closest('#layer .pop.acct'); acct = !!d; }
+  if (d && !acct && e.touches.length === 1 && document.documentElement.classList.contains('kb-open')) { kbPullStart(d, e); return; }
   if (!d || (!acct && !lmSheet()) || e.touches.length !== 1 || /INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return;
   var ov = acct ? d : d.closest('.overlay'), t = e.touches[0];
   LM.drag = { d: d, ov: ov, y0: t.clientY, x0: t.clientX, on: false, last: [[t.clientY, e.timeStamp]], top: ov.scrollTop <= 0 };
 }, { passive: true });
+/* 0.3.2 (BACKLOG 33, admin: "feedback không kéo xuống khi vuốt xuống mà đi lên"): with the keyboard open (iPhone) the sheet
+   sits at the top of what is visible, and a pull down used to move Safari's own view of the page, so the sheet went up.
+   Now a pull down there first closes the keyboard, as in iPhone apps; the sheet drops back to its place and the next pull
+   closes it. A pull in a box that can still scroll up scrolls it, and a box with selected text keeps the drag. */
+function kbPullStart(d, e) {
+  var t = e.touches[0], el = e.target, box = /INPUT|TEXTAREA/.test(el.tagName) ? el : null;
+  if (box && box.selectionStart !== box.selectionEnd) return;
+  LM.drag = { kb: true, d: d, ov: d.closest('.overlay'), t: el, y0: t.clientY, x0: t.clientX };
+}
+function kbPullMove(g, e) {
+  if (g.done) { if (e.cancelable) e.preventDefault(); return; } // the rest of this pull stays the app's
+  var t = e.touches[0], dy = t.clientY - g.y0, dx = t.clientX - g.x0;
+  if (Math.abs(dx) > 12 && Math.abs(dx) > Math.abs(dy)) { LM.drag = null; return; }
+  if (dy <= 0) return;
+  if (scrollsOn(g.t, g.ov, 'y', true)) { LM.drag = null; return; } // the box or the sheet scrolls up first
+  if (e.cancelable) e.preventDefault(); // Safari must not move the page under the finger
+  if (dy > 10) { g.done = true; var a = document.activeElement; if (a && a.blur) a.blur(); }
+}
 document.addEventListener('touchmove', function (e) {
-  var g = LM.drag; if (!g) return; var t = e.touches[0], dy = t.clientY - g.y0;
+  var g = LM.drag; if (!g) return; if (g.kb) { kbPullMove(g, e); return; } var t = e.touches[0], dy = t.clientY - g.y0;
   if (!g.on) {
     if (g.scroll) { if (g.ov.scrollTop > 0 || dy <= 0) return; g.on = true; g.noFlick = true; g.y0 = t.clientY - 10; dy = 10; } // 0.3.1: scrolled to the top, the pull goes on
     else if (Math.abs(t.clientX - g.x0) > 12 && Math.abs(t.clientX - g.x0) > Math.abs(dy)) { LM.drag = null; return; }
@@ -5542,7 +5588,7 @@ document.addEventListener('touchmove', function (e) {
   g.last.push([t.clientY, e.timeStamp]); if (g.last.length > 5) g.last.shift();
 }, { passive: false });
 document.addEventListener('touchend', function (e) {
-  var g = LM.drag; LM.drag = null; if (!g || !g.on) return;
+  var g = LM.drag; LM.drag = null; if (!g || g.kb || !g.on) return;
   var a = g.last[0], b = g.last[g.last.length - 1], v = b[1] > a[1] && e.timeStamp - b[1] < 80 ? (b[0] - a[0]) / (b[1] - a[1]) : 0, h = Math.min(g.d.offsetHeight, window.innerHeight);
   if (g.dy > h / 3 || (v > 0.5 && g.dy > 40 && !g.noFlick)) { LM.pull = g.dy; if (closeTop()) return; LM.pull = null; }
   var s = spring(SPR.snap, 0); g.d.animate([{ transform: 'translateY(' + g.dy + 'px)' }, { transform: 'none' }], { duration: s.d, easing: s.e }); g.d.style.transform = '';
@@ -5633,7 +5679,11 @@ document.addEventListener('touchmove', function (e) {
   var c = e.touches[0], dx = c.clientX - g.x, dy = c.clientY - g.y;
   if (!g.lock) {
     if (Math.abs(dx) < 12 && Math.abs(dy) < 12) return;
-    if (Math.abs(dx) > 1.5 * Math.abs(dy) && (g.caught !== undefined ? (g.p0 < 0.999 || dx < 0) && (g.p0 > 0.001 || dx > 0) : g.p0 ? dx < 0 : dx > 0)) { g.lock = 1; if (!g.parts) g.parts = drawerParts(); }
+    if (Math.abs(dx) > 1.5 * Math.abs(dy) && (g.caught !== undefined ? (g.p0 < 0.999 || dx < 0) && (g.p0 > 0.001 || dx > 0) : g.p0 ? dx < 0 : dx > 0)) {
+      g.lock = 1;
+      if (layName() === 'short' && !S.drawer) { DR.busy = true; drawerSet(true); DR.busy = false; g.parts = null; } // 0.3.2: the full sidebar drawn, held at its rail
+      if (!g.parts) g.parts = drawerParts();
+    }
     else { DR.g = null; if (g.caught !== undefined) drawerTo(g.caught, g.p0, 0, g.parts); return; } // caught but not swiped: it goes on
   }
   if (e.cancelable) e.preventDefault();
@@ -5653,20 +5703,33 @@ window.addEventListener('click', function (e) { if (DR.eat && Date.now() < DR.ea
 /* 0.2.9 (admin, after the first build: "khi thanh bên cũng bị thu lại chỉ hiện icon của sidebar thì cũng như là kéo tờ giấy sát
    lại thôi, khi di chuột lại thì chỉ hiện tên của nút chứ không chạy ra cả sidebar"): hovering the rail shows each
    button's name (its tip), never the full sidebar; the full sidebar comes only from its button */
-function sheetSlide(els, x0, x1, done) { // the page, a sheet over the sidebar, slides in or out, a little lifted on the way
-  var s = spring(SPR.nav), cs = getComputedStyle(document.documentElement), e0 = cs.getPropertyValue('--d-edge').trim(), e1 = cs.getPropertyValue('--d-edge-up').trim(), anims = [];
+function sheetSlide(els, x0, x1, done) { // the page's content glides to its new edge, under the sidebar that changes form (0.3.2: no sheet lifted)
+  var s = spring(SPR.nav), anims = [];
   els.forEach(function (el) { anims.push(el.animate([{ transform: 'translateX(' + x0 + 'px)' }, { transform: 'translateX(' + x1 + 'px)' }], { duration: s.d, easing: s.e, fill: 'forwards' })); });
-  var mw = document.querySelector('.mainwrap'); if (mw && e0 && e1) anims.push(mw.animate([{ boxShadow: e0 }, { boxShadow: e1, offset: 0.35 }, { boxShadow: e0 }], { duration: s.d, easing: 'ease-in-out' }));
   if (!anims.length) { if (done) done(); return; }
   anims[0].onfinish = function () { if (done) done(); anims.forEach(function (a) { a.cancel(); }); };
 }
-function sheetEls() { return [document.querySelector('.mainwrap'), document.querySelector('.shell.pshown .panel')].filter(Boolean); }
-/* a forced rail (600 to 839 px): the sidebar's button slides the sheet aside to show the full sidebar under it */
-function peekTo(open) {
-  if (!!S.sbPeek === open) return;
+/* 0.3.2 (BACKLOG 42, admin: "lớp table là lớp base, lớp sidebar là lớp trượt trên đó"): with a rail (600 to 839 px, or "Keep
+   the sidebar hidden" on a computer) the full sidebar grows out of its rail over the page, which stays where it is and dims:
+   the icons stay in their places and the words come (the fold of 0.3.1, the other way), the sidebar's edge moves out with
+   it. p = 0 the rail, 1 the full sidebar. The setting is not changed (its button does that). */
+function peekParts() {
+  var sb = app.querySelector('.shell > .sb'), dim = app.querySelector('.drshade');
+  return { m: [{ el: sb, f: function (p) { return { clipPath: 'inset(0 ' + (204 * (1 - p)).toFixed(1) + 'px 0 0)' }; } }, { el: dim, f: function (p) { return { opacity: p.toFixed(3) }; } }], s: sbParts(sb) };
+}
+function peekHold(k, p) { moSet(k.m, p); sbHold(k.s, 1 - p); }
+function peekRun(k, p0, p1, v, done) {
+  var sp = p1 ? SPR.nav : SPR.exit; DR.peek = true;
+  sbRun(k.s, 1 - p0, 1 - p1, spring(sp, v));
+  moGo(k.m, p0, p1, sp, v, function () { sbClear(k.s); partsClear(k.m); DR.peek = false; if (done) done(); });
+}
+function peekTo(open, p0, v, k) {
+  if (p0 === undefined && (!!S.sbPeek === open || DR.peek)) return;
   if (reduceMotion()) { S.sbPeek = open; render(); return; }
-  if (open) { S.sbPeek = true; render(); sheetSlide(sheetEls(), 0, 204); }
-  else sheetSlide(sheetEls(), 204, 0, function () { S.sbPeek = false; render(); });
+  if (open && !S.sbPeek) { S.sbPeek = true; render(); k = null; } // the full sidebar drawn, held at its rail below
+  k = k || peekParts(); if (p0 === undefined) p0 = open ? 0 : 1;
+  peekHold(k, p0);
+  peekRun(k, p0, open ? 1 : 0, v || 0, function () { if (!open) { S.sbPeek = false; render(); } }); // at 0 it looks exactly like the rail
 }
 /* "Keep the sidebar hidden" (computers): the sheet slides over the sidebar, or off it, in one movement */
 /* 0.3.0 (admin: "hiệu ứng của sidebar khi hidden cũng dị, tự ngưng khựng 1 cái ... các bài trong block cũng phải được sắp xếp"):
@@ -5830,41 +5893,32 @@ document.addEventListener('wheel', function (e) {
   };
   if (g.d > g.L.el.offsetHeight * 0.6) rel(); else g.end = setTimeout(rel, 120);
 }, { passive: false });
-/* the page over a hidden sidebar (computers, the sidebar beside the page): it slides off the sidebar and back with the
-   hand, and where it is let go decides "Keep the sidebar hidden", like the sidebar's button (admin: "1. A") */
-function psOk() { return N3() && layName() === 'side' && !panelShown() && !S.pop && !S.pal && !S.drawer && !S.sbSlide && !S.sbShow && !S.sbPeek && S.tour < 0 && !layer.querySelector('.overlay'); }
-function psStart(hide) { // hide: the page goes over the sidebar; else it slides off it
-  var p = S.boot.prefs = S.boot.prefs || {}, before = hide ? blockRects(true) : null;
-  if (hide) p.sbCollapsed = true; S.sbSlide = true; render(); // the full sidebar under the page; hiding, the page takes its new width at once
-  var mw = document.querySelector('.mainwrap'); if (before) glideBlocks(before, 204);
-  var g = { hide: hide, was: !hide, mw: mw, d: 0, parts: sbParts(app.querySelector('.shell > .sb')) };
-  sbHold(g.parts, hide ? 0 : 1); // revealing, it starts with the rail's look and unfolds with the hand
+/* a hidden sidebar on a computer (its rail beside the page): two fingers on a trackpad, or a mouse drag, bring the full
+   sidebar out over the page and back with the hand (0.3.2, BACKLOG 42: the sidebar is the layer that moves, the page stays;
+   the setting is left as it is: before 0.3.2 the page slid off the sidebar and the setting followed) */
+function psOk() { return N3() && layName() === 'side' && !!prefs().sbCollapsed && !panelShown() && !S.pop && !S.pal && !S.drawer && !S.sbSlide && !S.sbShow && !DR.peek && S.tour < 0 && !layer.querySelector('.overlay'); }
+function psStart(hide) { // hide: the full sidebar goes back into its rail; else it comes out of it
+  if (!hide) { S.sbPeek = true; render(); }
+  var g = { hide: hide, d: 0, k: peekParts() };
+  peekHold(g.k, hide ? 1 : 0);
   return g;
 }
 function psSet(g, d) { // d: px toward where the hand goes
-  g.d = Math.max(0, Math.min(204, d)); var x = g.hide ? 204 - g.d : g.d; g.x = x;
-  if (g.mw.__ps) g.mw.__ps.cancel(); g.mw.__ps = g.mw.animate([{ transform: 'translateX(' + x.toFixed(1) + 'px)' }, { transform: 'translateX(' + x.toFixed(1) + 'px)' }], { duration: 1, fill: 'forwards' });
-  sbHold(g.parts, g.hide ? g.d / 204 : 1 - g.d / 204);
+  g.d = Math.max(0, Math.min(204, d)); peekHold(g.k, g.hide ? 1 - g.d / 204 : g.d / 204);
 }
 function psEnd(g, v) { // v: px per ms toward the goal
-  var go = g.d > 82 || v > 0.6 ? g.hide : !g.hide, p = S.boot.prefs, x = g.x || 0, hold = g.mw.__ps, before = null, s = spring(SPR.nav); // go: hidden at the end
-  var q = g.hide ? g.d / 204 : 1 - g.d / 204, parts = g.parts;
-  if (!go) { sbClear(parts); before = blockRects(true); p.sbCollapsed = false; S.sbSlide = false; S.sbShow = true; render(); x -= 204; parts = sbParts(app.querySelector('.shell > .sb')); } // the page lies 204 px further right
-  var mw = document.querySelector('.mainwrap'); if (before) glideBlocks(before, x);
-  sbRun(parts, q, go ? 1 : 0, s);
-  sheetSlide([mw], x, 0, function () { sbClear(parts); if (go) { S.sbSlide = false; render(); } else sbSettled(); });
-  if (hold) hold.cancel(); g.mw.__ps = null;
-  if (go !== g.was) { keepBoot(); api('api_setPrefs', { sbCollapsed: go }).catch(function () { }); }
+  var far = g.d > 82 || v > 0.6, open = g.hide ? !far : far, p = g.hide ? 1 - g.d / 204 : g.d / 204;
+  peekTo(open, p, Math.abs(v) * 1000 / 204, g.k);
 }
 var WP = null;
 document.addEventListener('wheel', function (e) {
   var now = Date.now(), dx = -e.deltaX * (e.deltaMode === 1 ? 16 : 1), dy = -e.deltaY * (e.deltaMode === 1 ? 16 : 1), g = WP;
   if (g && now - g.t < 160) { g.t = now; if (g.no) return; e.preventDefault(); if (g.over) return; }
   else {
-    WP = null; if (!dx || Math.abs(dx) < 1.5 * Math.abs(dy) || !psOk() || !(e.target.closest && e.target.closest('.mainwrap, .shell.sbc .sb'))) return;
-    var hidden = !!prefs().sbCollapsed;
-    if ((hidden ? dx < 0 : dx > 0) || wheelMouse(e) || scrollsOn(e.target, document.querySelector('.mainwrap'), 'x', dx > 0)) { WP = { no: true, t: now }; return; }
-    e.preventDefault(); g = WP = { t: now, ps: psStart(!hidden), d: 0, pts: [] };
+    WP = null; if (!dx || Math.abs(dx) < 1.5 * Math.abs(dy) || !psOk() || !(e.target.closest && e.target.closest('.mainwrap, .shell > .sb'))) return;
+    var out = !!S.sbPeek;
+    if ((out ? dx > 0 : dx < 0) || wheelMouse(e) || scrollsOn(e.target, document.querySelector('.mainwrap'), 'x', dx > 0)) { WP = { no: true, t: now }; return; }
+    e.preventDefault(); g = WP = { t: now, ps: psStart(out), d: 0, pts: [] };
   }
   g.d += g.ps.hide ? -dx : dx; psSet(g.ps, g.d); g.pts.push([g.ps.d, now]); if (g.pts.length > 6) g.pts.shift();
   clearTimeout(g.end);
@@ -5886,7 +5940,7 @@ document.addEventListener('pointerdown', function (e) {
   MD = null; if (e.pointerType !== 'mouse' || e.button !== 0) return;
   var t = e.target, L = vLayer(t), k = L ? 'v' : '';
   if (!L && panelShown() && !S.closing && !layer.querySelector('.overlay') && S.tour < 0 && t.closest && t.closest('.shell.pshown .panel')) { L = { el: t.closest('.panel') }; k = 'card'; }
-  if (!L && psOk() && t.closest && t.closest('.mainwrap, .shell.sbc .sb')) { L = { el: t.closest('.mainwrap, .sb') }; k = 'page'; }
+  if (!L && psOk() && t.closest && t.closest('.mainwrap, .shell > .sb')) { L = { el: t.closest('.mainwrap, .sb') }; k = 'page'; }
   if (!L || L.up) return;
   var hit = t.closest('input, textarea, select, button, a, label, summary, [contenteditable="true"], [data-a], [data-i], [role="slider"], .sc-rail, #scrub');
   if ((hit && L.el.contains(hit)) || onText(e.clientX, e.clientY)) return;
@@ -5898,11 +5952,11 @@ document.addEventListener('pointermove', function (e) {
   var dx = e.clientX - g.x, dy = e.clientY - g.y;
   if (!g.lock) {
     if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
-    var hidden = !!prefs().sbCollapsed;
-    var okDir = g.k === 'v' ? dy > 0 && dy > 1.5 * Math.abs(dx) : Math.abs(dx) > 1.5 * Math.abs(dy) && (g.k === 'card' ? dx > 0 : hidden ? dx > 0 : dx < 0);
+    var out = !!S.sbPeek;
+    var okDir = g.k === 'v' ? dy > 0 && dy > 1.5 * Math.abs(dx) : Math.abs(dx) > 1.5 * Math.abs(dy) && (g.k === 'card' ? dx > 0 : out ? dx < 0 : dx > 0);
     if (!okDir) { MD = null; return; }
     g.lock = true; document.documentElement.classList.add('ldrag'); try { window.getSelection().removeAllRanges(); } catch (x) { }
-    if (g.k === 'card') g.parts = cardParts(); else if (g.k === 'page') g.ps = psStart(!hidden);
+    if (g.k === 'card') g.parts = cardParts(); else if (g.k === 'page') g.ps = psStart(out);
     g.x = e.clientX; g.y = e.clientY; dx = dy = 0;
   }
   e.preventDefault();
@@ -6288,12 +6342,23 @@ var ACT = {
   },
   'sb-toggle': function () {
     if (phoneW()) { drawerGo(!S.drawer); return; }
-    if (railForced()) { peekTo(!S.sbPeek); return; } // 0.2.9: the sheet slides aside to show the full sidebar, the setting unchanged
-    var p = S.boot.prefs = S.boot.prefs || {}, hide = !p.sbCollapsed; sbSlide(hide); // 0.2.9: the page slides over the sidebar
+    if (railForced()) { peekTo(!S.sbPeek); return; } // 0.3.2: the full sidebar out of its rail over the page, the setting unchanged
+    var p = S.boot.prefs = S.boot.prefs || {}, hide = !p.sbCollapsed;
+    if (S.sbPeek && !hide) { // 0.3.2: out over the page already: it stays, and the page makes room beside it
+      S.sbPeek = false; p.sbCollapsed = false; S.sbShow = true; render();
+      var mw = document.querySelector('.mainwrap'); if (mw) sheetSlide([mw], -204, 0, sbSettled); else sbSettled();
+    } else sbSlide(hide); // the page's edge glides while the sidebar folds into its rail or unfolds (0.3.1)
     api('api_setPrefs', { sbCollapsed: hide }).catch(function () { });
   },
   'drawer-open': function () { drawerGo(true); var f = document.querySelector('.sb .sb-item'); if (f) f.focus({ preventScroll: true }); },
   'drawer-close': function () { drawerGo(false); },
+  // 0.3.2 (BACKLOG 44): the pencil after the title opens "Title, journal, IF and IDs" and puts the cursor in the title
+  'title-edit': function () {
+    S.keep.ids = true; var dt = document.querySelector('.panel details[data-keep="ids"]'), t = document.getElementById('f-title'); if (dt) dt.open = true;
+    if (!t) return;
+    t.scrollIntoView({ block: 'center', behavior: reduceMotion() ? 'auto' : 'smooth' });
+    setTimeout(function () { t.focus({ preventScroll: true }); try { t.setSelectionRange(t.value.length, t.value.length); } catch (x) { } }, reduceMotion() ? 0 : 380);
+  },
   'pal-open': function () { palOpen(); },
   'pal-go': function (v) { palRun(Number(v)); },
   'pal-bg': function (v, e) { if (e.target.classList && e.target.classList.contains('overlay')) { S.pal = null; render(); } },
