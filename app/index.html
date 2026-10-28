@@ -5,12 +5,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <script>
-/* VIBRA Tracker 0.3.2 on the group's own address (vibra-group.github.io), built by tools/build_web.py from app/Index.html.
+/* VIBRA Tracker 0.3.3 on the group's own address (vibra-group.github.io), built by tools/build_web.py from app/Index.html.
    This page is the VIBRA app: installable, with notifications and the last data readable offline.
    Google confirms who the member is ("Sign in with Google"), or a one-time code made on a signed-in device does; the
    admin's helper checks that once and gives a session; every server call then goes to the helper with that session
    and runs the tracker's own code as the member. */
-window.VIBRA_WEB = { helper: "https://script.google.com/macros/s/AKfycbzNE__5onOmvia3VaFHjybAJ5G35cnDJCN1ysuiNAYlgOC5xsbCi0xyDnmoJP7lEaFR3w/exec", clientId: "619243121375-pi18v7vjgvcue7qo6455uids4v28megi.apps.googleusercontent.com", classic: "https://script.google.com/macros/s/AKfycbzkG5eCrxQvQtJgfksL92G9vtl2I4LLEew-Az4qYlDxX6V1QfgtIrwGjYOGq9CQ0r3aWA/exec", built: "0.3.2" };
+window.VIBRA_WEB = { helper: "https://script.google.com/macros/s/AKfycbzNE__5onOmvia3VaFHjybAJ5G35cnDJCN1ysuiNAYlgOC5xsbCi0xyDnmoJP7lEaFR3w/exec", clientId: "619243121375-pi18v7vjgvcue7qo6455uids4v28megi.apps.googleusercontent.com", classic: "https://script.google.com/macros/s/AKfycbzkG5eCrxQvQtJgfksL92G9vtl2I4LLEew-Az4qYlDxX6V1QfgtIrwGjYOGq9CQ0r3aWA/exec", built: "0.3.3" };
 (function () {
   var W = window.VIBRA_WEB, KEY = 'vibra-web-session', S = null, queue = [], gisInit = false, tries = 0, gateOn = false;
   var ua = navigator.userAgent || '', IOS = /iPad|iPhone|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
@@ -212,6 +212,13 @@ window.VIBRA_WEB = { helper: "https://script.google.com/macros/s/AKfycbzNE__5onO
   W.titlePage = function (id, images, text) { return ask({ api: 'titlepage', id: id, images: images || [], text: text || '' }); };
   /* 0.2.5: a quick update in one call (saved, read by the AI from memory, answered with what changed) */
   W.quick = function (d) { return ask({ api: 'quick', mid: d.mid || '', text: d.text || '', images: d.images || [], reply_to: d.reply_to || '', cid: d.cid || '', note: d.note || '' }); }; // 0.3.0: note = the reminder answered
+  /* 0.3.3 (BACKLOG 52): Save apart from the AI: the text, then the pieces of the screenshots, then ready; the
+     AI's reading is asked for apart (one call per part of a report) */
+  W.qsave = function (d) { return ask({ api: 'qsave', mid: d.mid || '', text: d.text || '', files: d.files || [], reply_to: d.reply_to || '', cid: d.cid || '', note: d.note || '' }); };
+  W.qpart = function (d) { return ask({ api: 'qpart', id: d.id, k: d.k, p: d.p, data: d.data }); };
+  W.qready = function (d) { return ask({ api: 'qready', id: d.id, lens: d.lens }); };
+  W.ask = function (q) { return ask({ api: 'ask', q: String(q || '') }); }; // 0.3.3 (BACKLOG 55 D): read only
+  W.qread = function (d) { return ask({ api: 'qread', id: d.id, part: d.part === undefined ? '' : d.part }); };
   W.newCode = function () {
     if (!S) return Promise.reject(new Error('Sign in first.'));
     return post({ api: 'code', session: S.session }).then(function (x) {
@@ -373,6 +380,10 @@ if(top==="https://script.google.com")return;if(top==="https://vibra-group.github
 <script>/* Ask the server for the data at once, before the rest of the page is read (saves a few hundred ms). */
 try{if(!window.__VIBRA_BLOCKED&&window.google&&google.script&&google.script.run){window.__bootP=new Promise(function(res,rej){google.script.run.withSuccessHandler(res).withFailureHandler(rej).api_bootstrap();});}}catch(e){}</script>
 <script>try{var t=localStorage.getItem("vibra-theme");if(t){document.documentElement.setAttribute("data-theme",t==="system"?(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"):t);}var z=localStorage.getItem("vibra-fs");z={s:"2",m:"3",l:"5"}[z]||z;if(/^[124-6]$/.test(z||""))document.documentElement.setAttribute("data-fs",z);var c=localStorage.getItem("vibra-pal");if(/^(navy|sage|sky|teal)$/.test(c||""))document.documentElement.setAttribute("data-pal",c);}catch(e){}</script>
+<script>/* BACKLOG 45 (for 0.3.3, admin: "Ấn ấn vào các ô nhập, tự nhiên pop up zoom lên 1 tí rồi không tự thu lại"): iPhone and iPad
+   Safari zoom in on a box whose text is under 16 px when it is tapped, and stay zoomed; maximum-scale=1 stops that zoom
+   only (iOS still lets a person pinch to zoom). Not on Android, where it would stop pinching. */
+(function(){try{var ua=navigator.userAgent,vp;if(/iPad|iPhone|iPod/.test(ua)||(/Macintosh/.test(ua)&&navigator.maxTouchPoints>1)){vp=document.querySelector('meta[name="viewport"]');if(vp&&!/maximum-scale/.test(vp.content))vp.setAttribute('content',vp.content+', maximum-scale=1');}}catch(e){}})();</script>
 <script>/* 0.2.8: slim scroll bars on Windows and Linux (Macs and phones keep their own) */try{var pl=(navigator.userAgentData&&navigator.userAgentData.platform)||navigator.platform||"";if(/win|linux/i.test(pl)&&!/android/i.test(navigator.userAgent))document.documentElement.classList.add("sb-thin");}catch(e){}</script>
 <title>VIBRA Tracker</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1075,6 +1086,17 @@ html[data-fs="6"]{--fz:1.18}
 /* 0.2.6: Paste inside the text box; the box keeps room for it */
 .ta-wrap{position:relative}
 .ta-wrap textarea{width:100%;padding-bottom:40px}
+.qu-ai .ic{width:14px;height:14px;vertical-align:-2px;margin-right:4px;color:var(--accent-text)}
+.nf-mem{display:flex;flex-direction:column;gap:6px;margin-top:2px}
+.nf-mh{font-size:calc(12px*var(--fz,1));color:var(--muted)}
+.nf-ml{display:flex;flex-wrap:wrap;gap:6px}
+.nf-mc{display:inline-flex;align-items:center;gap:6px;min-height:34px;padding:3px 11px 3px 4px;border-radius:999px;border:1px solid var(--line);background:var(--surface);font-size:calc(13px*var(--fz,1));cursor:pointer;-webkit-user-select:none;user-select:none}
+.nf-mc input{position:absolute;opacity:0;width:1px;height:1px}
+.nf-mc .av{width:26px;height:26px;font-size:calc(10.5px*var(--fz,1))}
+.nf-mc.on{background:var(--accent-soft);border-color:var(--accent-line);color:var(--accent-text);font-weight:600}
+.nf-mc:focus-within{outline:2px solid var(--accent);outline-offset:2px}
+.qu-sending{display:flex;align-items:center;gap:8px;margin:0;padding:9px 12px;border-radius:var(--r-sm);background:var(--accent-soft);color:var(--accent-text);font-size:calc(13px*var(--fz,1));font-weight:600}
+.qu-sending .ic{width:16px;height:16px}
 .paste-btn{position:absolute;right:8px;bottom:8px;display:inline-flex;align-items:center;gap:5px;height:28px;padding:0 10px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink-2);font:600 calc(12.5px*var(--fz,1)) var(--sans);cursor:pointer;box-shadow:0 1px 2px rgba(16,24,40,.06)}
 .paste-btn:hover{color:var(--accent-text);border-color:color-mix(in srgb,var(--accent) 45%,var(--line))}
 .paste-btn .ic{width:15px;height:15px}
@@ -1612,6 +1634,13 @@ button.kpi:hover:not([disabled]),.tile:hover:not([disabled]){transform:none;box-
 .pal-in kbd,.pal-foot kbd{font:500 calc(11px*var(--fz,1)) var(--sans);padding:2px 6px;border-radius:6px;background:var(--surface-2);color:var(--muted);box-shadow:inset 0 0 0 1px var(--line)}
 .pal-list{max-height:min(56vh,460px);overflow-y:auto;padding:6px}
 .pal-g{margin:8px 10px 4px;font:500 calc(11.5px*var(--fz,1)) var(--sans);color:var(--muted)}
+.pal-ask{margin:8px 8px 2px;padding:10px 12px 10px;border-radius:12px;background:color-mix(in srgb,var(--accent-soft) 60%,var(--surface));box-shadow:inset 0 0 0 1px var(--accent-line);display:flex;flex-direction:column;gap:8px;max-height:min(40vh,320px);overflow:auto}
+.pa-q{display:flex;align-items:center;gap:8px;color:var(--accent-text);font-size:calc(13.5px*var(--fz,1))}.pa-q b{flex:1;min-width:0}.pa-q .ic{width:16px;height:16px;flex:none}.pa-q .ibtn{width:30px;height:30px}
+.pa-a{font-size:calc(14px*var(--fz,1));line-height:1.5;color:var(--ink)}
+.pa-busy{display:flex;align-items:center;gap:8px;margin:0;color:var(--ink-2);font-size:calc(13px*var(--fz,1))}.pa-busy i{width:9px;height:9px;border-radius:999px;background:var(--accent);animation:stalePulse 1s ease-in-out infinite alternate}
+.pa-ms{display:flex;flex-direction:column;gap:4px}
+.pa-m{display:flex;align-items:center;gap:8px;padding:6px 8px;border:0;border-radius:9px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--line);color:var(--ink);font:500 calc(13px*var(--fz,1)) var(--sans);text-align:left;cursor:pointer}.pa-m:hover{box-shadow:inset 0 0 0 1px var(--accent-line)}.pa-m span:last-child{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pa-foot{margin:0;font-size:calc(11.5px*var(--fz,1));color:var(--muted)}
 .pal-o{display:flex;align-items:center;gap:10px;width:100%;min-height:42px;padding:6px 10px;border:0;border-radius:10px;background:none;color:var(--ink);text-align:left;cursor:pointer}
 .pal-o.on,.pal-o:hover{background:var(--sel)}
 .pal-o .tt{flex:1;min-width:0;display:flex;flex-direction:column}
@@ -1675,6 +1704,9 @@ button.kpi:hover:not([disabled]),.tile:hover:not([disabled]){transform:none;box-
 .stale-pill{display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 15px;border-radius:999px;background:var(--accent-soft);color:var(--accent-text);font:650 calc(14px*var(--fz,1)) var(--sans);border:0;box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--accent) 30%,transparent);white-space:nowrap}
 .stale-pill.off{background:var(--soon-bg,#F8EBD3);color:var(--soon,#8A4B0F);box-shadow:inset 0 0 0 1px color-mix(in srgb,currentColor 30%,transparent)}
 .stale-pill.upd{cursor:pointer}
+.stale-pill.qp{position:relative;overflow:hidden;font-variant-numeric:tabular-nums;min-width:150px;justify-content:center}
+.stale-pill.qp .qp-bar{position:absolute;left:14px;right:14px;bottom:5px;height:3px;border-radius:3px;background:color-mix(in srgb,var(--accent) 20%,transparent)}
+.stale-pill.qp .qp-bar span{display:block;height:100%;width:0;border-radius:3px;background:var(--accent);transition:width .3s var(--ease)}
 .stale-pill .ic{width:17px;height:17px}
 .draft-bar{clear:both;display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 14px;padding:10px 14px;border-radius:12px;background:var(--soon-bg,#F8EBD3);color:var(--ink);font-size:calc(14px*var(--fz,1));line-height:1.45}
 .draft-bar>.ic{color:var(--soon,#8A4B0F);flex:none}
@@ -1762,6 +1794,7 @@ html,body{overscroll-behavior-x:none} /* the browser's own two-finger back swipe
 .sc-bub{right:44px}
 :root.sc-sys{scrollbar-width:none}
 html.sc-sys::-webkit-scrollbar,html.sc-sys body::-webkit-scrollbar{display:none;width:0;height:0}
+html.sc-sys.sb-thin::-webkit-scrollbar,html.sc-sys.sb-thin body::-webkit-scrollbar{display:none;width:0;height:0} /* 0.3.3 (BACKLOG 50): above the slim bar of Windows */
 /* 0.2.8 (admin, Windows: "thanh scrolling mặc định trên windows sao thấy thô thiển vậy ... làm cho nó thanh mảnh lại"):
    one slim scroll bar everywhere on Windows and Linux (html.sb-thin): thin, round, a soft thumb that darkens on hover,
    no arrows, a clear track, both themes; Macs and phones keep their own */
@@ -1930,7 +1963,9 @@ html.nav3[data-lay="stack"] .sb,html.nav3[data-lay="stack"] .drshade{will-change
   .pop.npop::after{content:"";position:absolute;bottom:6px;left:50%;width:38px;height:5px;margin-left:-19px;border-radius:3px;background:var(--line-2);background:var(--dbar);pointer-events:none}
   .pop.acct.sheet{padding-top:14px}
 }
-html.nav3[data-lay="side"] .shell.sbc:not(.pshown) .mainwrap::before{content:"";position:fixed;left:calc(var(--sbw) + 6px);top:calc(50% - 28px);width:5px;height:56px;border-radius:3px;background:var(--line-2);background:var(--dbar);z-index:40;pointer-events:none}
+/* 0.3.3 (BACKLOG 46, admin: "Phương án A nha"): with the sidebar hidden the page never moves (0.3.2); the sidebar is what two
+   fingers or a mouse drag bring out, so its bar sits on the rail's right edge and rides it as it comes out */
+html.nav3[data-lay="side"] .shell.sbc:not(.pshown) .sb::after{content:"";position:absolute;right:4px;top:calc(50% - 28px);width:5px;height:56px;border-radius:3px;background:var(--line-2);background:var(--dbar);z-index:2;pointer-events:none}
 html.ldrag,html.ldrag *{cursor:grabbing!important;user-select:none!important;-webkit-user-select:none!important}
 /* the choice in Settings: a small picture of each set (menu, page, card) */
 .cs-row{display:flex;flex-direction:column;gap:8px}
@@ -1959,6 +1994,7 @@ html.ldrag,html.ldrag *{cursor:grabbing!important;user-select:none!important;-we
 .trk{display:inline-flex;align-items:center;gap:5px;min-height:34px;padding:0 13px;border-radius:999px;background:var(--accent);color:var(--accent-fg);font:600 calc(13px*var(--fz,1)) var(--sans);text-decoration:none;flex:none}
 .trk .ic{width:14px;height:14px}.trk:hover{filter:brightness(1.08)}.trk:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .trk-chip{display:inline-flex;align-items:center;gap:3px;padding:1px 8px;border-radius:999px;background:var(--accent-soft);box-shadow:inset 0 0 0 1px var(--accent-line);color:var(--accent-text);font:600 calc(11.5px*var(--fz,1)) var(--sans);white-space:nowrap;cursor:pointer;flex:none}
+.trk-chip.step{gap:4px} /* 0.3.3 (BACKLOG 49): a step's link in place of Track */
 .trk-chip .ic{width:11px;height:11px}.trk-chip:hover{background:var(--accent);color:var(--accent-fg)}
 .bl-top .trk-chip{margin-left:auto}.bl-top .trk-chip + .meta{margin-left:8px}
 .row .meta .trk-chip{margin-top:4px}
@@ -2089,6 +2125,13 @@ var TIPS = {
    something works, a bug they may have met); internal fixes need none. Each member sees the card once per release
    (preference relSeen; the 0.2.0 tour stands for 0.2.0), never in a session that showed the tour; the bell keeps it. */
 var RELEASES = [
+  { v: '0.3.3', date: '2026-10-28', title: 'Saved at once, the AI reads after', items: [
+    ['spark', 'Quick update: Save shows how far the saving is, then "Saved"; the AI reads it afterwards while you go on, and several updates are read at the same time. Opened again while one is still on its way, Quick update starts empty.'],
+    ['chat2', 'Your own AI can read your mailbox for the journals\' news: copy the prompt in Quick update and paste its answer back. Only news about our manuscripts is sent.'],
+    ['ball', 'When an update leaves your part done, the AI passes the ball on and says why; Mark done in your to-do takes you off the ball too.'],
+    ['link', 'One button on each row: the DOI, the link the next step needs, or Track.'],
+    ['people', 'New manuscript: tick members and their names go into Authors where the cursor is.'],
+    ['check', 'Smoother first opening of Notifications and Settings; one scroll bar on Windows; on a laptop with the sidebar hidden, its grey bar sits on the sidebar\'s edge.']] },
   { v: '0.3.2', date: '2026-10-25', title: 'Steadier buttons and sheets on the iPhone', items: [
     ['spark', 'Search and Quick update stay in one place. Quick update, now in New manuscript\'s style, shows its name for a few seconds when the app opens, then stays a round ⚡; Save on an open manuscript stays clear of it.'],
     ['check', 'iPhone: with the keyboard open, a pull down on Feedback or Quick update closes the keyboard first; the next pull closes the sheet. After Search is closed by a pull, the two buttons come back. The page behind a closing sheet no longer flashes.'],
@@ -2266,6 +2309,7 @@ var ICON = {
   restore: '<path d="M230,144a62.07,62.07,0,0,1-62,62H80a6,6,0,0,1,0-12h88a50,50,0,0,0,0-100H46.49l37.75,37.76a6,6,0,1,1-8.48,8.48l-48-48a6,6,0,0,1,0-8.48l48-48a6,6,0,0,1,8.48,8.48L46.49,82H168A62.07,62.07,0,0,1,230,144Z"/>'
 };
 var ICON2 = {
+  copy: '<rect x="8.5" y="8.5" width="11" height="12" rx="2.2"/><path d="M15.5 8.5V6.2a2 2 0 0 0-2-2h-7a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h2"/>',
   paste: '<rect x="6" y="4.5" width="12" height="16" rx="2.2"/><path d="M9.5 4.5V3.8a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v.7"/><path d="M9.5 11h5M9.5 14.5h5"/>',
   pen: '<path d="M4 20h4.2L19.4 8.8a2 2 0 0 0 0-2.8l-1.4-1.4a2 2 0 0 0-2.8 0L4 15.8z"/><path d="M13.5 6.5l4 4"/>',
   link: '<path d="M10.5 13.5a3.5 3.5 0 0 0 5 0l3-3a3.5 3.5 0 0 0-5-5l-1 1"/><path d="M13.5 10.5a3.5 3.5 0 0 0-5 0l-3 3a3.5 3.5 0 0 0 5 5l1-1"/>',
@@ -2514,13 +2558,14 @@ function render() {
   var pk = S.pop || '', dk = S.wn ? 'wn' : S.ga ? 'ga' : S.ad ? 'ad' : S.del ? 'del' : S.rp ? 'rp' : S.qu ? 'qu' : S.fb ? 'fb' : S.nf ? 'nf' : '', tk = S.tour >= 0 ? 'tour' + S.tour : '', sk = S.pal ? 'pal' : '';
   layer.className = (pk && pk === S.lk[0] ? 'calm-pop ' : '') + (dk && dk === S.lk[1] ? 'calm-dlg ' : '') + (tk && tk === S.lk[2] ? 'calm-tour ' : '') + (sk && sk === S.lk[3] ? 'calm-pal' : '');
   var prevDk = S.lk[1], prevPk = S.lk[0], prevSk = S.lk[3]; S.lk = [pk, dk, tk, sk]; S.painted = true;
-  var segB = segRects(); // 0.2.8
+  var segK = S.view, segB = segK === S.segK ? segRects() : {}; S.segK = segK; // 0.2.8; 0.3.3 (BACKLOG 40): another view has other switches: nothing to slide, so nothing measured (it forced a layout of the old page)
   var sbs = document.querySelector('.sb-scroll'), sbScroll = sbs ? sbs.scrollTop : 0, sbm = document.querySelector('.sb-mid'), sbMid = sbm ? sbm.scrollTop : 0;
   var shell0 = app.querySelector('.shell'), drWas = !!(shell0 && shell0.classList.contains('drawer')); // 0.2.9
   var sbOver = sbCollapsed() && N3() && (S.sbPeek || S.sbSlide); // the full sidebar over (peek) or under (slide) the rail
-  morph(app, '<div class="shell' + (sbCollapsed() && !sbOver ? ' sbc' : '') + (sbOver ? (S.sbSlide ? ' sbslide' : ' sbpeek') : '') + (S.sbShow ? ' sbshow' : '') + (S.drawer ? ' drawer' : '') + (panelShown() ? ' pshown' : '') + (S.view === 'today' && todayView() === 'blocks' ? ' tvb blkA' : '') + '">' + sidebar() + '<div class="scrim" data-a="drawer-close"></div><div class="drshade" aria-hidden="true"></div>' + (panelShown() ? '<div class="pscrim" aria-hidden="true"></div>' : '') +
+  var appHtml = '<div class="shell' + (sbCollapsed() && !sbOver ? ' sbc' : '') + (sbOver ? (S.sbSlide ? ' sbslide' : ' sbpeek') : '') + (S.sbShow ? ' sbshow' : '') + (S.drawer ? ' drawer' : '') + (panelShown() ? ' pshown' : '') + (S.view === 'today' && todayView() === 'blocks' ? ' tvb blkA' : '') + '">' + sidebar() + '<div class="scrim" data-a="drawer-close"></div><div class="drshade" aria-hidden="true"></div>' + (panelShown() ? '<div class="pscrim" aria-hidden="true"></div>' : '') +
     '<div class="mainwrap">' + topbar() + '<div class="wrap"><div class="cols"><div class="main">' + pageTools() + draftBar() + main + '</div></div></div></div>' + (panelShown() ? panel() : '') + // 0.2.9: the card is its own layer
-    '<div class="fstat' + fsNew() + '" aria-live="polite">' + statusChip() + '</div></div>' + fab()); // 0.2.8: only what changed is touched
+    '<div class="fstat' + fsNew() + '" aria-live="polite">' + statusChip() + '</div></div>' + fab();
+  morph(app, appHtml); // 0.2.8: only what changed is touched
   document.documentElement.style.setProperty('--sbw', sbCollapsed() ? '60px' : '264px');
   var sbs2 = document.querySelector('.sb-scroll'); if (sbs2) sbs2.scrollTop = sbScroll;
   var sbm2 = document.querySelector('.sb-mid'); if (sbm2) sbm2.scrollTop = sbMid;
@@ -2560,6 +2605,28 @@ function render() {
   syncLock();
   scSync(); // 0.2.7
   histSync(); // 0.2.8
+  if (!S.warmed && S.boot && !S.stale) { S.warmed = true; setTimeout(warmLayers, 1200); } // 0.3.3 (BACKLOG 40)
+}
+/* 0.3.3 (BACKLOG 40, admin: "app vẫn có khựng nhẹ khi ấn noti hoặc setting khi mới mở app, sau đso thì mượt lại"): measured
+   with the processor slowed 4 times, the first opening of Settings or Notifications spent 65 ms on a forced layout and
+   about twice the script time of later openings: the browser met their elements, rules and code for the first time
+   while the layer was already starting. So, in a quiet moment just after start-up, both are built once out of sight
+   (hidden, never shown or read aloud), laid out, and removed: the later real opening finds everything prepared. */
+function warmLayers() {
+  var go = function () {
+    Array.prototype.forEach.call(app.querySelectorAll('.fx-in, .fx-new, .fx-tag'), function (e) { if (!e.getAnimations || !e.getAnimations().some(function (a) { return a.playState === 'running'; })) e.classList.remove('fx-in', 'fx-new', 'fx-tag'); }); // played, or never played (a calm repaint)
+    if (!S.boot || S.view === 'settings' || S.pop || layerN() || document.getElementById('warm')) return;
+    var v = S.view, tab = S.setTab, pop = S.pop, html = '';
+    try { S.view = 'settings'; S.setTab = 'general'; html = '<div class="shell"><div class="mainwrap"><div class="wrap"><div class="cols"><div class="main">' + viewSettings() + '</div></div></div></div></div>'; S.pop = 'notif'; html += popover(); }
+    catch (e) { html = ''; } finally { S.view = v; S.setTab = tab; S.pop = pop; }
+    if (!html) return;
+    var w = document.createElement('div'); w.id = 'warm'; w.setAttribute('aria-hidden', 'true'); w.inert = true;
+    w.style.cssText = 'position:fixed;left:0;top:0;width:100%;height:100%;overflow:hidden;opacity:.001;pointer-events:none;z-index:-1;contain:strict'; // painted once (fonts, icons, photos), under the page and unseen
+    w.innerHTML = html.replace(/\sid="[^"]*"/g, ''); document.body.appendChild(w);
+    Array.prototype.forEach.call(w.querySelectorAll('.pop, .box, .seg, .setrow'), function (e) { e.getBoundingClientRect(); });
+    S.warmAt = Date.now(); setTimeout(function () { w.remove(); }, 700);
+  };
+  if (window.requestIdleCallback) requestIdleCallback(go, { timeout: 3000 }); else setTimeout(go, 0);
 }
 /* On narrow screens an open tip is pinned to the screen width under its "i", so it never pushes the page sideways. */
 function placeTip() {
@@ -2699,16 +2766,20 @@ function statusChip() {
   else if (!x && S.freshAt && Date.now() - S.freshAt < 1800) x = '<span class="stale-pill ok" role="status">' + ic('check') + 'Up to date</span>'; // 0.2.5: the end of Updating
   // 0.2.5: a quick update on its way (the dialog is already closed); 0.2.6: no running seconds (admin: it twitched every
   // second and made people wait for the number), the same moving sheen as Updating
-  if (S.qprog) x += '<span class="stale-pill busy" role="status"' + ph + '><i aria-hidden="true"></i><span data-qp>' + esc(qprogText()) + '</span></span>';
+  // 0.3.3 (BACKLOG 52): Saving with a real bar (what the server has written), then Saved, then a plain line while the AI reads
+  var qp = S.qprog;
+  if (qp && qp.phase === 'save') x += '<span class="stale-pill qp" role="progressbar" aria-label="Saving your update" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + (qp.pct || 0) + '"><span data-qp>' + esc(qprogText()) + '</span><span class="qp-bar" aria-hidden="true"><span style="width:' + (qp.pct || 0) + '%"></span></span></span>';
+  else if (qp && qp.phase === 'saved') x += '<span class="stale-pill ok" role="status">' + ic('check') + '<span data-qp>Saved</span></span>';
+  else if (qp) x += '<span class="stale-pill busy" role="status"' + ph + '><i aria-hidden="true"></i><span data-qp>' + esc(qprogText()) + '</span></span>';
   if (S.updReady) x += '<button class="stale-pill upd" data-a="reload" title="A new version of VIBRA Tracker is ready">' + ic('restore') + 'New version · Reload</button>';
   return x;
 }
 /* 0.2.6: the floating label slides in only when what it says changes, not at every repaint */
 function fsNew() {
-  var k = [S.offline, S.stale, S.staleErr, !!(S.freshAt && Date.now() - S.freshAt < 1800), !!S.qprog, !!S.updReady].join();
+  var k = [S.offline, S.stale, S.staleErr, !!(S.freshAt && Date.now() - S.freshAt < 1800), S.qprog ? S.qprog.phase : '', !!S.updReady].join();
   var n = k !== S.fsKey; S.fsKey = k; return n ? ' fsnew' : '';
 }
-function qprogText() { return S.qprog && S.qprog.read ? 'The AI is reading your ' + (S.qprog.imgs ? 'screenshot' + (S.qprog.imgs > 1 ? 's' : '') : 'update') + '…' : 'Sending your update…'; }
+function qprogText() { var q = S.qprog; return !q ? '' : q.phase === 'save' ? 'Saving… ' + (q.pct || 0) + '%' : q.phase === 'saved' ? 'Saved' : 'The AI is reading…'; } // 0.3.3 (BACKLOG 52)
 function keptWhen(t) { var d = new Date(t), p = function (n) { return ('0' + n).slice(-2); }; var day = d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()); return (S.boot && day === S.boot.today ? '' : niceShort(day) + ' ') + p(d.getHours()) + ':' + p(d.getMinutes()); }
 /* 0.2.2: unsent changes kept on this device (manuscript fields, quick update, feedback), until they are saved online */
 function draftKey() { var k = bootKey(); return k ? k + '-drafts' : null; }
@@ -2806,10 +2877,13 @@ function palEntries(q) {
     recents().concat(myWork().map(function (d) { return d.m.id; })).forEach(function (id) { if (!seen[id] && pick.length < 7) { seen[id] = 1; pick.push(id); } });
     ms = pick.map(function (id) { return all.filter(function (d) { return d.m.id === id; })[0]; }).filter(Boolean);
   } else ms = msFind(toks, all, 12);
+  var askE = askOk() && askLooks(q) ? { g: 'Ask the tracker', a: 'pal-ask', v: q.trim(), icon: 'spark', title: 'Ask: “' + short(q.trim(), 80) + '”', sub: 'The AI answers from the manuscripts and their history. It changes nothing.' } : null; // 0.3.3 (BACKLOG 55 D)
+  if (askE && askFirst(q)) { out.push(askE); askE = null; } // a question comes first; a few words of a title stay a search first
   ms.forEach(function (d) {
     out.push({ g: toks.length ? 'Manuscripts' : 'Recent and waiting on you', a: 'pal-m', v: d.m.id, icon: '', tag: tagHtml(d), title: '#' + d.m.id + ' ' + d.m.title,
       sub: [d.m.journal, d.m.status + (d.m.stage ? ' · ' + d.m.stage : ''), 'Ball: ' + peopleText(d.m.people)].filter(Boolean).join(' · ') });
   });
+  if (askE) out.push(askE);
   var cmds = [['view', 'today', 'Go to Today', 'today'], ['view', 'board', 'Go to Pipeline', 'board'], ['view', 'list', 'Go to All manuscripts', 'list'], ['view', 'dash', 'Go to Dashboard', 'dash'],
     ['view', 'settings', 'Open Settings', 'gear']];
   if (me().role === 'Admin') cmds.push(['view', 'desk', 'Open the AI desk', 'desk']);
@@ -2825,6 +2899,27 @@ function palEntries(q) {
   if (toks.length) out.push({ g: 'Commands', a: 'q-set', v: q.trim(), icon: 'find', title: 'Filter the list by “' + q.trim() + '”', sub: 'Shows only matching manuscripts in Today, Pipeline and All manuscripts' });
   return out;
 }
+/* 0.3.3 (BACKLOG 55 D, admin: "Ask the tracker"): a question in plain words typed in Search ("which papers wait for GV?",
+   "what did Pain and Therapy ask last time?") is answered by the AI from the manuscripts and their history only: never
+   anyone's to-do, reminders, personal links or contact details (they are not in what it reads). It changes nothing.
+   The answer names its manuscripts, each one tap from its card. */
+function askOk() { return aiOn('ask') && aiWeb(); }
+function askFirst(q) { return /\?\s*$/.test(q) || /^\s*(which|what|when|who|whose|how|why|where|is|are|does|did|do|has|have|list|show|tell|any)\b/i.test(q); }
+function askLooks(q) { var w = String(q || '').trim().split(/\s+/).filter(Boolean); return w.length >= 3 || /\?\s*$/.test(String(q || '')); }
+function askHtml() {
+  var A = S.pal && S.pal.ask; if (!A) return '';
+  var ms = (A.ids || []).map(function (id) { return mById(id); }).filter(Boolean);
+  return '<div class="pal-ask" role="region" aria-label="Answer from the tracker" aria-live="polite"><div class="pa-q">' + ic('spark') + '<b>' + esc(A.q) + '</b><button type="button" class="ibtn" data-a="pal-ask-x" aria-label="Close the answer">' + ic('x') + '</button></div>' +
+    (A.busy ? '<p class="pa-busy"><i aria-hidden="true"></i>Reading the tracker…</p>' : A.err ? '<p class="err" style="margin:0">' + esc(A.err) + '</p>' :
+      '<div class="pa-a">' + esc(A.answer || '').replace(/\n/g, '<br>') + '</div>' + (ms.length ? '<div class="pa-ms">' + ms.map(function (m) { return '<button type="button" class="pa-m" data-a="pal-ask-m" data-v="' + m.id + '">' + tagHtml(derive(m)) + '<span>#' + m.id + ' ' + esc(short(m.title, 52)) + '</span></button>'; }).join('') + '</div>' : '') +
+      '<p class="pa-foot">From the manuscripts and their history only. Nothing was changed.</p>') + '</div>';
+}
+function askRun(q) {
+  q = String(q || '').trim().slice(0, 300); if (!q || !S.pal) return;
+  var A = S.pal.ask = { q: q, busy: true }; palRefresh(true);
+  window.VIBRA_WEB.ask(q).then(function (x) { if (!S.pal || S.pal.ask !== A) return; A.busy = false; A.answer = x.answer || 'No answer.'; A.ids = x.ids || []; palRefresh(true); })
+    .catch(function (e) { if (!S.pal || S.pal.ask !== A) return; A.busy = false; A.err = msg(e); palRefresh(true); });
+}
 function palList() {
   var es = palEntries(S.pal.q), g = '', i = Math.min(S.pal.i, Math.max(0, es.length - 1));
   var list = es.map(function (e, k) {
@@ -2839,14 +2934,16 @@ function palHtml() {
   var L = palList();
   return '<div class="overlay pal-ov" data-a="pal-bg"><div class="pal" role="dialog" aria-modal="true" aria-label="Search">' +
     '<div class="pal-in">' + ic('find') + '<input id="pal-q" type="text" data-i="pal" value="' + esc(S.pal.q) + '" placeholder="Search manuscripts, people, journals, MS ID… or type a command" autocomplete="off" spellcheck="false" role="combobox" aria-expanded="true" aria-controls="pal-list" aria-activedescendant="pal-o-' + L.i + '"><kbd>Esc</kbd></div>' +
-    '<div class="pal-list" id="pal-list" role="listbox" aria-label="Results">' + L.html + '</div>' +
+    '<div id="pal-askw">' + askHtml() + '</div><div class="pal-list" id="pal-list" role="listbox" aria-label="Results">' + L.html + '</div>' +
     '<div class="pal-foot"><span><kbd>↑</kbd> <kbd>↓</kbd> to move</span><span><kbd>Enter</kbd> to open</span><span><kbd>Ctrl</kbd> <kbd>K</kbd> anywhere</span></div></div></div>';
 }
 /* 0.1.11: typing or moving in the search box changes only the results in place; the page, the backdrop and the box
    are not rebuilt, so nothing fades or flashes on each key. */
-function palRefresh() {
-  var box = document.getElementById('pal-list'), inp = document.getElementById('pal-q');
+function palRefresh(ask) {
+  var box = document.getElementById('pal-list'), inp = document.getElementById('pal-q'), aw = document.getElementById('pal-askw');
   if (!box || !inp) { render(); return; }
+  if (aw) aw.innerHTML = askHtml();
+  if (ask) return;
   var L = palList();
   box.innerHTML = L.html; box.scrollTop = 0;
   inp.setAttribute('aria-activedescendant', 'pal-o-' + L.i);
@@ -2866,6 +2963,7 @@ function palOpen() {
 }
 function palRun(k) {
   var e = palEntries(S.pal.q)[k]; if (!e) return;
+  if (e.a === 'pal-ask') { askRun(e.v); return; } // the answer shows above the results; Search stays open
   S.pal = null;
   if (e.a === 'pal-m') { if (S.view === 'settings' || S.view === 'desk') S.view = 'today'; render(); openManuscript(Number(e.v)); return; }
   if (e.a === 'q-set') { S.q = e.v; S.fx.list = true; if (S.view !== 'today' && S.view !== 'board' && S.view !== 'list') S.view = 'list'; render(); return; }
@@ -3243,7 +3341,7 @@ function viewList(list0) {
     var m = d.m, sub = [m.journal, m.impact_factor ? 'IF ' + m.impact_factor : '', m.ms_id].filter(Boolean).join(' · ');
     return '<tr data-a="open" data-v="' + m.id + '"' + (S.sel === m.id ? ' aria-current="true"' : '') + (d.tier === 'closed' ? ' class="closed"' : '') + '><td>' + tagHtml(d) + '</td>' +
       '<td style="max-width:380px"><button class="sr-btn" data-a="open" data-v="' + m.id + '" style="all:unset;cursor:pointer;font-weight:550">' + esc(m.title) + '</button>' + lockChip(m.id) + '<div class="muted" style="font-size:calc(12px*var(--fz,1))">' + esc(sub) + '</div>' +
-      (m.doi ? '<div style="font-size:calc(12px*var(--fz,1))">' + doiLink(m.doi) + '</div>' : '') + '</td>' +
+      (m.doi ? '<div style="font-size:calc(12px*var(--fz,1))">' + doiLink(m.doi) + '</div>' : '') + (rowLink(m) && !rowLink(m).doi ? '<div style="margin-top:4px">' + trackChip(m) + '</div>' : '') + '</td>' + // 0.3.3 (BACKLOG 49): the same one button as the rows
       '<td>' + esc(m.status) + '<div class="muted" style="font-size:calc(12px*var(--fz,1))">' + esc(m.stage) + '</div></td><td>' + esc(peopleText(m.people)) + rolesHtml(m) + '</td>' +
       '<td style="max-width:300px;white-space:pre-line">' + esc(m.next) + '</td><td class="mono">' + esc(m.deadline ? niceShort(m.deadline) : '') + '</td><td class="mono muted">' + esc(nice(m.last_update)) + '</td></tr>';
   }).join('');
@@ -3614,11 +3712,12 @@ function quDialog() {
     '<p class="qu-lead" id="qu-lead">Say what happened, in any language, or paste an e-mail or a screenshot. <b>No need to edit the fields:</b> the AI reads it and updates everything the news affects.</p>' +
     '<div class="qu-ex" aria-label="Example"><span class="lbl">Example</span><q>Pain and Therapy sent the reviews today, revision due 15 November</q><span class="muted" style="font-size:calc(12px*var(--fz,1))">becomes</span><div class="tags">' +
     ['Under Review', 'Reviews back R1', 'Deadline 15 Nov', 'Next: answer the reviewers'].map(function (t) { return '<span class="tag t-action">' + esc(t) + '</span>'; }).join('') + '</div></div>' +
+    (q.sending && S.qprog && S.qprog.phase === 'save' ? '<p class="qu-sending" role="status">' + ic('up') + 'Your last update is being sent…</p>' : '') +
     (q.reply ? '<div class="qu-ans"><span class="lbl">Answering the AI</span><b>' + esc(q.reply.q || 'Which manuscript is it about?') + '</b><span class="muted" style="font-size:calc(12.5px*var(--fz,1))">Your earlier update' + (q.reply.n ? ' and its screenshot' + (q.reply.n > 1 ? 's' : '') : '') + ' go with your answer: pick the manuscript or add one line.</span></div>' : '') +
     '<div style="display:flex;flex-direction:column;gap:4px"><label class="lbl" for="' + (q.mid ? 'qu-msx' : 'qu-ms') + '">Manuscript</label>' + quMsBox(q, ms) +
     '<p class="qu-hint">' + (q.pre && String(q.mid) === String(q.pre) ? 'The manuscript you have open.' : q.mid ? 'Only this manuscript is updated.' : 'Not sure? The AI finds the manuscript.') + '</p></div>' +
     '<div style="display:flex;flex-direction:column;gap:4px"><label class="lbl" for="qu-text">What happened</label><div class="ta-wrap"><textarea id="qu-text" class="in" rows="5" data-i="qu" data-v="text" placeholder="Any language. E.g. reviews received today, revision due 15 Nov.">' + esc(q.text) + '</textarea>' + pasteBtn('qu') + '</div></div>' +
-    imgZone(q, 'qu') + (q.err ? '<p class="err" role="alert" style="margin:0">' + esc(q.err) + '</p>' : '') +
+    imgZone(q, 'qu') + aiPromptBox(q) + (q.err ? '<p class="err" role="alert" style="margin:0">' + esc(q.err) + '</p>' : '') +
     '<p class="qu-fb">About the app itself? <button type="button" data-a="qu-to-fb">Send feedback instead</button></p>' +
     '<p class="muted" style="margin:0;font-size:calc(12px*var(--fz,1))">' + (inst ? 'The AI applies it at once and tells you what changed; Undo is possible.' : 'The 06:00 check applies it and tells you what changed; Undo is possible.') + '</p>' +
     '<div style="display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap"><button type="button" class="btn btn-s" data-a="qu-close">Cancel</button><button type="submit" class="btn btn-p"' + (q.busy ? ' disabled' : '') + '>' + (q.busy ? 'Saving…' : 'Save') + '</button></div></form></div>';
@@ -3679,10 +3778,11 @@ function bugContext() {
 function submitReq(key) {
   var o = S[key]; if (!o || o.busy) return;
   if (!String(o.text || '').trim() && !o.images.length && !(key === 'qu' && o.reply)) { o.err = key === 'qu' ? 'Write what happened or add a screenshot first.' : 'Write your feedback or add a screenshot first.'; render(); return; }
+  if (key === 'qu' && quickReport(o.text || '') && !quickReport(o.text || '').kept && !o.images.length) { o.err = 'Nothing in this report is about a manuscript in the tracker, so nothing was sent.'; render(); return; } // 0.3.3 (BACKLOG 51)
   if (key === 'qu' && window.VIBRA_WEB && window.VIBRA_WEB.quick && quickMode() === 'instant' && !S.offline) { sendQuick(o); return; }
   o.busy = true; o.err = ''; render();
   if (key === 'qu') o.cid = o.cid || newCid();
-  var call = key === 'qu' ? api('api_quickUpdate', { mid: o.mid || '', text: o.text, images: o.images, reply_to: o.reply ? o.reply.id : '', cid: o.cid }) :
+  var call = key === 'qu' ? api('api_quickUpdate', { mid: o.mid || '', text: quickReport(o.text || '') ? quickReport(o.text).text : o.text, images: o.images, reply_to: o.reply ? o.reply.id : '', cid: o.cid }) :
     api('api_feedback', { kind: o.kind, text: o.text, images: o.images, page: o.kind === 'Bug' ? bugContext() : '' });
   call.then(function (r) {
     keepReq(key, null); S.boot.requests = r.requests; S[key] = null; render();
@@ -3703,22 +3803,149 @@ function submitReq(key) {
 /* 0.2.5 (speed): on the web page a quick update is one call to the helper, which saves it, gives the screenshots to
    the AI from memory and answers with what changed. The dialog closes at once; the update stays kept on this device
    until the answer arrives; the floating label shows it is on its way. */
-var qprogTimer = null; // 0.2.6: one change of wording, no ticking
 function newCid() { var a = new Uint8Array(5); try { crypto.getRandomValues(a); } catch (e) { for (var i = 0; i < 5; i++) a[i] = Math.floor(Math.random() * 256); } return 'q' + Array.prototype.map.call(a, function (b) { return ('0' + b.toString(16)).slice(-2); }).join(''); }
 function sendQuick(o) {
   o.cid = o.cid || newCid(); // 0.2.6: the same update sent again is recognised by the server (no second copy)
-  var d = { mid: o.mid || '', text: o.text || '', images: o.images || [], reply_to: o.reply ? o.reply.id : '', cid: o.cid, note: o.note || '' }; // 0.3.0: note = the reminder answered
+  var W = window.VIBRA_WEB, rep = quickReport(o.text || ''), text = rep ? rep.text : String(o.text || '');
+  var d = { mid: o.mid || '', text: text, images: o.images || [], reply_to: o.reply ? o.reply.id : '', cid: o.cid, note: o.note || '' }; // 0.3.0: note = the reminder answered
+  if (!W.qsave) { // the page and the helper of before 0.3.3 (one call)
+    keepReq('qu', o); S.qu = null;
+    var qp0 = S.qprog = { at: Date.now(), phase: 'read', imgs: d.images.length }; render();
+    W.quick(d).then(function (x) {
+      if (S.qprog === qp0) S.qprog = null; keepReq('qu', null);
+      if (x.saved) { if (x.saved.requests) S.boot.requests = x.saved.requests; if (x.saved.mode) S.boot.quick = { mode: x.saved.mode }; }
+      render(); helperDone(x.helper, x.saved && x.saved.id);
+    }).catch(function (e) { if (S.qprog === qp0) S.qprog = null; render(); quickKept(e); });
+    return;
+  }
+  /* 0.3.3 (BACKLOG 52, admin: "cái tôi nghĩ quan trọng là hiện tình trạng saving á ... hoặc thanh tình trạng save"; "thì hiện
+     saved trên app mà, còn thông báo là Ai đang đọc chú đâu cần nói bao lâu đâu"): Save is only the saving. The text goes
+     first, then the screenshots in pieces, three at a time; the pill counts what the server has
+     written ("Saving… 60%"), says "Saved" when all of it is in the Sheet, and the update leaves this device. The AI's
+     reading is asked for apart (one call per part of a report, at the same time): "The AI is reading…", no time. */
+  var media = d.images.map(function (u) { return { kind: 'image', data: u }; });
+  d.files = media.map(function (m) { return { kind: m.kind, len: m.data.length }; }); delete d.images;
   keepReq('qu', o); S.qu = null;
-  var qp = S.qprog = { at: Date.now(), imgs: d.images.length }; render();
-  clearTimeout(qprogTimer); qprogTimer = setTimeout(function () { if (S.qprog !== qp) return; qp.read = true; var q = document.querySelector('.fstat [data-qp]'); if (q) q.textContent = qprogText(); }, 1500);
-  window.VIBRA_WEB.quick(d).then(function (x) {
-    S.qprog = null; keepReq('qu', null);
-    if (x.saved) { if (x.saved.requests) S.boot.requests = x.saved.requests; if (x.saved.mode) S.boot.quick = { mode: x.saved.mode }; }
-    render(); helperDone(x.helper, x.saved && x.saved.id);
-  }).catch(function (e) {
-    S.qprog = null; render();
-    toast((isNetErr(e) ? 'No connection. ' : msg(e) + ' ') + 'Your update is kept on this device: open Quick update to send it again.', true, 12000, [['Open', 'qu-open', '']]);
+  var total = text.length + 400 + media.reduce(function (a, m) { return a + m.data.length; }, 0), sent = 0;
+  var qp = S.qprog = { at: Date.now(), phase: 'save', pct: 0, cid: o.cid }; render();
+  var step = function (n) { sent += n; if (S.qprog !== qp) return; qp.pct = Math.min(99, Math.floor(sent * 100 / total)); qpPaint(); };
+  W.qsave(d).then(function (x) {
+    var sv = x.saved || {}; if (sv.requests) S.boot.requests = sv.requests; if (sv.mode) S.boot.quick = { mode: sv.mode };
+    step(text.length + 400);
+    if (sv.done) { quickSaved(qp, o, sv, null); helperDone({ ok: true, already: true, status: sv.status, reply: sv.reply }, sv.id); return; }
+    return (sv.status === 'up' ? quickUpload(sv.id, media, step) : Promise.resolve({ status: sv.status })).then(function (r) { quickSaved(qp, o, sv, r.status); });
+  }).catch(function (e) { if (S.qprog === qp) S.qprog = null; render(); quickKept(e); });
+}
+/* 0.3.3 (BACKLOG 55, admin: "để nút bật tắt trong AI desk của tôi để kiểm soát"; on the pictures: B and C dropped, "Tắt sẵn"):
+   Ask the tracker, with a switch in the AI desk (Meta ai_ask; off until the admin turns it on = gone from the members'
+   screens). It runs through the admin's helper (Gemini), so only in the VIBRA app. */
+function aiOn(k) { return !!(S.boot && S.boot.ai && S.boot.ai[k] === true); } // off until the admin turns it on
+function aiWeb() { return !!(window.VIBRA_WEB && window.VIBRA_WEB.qsave); }
+/* 0.3.3 (BACKLOG 51, admin: "Prompt for your AI chỉ cần copy, đến lúc dán qua bên AI họ tự sửa"): one Copy button; the
+   member changes the prompt (7 days) in their own AI if they wish */
+function aiPromptBox(q) {
+  if (!q || q.reply) return '';
+  return '<p class="qu-fb qu-ai">' + ic('spark') + 'Your own AI can read your mailbox for the journals\' news: <button type="button" data-a="qu-ai-copy">Copy the prompt</button>, then paste its answer here. Only news of our manuscripts is sent.</p>';
+}
+function copyText(t) {
+  var done = function () { toast('Copied. Paste it into your own AI.', false, 5000); };
+  if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(t).then(done, function () { copyOld(t) ? done() : toast('Could not copy. Show the prompt and copy it by hand.', true); }); return; }
+  if (copyOld(t)) done(); else toast('Could not copy. Show the prompt and copy it by hand.', true);
+}
+function copyOld(t) { var a = document.createElement('textarea'); a.value = t; a.setAttribute('readonly', ''); a.style.cssText = 'position:fixed;top:-100px;opacity:0'; document.body.appendChild(a); a.select(); var ok = false; try { ok = document.execCommand('copy'); } catch (e) { } a.remove(); return ok; }
+function quickKept(e) { toast((isNetErr(e) ? 'No connection. ' : msg(e) + ' ') + 'Your update is kept on this device: open Quick update to send it again.', true, 12000, [['Open', 'qu-open', '']]); }
+var QPIECE = 90000; // two cells of the Files tab per piece
+function pool(jobs, n) {
+  return new Promise(function (res, rej) {
+    var i = 0, run = 0, out = [], bad = false;
+    var next = function () {
+      if (bad) return; if (i >= jobs.length && !run) { res(out); return; }
+      while (run < n && i < jobs.length) (function (k) { run++; jobs[k]().then(function (v) { out[k] = v; run--; next(); }, function (e) { bad = true; rej(e); }); })(i++);
+    };
+    next();
   });
+}
+function quickUpload(id, media, step) {
+  var W = window.VIBRA_WEB, lens = media.map(function (m) { return m.data.length; });
+  var jobsFor = function (ks, count) {
+    var jobs = [];
+    ks.forEach(function (k) { var u = media[k].data; for (var p = 0; p * QPIECE < u.length; p++) (function (p) {
+      var piece = u.slice(p * QPIECE, (p + 1) * QPIECE);
+      jobs.push(function () { return W.qpart({ id: id, k: k, p: p, data: piece }).then(function () { if (count) step(piece.length); }); });
+    })(p); });
+    return jobs;
+  };
+  var ready = function (again) {
+    return W.qready({ id: id, lens: lens }).then(function (x) {
+      var r = x.r || {};
+      if (r.missing && r.missing.length && again) return pool(jobsFor(r.missing, false), 3).then(function () { return ready(false); }); // a piece lost on the way: once more
+      if (!r.ok) throw new Error('Your screenshots did not all arrive.');
+      return r;
+    });
+  };
+  return pool(jobsFor(media.map(function (m, k) { return k; }), true), 3).then(function () { return ready(true); });
+}
+function quickSaved(qp, o, sv, st) {
+  var kq = keptReq('qu'); if (kq && kq.cid === o.cid) keepReq('qu', null); // saved: it leaves this device (not a newer one being sent)
+  if (S.qprog !== qp) return;
+  qp.phase = 'saved'; qp.pct = 100; render();
+  if (st === null) { setTimeout(function () { if (S.qprog === qp) { S.qprog = null; render(); } }, 1600); return; }
+  if (st !== 'live') {
+    setTimeout(function () { if (S.qprog === qp) { S.qprog = null; render(); } }, 1600);
+    toast(quickMode() === 'instant' ? 'Saved. The AI applies it within a few minutes; the result comes under your bell.' : 'Saved. The 06:00 check applies it (Vietnam time).', false, 8000);
+    return;
+  }
+  setTimeout(function () { if (S.qprog === qp && qp.phase === 'saved') { qp.phase = 'read'; render(); } }, 1400);
+  var W = window.VIBRA_WEB, n = sv.parts || 0, done = function (r) { if (S.qprog === qp) S.qprog = null; render(); helperDone(r, sv.id); };
+  if (!n) { W.qread({ id: sv.id }).then(function (x) { done(x.helper); }, function () { done({ ok: false, queued: true }); }); return; }
+  var jobs = []; for (var k = 0; k < n; k++) (function (k) { jobs.push(function () { return W.qread({ id: sv.id, part: k }).then(function (x) { return x.helper || {}; }); }); })(k);
+  pool(jobs, 3).then(function (rs) {
+    var fin = rs.filter(function (r) { return r && r.final; })[0];
+    if (fin) done({ ok: true, status: fin.final.status, reply: fin.final.reply, applied: fin.final.applied, ids: fin.final.ids });
+    else done(rs.some(function (r) { return !r || !r.ok; }) ? { ok: false, queued: true } : { ok: true, already: true, status: 'live' });
+  }, function () { done({ ok: false, queued: true }); });
+}
+function qpPaint() {
+  var q = document.querySelector('.fstat [data-qp]'), b = document.querySelector('.fstat .qp-bar span'), p = document.querySelector('.fstat .qp');
+  if (!q || !S.qprog) { render(); return; }
+  q.textContent = qprogText(); if (b) b.style.width = S.qprog.pct + '%'; if (p) p.setAttribute('aria-valuenow', String(S.qprog.pct));
+}
+/* 0.3.3 (BACKLOG 51, admin: "chỉ cần tạo prompt, người ta tự đưa cho AI của người ta. còn trả về thì bạn so sánh với các
+   project đang làm thôi mà"; "nếu đã liệt kê những bài đã cập nhật, thì có cần nói những gì chưa cập nhật không"): a ready
+   prompt for the member's own AI (it carries nothing from the app); what that AI returns is pasted into Quick update
+   and saved as any update. At Save, on this device, a report in the prompt's format keeps only its entries about
+   manuscripts in the tracker (the journal's manuscript ID first, else the title, the journal deciding between two);
+   the rest is dropped here, never sent, never named. */
+var AI_PROMPT = ['Please read my e-mails from the last 7 days (change the number if you like) and find every message from a journal, a publisher or a submission system about a scientific manuscript I am an author of: submissions, editor decisions, reviews, revision requests, proofs, acceptances, publications, invitations to submit, requests for forms or for confirming authorship.',
+  'Reply with a plain-text report in exactly this format and nothing else, one "=== Entry" block per e-mail, newest first:', '',
+  'VIBRA update report', 'Period: <first date> to <last date>', '',
+  '=== Entry', 'Date: <date of the e-mail, YYYY-MM-DD>', 'Journal: <journal name>', 'Manuscript ID: <the journal\'s manuscript number, or none>',
+  'Title: <the manuscript\'s title exactly as the e-mail writes it>', 'What happened: <one or two sentences in English: the news, and what the authors must do>',
+  'Deadline: <YYYY-MM-DD, or none>', 'Links: <web addresses in the e-mail that the authors need (submission, revision, proofs), or none>', '',
+  'Leave out e-mail addresses, phone numbers and the names of people who are not authors of the manuscript.'].join('\n');
+function qrTok(t) { return fold(String(t || '')).toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim().split(' ').filter(function (w) { return w.length > 2 && QR_STOP.indexOf(w) < 0; }); }
+var QR_STOP = ['the', 'and', 'for', 'with', 'from', 'into', 'its', 'are', 'was', 'were', 'this', 'that', 'among', 'between', 'after', 'before', 'study', 'review'];
+function qrSim(a, b) {
+  if (!a.length || !b.length) return 0;
+  var n = 0, B = {}; b.forEach(function (w) { B[w] = 1; }); a.forEach(function (w) { if (B[w]) n++; });
+  return n / Math.max(a.length, b.length);
+}
+function quickReport(text) {
+  if (!/^\s*VIBRA update report\b/i.test(text)) return null;
+  var parts = String(text).replace(/\r\n/g, '\n').split(/^===\s*Entry\b[^\n]*$/m), head = parts[0].trim(), kept = [];
+  var ms = (S.boot && S.boot.manuscripts) || [], idn = function (v) { return String(v || '').toUpperCase().replace(/[^A-Z0-9]/g, ''); };
+  parts.slice(1).forEach(function (e) {
+    var f = {}; e.split('\n').forEach(function (l) { var m = /^\s*([A-Za-z ]{2,20}):\s*(.*)$/.exec(l); if (m) f[m[1].trim().toLowerCase()] = m[2].trim(); });
+    var id = idn(f['manuscript id']), hit = [];
+    if (id.length >= 4 && !/^NONE$/.test(id)) hit = ms.filter(function (m) { return idn(m.ms_id) === id; });
+    if (!hit.length && f.title) {
+      var t = qrTok(f.title);
+      hit = ms.filter(function (m) { return t.length >= 3 && qrSim(t, qrTok(m.title)) >= 0.8; });
+      if (hit.length > 1 && f.journal) { var j = qrTok(f.journal); hit = hit.filter(function (m) { return qrSim(j, qrTok(m.journal)) >= 0.5; }); }
+    }
+    if (hit.length === 1) kept.push('=== Entry for #' + hit[0].id + '\n' + e.trim());
+  });
+  return { text: kept.length ? (head + '\n\n' + kept.join('\n\n')).slice(0, 20000) : '', kept: kept.length, all: parts.length - 1 };
 }
 function runHelper(h, id) {
   var ctl = window.AbortController ? new AbortController() : null;
@@ -4048,8 +4275,18 @@ function trackBtn(m) {
   var t = trackOf(m); if (!t) return '';
   return '<a class="trk" href="' + esc(t.url) + '" target="_blank" rel="noopener" title="' + esc(t.label + ' · ' + t.url) + '" aria-label="' + esc((t.doi ? 'Open the DOI' : 'Track at the journal: ' + t.label)) + '">' + (t.doi ? 'DOI' : 'Track') + ic('arrow') + '</a>';
 }
+/* 0.3.3 (BACKLOG 49, admin: "tracking là xuyên suốt, ko cấp như những link khác nên khi các link khác như revision ...thì hiện
+   ra thay tracking, còn khi đã có DOI thì tracking làm chi nữa, hiện DOI thôi"): one button on a row, a block and a to-do
+   line: the DOI once published; else the link the first next action names (Revision & reviews, a portal, proofs), in
+   place of Track, until its step is done; else Track when there is the journal's page; else nothing. The card keeps
+   Track and each step's link beside its next action. */
+function rowLink(m) {
+  var t = trackOf(m); if (t && t.doi) return t;
+  var first = firstStep(m.next), st = first ? liveLinks(m.links).filter(function (l) { return l.kind !== 'track' && linkNamed(l.label, first); })[0] : null;
+  return st ? { url: st.url, label: st.label, step: true } : t;
+}
 function trackChip(m) { // inside a row or block (a button): a span that opens the link, without opening the card
-  var t = trackOf(m); return t ? '<span class="trk-chip" data-a="track" data-v="' + m.id + '" title="' + esc(t.label) + '">' + (t.doi ? 'DOI' : 'Track') + ic('arrow') + '</span>' : '';
+  var t = rowLink(m); return t ? '<span class="trk-chip' + (t.step ? ' step' : '') + '" data-a="track" data-v="' + m.id + '" title="' + esc(t.step ? t.label + ' · ' + t.url : t.label) + '">' + (t.step ? ic('link') + esc(short(t.label, 22)) : t.doi ? 'DOI' : 'Track') + ic('arrow') + '</span>' : '';
 }
 function stepChips(d) {
   var L = liveLinks(d.links).filter(function (l) { return l.kind !== 'track'; }), lines = String(d.next || '').split('\n'), out = '', n = 0;
@@ -4105,7 +4342,7 @@ function tdBallDone(x) {
 }
 function tdBallGo(mid) {
   var r = ballLines().filter(function (x) { return x.mid === Number(mid); })[0]; if (!r) { S.tdb = null; render(); return; }
-  var note = String((S.tdb && S.tdb.note) || '').trim(), o = { mid: r.mid, text: 'Done: ' + r.note.replace(/[.\s]+$/, '') + (note ? '. ' + note : ''), images: [] };
+  var note = String((S.tdb && S.tdb.note) || '').trim(), o = { mid: r.mid, text: 'Done (ticked in the to-do): ' + r.note.replace(/[.\s]+$/, '') + (note ? '. ' + note : ''), images: [] }; // 0.3.3 (BACKLOG 48): the helper also takes the member off the ball
   S.tdb = null;
   if (window.VIBRA_WEB && window.VIBRA_WEB.quick && quickMode() === 'instant' && !S.offline) { sendQuick(o); return; }
   render(); o.cid = newCid();
@@ -4169,7 +4406,7 @@ function viewDesk() {
     '<div class="ogrid"><div class="box"><h2>Quick updates waiting (' + D.inbox.length + ')</h2><p class="muted" style="margin:0;font-size:calc(12.5px*var(--fz,1))">' +
     (D.quick && D.quick.mode === 'instant' ? 'Instant AI updates are on: the helper applies new quick updates within about a minute; what it cannot settle waits here.' : 'Instant AI updates are off (no helper in the Meta tab): every quick update waits here for this check.') + '</p>' + (D.inbox.map(function (x) { return item(x, true); }).join('') || '<p class="muted" style="margin:0">None.</p>') + '</div>' +
     '<div class="box"><h2>Feedback waiting (' + D.feedback.length + ')</h2>' + (D.feedback.map(function (x) { return item(x, false); }).join('') || '<p class="muted" style="margin:0">None.</p>') + '</div></div>' +
-    deskDeletions(D) + deskNames(D) + deskAuthors(D) +
+    deskAi(D) + deskDeletions(D) + deskNames(D) + deskAuthors(D) +
     '<div class="box" style="margin-top:12px"><h2>Excel workbook import</h2><p class="muted" style="margin:0;font-size:calc(13px*var(--fz,1))">One-time import of what the first migration left out of Manuscripts_tracker.xlsx: the IF and first-author columns, the full original row of every manuscript (read-only, under each manuscript), and the Authors tab in the Sheet (reference only, never shown in the app). Safe to run again: it never overwrites a value entered in the app.</p>' +
     '<div class="btns"><button class="btn btn-s" data-a="seed-xl"' + (S.seedBusy ? ' disabled' : '') + '>' + ic('sheet') + (S.seedBusy ? 'Importing…' : 'Run the Excel import') + '</button></div>' +
     (S.seedReport ? '<pre class="desk-pre">' + esc(JSON.stringify(S.seedReport, null, 2)) + '</pre>' : '') + '</div>' +
@@ -4180,6 +4417,17 @@ function viewDesk() {
     '<details class="box" style="margin-top:12px" open><summary style="cursor:pointer;font-weight:600">Data snapshot, ' + D.manuscripts.length + ' manuscripts</summary><pre class="desk-pre" id="desk-snap">id | status | stage | deadline | ball | next actions | last update | journal | MS ID | submitted\n' + esc(snap) + '</pre></details>';
 }
 
+/* 0.3.3 (BACKLOG 55): a switch for each AI feature (Ask the tracker; B and C were dropped), off until the admin turns it on;
+   off = gone from every member's screen at their next refresh */
+var AI_FEATS = [['ask', 'Ask the tracker', 'A question in plain words in Search ("which papers wait for GV?"), answered from the manuscripts and their history only. It changes nothing.']];
+function deskAi(D) {
+  var a = D.ai || (S.boot && S.boot.ai) || {};
+  return '<div class="box" style="margin-top:12px"><h2>AI features</h2><p class="muted" style="margin:0 0 4px;font-size:calc(12.5px*var(--fz,1))">Switched off, a feature is gone from every member\'s screen. Quick updates themselves stay on (the helper\'s own pause is in the Meta tab).</p>' +
+    AI_FEATS.map(function (f) {
+      return '<div class="setrow"><div style="flex:1;min-width:0"><label for="ai-' + f[0] + '" style="font-weight:600">' + f[1] + '</label><div class="muted" style="font-size:calc(12px*var(--fz,1))">' + esc(f[2]) + '</div></div>' +
+        '<input id="ai-' + f[0] + '" class="switch" type="checkbox" data-i="aisw" data-v="' + f[0] + '"' + (a[f[0]] === true ? ' checked' : '') + '></div>';
+    }).join('') + '</div>';
+}
 /* 0.1.12: author names. One button links every author list to the Authors tab; names the rules cannot settle are
    listed with the people they could be, and the admin says who it is. */
 function deskNames(D) {
@@ -4746,8 +4994,12 @@ function scSync() {
   }) : [];
   var rail = SC.el.querySelector('.sc-rail'), key = S.view + ':' + items.map(function (x) { return x.tier; }).join(',');
   SC.items = items.length >= 6 ? items : [];
-  document.documentElement.classList.toggle('sc-sys', !!SC.items.length && phoneW()); // the phone's own scroll indicator steps aside (a computer keeps its bar)
+  // the phone's own scroll indicator steps aside; 0.3.3 (BACKLOG 50, admin: "A"): a computer's scroll bar too (Windows
+  // showed both side by side): the scrubber does its job, stays while the mouse is on the page and can be dragged
+  document.documentElement.classList.toggle('sc-sys', !!SC.items.length);
+  SC.el.classList.toggle('pin', !!SC.items.length && scPin());
   if (!SC.items.length) { SC.el.classList.remove('show'); SC.key = ''; return; }
+  if (scPin() && SC.inside) SC.el.classList.add('show');
   if (key !== SC.key) {
     SC.key = key;
     var n = items.length, gaps = 0, i; for (i = 1; i < n; i++) if (items[i].tier !== items[i - 1].tier) gaps++;
@@ -4767,7 +5019,10 @@ function scThumb() {
   var th = SC.el.querySelector('.sc-thumb'); if (f < 0) { th.style.height = '0'; return; }
   th.style.top = 'calc(' + (SC.items[f].y - SC.u * .8).toFixed(2) + '% - 2px)'; th.style.height = 'calc(' + (SC.items[l].y - SC.items[f].y + SC.u * 1.6).toFixed(2) + '% + 4px)';
 }
-function scHide() { if (!SC.drag && SC.el) SC.el.classList.remove('show'); }
+function scHide() { if (!SC.drag && SC.el && !(scPin() && SC.inside)) SC.el.classList.remove('show'); }
+function scPin() { return !phoneW() && !!(window.matchMedia && matchMedia('(hover: hover) and (pointer: fine)').matches); } // a computer with a mouse or a trackpad
+document.addEventListener('mouseover', function () { if (SC.inside) return; SC.inside = true; if (SC.el && SC.items.length && scPin()) { SC.el.classList.add('show'); scThumb(); } }, { passive: true });
+document.addEventListener('mouseout', function (e) { if (e.relatedTarget) return; SC.inside = false; clearTimeout(SC.hideT); SC.hideT = setTimeout(scHide, 900); }, { passive: true }); // the mouse left the window
 window.addEventListener('scroll', function () {
   if (!SC.el || !SC.items.length) return;
   // 0.2.8 (admin: "có tới 2 thanh trên màn hình, không thấy đẹp"): on Today the scrubber is the only bar; it shows as
@@ -4877,14 +5132,14 @@ function dialog() {
       return '<button type="button" class="ptag' + (p.member ? '' : ' guest') + (S.fx.tag === 'nf' + i ? ' fx-tag' : '') + '" data-a="nf-del" data-v="' + i + '" aria-label="' + esc(p.name) + '. Remove"><span class="av" aria-hidden="true">' + esc(initials(p.name)) + avImg(p.member ? photoOf(p.key || p.name) : '') + '</span>' + esc(p.name) + (p.note ? '<span class="nt">· ' + esc(p.note) + '</span>' : '') + '<span class="nt" aria-hidden="true">×</span></button>';
     }).join('') + '</div>' + cbHtml('nf') + '</div>' +
     col(lab('nf-next', 'Next actions', 'next') + '<textarea id="nf-next" class="in" rows="3" data-i="nf" data-v="next" data-k="num" placeholder="Type an action and press Enter: the list numbers itself">' + esc(f.next) + '</textarea>') +
-    col(lab('nf-au', 'Authors (optional)', 'authors') + '<textarea id="nf-au" class="in" rows="2" data-i="nf" data-v="authors" placeholder="Paste the author list, separated by commas or semicolons; add (corr.) after the corresponding author">' + esc(f.authors) + '</textarea>') +
+    col(lab('nf-au', 'Authors (optional)', 'authors') + '<textarea id="nf-au" class="in" rows="2" data-i="nf" data-v="authors" placeholder="Tick members below, type or paste other names, separated by commas; add (corr.) after the corresponding author">' + esc(f.authors) + '</textarea>' + nfMembers(f)) + // 0.3.3 (BACKLOG 53)
     '<details class="nf-more"' + (moreOpen ? ' open' : '') + '><summary>MS ID, DOI, preprint, submission date, journal IF, first author</summary><div class="p-grid" style="margin-top:8px">' +
     col(lab('nf-ms_id', 'MS ID', 'ms_id') + '<input id="nf-ms_id" class="in" data-i="nf" data-v="ms_id" value="' + esc(f.ms_id) + '">') +
     col(lab('nf-doi', 'DOI', 'doi') + '<input id="nf-doi" class="in" data-i="nf" data-v="doi" value="' + esc(f.doi) + '">') +
     col(lab('nf-pp', 'Preprint (ID or DOI)', 'preprint') + '<input id="nf-pp" class="in" data-i="nf" data-v="preprint" value="' + esc(f.preprint || '') + '">') +
     col(lab('nf-sub', 'Submission date', 'submission_date') + '<input id="nf-sub" class="in" type="date" data-i="nf" data-v="submission_date" value="' + esc(f.submission_date) + '">') +
     col(lab('nf-if', 'Journal impact factor', 'impact_factor') + '<input id="nf-if" class="in" data-i="nf" data-v="impact_factor" value="' + esc(f.impact_factor) + '">') +
-    '<div style="grid-column:1/-1;display:flex;flex-direction:column;gap:4px">' + lab('nf-fa', 'First author', 'first_author') + '<input id="nf-fa" class="in" data-i="nf" data-v="first_author" value="' + esc(f.first_author) + '"></div></div></details>' +
+    '<div style="grid-column:1/-1;display:flex;flex-direction:column;gap:4px">' + lab('nf-fa', 'First author', 'first_author') + '<input id="nf-fa" class="in" data-i="nf" data-v="first_author" value="' + esc(f.first_author) + '" aria-describedby="nf-fa-h"><p class="qu-hint" id="nf-fa-h">Only if it differs from the first name in Authors, for example equal first authors.</p></div></div></details>' + // 0.3.3 (BACKLOG 53, admin: "ghi chú là được")
     (f.err ? '<p class="err" role="alert" style="margin:0">' + esc(f.err) + '</p>' : '') +
     '<div style="display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap"><button type="button" class="btn btn-s" data-a="nf-close">Cancel</button><button type="submit" class="btn btn-p"' + (f.busy ? ' disabled' : '') + '>' + (f.busy ? 'Creating…' : 'Create manuscript') + '</button></div></form></div>';
 }
@@ -5109,6 +5364,42 @@ function numEnter(e) {
   var pos = renumber(nb).length; ta.setSelectionRange(pos, pos);
   return true;
 }
+/* 0.3.3 (BACKLOG 53, admin: "tick thì tên sẽ hiện lên trên dòng Author kèm dấu phẩy sẵn, sau đó đánh tên người không có
+   trong đó"; "để con chuột ở đâu thì tên nhập ở đó"): in New manuscript the authors stay one line of text; under it the
+   members, each with a tick. A tick puts "Full Name, " where the cursor was in the line (remembered when the finger or
+   the mouse leaves the box), an untick takes that name out; commas and spaces tidy themselves. The order of the line is
+   the order of the authors. A ticked member is linked for certain at Create (by the member's key), as long as the name
+   is left as inserted. */
+function rxEsc(t) { return String(t).replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+function nfAuRx(name) { return new RegExp('(^|[,;]\\s*)' + rxEsc(name) + '(\\s*\\([^)]*\\))?\\s*(?=[,;]|$)', 'i'); }
+function nfAuTidy(t) { return String(t || '').replace(/\s*([,;])\s*/g, '$1 ').replace(/(,\s*){2,}/g, ', ').replace(/^[\s,;]+/, ''); }
+function nfMembers(f) {
+  var ps = (S.boot.people || []).slice().sort(function (a, b) { return a.key === me().key ? -1 : b.key === me().key ? 1 : String(a.full_name).localeCompare(String(b.full_name)); });
+  return '<div class="nf-mem" role="group" aria-label="Members: a tick adds the name where the cursor is"><span class="nf-mh">Members · a tick puts the name where the cursor is</span><div class="nf-ml">' +
+    ps.map(function (p) {
+      var name = p.full_name || p.display || p.key, on = nfAuRx(name).test(f.authors || '');
+      return '<label class="nf-mc' + (on ? ' on' : '') + '"><input type="checkbox" data-i="nfmem" data-v="' + esc(p.key) + '"' + (on ? ' checked' : '') + '><span class="av" aria-hidden="true">' + esc(p.initials || initials(p.key)) + avImg(photoOf(p.key)) + '</span><span>' + esc(name) + '</span></label>';
+    }).join('') + '</div></div>';
+}
+function nfTick(k, on) {
+  var f = S.nf, p = person(k); if (!f || !p) return;
+  var name = p.full_name || p.display || k, t = String(f.authors || ''), caret;
+  if (on && !nfAuRx(name).test(t)) {
+    var sel = f.auSel || [t.length, t.length], a = Math.min(sel[0], t.length), b = Math.min(sel[1], t.length);
+    var cut = t.slice(a).search(/[,;]/); // inside a name: after it
+    if (a > 0 && /[^,;\s]/.test(t.charAt(a - 1)) && cut >= 0 && /[^,;\s]/.test(t.charAt(a))) { a = b = a + cut + 1; }
+    var before = t.slice(0, a), after = t.slice(b), pre = before.trim() && !/[,;]\s*$/.test(before) ? before.replace(/\s*$/, '') + ', ' : before;
+    t = pre + name + ', ' + after.replace(/^\s*[,;]?\s*/, '');
+    caret = nfAuTidy(pre + name + ', ').length;
+  } else if (!on) { t = t.replace(nfAuRx(name), '$1'); caret = t.length; }
+  f.authors = nfAuTidy(t).replace(/^\s+/, ''); f.touched.authors = 1; f.auSel = [Math.min(caret, f.authors.length), Math.min(caret, f.authors.length)];
+  var ta = document.getElementById('nf-au');
+  if (ta) { ta.value = f.authors; Array.prototype.forEach.call(document.querySelectorAll('[data-i="nfmem"]'), function (c) { var q = person(c.getAttribute('data-v')); var y = q && nfAuRx(q.full_name || q.display || q.key).test(f.authors); c.checked = !!y; c.parentNode.classList.toggle('on', !!y); }); }
+  else render();
+}
+['keyup', 'mouseup', 'input', 'select', 'focusout'].forEach(function (ev) {
+  document.addEventListener(ev, function (e) { var t = e.target; if (t && t.id === 'nf-au' && S.nf && t.selectionStart != null) S.nf.auSel = [t.selectionStart, t.selectionEnd]; }, true);
+});
 function parsePaste(t) {
   var parts = [], buf = '', depth = 0;
   String(t).split(/(\(|\)|;|,|·|\n|\band\b)/).forEach(function (tok) {
@@ -5160,7 +5451,9 @@ function loadHistory(id) {
 }
 function closePanel(force, how) {
   if (!force && dirty()) { S.confirmClose = true; if (how) cardBack(how.v); render(); return; }
+  if (S.closing && S.closeNow && Date.now() - (S.closingAt || 0) > 1500) S.closeNow(); // 0.3.3 (BACKLOG 47): never stuck closing
   if (S.closing) return;
+  S.closingAt = Date.now();
   if (S.draft && dirty() && !S.offline) dropDraft(S.draft.id); // closed without saving on purpose (offline it stays kept)
   var fin = false, done = function () { if (fin) return; fin = true; S.closeNow = null; S.closing = false; S.sel = null; S.draft = null; S.ed = null; S.cb = null; S.rem = null; S.lnk = null; S.confirmClose = false; render(); moClear(); };
   S.closeNow = done;
@@ -5258,6 +5551,10 @@ function blkFit() { // A: as many columns of that width as leave the card at lea
    change is not repainted and does not replay its entry animation, and what stays (the ⚡ button, the card) can move
    from one state to the next. */
 var FX_ONCE = { 'fx-in': 1, 'fx-panel': 1, 'fx-tag': 1, 'fx-new': 1 }; // entry animations: only when an element appears
+/* 0.3.3 (BACKLOG 40): an entry animation that has played leaves with its class. The rows of the first Today kept "fx-in",
+   so the first change of view or layer restarted 31 finished animations (".calm .fx-in" switched them off and on), which
+   was most of the first opening's stutter of Notifications and Settings. */
+document.addEventListener('animationend', function (e) { var t = e.target; if (t && t.classList && (t.classList.contains('fx-in') || t.classList.contains('fx-new') || t.classList.contains('fx-tag')) && /^(fxIn|tagIn)$/.test(e.animationName)) t.classList.remove('fx-in', 'fx-new', 'fx-tag'); }, true);
 function mKey(n) {
   if (n.nodeType !== 1) return null;
   if (n.id) return '#' + n.id;
@@ -5288,6 +5585,9 @@ function mClass(o, n) {
 }
 function mNode(a, b) {
   if (a.nodeType !== 1) { if (a.nodeValue !== b.nodeValue) a.nodeValue = b.nodeValue; return; }
+  // 0.3.3 (BACKLOG 40): a part that is already exactly what the new HTML says (the live part, with whatever the page set on
+  // it since, compared as text by the browser, far faster than this walks it) is left as it is; parts with fields are walked
+  if (b.childElementCount > 2 && b.nodeName !== 'FORM' && a.outerHTML === b.outerHTML && !b.querySelector('input, textarea, select')) return;
   var i, at, v;
   for (i = 0; i < b.attributes.length; i++) {
     at = b.attributes[i]; v = at.name === 'class' ? mClass(a.getAttribute('class') || '', at.value) : at.value;
@@ -5357,10 +5657,14 @@ function cardIn(pn) {
 }
 function cardOut(pn, how, done) {
   var full = !cardSide(), fin = false, end = function () { if (!fin) { fin = true; done(); } };
-  if (reduceMotion()) { pn.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 160, fill: 'forwards' }).onfinish = end; moSet(underParts(), 1); return; }
+  if (reduceMotion()) { pn.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 160, fill: 'forwards' }).onfinish = end; moSet(underParts(), 1); setTimeout(end, 560); return; }
   // it slides away to the right (0.3.0: always; before, it shrank back into its row), at the finger's speed when swiped
   var p0 = how ? how.p || 0 : 0, v = how ? how.v || 0 : 0;
-  moGo(cardParts(), p0, 1, SPR.exit, v / Math.max(0.05, 1 - p0), end);
+  var sp = moGo(cardParts(), p0, 1, SPR.exit, v / Math.max(0.05, 1 - p0), end);
+  // 0.3.3 (BACKLOG 47, admin: "khi AI chưa hoạt động xong thì tôi không thoát popup được"): a redraw in the middle (the AI's
+  // answer arriving) could cancel this movement; its end never came, the card stayed "closing" and every later close was
+  // ignored. It now ends on time whatever happens to the movement.
+  setTimeout(end, sp.d + 400);
 }
 function cardBack(v) { var p0 = moNow(); moGo(cardParts(), p0, 0, SPR.back, -(v || 0) / Math.max(0.05, p0)); }
 
@@ -5935,7 +6239,8 @@ function onText(x, y) {
   for (var i = 0; i < rs.length; i++) if (x >= rs[i].left - 2 && x <= rs[i].right + 2 && y >= rs[i].top - 2 && y <= rs[i].bottom + 2) return true;
   return false;
 }
-var MD = null;
+var MD = null, BG_DOWN = true;
+document.addEventListener('pointerdown', function (e) { BG_DOWN = !!(e.target && e.target.classList && e.target.classList.contains('overlay')); }, true);
 document.addEventListener('pointerdown', function (e) {
   MD = null; if (e.pointerType !== 'mouse' || e.button !== 0) return;
   var t = e.target, L = vLayer(t), k = L ? 'v' : '';
@@ -6334,7 +6639,7 @@ var ACT = {
     var mid = S.sel, cur = plinksOf(mid).slice(), gone = cur.splice(Number(v), 1)[0]; if (!gone) return;
     api('api_setPersonalLinks', mid, cur).then(function (all) { S.boot.plinks = all; render(); toast('Personal link removed.'); }).catch(function (e) { toast(msg(e), true); });
   },
-  track: function (v) { var m = mById(Number(v)), t = m && trackOf(m); if (t) window.open(t.url, '_blank', 'noopener'); }, // 0.3.0: from a row or block, without opening the card
+  track: function (v) { var m = mById(Number(v)), t = m && rowLink(m); if (t) window.open(t.url, '_blank', 'noopener'); }, // 0.3.0: from a row or block, without opening the card; 0.3.3: the step's link first (BACKLOG 49)
   'sb-fold': function (v) { // 0.2.4: open or close a sidebar group (kept per member)
     var p = S.boot.prefs = S.boot.prefs || {}, f = (p.sbFold || []).slice(), i = f.indexOf(v);
     if (i >= 0) f.splice(i, 1); else f.push(v);
@@ -6361,6 +6666,8 @@ var ACT = {
   },
   'pal-open': function () { palOpen(); },
   'pal-go': function (v) { palRun(Number(v)); },
+  'pal-ask-x': function () { if (S.pal) { S.pal.ask = null; palRefresh(true); var t = document.getElementById('pal-q'); if (t) t.focus(); } },
+  'pal-ask-m': function (v) { S.pal = null; if (S.view === 'settings' || S.view === 'desk') S.view = 'today'; render(); openManuscript(Number(v)); },
   'pal-bg': function (v, e) { if (e.target.classList && e.target.classList.contains('overlay')) { S.pal = null; render(); } },
   'q-clear': function () { S.q = ''; S.fx.list = true; render(); },
   pin: function (v) {
@@ -6631,7 +6938,10 @@ var ACT = {
     S.qu = { mid: r.manuscript_id || '', pre: '', text: '', images: [], err: '', reply: { id: r.id, q: r.reply, text: r.text, n: r.images } }; S.pop = null; render();
     var t = document.getElementById('qu-text'); if (t) t.focus();
   },
-  'qu-open': function (v) { var pre = v ? Number(v) : (panelShown() ? S.sel : ''), kq = keptReq('qu'); S.qu = kq ? { mid: kq.mid || pre, pre: pre, text: kq.text, images: kq.images || [], cid: kq.cid || '', err: 'Not sent yet: kept on this device since ' + keptWhen(kq.at) + (kq.noImg ? ' (without its screenshots: too big to keep)' : '') + '. Press Send, or clear the text to drop it.' } : { mid: pre, pre: pre, text: '', images: [], err: '' }; S.pop = null; S.tip = null; render(); var t = document.getElementById('qu-text'); if (t) t.focus(); },
+  'qu-ai-copy': function () { copyText(AI_PROMPT); },
+  'qu-open': function (v) { var pre = v ? Number(v) : (panelShown() ? S.sel : ''), kq = keptReq('qu'), on = S.qprog && S.qprog.phase === 'save' && kq && kq.cid === S.qprog.cid; // 0.3.3 (BACKLOG 47): the update being sent stays out of the box
+    if (on) kq = null;
+    S.qu = kq ? { mid: kq.mid || pre, pre: pre, text: kq.text, images: kq.images || [], cid: kq.cid || '', err: 'Not sent yet: kept on this device since ' + keptWhen(kq.at) + (kq.noImg ? ' (without its screenshots: too big to keep)' : '') + '. Press Send, or clear the text to drop it.' } : { mid: pre, pre: pre, text: '', images: [], err: '', sending: !!on }; S.pop = null; S.tip = null; render(); var t = document.getElementById('qu-text'); if (t) t.focus(); },
   'au-export': function (v) { exportAuthors(Number(v)); },
   'ad-open': function (v) { adOpen(Number(v)); },
   'ad-sheet': function () { var A = S.ad; if (!A || A.loading) return; if (adChanged().length) { A.err = 'Save first: the author sheet is made from the saved details.'; render(); return; } exportAuthors(A.id); },
@@ -6715,7 +7025,7 @@ var ACT = {
     api('api_setDigestMode', v).then(function (r) { S.digestBusy = false; S.boot.digest.mode = r.mode; render(); toast(r.mode === 'all' ? 'The digest goes to every member who has it on.' : r.mode === 'admin' ? 'Trial: only you receive the digest.' : 'The digest is paused.'); })
       .catch(function (e) { S.digestBusy = false; render(); toast(msg(e), true); });
   },
-  'qu-close': function () { var q = S.qu; if (q && keptReq('qu') && !String(q.text || '').trim() && !q.images.length) keepReq('qu', null); S.qu = null; render(); },
+  'qu-close': function () { var q = S.qu; if (q && !q.sending && keptReq('qu') && !String(q.text || '').trim() && !q.images.length) keepReq('qu', null); S.qu = null; render(); }, // 0.3.3: the update being sent keeps its copy (BACKLOG 47)
   'qu-bg': function (v, e) { if (e.target.classList && e.target.classList.contains('overlay')) ACT['qu-close'](); },
   'fb-open': function () { var kf = keptReq('fb'); S.fb = kf ? { kind: kf.kind || 'Idea', text: kf.text, images: kf.images || [], err: 'Not sent yet: kept on this device since ' + keptWhen(kf.at) + '. Press Send, or clear the text to drop it.' } : { kind: 'Idea', text: '', images: [], err: '' }; S.pop = null; render(); var t = document.getElementById('fb-text'); if (t) t.focus(); },
   'fb-close': function () { var f = S.fb; if (f && keptReq('fb') && !String(f.text || '').trim() && !f.images.length) keepReq('fb', null); S.fb = null; render(); },
@@ -6780,6 +7090,7 @@ function submitNew() {
     filled: a.filled.map(function (k) { return NF_SERVER[k] || k; }),
     changed: a.filled.filter(function (k) { return JSON.stringify(cur[k]) !== JSON.stringify(a.snap[k]); }).map(function (k) { return NF_SERVER[k] || k; }) };
   var authors = f.authorsAI && f.authors === f.authorsText ? f.authorsAI : parsePaste(f.authors || '');
+  authors.forEach(function (x) { var p = (S.boot.people || []).filter(function (q) { return fold(q.full_name || q.display) === fold(x.name); })[0]; if (p && !x.key) { x.key = p.key; x.member = true; } }); // 0.3.3 (BACKLOG 53): a ticked member, for certain
   api('api_create', { title: f.title, type: f.type, status: f.status, stage: f.stage, journal: f.journal, deadline: f.deadline, people_json: f.people, next_actions: f.next, authors_json: authors,
     ms_id: f.ms_id, doi: f.doi, preprint: f.preprint || '', submission_date: f.submission_date, impact_factor: f.impact_factor, first_author: f.first_author }, a && a.id && a.filled.length ? a.id : '', aiInfo)
     .then(function (r) {
@@ -6985,6 +7296,7 @@ document.addEventListener('click', function (e) {
     if (a === 'fb-open' || a === 'nf-open') { ACT[a](v); return; }
     render(); setTimeout(function () { ACT[a](v); }, reduceMotion() ? 0 : 220); return;
   }
+  if (a && /-bg$/.test(a) && !BG_DOWN) return; // 0.3.3: a press that began inside a dialog (selecting its text) and ended on the dim beside it does not close it
   if (a && ACT[a]) { if (['nf-bg', 'qu-bg', 'rp-bg', 'fb-bg', 'del-bg', 'ga-bg', 'ad-bg', 'wn-bg'].indexOf(a) < 0 && !(el.tagName === 'LABEL')) e.preventDefault(); ACT[a](v, e); }
 });
 document.addEventListener('mousedown', function (e) { if (e.target.closest && e.target.closest('.cbo')) e.preventDefault(); });
@@ -7089,6 +7401,8 @@ document.addEventListener('change', function (e) {
     ids.forEach(function (id) { var at = dp.hide.indexOf(id); if (t.checked && at >= 0) dp.hide.splice(at, 1); if (!t.checked && at < 0) dp.hide.push(id); });
     saveDash(dp);
   }
+  if (i === 'nfmem') { nfTick(t.getAttribute('data-v'), t.checked); return; } // 0.3.3 (BACKLOG 53)
+  if (i === 'aisw') { var k = t.getAttribute('data-v'), on = t.checked; api('api_setAiSwitch', k, on).then(function (a) { S.boot.ai = a; if (S.desk) S.desk.ai = a; toast((AI_FEATS.filter(function (f) { return f[0] === k; })[0] || [0, 'The feature'])[1] + (on ? ' is on.' : ' is off for everyone.')); render(); }).catch(function (e2) { t.checked = !on; toast(msg(e2), true); }); } // 0.3.3 (BACKLOG 55)
   if (i === 'role') { api('api_setRole', t.getAttribute('data-v'), t.value).then(function () { var p = person(t.getAttribute('data-v')); if (p) p.role = t.value; toast('Role updated.'); }).catch(function (e2) { toast(msg(e2), true); render(); }); }
 });
 // keep <details> open or closed across re-renders
@@ -7437,6 +7751,7 @@ window.__vibra026 = { vvFit: vvFit, keepReq: keepReq, keptReq: keptReq, settle: 
 window.__vibra028 = { setPal: setPal, LM: LM, HB: HB, MO: MO, spring: spring, morph: morph, closeTop: closeTop, render: render }; // test hook (0.2.8)
 window.__vibra030 = { ic: ic, esc: esc, tagHtml: tagHtml, allDerived: allDerived, myWork: myWork, short: short, nice: nice, niceShort: niceShort, render: render }; // test hook (0.3.0)
 window.__vibra031 = { render: render }; // test hook (0.3.1)
+window.__vibra033 = { act: function (a, v) { ACT[a](v); }, nfTick: nfTick, quickReport: quickReport, rowLink: rowLink, askRun: askRun, AI_PROMPT: AI_PROMPT, scPin: scPin, moClear: moClear }; // test hook (0.3.3)
 window.__vibraNames = { authorKey: authorKey, isMemberKey: isMemberKey, onMine: onMine, open: function (id) { openManuscript(id); }, close: function () { closePanel(true); }, render: render };
 window.__vibraReboot = function () { api('api_bootstrap').then(function (b) { S.boot = b; applyTheme(); S.sel = null; S.draft = null; S.pop = null; S.feed = null; S.pair = null; S.fx.list = true; render(); }).catch(function (e) { toast(msg(e), true); }); };
 })();
