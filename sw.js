@@ -15,15 +15,16 @@
    3.0.2: page 0.3.2 (the floating buttons stay in place, sheets with the iPhone keyboard open, Search's pull down, no flash behind a closing sheet).
    3.0.3: page 0.3.3 (Save apart from the AI with a saving bar, the prompt for a member's own AI, the AI moves the ball, one button per row, Ask the tracker).
    3.0.4: page 0.3.4 (finished papers that stand out, Ask AI first in Search, full names, one set of colours, type sizes and icons, touch and hover polish).
+   3.0.5: page 0.3.5 (the New layout: My work, Papers, Group, with a Classic switch; the card led by its summary; Your week, whose notification opens My work).
    A push carries no content: on each push the worker asks the admin's helper for the text, with this device's
    own secret, and shows it. Nothing else leaves the device. */
-var CACHE = 'vibra-app-3.0.4';
+var CACHE = 'vibra-app-3.0.5';
 var SHELL = ['./', './app/', './manifest.webmanifest', './icons/app-192.png', './icons/app-512.png', './icons/app-maskable-512.png',
   './icons/app-apple-180.png', './icons/app-badge-96.png', './icons/app-favicon-32.png', './icons/vibra-logo-full.jpg',
   './icons/vibra-logo-light.webp', './icons/vibra-logo-dark.webp']; // 3.0.0: the sign-in logo without its white box, one for each theme
 var LABEL = { nudge: 'Nudge', ball_to_you: 'Ball to you', changed: 'Manuscript changed', ai_update: 'AI update', inbox_reply: 'Quick update', deadline: 'Deadline',
   delete_request: 'Deletion request', delete_reply: 'Deletion', feedback_reply: 'App feedback', inbox: 'Quick update', test: 'VIBRA Tracker',
-  nudge_reply: 'Reply to your nudge' };
+  nudge_reply: 'Reply to your nudge', week: 'Your week' };
 /* 3.0.0 (BACKLOG 6): reminders (nudges and deadline alerts) can be answered. Browsers that show buttons on a notification
    (Chrome, Edge, Firefox on Android and computers; at most two) get Reply and On it; iPhone shows none and a tap opens
    the Reply sheet. */
@@ -132,7 +133,7 @@ function onPush() {
     }
     return Promise.resolve().then(function () {
       var shown = items.slice(0, 3).map(function (n) {
-        var rem = REMIND[n.kind] && n.mid, o = { body: n.text, tag: 'vibra-' + n.id, data: { url: n.mid ? './app/?m=' + encodeURIComponent(n.mid) + (rem ? '&r=' + encodeURIComponent(n.id) : '') : './app/', m: Number(n.mid) || 0, n: rem ? String(n.id) : '' } };
+        var rem = REMIND[n.kind] && n.mid, wk = n.kind === 'week', o = { body: n.text, tag: 'vibra-' + n.id, data: { url: n.mid ? './app/?m=' + encodeURIComponent(n.mid) + (rem ? '&r=' + encodeURIComponent(n.id) : '') : wk ? './app/?v=mine' : './app/', m: Number(n.mid) || 0, n: rem ? String(n.id) : '', v: wk ? 'mine' : '' } };
         if (rem) o.actions = [{ action: 'reply', title: 'Reply' }, { action: 'onit', title: 'On it' }];
         return self.registration.showNotification(LABEL[n.kind] || 'VIBRA Tracker', Object.assign(o, opts));
       });
@@ -150,7 +151,7 @@ self.addEventListener('notificationclick', function (e) {
   var open = function () {
     return self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function (cs) {
       for (var i = 0; i < cs.length; i++) {
-        if (cs[i].url.indexOf(self.registration.scope) === 0 && 'focus' in cs[i]) { cs[i].postMessage({ type: 'open', m: data.m || 0, n: data.n || '' }); return cs[i].focus(); }
+        if (cs[i].url.indexOf(self.registration.scope) === 0 && 'focus' in cs[i]) { cs[i].postMessage({ type: 'open', m: data.m || 0, n: data.n || '', v: data.v || '' }); return cs[i].focus(); }
       }
       return self.clients.openWindow(target);
     });
