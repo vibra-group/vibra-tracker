@@ -14,9 +14,10 @@
    3.0.1: page 0.3.1 (blocks that keep their size, closing by hand with grey bars, the trackpad and the mouse on computers, the Google photo, Google's pill button).
    3.0.2: page 0.3.2 (the floating buttons stay in place, sheets with the iPhone keyboard open, Search's pull down, no flash behind a closing sheet).
    3.0.3: page 0.3.3 (Save apart from the AI with a saving bar, the prompt for a member's own AI, the AI moves the ball, one button per row, Ask the tracker).
+   3.0.4: page 0.3.4 (finished papers that stand out, Ask AI first in Search, full names, one set of colours, type sizes and icons, touch and hover polish).
    A push carries no content: on each push the worker asks the admin's helper for the text, with this device's
    own secret, and shows it. Nothing else leaves the device. */
-var CACHE = 'vibra-app-3.0.3';
+var CACHE = 'vibra-app-3.0.4';
 var SHELL = ['./', './app/', './manifest.webmanifest', './icons/app-192.png', './icons/app-512.png', './icons/app-maskable-512.png',
   './icons/app-apple-180.png', './icons/app-badge-96.png', './icons/app-favicon-32.png', './icons/vibra-logo-full.jpg',
   './icons/vibra-logo-light.webp', './icons/vibra-logo-dark.webp']; // 3.0.0: the sign-in logo without its white box, one for each theme
