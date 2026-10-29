@@ -5,12 +5,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <script>
-/* VIBRA Tracker 0.3.4 on the group's own address (vibra-group.github.io), built by tools/build_web.py from app/Index.html.
+/* VIBRA Tracker 0.3.5 on the group's own address (vibra-group.github.io), built by tools/build_web.py from app/Index.html.
    This page is the VIBRA app: installable, with notifications and the last data readable offline.
    Google confirms who the member is ("Sign in with Google"), or a one-time code made on a signed-in device does; the
    admin's helper checks that once and gives a session; every server call then goes to the helper with that session
    and runs the tracker's own code as the member. */
-window.VIBRA_WEB = { helper: "https://script.google.com/macros/s/AKfycbzNE__5onOmvia3VaFHjybAJ5G35cnDJCN1ysuiNAYlgOC5xsbCi0xyDnmoJP7lEaFR3w/exec", clientId: "619243121375-pi18v7vjgvcue7qo6455uids4v28megi.apps.googleusercontent.com", classic: "https://script.google.com/macros/s/AKfycbzkG5eCrxQvQtJgfksL92G9vtl2I4LLEew-Az4qYlDxX6V1QfgtIrwGjYOGq9CQ0r3aWA/exec", built: "0.3.4" };
+window.VIBRA_WEB = { helper: "https://script.google.com/macros/s/AKfycbzNE__5onOmvia3VaFHjybAJ5G35cnDJCN1ysuiNAYlgOC5xsbCi0xyDnmoJP7lEaFR3w/exec", clientId: "619243121375-pi18v7vjgvcue7qo6455uids4v28megi.apps.googleusercontent.com", classic: "https://script.google.com/macros/s/AKfycbzkG5eCrxQvQtJgfksL92G9vtl2I4LLEew-Az4qYlDxX6V1QfgtIrwGjYOGq9CQ0r3aWA/exec", built: "0.3.5" };
 (function () {
   var W = window.VIBRA_WEB, KEY = 'vibra-web-session', S = null, queue = [], gisInit = false, tries = 0, gateOn = false;
   var ua = navigator.userAgent || '', IOS = /iPad|iPhone|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
@@ -331,6 +331,7 @@ window.VIBRA_WEB = { helper: "https://script.google.com/macros/s/AKfycbzNE__5onO
     navigator.serviceWorker.register('../sw.js', { scope: '../' }).catch(function () { });
     navigator.serviceWorker.addEventListener('message', function (e) {
       var d = e.data; if (d && d.type === 'open' && Number(d.m) && window.__vibraAppMsg) window.__vibraAppMsg({ type: 'vibra-open', m: Number(d.m), n: d.n || '' }); // 0.3.0: n = a reminder to answer
+      if (d && d.type === 'open' && !Number(d.m) && d.v && window.__vibraAppMsg) window.__vibraAppMsg({ type: 'vibra-view', v: String(d.v) }); // 0.3.5: Your week opens My work
       if (d && d.type === 'update') { if (d.force && e.source) try { e.source.postMessage({ type: 'pong' }); } catch (x) { } if (window.__vibraUpdate) window.__vibraUpdate(); } // 2.2.0: a newer page is ready; 2.8.0: it moves in by itself
       if (d && d.type === 'news' && window.__vibraNews) window.__vibraNews(); // 2.3.0: a push arrived: fetch the news now
     });
@@ -2031,6 +2032,106 @@ html.notr *,html.notr *::before,html.notr *::after{transition:none!important}
   .tb-new::after{content:"";position:absolute;inset:-5px -4px}
   .sb-ib::after{content:"";position:absolute;inset:-5px}
 }
+/* 0.3.5 (BACKLOG 64): the New layout: the Group heading in the sidebar, My work (To confirm, Your move with its step and
+   two buttons, the own to-do, the manuscripts where the ball is elsewhere, folded) */
+.sb-grp{margin:12px 10px 4px;font:500 var(--fs-xs)/1.4 var(--sans);color:var(--muted)}
+.shell.sbc .sb .sb-grp{height:1px;margin:8px 12px;overflow:hidden;color:transparent;background:var(--line)}
+.bl-step{font-size:var(--fs-sm);line-height:1.4;color:var(--ink-2);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.bl-step b{font-weight:650;color:var(--ink)}
+.mw-acts{display:flex;flex-wrap:wrap;gap:8px;padding-top:4px}
+.mw-acts .btn{min-height:34px}
+.mw-ask{display:grid;gap:8px;margin-top:4px;padding:10px 12px;border-radius:10px;background:var(--accent-soft);box-shadow:inset 0 0 0 1px var(--accent-line);font-size:var(--fs-md);cursor:default}
+.mw-ask .muted{font-size:var(--fs-sm)}
+@media (max-width:599px){.blocks .mwb.asking{grid-column:1/-1}}.mw-ask .btns{display:flex;gap:8px;flex-wrap:wrap}
+.mw-list{padding-top:4px;padding-bottom:4px}.mw-list .td-row:first-child{border-top:0}
+.mw-upd{margin-left:auto;align-self:center;opacity:1}
+.sec-h .mw-seg{margin-left:auto;align-self:center}
+.mw-td{grid-template-columns:minmax(0,1fr)}
+.mw-td.m-list .td-cal,.mw-td.m-cal .td-list{display:none}
+.tc-box{padding:4px 16px}
+.tc-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line)}.tc-row:first-child{border-top:0}
+.tc-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.tc-q{display:flex;gap:6px;align-items:flex-start;font-weight:550}.tc-q .ic{width:16px;height:16px;flex:none;margin-top:2px;color:var(--accent-text)}
+.tc-you{font-size:var(--fs-sm);color:var(--muted)}
+#mw-tc .sec-h h2{color:var(--accent-text)}
+details.mw-else>summary{list-style:none;cursor:pointer}
+details.mw-else>summary::-webkit-details-marker{display:none}
+details.mw-else>summary h2{display:flex;align-items:center;gap:6px}
+details.mw-else>summary h2 .ic{width:18px;height:18px;transform:rotate(-90deg);transition:transform .18s var(--ease);color:var(--muted)}
+details.mw-else[open]>summary h2 .ic{transform:none}
+@media (hover:hover){details.mw-else>summary:hover h2{color:var(--accent-text)}}
+@media (max-width:599px){.mw-acts .btn{flex:1;justify-content:center;padding:0 8px}.tc-row{flex-direction:column;align-items:stretch}.mw-upd{margin-left:32px}}
+/* 0.3.5: Papers */
+.tile[aria-pressed="true"]{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent),var(--shadow-1)}
+.pp-all{margin-left:auto;font-size:var(--fs-sm)}
+.pp-more{all:unset;cursor:pointer;margin:12px 4px 0;font:500 var(--fs-md) var(--sans);color:var(--accent-text)}
+@media (hover:hover){.pp-more:hover{text-decoration:underline}}
+.pp-more:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+.pp-win .sec-h h2{display:flex;align-items:center;gap:6px;color:var(--ok-fg)}.pp-win .sec-h h2 .ic{width:18px;height:18px}
+.block.win{background:color-mix(in srgb,var(--ok-bg) 70%,var(--surface));border-color:color-mix(in srgb,var(--ok-fg) 22%,var(--line))}
+tr.pp-h td{color:var(--ink)}tr.pp-h.win td{color:var(--ok-fg)}tr.pp-h.rej td{color:var(--muted)}
+/* 0.3.5: My work's compact to-do */
+.mwt{padding:4px 16px 6px;gap:0}
+.mwt-row{align-items:center;padding:9px 2px;border-top:1px solid var(--line)}.mwt>.mwt-row:first-child{border-top:0}
+.td-chk.round{border-radius:999px}
+.mwt-t{flex:1;min-width:0;display:flex;align-items:baseline;flex-wrap:wrap;gap:2px 8px}
+.mwt-t .td-m,.mwt-t .td-tag{font-size:var(--fs-xs);color:var(--muted)}.mwt-t .td-m{color:var(--accent-text)}
+.mwt-d{flex:none;font-size:var(--fs-sm);color:var(--muted);font-variant-numeric:tabular-nums;text-align:right;min-width:56px}
+.mwt-d.late{color:var(--danger)}.mwt-d.now{color:var(--accent-text);font-weight:550}
+@media (hover:hover){.mwt .td-acts{opacity:0}.mwt .td-row:hover .td-acts,.mwt .td-acts:focus-within{opacity:1}}
+.mwt-add{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;padding:8px 2px;border-top:1px solid var(--line)}.mwt>.mwt-add:first-child{border-top:0}
+.mwt-plus{width:22px;height:22px;display:grid;place-items:center;color:var(--muted);flex:none}.mwt-plus .ic{width:16px;height:16px}
+.mwt-in{flex:1;min-width:160px;border:0;background:transparent;font:inherit;font-size:var(--fs-md);color:var(--ink);padding:4px 0;outline:none}
+.mwt-in::placeholder{color:var(--muted)}
+.mwt-more{display:none;flex:1 1 100%;gap:8px;flex-wrap:wrap;padding-left:32px}
+.mwt-add:focus-within .mwt-more,.mwt-add.has .mwt-more{display:flex}
+.mwt-more .in[type=date]{width:auto;flex:0 0 160px}.mwt-more select.in{flex:1 1 180px;min-width:0}
+.mwt-done{margin:2px 0 4px}.mwt-done .mwt-row{border-top:1px solid var(--line)}
+@media (hover:none){.mwt .td-acts{display:none}}
+.mwt-e{all:unset;cursor:text;overflow-wrap:anywhere}.mwt-e:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.mwt-del{margin-left:auto;color:var(--danger)}
+/* 0.3.5 Papers: the urgency marks (A chips, B a notebook's tabs) */
+.ptab{all:unset;box-sizing:border-box;cursor:pointer;display:inline-flex;align-items:baseline;gap:6px;font:500 var(--fs-sm)/1.2 var(--sans);color:var(--ink-2);--pc:var(--line-2)}
+.ptab b{font:650 var(--fs-md)/1 var(--sans);font-variant-numeric:tabular-nums;color:var(--ink)}
+.ptab:disabled{opacity:.45;cursor:default}
+.ptab:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.pt-due{--pc:var(--sc-due)}.pt-deadline{--pc:var(--sc-deadline)}.pt-action{--pc:var(--sc-action)}.pt-chase{--pc:var(--sc-chase)}.pt-waiting{--pc:var(--sc-waiting)}.pt-drafting{--pc:var(--sc-drafting)}.pt-all{--pc:var(--accent)}
+.pp-tabs.side{position:fixed;right:0;top:110px;z-index:46;display:flex;flex-direction:column;gap:6px;width:80px} /* within the free column (--fcol), clear of the card */
+.pp-tabs.side .ptab{flex-direction:column;align-items:flex-start;gap:3px;width:72px;margin-left:8px;padding:8px 8px 8px 12px;border-radius:12px 0 0 12px;background:var(--surface);border:1px solid var(--line);border-right:0;
+  box-shadow:inset 4px 0 0 var(--pc),var(--shadow-1);transition:margin .2s var(--ease),width .2s var(--ease)}
+.pp-tabs.side .ptab span{font-size:var(--fs-xs);color:var(--ink-2);white-space:nowrap}
+.pp-tabs.side .ptab[aria-pressed="true"]{margin-left:0;width:80px;background:color-mix(in srgb,var(--pc) 16%,var(--surface));border-color:color-mix(in srgb,var(--pc) 55%,var(--line))}
+@media (hover:hover){.pp-tabs.side .ptab:not(:disabled):hover{margin-left:3px;width:77px}}
+.pp-tabs.strip{position:sticky;top:var(--hdr-h,0px);z-index:35;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 -16px 20px;padding:0 16px 8px;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.pp-tabs.strip::-webkit-scrollbar{display:none}
+.pp-tabs.strip{transition:transform .28s var(--ease),opacity .2s}.pp-tabs.strip.tuck{transform:translateY(-110%);opacity:0;pointer-events:none}
+@media (prefers-reduced-motion:reduce){.pp-tabs.strip{transition:none}}
+.pp-tabs.strip .ptab{flex:none;padding:12px 11px 8px;border-radius:0 0 12px 12px;background:var(--surface);border:1px solid var(--line);border-top:0;box-shadow:inset 0 4px 0 var(--pc),var(--shadow-1)}
+.pp-tabs.strip .ptab[aria-pressed="true"]{padding-top:18px;background:color-mix(in srgb,var(--pc) 16%,var(--surface));border-color:color-mix(in srgb,var(--pc) 55%,var(--line))}
+/* 0.3.5: the New card, led by its summary */
+.p-sum{display:grid;grid-template-columns:auto 1fr;gap:0;margin:14px 0 0;padding:4px 14px;border-radius:12px;background:var(--surface-2);font-size:var(--fs-md)}
+.p-sum dt,.p-sum dd{margin:0;padding:9px 0;border-top:1px solid var(--line)}
+.p-sum dt:first-of-type,.p-sum dt:first-of-type+dd{border-top:0}
+.p-sum dt{padding-right:16px;font-size:var(--fs-sm);color:var(--muted);white-space:nowrap}
+.p-sum dd{line-height:1.45;overflow-wrap:anywhere}.p-sum dd .tag{margin-left:6px;vertical-align:1px}
+.p-tell{display:grid;gap:8px;margin:14px 0 6px;padding:12px 14px;border-radius:12px;border:1px solid var(--accent-line);background:var(--surface)}
+.p-tell .frow b{display:inline-flex;align-items:center;gap:6px;font-weight:600}.p-tell .frow b .ic{width:16px;height:16px;color:var(--accent-text)}
+.p-tell .pt-more{margin-left:auto;font-size:var(--fs-sm);font-weight:500}
+.p-tell .btns{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+.p-fold{border-top:1px solid var(--line)}.p-fold:last-of-type{border-bottom:1px solid var(--line)}
+.p-fold>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;padding:12px 2px;min-height:24px}
+.p-fold>summary::-webkit-details-marker{display:none}
+.pf-t{flex:1;min-width:0;display:flex;align-items:baseline;gap:8px;overflow:hidden}.pf-t .muted{font-size:var(--fs-sm);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.p-fold>summary .ic{width:18px;height:18px;color:var(--muted);flex:none;transition:transform .18s var(--ease)}.p-fold[open]>summary .ic{transform:rotate(180deg)}
+@media (hover:hover){.p-fold>summary:hover b{color:var(--accent-text)}}
+.p-fold>summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+.pf-b{padding:0 0 14px}.pf-b>.p-grid:first-child{margin-top:0}
+.panel.pnew:not(.pdirty) .savebar{display:none}
+@media (max-width:599px){.p-tell .btns{justify-content:flex-start}.p-sum{grid-template-columns:1fr}.p-sum dt{padding:9px 0 0}.p-sum dd{border-top:0;padding-top:2px}.p-sum dt:not(:first-of-type){border-top:1px solid var(--line)}}
+/* 0.3.5: What's new, the new map */
+.wn-map{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.wn-mp{display:flex;flex-direction:column;gap:3px;padding:10px 12px;border-radius:12px;background:var(--accent-soft);box-shadow:inset 0 0 0 1px var(--accent-line);min-width:0}
+.wn-mp .ic{width:18px;height:18px;color:var(--accent-text)}.wn-mp b{font-weight:600}.wn-mp span{font-size:var(--fs-xs);color:var(--ink-2)}
 </style>
 </head>
 <body>
@@ -2081,7 +2182,7 @@ var TIPS = {
   urgency: 'Set automatically. Due: a deadline within 7 days or overdue, or the journal sent it back to us and is waiting (stage Returned to authors). Deadline: a later deadline. Our move: the group must act (ready to submit, internal review, co-authors confirming, reviews back, a revision). Chase journal: at a journal with no news for over 90 days. Waiting: the journal or editor has it. Click a tile to jump to its list.',
   status: 'Where the manuscript is: Drafting, Internal review, Ready to Submit, Submitted, Under Review, Accepted, Published or Rejected. Published and Rejected close the manuscript.',
   stage: 'Only for Submitted and Under Review: where it stands at the journal, for example With editor, Review R1 or Revising. Returned to authors: the journal asked us for something (a checklist, forms, files, resume the submission); it then shows as Due until it is done. Authors confirming: co-authors still have to confirm on the journal site; it shows as Our move.',
-  deadline: 'A real date set by the journal or by Giustino Varrassi. Whoever has the ball sees it on Today and gets an alert 7 days and 1 day before.',
+  deadline: 'A real date set by the journal or by Giustino Varrassi. Whoever has the ball sees it among their most urgent work and gets an alert 7 days and 1 day before.',
   ball: 'The people who must act next (not the authors). Click a tag to add a short note such as corr. or submitting, or to make it primary: the primary person gets the alerts. Click the box below to pick a member, or type any other name to add a guest tag (no notifications).',
   next: 'What has to happen next, as a numbered list. Press Enter and the next number appears; Enter on an empty number ends the list; Shift+Enter adds a line break.',
   authors: 'The author list in submission order; the first tag is the first author. Each author is one person in the Authors list, shown with the full name on file however it was written (point at a tag to see how it was written). A tag with ? is not settled yet: the admin confirms it in the AI desk. Click a tag to add a note, mark the corresponding author or move it.',
@@ -2099,7 +2200,7 @@ var TIPS = {
   calfile: 'One calendar file with the deadlines of every open manuscript where you are tagged (ball or author). Open it to import them into Google, Apple or Outlook calendar. It is a snapshot: download it again after deadlines change.',
   feed: 'A private calendar address that your calendar app subscribes to: the deadlines appear as all-day events and move by themselves when a deadline changes, with no file to download again. Google Calendar refreshes subscribed calendars on its own schedule, sometimes only once a day; Apple Calendar and Outlook let you choose how often. Keep the address to yourself: anyone who has it sees these deadlines (titles, journal, ball, next actions). Make a new link if it was shared by mistake: the old one stops at once. It gives no access to the app or the database.',
   mailrem: 'Your reminders are private: they are kept in your own Google account, not in the shared database, so they are not sent by e-mail. Add a reminder to your calendar with the calendar button and your calendar alerts you, by e-mail too if you set it so.',
-  digest: 'A short e-mail every Monday at 07:00 (Vietnam time): the manuscripts that wait on you, what is due or overdue, deadlines in the next three weeks and journals to chase. It is sent from the admin\'s helper with the sender name VIBRA Tracker. The admin tries it alone first, then opens it to everyone; you can switch it off for yourself at any time.',
+  digest: 'Your week, every Monday at 07:00 (Vietnam time): a short e-mail like My work (your move, deadlines this week, what changed on your manuscripts, a button to open My work) and a notification on your phone. It is sent from the admin\'s helper with the sender name VIBRA Tracker (or from the group\'s own account once the helper runs there). The admin tries it alone first, then opens it to everyone; you can switch it off for yourself at any time.',
   dlalert: 'A notification under the bell (and on your phone if you paired the VIBRA app) 7 days and 1 day before a deadline, when you have the ball. Sent at 07:00 Vietnam time.',
   permweb: 'You sign in with Google on the group\'s own page. Google tells the app only your name and e-mail address; the app gets no permission on your Google account. Sign out on this device in Settings, General. You can also remove the sign-in in your Google account at any time.',
   perm: 'Google asked you for these two permissions the first time you opened the app. They cover only this database and your e-mail address. You can remove the access at any time in your Google account; the app then asks again next time.',
@@ -2121,8 +2222,15 @@ var TIPS = {
 /* 0.3.4 (admin: "không cần what's new vì chỉ là chỉnh giao diện nhỏ, sửa lại các what's new, cái nào nhỏ quá hoặc sửa
    bug nhỏ nhỏ thì ghi chung chung ngắn gọn thôi"): a release gets a card only when members will notice something new;
    small changes and fixes are one short line. The page's own version is PAGE_VERSION, not the latest card. */
-var PAGE_VERSION = '0.3.4'; // = APP_VERSION in Code.gs (test/server_test.js checks)
+var PAGE_VERSION = '0.3.5'; // = APP_VERSION in Code.gs (test/server_test.js checks)
 var RELEASES = [
+  { v: '0.3.5', date: '2026-10-29', title: 'A new layout: My work, Papers, Group', map: true, go: ['general', 'Layout settings'], items: [ // 0.3.5 (BACKLOG 64)
+    ['user', 'My work is your home: what the AI asks you to confirm, your move with each step (Done, Update), your own to-do and the manuscripts you are on.', 'new'],
+    ['book', 'Papers: every manuscript, grouped by where it is; the tabs on the side filter by urgency.', 'new'],
+    ['spark', 'A manuscript\'s card starts with a summary and Tell the tracker; the fields are folded under Details.', 'new'],
+    ['mail', 'Your week: on Mondays an e-mail and a notification with your move, this week\'s deadlines and what changed.'],
+    ['sliders', 'Prefer the old layout? Settings, General, Appearance, Layout: Classic. You can switch back at any time.', 'new'],
+    ['sliders', 'A new layout is ready (My work, Papers, Group): Settings, General, Appearance, Layout: New.', 'classic']] },
   { v: '0.3.3', date: '2026-10-28', title: 'Saved at once, the AI reads after', items: [
     ['spark', 'Quick update: Save shows how far it is, then "Saved"; the AI reads it afterwards while you go on.'],
     ['chat2', 'Your own AI can read your mailbox for the journals\' news: copy the prompt in Quick update and paste its answer back.'],
@@ -2198,9 +2306,13 @@ function wnSeen() {
   S.boot.prefs = S.boot.prefs || {}; S.boot.prefs.relSeen = v; keepBoot();
   api('api_setPrefs', { relSeen: v }).catch(function () { });
 }
-function relItems(r) { return r.items.filter(function (it) { return !it[2] || (it[2] === 'nav3' && N3()); }); } // 0.2.9: lines about the new navigation only for those who have it
+function relItems(r) { return r.items.filter(function (it) { return !it[2] || (it[2] === 'nav3' && N3()) || (it[2] === 'new' && UIN()) || (it[2] === 'classic' && !UIN()); }); } // 0.3.5: lines for the layout the member has // 0.2.9: lines about the new navigation only for those who have it
+function relMap() { // 0.3.5: the new map, as the sidebar shows it
+  return '<div class="wn-map" aria-label="The new map">' + [['user', 'My work', 'what is yours'], ['book', 'Papers', 'every manuscript'], ['dash', 'Group', 'dashboard, changes to review']].map(function (x) {
+    return '<span class="wn-mp">' + ic(x[0]) + '<b>' + x[1] + '</b><span>' + x[2] + '</span></span>'; }).join('') + '</div>';
+}
 function relBlock(r) {
-  return '<div class="wn-rel"><div class="wn-h"><b>' + esc(r.title) + '</b><span class="muted mono">' + esc(r.v) + ' · ' + esc(nice(r.date)) + '</span></div><ul class="wn-list">' +
+  return '<div class="wn-rel"><div class="wn-h"><b>' + esc(r.title) + '</b><span class="muted mono">' + esc(r.v) + ' · ' + esc(nice(r.date)) + '</span></div>' + (r.map && UIN() ? relMap() : '') + '<ul class="wn-list">' +
     relItems(r).map(function (it) { return '<li>' + ic(it[0]) + '<span>' + esc(it[1]) + '</span></li>'; }).join('') + '</ul></div>';
 }
 /* 0.2.8 (admin: "whats news vẫn chưa đổi nha"): in Settings, Help, the releases sit in a frame of about half the window
@@ -2246,11 +2358,23 @@ var COACH = [
   { id: 'getapp', more: true, sel: ['.sb-get', '.topbar [data-a="drawer-open"]'], t: 'Get the app', b: 'Install VIBRA on this computer or phone: its own icon and window, and notifications. It also shows the address and a QR code for your other devices. On a phone it sits beside your name in the menu.' },
   { id: 'settings', more: true, sel: ['.sb-foot [data-v="settings"]', '.topbar [data-a="drawer-open"]'], t: 'Settings', b: 'Notifications on this device, your private calendar link, the Monday e-mail, light or dark. Help replays this tour. Under General, add My details (affiliation, e-mail, ORCID) once: they serve every manuscript you are on.' }
 ];
+/* 0.3.5 (BACKLOG 64): the same tour for the New layout: My work, the card led by its summary, Papers */
+var COACH_NEW = [
+  { p: 0, key: true, sel: ['.sb nav [data-v="mine"]', '.topbar [data-a="drawer-open"]'], t: 'Start with My work', k: 'Everything that is yours, in one place.', b: 'What the AI asks you to confirm, your move, your own to-do, and the manuscripts you are on. Papers and Group sit beside it; on a phone they are behind this menu button.' },
+  { p: 0, key: true, sel: ['#mw-move .sec-h', '#mw-move'], t: 'Your move', k: 'Where you have the ball, the most urgent first.', b: 'Each block says your step. Done: the step is done and the AI moves the manuscript on. Update: tell the tracker what happened.' },
+  { p: 0, sel: ['.main [data-a="open"][data-v]'], t: 'One block, one manuscript', k: 'How urgent, the title, your step.', b: 'Click a block to open its card. The tour opens this one for you.' },
+  { p: 1, key: true, sel: ['.panel .p-sum'], open: true, t: 'The summary', k: 'Where it is, who has the ball, the next step, the latest news.', b: 'Read this first: it answers most questions without opening anything.' },
+  { p: 1, key: true, sel: ['.panel .p-tell'], open: true, when: function () { return canEdit(); }, t: 'Tell the tracker', k: 'Say what happened; the AI updates the record.', b: 'Step done when your step is finished. You can undo what the AI changed.' },
+  { p: 1, sel: ['.panel details[data-keep="pfdet"] > summary'], open: true, t: 'Details', k: 'Status, stage, deadline, ball, next actions.', b: 'Ball is with is the heart of the tracker: who must make the next move. Save appears when you change a field.' },
+  { p: 2, key: true, sel: ['.fab'], t: 'Quick update', k: 'The fastest way: tell the tracker what happened, the AI does the rest.', b: 'Say it in any language, or paste the journal\'s e-mail or a screenshot, about any manuscript.' },
+  { p: 2, sel: ['.sb nav [data-v="papers"]', '.topbar [data-a="drawer-open"]'], t: 'Papers', k: 'Every manuscript, grouped by where it is.', b: 'The tabs on the side filter by urgency; Whose shows one person\'s manuscripts. List shows them as a table.' },
+  { p: 2, sel: ['.sb-foot [data-v="notif"]', '.topbar [data-v="notif"]'], t: 'Notifications', k: 'Know when the ball comes to you.', b: 'The ball passed to you, a change on your manuscripts, a deadline close, and Your week on Mondays. Turn them on for each phone or computer in Settings, Notifications.' },
+  { id: 'feedback', p: 2, sel: ['.sb-fb', '.topbar [data-a="fb-open"]'], t: 'Send feedback', k: 'While we test the app, tell us what goes wrong.', b: 'Or what would help, in any language; the answer comes under your bell. Settings, Help replays this tour. Settings, General, Appearance switches back to the Classic layout.' }];
 /* 0.2.3: the steps of the tour in progress: the full tour (0.3.0: the steps not marked more), or for members who saw the
    0.2.0 tour a short one with what was added since (author details, offline, feedback, the app, my details) */
 var CO_NEW = ['author', 'save', 'feedback', 'getapp', 'settings'];
 function CO() {
-  var list = COACH.filter(function (st) { return !st.when || st.when(); });
+  var list = (UIN() ? COACH_NEW.concat(COACH.filter(function (st) { return st.more; })) : COACH).filter(function (st) { return !st.when || st.when(); }); // 0.3.5
   if (S.tourSet === 'new') list = list.filter(function (st) { return CO_NEW.indexOf(st.id) >= 0 && !(st.id === 'getapp' && appInstalled()); });
   else list = list.filter(function (st) { return !st.more; });
   return list;
@@ -2284,6 +2408,7 @@ var ICON2 = {
   people: '<circle cx="9" cy="9" r="3"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0"/><circle cx="16.5" cy="9.5" r="2.5"/><path d="M15.5 14.2a4.6 4.6 0 0 1 5 4.8"/>',
   chat2: '<path d="M5 18.5V7a2.5 2.5 0 0 1 2.5-2.5h9A2.5 2.5 0 0 1 19 7v6.5a2.5 2.5 0 0 1-2.5 2.5H9z"/>',
   cal2: '<rect x="4" y="5" width="16" height="15" rx="2.5"/><path d="M8 3v4M16 3v4M4 10h16"/>',
+  book: '<rect x="4" y="3.5" width="13" height="17" rx="2"/><path d="M8 3.5v17"/><path d="M17 6.5h1.8a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H17M17 12.5h1.8a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H17"/>', // 0.3.5: Papers, a notebook with its tabs (admin)
   apps: '<rect x="4" y="4" width="6.5" height="6.5" rx="1.6"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.6"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.6"/><path d="M16.75 13.75v6M13.75 16.75h6"/>',
   x: '<path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/>',
   back: '<path d="M14.5 5.5L8 12l6.5 6.5"/>',
@@ -2494,7 +2619,7 @@ function allDerived() { return S.boot.manuscripts.map(derive).sort(function (a, 
 function filtered(list) {
   var q = S.q.trim().toLowerCase();
   return list.filter(function (d) {
-    if (S.who !== 'all' && !involves(d, S.who, S.view === 'list')) return false;
+    if (S.who !== 'all' && !involves(d, S.who, S.view === 'list' || S.view === 'papers')) return false;
     if (!q) return true;
     var hay = [d.m.title, d.m.journal, d.m.ms_id, d.m.next, peopleText(d.m.people), d.m.doi, d.m.preprint].join(' ').toLowerCase();
     return hay.indexOf(q) >= 0;
@@ -2527,10 +2652,12 @@ function render() {
   if (S.err) { app.innerHTML = errorPage(); return; }
   if (!S.boot) return;
   applyNav3(); // 0.2.9
+  viewFix(); // 0.3.5: an old view's address opens its place in the New layout, and the reverse
   var all = allDerived();
   var open = all.filter(function (d) { return d.tier !== 'closed'; });
   var main = S.view === 'today' ? viewToday(filtered(open)) : S.view === 'board' ? viewBoard(filtered(all)) :
-    S.view === 'list' ? viewList(filtered(all)) : S.view === 'dash' ? viewDash(all) : S.view === 'desk' ? viewDesk() : S.view === 'review' ? viewReview() : S.view === 'todo' ? viewTodo() : viewSettings();
+    S.view === 'list' ? viewList(filtered(all)) : S.view === 'dash' ? viewDash(all) : S.view === 'desk' ? viewDesk() : S.view === 'review' ? viewReview() : S.view === 'todo' ? viewTodo() :
+    S.view === 'mine' ? viewMine() : S.view === 'papers' ? viewPapers(filtered(all)) : viewSettings();
   // Animate only what is new (a view, filter or search result, or a layer that just opened); plain
   // re-renders (typing, toggles, saves, live refresh, tour steps) repaint without replaying animations.
   app.classList.toggle('calm', !S.fx.list && !!S.painted);
@@ -2541,7 +2668,7 @@ function render() {
   var sbs = document.querySelector('.sb-scroll'), sbScroll = sbs ? sbs.scrollTop : 0, sbm = document.querySelector('.sb-mid'), sbMid = sbm ? sbm.scrollTop : 0;
   var shell0 = app.querySelector('.shell'), drWas = !!(shell0 && shell0.classList.contains('drawer')); // 0.2.9
   var sbOver = sbCollapsed() && N3() && (S.sbPeek || S.sbSlide); // the full sidebar over (peek) or under (slide) the rail
-  var appHtml = '<div class="shell' + (sbCollapsed() && !sbOver ? ' sbc' : '') + (sbOver ? (S.sbSlide ? ' sbslide' : ' sbpeek') : '') + (S.sbShow ? ' sbshow' : '') + (S.drawer ? ' drawer' : '') + (panelShown() ? ' pshown' : '') + (S.view === 'today' && todayView() === 'blocks' ? ' tvb blkA' : '') + '">' + sidebar() + '<div class="scrim" data-a="drawer-close"></div><div class="drshade" aria-hidden="true"></div>' + (panelShown() ? '<div class="pscrim" aria-hidden="true"></div>' : '') +
+  var appHtml = '<div class="shell' + (sbCollapsed() && !sbOver ? ' sbc' : '') + (sbOver ? (S.sbSlide ? ' sbslide' : ' sbpeek') : '') + (S.sbShow ? ' sbshow' : '') + (S.drawer ? ' drawer' : '') + (panelShown() ? ' pshown' : '') + (blkView() ? ' tvb blkA' : '') + '">' + sidebar() + '<div class="scrim" data-a="drawer-close"></div><div class="drshade" aria-hidden="true"></div>' + (panelShown() ? '<div class="pscrim" aria-hidden="true"></div>' : '') +
     '<div class="mainwrap">' + topbar() + '<div class="wrap"><div class="cols"><div class="main">' + pageTools() + draftBar() + main + '</div></div></div></div>' + (panelShown() ? panel() : '') + // 0.2.9: the card is its own layer
     '<div class="fstat' + fsNew() + '" aria-live="polite">' + statusChip() + '</div></div>' + fab();
   morph(app, appHtml); // 0.2.8: only what changed is touched
@@ -2585,6 +2712,7 @@ function render() {
   scSync(); // 0.2.7
   histSync(); // 0.2.8
   if (!S.warmed && S.boot && !S.stale) { S.warmed = true; setTimeout(warmLayers, 1200); } // 0.3.3 (BACKLOG 40)
+  if (S.mwTo && S.view === 'mine') { var mt = document.getElementById(S.mwTo); S.mwTo = null; if (mt) mt.scrollIntoView({ block: 'start' }); } // 0.3.5: To-do or To confirm, from an old address or the bell
 }
 /* 0.3.3 (BACKLOG 40, admin: "app vẫn có khựng nhẹ khi ấn noti hoặc setting khi mới mở app, sau đso thì mượt lại"): measured
    with the processor slowed 4 times, the first opening of Settings or Notifications spent 65 ms on a forced layout and
@@ -2642,7 +2770,7 @@ var PWA_ORIGIN = 'https://vibra-group.github.io';
 var EMBED = window.__VIBRA_EMBED || '';
 function prefs() { return (S.boot && S.boot.prefs) || {}; }
 function sbCollapsed() { return (layName() === 'short' && !S.drawer) || ((!!prefs().sbCollapsed || railForced()) && !phoneW()); } // 0.2.9: a phone on its side shows the icon rail
-function unreadCount() { return allNotes().filter(function (n) { return !n.read; }).length + notesUnreadMore() + remDue().length + (relNew().length ? 1 : 0); }
+function unreadCount() { return allNotes().filter(function (n) { return !n.read; }).length + notesUnreadMore() + remDue().length + (relNew().length ? 1 : 0) + (tcUnseen().length ? 1 : 0); }
 /* 0.2.7 (admin: "hiện vài noti gần đây thôi ... ấn vào mới load thêm thông báo trước đó, cho đỡ phải tải về hết 1 lượt"):
    the data brings the 15 most recent notifications; "See earlier notifications" fetches the next 20 from the server.
    Order: newest first, then by id (the server's order), so a page never skips or repeats one. */
@@ -2654,6 +2782,13 @@ function allNotes() {
 }
 function notesMore() { return S.nOld && S.nOld.loaded ? S.nOld.more : !!(S.boot && S.boot.notifMore); }
 function notesUnreadMore() { return S.nOld && S.nOld.loaded ? S.nOld.unreadMore || 0 : (S.boot && S.boot.notifUnreadMore) || 0; }
+/* 0.3.5: Papers on a phone: the strip of tabs tucks away while the page is read downwards, comes back on the way up */
+var PPY = 0;
+window.addEventListener('scroll', function () {
+  var y = window.scrollY, dy = y - PPY; if (Math.abs(dy) < 8) return; PPY = y;
+  var st = S.view === 'papers' && document.querySelector('.pp-tabs.strip'); if (!st) { S.ppTuck = false; return; }
+  var t = dy > 0 && y > 260; if (t === !!S.ppTuck) return; S.ppTuck = t; st.classList.toggle('tuck', t);
+}, { passive: true });
 /* 0.3.1: the list's end row coming into view (scrolled to within 48 px of it) loads the next page by itself, not while
    the list is being swiped away */
 document.addEventListener('scroll', function (e) {
@@ -2686,14 +2821,16 @@ function dlText(d) {
   return '<span class="d' + (d.dl < 0 ? ' late' : '') + '">' + (d.dl < 0 ? (-d.dl) + ' d late' : d.dl === 0 ? 'today' : d.dl + ' d') + '</span>';
 }
 function sidebar() {
-  var nav = [['today', 'Today', 'today'], ['board', 'Pipeline', 'board'], ['list', 'All manuscripts', 'list'], ['dash', 'Dashboard', 'dash']];
-  if (todoOn()) nav.push(['todo', 'To-do', 'check']); // 0.2.3
+  var nw = UIN(), nav = nw ? [['mine', 'My work', 'user'], ['papers', 'Papers', 'book'], ['grp', 'Group'], ['dash', 'Dashboard', 'dash']] : // 0.3.5 (BACKLOG 64): the New layout
+    [['today', 'Today', 'today'], ['board', 'Pipeline', 'board'], ['list', 'All manuscripts', 'list'], ['dash', 'Dashboard', 'dash']];
+  if (todoOn() && !nw) nav.push(['todo', 'To-do', 'check']); // 0.2.3; 0.3.5: in New, the to-do is part of My work
   if (isSup()) nav.push(['review', 'Changes to review', 'undo']); // 0.2.3: Supervisor and Admin
   if (me().role === 'Admin') nav.push(['desk', 'AI desk', 'desk']);
-  var openN = allDerived().filter(function (d) { return d.tier !== 'closed'; }).length;
+  var openN = allDerived().filter(function (d) { return d.tier !== 'closed'; }).length, moveN = nw ? myWork().length + toConfirm().length : 0;
   var navHtml = nav.map(function (n) {
+    if (n[0] === 'grp') return '<div class="sb-grp" role="presentation">' + n[1] + '</div>';
     return '<button class="sb-item" data-a="view" data-v="' + n[0] + '"' + (S.view === n[0] ? ' aria-current="page"' : '') + (sbCollapsed() ? tt(n[1]) : '') + '>' + ic(n[2]) + '<span class="lab">' + n[1] + '</span>' +
-      (n[0] === 'today' ? '<span class="cnt">' + openN + '</span>' : n[0] === 'todo' && tdDueN() ? '<span class="cnt cnt-due">' + tdDueN() + '</span>' : n[0] === 'review' && S.rev && S.rev.total ? '<span class="cnt">' + S.rev.total + '</span>' : '') + '</button>';
+      (n[0] === 'today' || n[0] === 'papers' ? '<span class="cnt">' + openN + '</span>' : n[0] === 'mine' && moveN ? '<span class="cnt">' + moveN + '</span>' : n[0] === 'todo' && tdDueN() ? '<span class="cnt cnt-due">' + tdDueN() + '</span>' : n[0] === 'review' && S.rev && S.rev.total ? '<span class="cnt">' + S.rev.total + '</span>' : '') + '</button>';
   }).join('');
   var byId = {}; allDerived().forEach(function (d) { byId[d.m.id] = d; });
   var pinned = pins().map(function (id) { return byId[id]; }).filter(Boolean);
@@ -2709,13 +2846,13 @@ function sidebar() {
   };
   var unread = unreadCount();
   return '<aside class="sb" aria-label="Sidebar">' +
-    '<div class="sb-top"><button class="sb-brand" data-a="view" data-v="today" aria-label="VIBRA Tracker, go to Today" title="VIBRA Tracker ' + esc(S.boot.version) + '"><b>VIBRA</b><span>Tracker</span></button>' +
+    '<div class="sb-top"><button class="sb-brand" data-a="view" data-v="today" aria-label="VIBRA Tracker, go to ' + (nw ? 'My work' : 'Today') + '" title="VIBRA Tracker ' + esc(S.boot.version) + '"><b>VIBRA</b><span>Tracker</span></button>' +
     '<button class="sb-ib sb-hide" data-a="sb-toggle" aria-label="' + (S.drawer ? 'Close the sidebar' : sbCollapsed() ? 'Show the sidebar' : 'Hide the sidebar') + '"' + tt(sbCollapsed() ? 'Show the sidebar' : 'Hide the sidebar', 'Ctrl .') + '>' + ic('sidebar') + '</button></div>' +
     (canEdit() ? '<button class="sb-item sb-new" data-a="nf-open"' + (sbCollapsed() ? tt('New manuscript') : '') + '><span class="plus">' + ic('plus') + '</span><span class="lab">New manuscript</span></button>' : '') +
     '<div class="sb-mid"><nav aria-label="Views">' + navHtml + '</nav>' +
     '<div class="sb-scroll">' +
     (pinned.length ? sec('pin', 'Pinned', pinned.map(function (d) { return sbM(d, dlText(d)); }), '') : '') +
-    sec('mine', 'Waiting on me', mine.map(function (d) { return sbM(d, dlText(d)); }), 'Nothing waits on you. Well done.') +
+    (nw ? '' : sec('mine', 'Waiting on me', mine.map(function (d) { return sbM(d, dlText(d)); }), 'Nothing waits on you. Well done.')) + // 0.3.5: in New, My work answers it
     sec('recent', 'Recent', rec.map(function (d) { return sbM(d, ''); }), 'Manuscripts you open appear here.') +
     '</div></div>' +
     '<div class="sb-foot">' +
@@ -2816,6 +2953,7 @@ function backOnline() {
 function pageTools() {
   if (S.view === 'settings' || S.view === 'desk') return '';
   if (S.view === 'review' || S.view === 'todo') return '';
+  if (S.view === 'mine' || S.view === 'papers') return pageToolsNew(); // 0.3.5
   return '<div class="ptools">' + (S.view === 'today' ? '<div class="seg seg-s" role="group" aria-label="Layout of Today">' +
     [['list', 'List', 'list'], ['blocks', 'Blocks', 'apps']].map(function (o) { return '<button data-a="tview" data-v="' + o[0] + '" aria-pressed="' + (todayView() === o[0]) + '" title="Show Today as ' + o[1].toLowerCase() + '">' + ic(o[2]) + '<span class="lab">' + o[1] + '</span></button>'; }).join('') + '</div>' : '') + (S.q ? '<button class="fchip" data-a="q-clear" aria-label="Remove the filter ' + esc(S.q) + '">Filter: ' + esc(short(S.q, 24)) + ic('x') + '</button>' : '') +
     (S.view !== 'dash' ? '<button class="btn btn-s" data-a="pop" data-v="export" aria-expanded="' + (S.pop === 'export') + '">' + ic('down') + 'Export</button>' : '') + '</div>';
@@ -2876,7 +3014,7 @@ function palEntries(q) {
   cmds.filter(function (c) { return !toks.length || toks.every(function (t) { return fold(c[2]).indexOf(t) >= 0; }); }).slice(0, toks.length ? 6 : 12).forEach(function (c) {
     out.push({ g: 'Commands', a: c[0], v: c[1], icon: c[3], title: c[2], sub: '' });
   });
-  if (toks.length) out.push({ g: 'Commands', a: 'q-set', v: q.trim(), icon: 'find', title: 'Filter the list by “' + q.trim() + '”', sub: 'Shows only matching manuscripts in Today, Pipeline and All manuscripts' });
+  if (toks.length) out.push({ g: 'Commands', a: 'q-set', v: q.trim(), icon: 'find', title: 'Filter the list by “' + q.trim() + '”', sub: UIN() ? 'Shows only matching manuscripts in Papers' : 'Shows only matching manuscripts in Today, Pipeline and All manuscripts' });
   return out;
 }
 /* 0.3.3 (BACKLOG 55 D, admin: "Ask the tracker"): a question in plain words typed in Search ("which papers are waiting on me?",
@@ -2947,7 +3085,7 @@ function palRun(k) {
   if (e.a === 'pal-ask-hint') { var t = document.getElementById('pal-q'); if (t) { t.placeholder = 'Ask a question about the manuscripts…'; t.focus(); } return; }
   S.pal = null;
   if (e.a === 'pal-m') { if (S.view === 'settings' || S.view === 'desk') S.view = 'today'; render(); openManuscript(Number(e.v)); return; }
-  if (e.a === 'q-set') { S.q = e.v; S.fx.list = true; if (S.view !== 'today' && S.view !== 'board' && S.view !== 'list') S.view = 'list'; render(); return; }
+  if (e.a === 'q-set') { S.q = e.v; S.fx.list = true; if (S.view !== 'today' && S.view !== 'board' && S.view !== 'list' && S.view !== 'papers') S.view = 'list'; render(); return; }
   render();
   if (ACT[e.a]) ACT[e.a](e.v);
 }
@@ -2977,12 +3115,13 @@ function viewSettings() {
       PALS.map(function (o) { var c = o[curTheme() === 'dark' ? 3 : 2]; return '<button class="cs-o" data-a="cs-set" data-v="' + o[0] + '" aria-pressed="' + (palPref() === o[0]) + '"><span class="cs-sw" aria-hidden="true"><i style="background:' + c[0] + '"></i><i style="background:' + c[1] + '"></i><b style="background:' + c[2] + '"></b></span>' + o[1] + '</button>'; }).join('') +
       '</div></div>' + (window.VIBRA_WEB ? '<div class="fs-row"><label class="lbl" for="fs-range" id="fs-l">Text size</label><div class="fs-sl"><span class="fs-a" style="font-size:var(--fs-xs)" aria-hidden="true">A</span>' +
         '<input type="range" class="fs-rng" id="fs-range" min="1" max="6" step="1" value="' + fontPref() + '" aria-valuetext="' + fsPct(fontPref()) + '"><span class="fs-a" style="font-size:var(--fs-3xl)" aria-hidden="true">A</span><span class="fs-v mono" id="fs-v">' + fsPct(fontPref()) + '</span></div></div>' : '') +
+      layoutRow() +
       '<div class="setrow"><div style="flex:1;min-width:0"><label for="p-sb" style="font-weight:500">Keep the sidebar hidden</label><div class="muted" style="font-size:var(--fs-xs)">Only the icons stay on the left (Ctrl + .).</div></div>' +
       '<input id="p-sb" class="switch" type="checkbox" data-i="pref" data-v="sbCollapsed"' + (prefs().sbCollapsed ? ' checked' : '') + '></div>' +
       '<p class="muted" style="margin:0;font-size:var(--fs-xs)">Remembered for your account, on every device.</p></div>' +
       '<div class="box"><h2>Data</h2><div class="btns"><a class="btn btn-s" target="_blank" rel="noopener" href="https://docs.google.com/spreadsheets/d/' + esc(sheet.id) + '/export?format=xlsx">' + ic('down') + 'Download the database (Excel)</a>' +
       '<a class="btn btn-s" target="_blank" rel="noopener" href="' + esc(sheet.url) + '">' + ic('sheet') + 'Open the Sheet</a></div>' +
-      '<p class="muted" style="margin:0;font-size:var(--fs-xs)">A branded export: Export on Today, Pipeline or All manuscripts.</p></div>';
+      '<p class="muted" style="margin:0;font-size:var(--fs-xs)">A branded export: Export on ' + (UIN() ? 'Papers' : 'Today, Pipeline or All manuscripts') + '.</p></div>';
   } else if (tab === 'notifications') {
     var swOff = (S.boot.cal || {}).on ? sw('dl', 'One of my deadlines is close', '7 days and 1 day before, when I have the ball') :
       '<div class="setrow off" aria-disabled="true"><div style="flex:1;min-width:0"><span style="font-weight:500">One of my deadlines is close</span><div class="muted" style="font-size:var(--fs-xs)">Switched on by the admin with the helper</div></div><input class="switch" type="checkbox" disabled aria-label="One of my deadlines is close, not available yet"></div>';
@@ -3220,7 +3359,7 @@ function fullNames(t) {
 }
 function chips(base) {
   var all = base || S.boot.manuscripts.map(derive).filter(function (d) { return d.tier !== 'closed'; });
-  var keys = ['all'].concat(S.boot.people.map(function (p) { return p.key; })), au = S.view === 'list';
+  var keys = ['all'].concat(S.boot.people.map(function (p) { return p.key; })), au = S.view === 'list' || S.view === 'papers';
   var cf = S.chipF || {}; // 0.3.1: drawn as they were last fitted, so a redraw does not unfold them for a moment (the page jumped)
   return '<div class="chips' + (cf.f ? ' folded' : '') + '"><span class="frow"><span class="lbl">' + (au ? 'Whose manuscripts' : 'Whose work') + '</span>' + tip(au ? 'whoseAll' : 'whose') + '</span>' + keys.map(function (k) {
     var n = k === 'all' ? all.length : all.filter(function (d) { return involves(d, k, au); }).length;
@@ -3278,7 +3417,7 @@ function blockHtml(d, i) {
     '<span class="bl-t">' + esc(m.title) + '</span>' + lockChip(m.id) +
     '<span class="bl-j">' + esc(m.journal || 'Journal not chosen') + '</span>' +
     '<span class="bl-p">' + ic('ball') + '<span>' + esc(peopleText(m.people)) + '</span></span>' +
-    (m.next ? '<span class="bl-n">' + esc(String(m.next).split('\n')[0]) + '</span>' : '') +
+    (m.next ? '<span class="bl-n">' + esc(fullNames(String(m.next).split('\n')[0])) + '</span>' : '') +
     '<span class="bl-prog" aria-label="Progress: ' + esc(p[1] === 'prep' ? 'preparing, ' : p[1] === 'jour' ? 'at the journal, ' : '') + esc(p[2]) + '"><span class="prog"><i class="pg-' + p[1] + '" style="width:' + Math.round(p[0] * 100) + '%"></i></span><span class="bl-st">' + esc(p[2]) + '</span></span></button>';
 }
 function viewToday(list) {
@@ -3332,22 +3471,23 @@ function viewList(list0) {
     var k = isWin(d.m) ? 'win' : 'rej'; if (gh[k]) return ''; gh[k] = 1;
     return '<tr class="ghead' + (k === 'rej' ? ' rej' : '') + '"><td colspan="7">' + (k === 'win' ? ic('check') + 'Accepted and published · ' + nWin : 'Rejected · ' + nRej) + '</td></tr>';
   };
-  var rows = list.map(function (d, i) {
-    var m = d.m, sub = [m.journal, m.impact_factor ? 'IF ' + m.impact_factor : '', m.ms_id].filter(Boolean).join(' · ');
-    return head(d) + '<tr data-a="open" data-v="' + m.id + '"' + (S.sel === m.id ? ' aria-current="true"' : '') + (d.tier === 'closed' ? ' class="closed' + (isWin(m) ? ' win' : '') + '"' : '') + '><td>' + tagHtml(d) + '</td>' +
-      '<td style="max-width:380px"><button class="sr-btn" data-a="open" data-v="' + m.id + '" style="all:unset;cursor:pointer;font-weight:550">' + esc(m.title) + '</button>' + lockChip(m.id) + '<div class="muted" style="font-size:var(--fs-xs)">' + esc(sub) + '</div>' +
-      (m.doi ? '<div style="font-size:var(--fs-xs)">' + doiLink(m.doi) + '</div>' : '') + (rowLink(m) && !rowLink(m).doi ? '<div style="margin-top:4px">' + trackChip(m) + '</div>' : '') + '</td>' + // 0.3.3 (BACKLOG 49): the same one button as the rows
-      '<td>' + esc(m.status) + '<div class="muted" style="font-size:var(--fs-xs)">' + esc(m.stage) + '</div></td><td>' + esc(peopleText(m.people)) + rolesHtml(m) + '</td>' +
-      '<td style="max-width:300px;white-space:pre-line">' + esc(fullNames(m.next)) + '</td><td class="mono">' + esc(m.deadline ? niceShort(m.deadline) : '') + '</td><td class="mono muted">' + esc(nice(m.last_update)) + '</td></tr>';
-  }).join('');
+  var rows = list.map(function (d) { return head(d) + tblRow(d); }).join('');
   var base = list0;
   var opts = '<div class="chips"><span class="frow"><span class="lbl">Show</span>' + tip('lst') + '</span>' + LST.map(function (o) {
     return '<button class="chip" data-a="lst" data-v="' + o[0] + '" aria-pressed="' + (S.lst === o[0]) + '">' + o[1] + ' <span class="n">' + lstFilter(base, o[0]).length + '</span></button>';
   }).join('') + '</div>';
   var nAll = S.boot.manuscripts.length, nClosed = allDerived().filter(function (d) { return d.tier === 'closed'; }).length;
-  return '<h1 class="h1">All manuscripts</h1><p class="sub">Every manuscript the group has tracked: ' + nAll + ' in total, ' + (nAll - nClosed) + ' in progress and ' + nClosed + ' finished.</p>' + opts + chips(lstFilter(allDerived(), S.lst)) +
-    '<div class="tbox"><table><thead><tr><th>Urgency</th><th>Title</th><th>Status</th><th>Ball is with</th><th>Next actions</th><th>Deadline</th><th>Last update</th></tr></thead><tbody>' +
-    (rows || '<tr><td colspan="7" class="muted" style="padding:18px">No manuscript matches.</td></tr>') + '</tbody></table></div>';
+  return '<h1 class="h1">All manuscripts</h1><p class="sub">Every manuscript the group has tracked: ' + nAll + ' in total, ' + (nAll - nClosed) + ' in progress and ' + nClosed + ' finished.</p>' + opts + chips(lstFilter(allDerived(), S.lst)) + tblHtml(rows);
+}
+var TBL_HEAD = '<tr><th>Urgency</th><th>Title</th><th>Status</th><th>Ball is with</th><th>Next actions</th><th>Deadline</th><th>Last update</th></tr>';
+function tblHtml(rows) { return '<div class="tbox"><table><thead>' + TBL_HEAD + '</thead><tbody>' + (rows || '<tr><td colspan="7" class="muted" style="padding:18px">No manuscript matches.</td></tr>') + '</tbody></table></div>'; }
+function tblRow(d) {
+    var m = d.m, sub = [m.journal, m.impact_factor ? 'IF ' + m.impact_factor : '', m.ms_id].filter(Boolean).join(' · ');
+    return '<tr data-a="open" data-v="' + m.id + '"' + (S.sel === m.id ? ' aria-current="true"' : '') + (d.tier === 'closed' ? ' class="closed' + (isWin(m) ? ' win' : '') + '"' : '') + '><td>' + tagHtml(d) + '</td>' +
+      '<td style="max-width:380px"><button class="sr-btn" data-a="open" data-v="' + m.id + '" style="all:unset;cursor:pointer;font-weight:550">' + esc(m.title) + '</button>' + lockChip(m.id) + '<div class="muted" style="font-size:var(--fs-xs)">' + esc(sub) + '</div>' +
+      (m.doi ? '<div style="font-size:var(--fs-xs)">' + doiLink(m.doi) + '</div>' : '') + (rowLink(m) && !rowLink(m).doi ? '<div style="margin-top:4px">' + trackChip(m) + '</div>' : '') + '</td>' + // 0.3.3 (BACKLOG 49): the same one button as the rows
+      '<td>' + esc(m.status) + '<div class="muted" style="font-size:var(--fs-xs)">' + esc(m.stage) + '</div></td><td>' + esc(peopleText(m.people)) + rolesHtml(m) + '</td>' +
+      '<td style="max-width:300px;white-space:pre-line">' + esc(fullNames(m.next)) + '</td><td class="mono">' + esc(m.deadline ? niceShort(m.deadline) : '') + '</td><td class="mono muted">' + esc(nice(m.last_update)) + '</td></tr>';
 }
 
 /* ---------- dashboard (0.1.1): four questions, in the order the admin chose */
@@ -3579,7 +3719,7 @@ function defaultRem(m, dl) {
   var t = S.boot.today, date;
   if (dl && m.deadline) date = m.deadline;
   else date = m.deadline && days(m.deadline, t) > 2 ? addDays(m.deadline, -2) : addDays(t, 1);
-  var first = String(m.next || '').split('\n')[0].replace(/^\s*\d+\.\s*/, '').trim();
+  var first = fullNames(String(m.next || '').split('\n')[0].replace(/^\s*\d+\.\s*/, '').trim());
   return { mid: m.id, date: date, time: dl ? '' : '09:00', allDay: !!dl, inApp: !dl,
     note: dl ? 'Deadline: ' + short(m.title, 70) : (first ? short(first, 120) : 'Check ' + short(m.title, 70)) };
 }
@@ -3588,7 +3728,7 @@ function localStamp(d) { return d.getFullYear() + pad2(d.getMonth() + 1) + pad2(
 function timed(r) { return !r.allDay && /^\d{2}:\d{2}$/.test(r.time || ''); }
 function calTitle(r, m) { return 'VIBRA: ' + short(r.note || m.title, 90); }
 function calDetails(r, m) {
-  return m.title + (m.journal ? '\n' + m.journal : '') + (r.note ? '\n\n' + r.note : '') + (m.next ? '\n\nNext actions:\n' + m.next : '') +
+  return m.title + (m.journal ? '\n' + m.journal : '') + (r.note ? '\n\n' + r.note : '') + (m.next ? '\n\nNext actions:\n' + fullNames(m.next) : '') +
     (m.deadline ? '\n\nDeadline: ' + nice(m.deadline) : '') + (S.boot.appUrl ? '\n\nOpen the VIBRA Tracker: ' + S.boot.appUrl : '');
 }
 function gcalUrl(r, m) {
@@ -4120,7 +4260,7 @@ function viewTodo() {
     '<div class="seg seg-s td-seg" role="group" aria-label="To-do layout">' + [['list', 'List', 'list'], ['cal', 'Calendar', 'cal2']].map(function (o) { return '<button data-a="td-mode" data-v="' + o[0] + '" aria-pressed="' + (mode === o[0]) + '">' + ic(o[2]) + '<span class="lab">' + o[1] + '</span></button>'; }).join('') + '</div></div>' +
     '<div class="td-grid m-' + mode + '">' + tdListCard() + tdCalCard() + '</div>';
 }
-function tdListCard() {
+function tdListCard(own) {
   var T0 = S.boot.today, f = S.tdDay, items = remList();
   var a = S.td || (S.td = { note: '', date: f || '', mid: '' });
   var openMs = S.boot.manuscripts.filter(function (m) { return ['Published', 'Rejected'].indexOf(m.status) < 0; }).slice().sort(function (x, y) { return x.id - y.id; });
@@ -4129,7 +4269,7 @@ function tdListCard() {
     '<select id="td-mid" class="in" data-i="td" data-v="mid" aria-label="Manuscript (optional)"><option value="">No manuscript</option>' +
     openMs.map(function (m) { return '<option value="' + m.id + '"' + (String(a.mid) === String(m.id) ? ' selected' : '') + '>#' + m.id + ' ' + esc(short(m.title, 56)) + '</option>'; }).join('') + '</select>' +
     '<button class="btn btn-p" type="submit">' + ic('plus') + 'Add</button></div></form>';
-  var all = items.concat(ballLines()), sel = f ? all.filter(function (r) { return r.date === f; }) : all, wk = addDays(T0, 7);
+  var all = own ? items : items.concat(ballLines()), sel = f ? all.filter(function (r) { return r.date === f; }) : all, wk = addDays(T0, 7);
   var groups = f ? [['On ' + nice(f), sel.filter(function (r) { return !r.done; }), '']] : [
     ['Overdue', sel.filter(function (r) { return !r.done && r.date && r.date < T0; }), 'late'],
     ['Today', sel.filter(function (r) { return !r.done && r.date === T0; }), 'now'],
@@ -4139,8 +4279,8 @@ function tdListCard() {
   var body = groups.filter(function (g) { return g[1].length; }).map(function (g) {
     return '<div class="td-sec"><h3 class="' + g[2] + '">' + esc(g[0]) + ' <span class="muted">' + g[1].length + '</span></h3>' + g[1].slice().sort(tdSort).map(function (r) { return r.ball ? tdBallRow(r) : tdRow(r); }).join('') + '</div>';
   }).join('');
-  var done = items.filter(function (r) { return r.done && (!f || r.date === f); }).sort(function (x, y) { return (x.dd || x.date) < (y.dd || y.date) ? 1 : -1; }), bd = f ? [] : ballDone();
-  return '<div class="box td-list"><div class="frow"><h2>My to-do</h2>' + tip('todo', true) + (f ? '<span style="margin-left:auto"></span><button class="btn btn-q" data-a="td-day" data-v="">Show all</button>' : '') + '</div>' + add +
+  var done = items.filter(function (r) { return r.done && (!f || r.date === f); }).sort(function (x, y) { return (x.dd || x.date) < (y.dd || y.date) ? 1 : -1; }), bd = f || own ? [] : ballDone();
+  return '<div class="box td-list">' + (own && !f ? '' : '<div class="frow">' + (own ? '' : '<h2>My to-do</h2>' + tip('todo', true)) + (f ? '<span style="margin-left:auto"></span><button class="btn btn-q" data-a="td-day" data-v="">Show all</button>' : '') + '</div>') + add +
     (body || '<p class="empty" style="margin:0">' + (f ? 'Nothing open on ' + esc(nice(f)) + '.' : 'Nothing to do.') + '</p>') +
     (done.length || bd.length ? '<details class="td-done" data-keep="tddone"' + (S.keep.tddone ? ' open' : '') + '><summary>Done (' + (done.length + bd.length) + ')</summary>' + bd.map(tdBallDone).join('') + done.map(tdRow).join('') + '</details>' : '') + '</div>';
 }
@@ -4157,11 +4297,12 @@ function tdRow(r) {
     '<button class="btn btn-q" data-a="td-edit" data-v="' + esc(r.id) + '" aria-label="Edit"' + tt('Edit') + '>' + ic('pencil') + '</button>' +
     '<button class="btn btn-q" data-a="td-del" data-v="' + esc(r.id) + '" aria-label="Delete"' + tt('Delete') + '>' + ic('trash') + '</button></span></div>';
 }
-function tdEditRow() {
+function tdEditRow(del) {
   var e = S.tde;
   return '<div class="td-row td-editing"><div class="td-main" style="display:grid;gap:8px;width:100%"><input id="tde-note" class="in" data-i="tde" data-v="note" maxlength="300" value="' + esc(e.note) + '" aria-label="What is to be done">' +
     '<div class="td-add2"><input class="in" type="date" data-i="tde" data-v="date" value="' + esc(e.date || '') + '" aria-label="Date (optional)"><input class="in" type="time" data-i="tde" data-v="time" value="' + esc(e.time || '') + '" aria-label="Time (optional)">' +
-    '<button class="btn btn-p" data-a="tde-save">Save</button><button class="btn btn-q" data-a="tde-cancel">Cancel</button></div></div></div>';
+    '<button class="btn btn-p" data-a="tde-save">Save</button><button class="btn btn-q" data-a="tde-cancel">Cancel</button>' +
+    (del ? '<button class="btn btn-q mwt-del" data-a="td-del" data-v="' + esc(e.id) + '">' + ic('trash') + 'Delete</button>' : '') + '</div></div></div>';
 }
 function tdCalCard() {
   var T0 = S.boot.today, mk = S.tdMonth || T0.slice(0, 7), y = Number(mk.slice(0, 4)), mo = Number(mk.slice(5, 7)) - 1;
@@ -4283,7 +4424,7 @@ function trackChip(m) { // inside a row or block (a button): a span that opens t
   var t = rowLink(m); return t ? '<span class="trk-chip' + (t.step ? ' step' : '') + '" data-a="track" data-v="' + m.id + '" title="' + esc(t.step ? t.label + ' · ' + t.url : t.label) + '">' + (t.step ? ic('link') + esc(short(t.label, 22)) : t.doi ? 'DOI' : 'Track') + ic('arrow') + '</span>' : '';
 }
 function stepChips(d) {
-  var L = liveLinks(d.links).filter(function (l) { return l.kind !== 'track'; }), lines = String(d.next || '').split('\n'), out = '', n = 0;
+  var L = liveLinks(d.links).filter(function (l) { return l.kind !== 'track'; }), lines = fullNames(String(d.next || '')).split('\n'), out = '', n = 0;
   if (!L.length) return '';
   lines.forEach(function (line) {
     var t = line.trim(); if (!t) return; n++;
@@ -4319,12 +4460,13 @@ function tdSort(a, b) {
   var ia = a.d ? (a.d.idle || 0) : 0, ib = b.d ? (b.d.idle || 0) : 0; if (ia !== ib) return ib - ia;
   return (a.c || '') < (b.c || '') ? -1 : 1;
 }
-function tdBallRow(r) {
+function tdBallRow(r, upd) {
   var T0 = S.boot.today, late = r.date && r.date < T0, d = r.d, ask = S.tdb && S.tdb.mid === r.mid;
   return '<div class="td-row ball' + (ask ? ' asking' : '') + '"><button class="td-chk round" data-a="tdb-ask" data-v="' + r.mid + '" role="checkbox" aria-checked="false" aria-label="Mark this step done: ' + esc(short(r.note, 60)) + '">' + ic('check') + '</button>' +
-    '<div class="td-main"><span class="td-src">' + ic('ball') + 'Ball with me</span><span class="td-t">' + esc(fullNames(r.note)) + '</span>' +
+    '<div class="td-main">' + (upd ? '' : '<span class="td-src">' + ic('ball') + 'Ball with me</span>') + '<span class="td-t">' + esc(fullNames(r.note)) + '</span>' +
     '<span class="td-meta">' + (r.date ? '<span class="td-d' + (late ? ' late' : r.date === T0 ? ' now' : '') + '">' + esc(niceShort(r.date)) + '</span>' : '') + tagHtml(d) +
-    '<button class="td-m" data-a="open" data-v="' + r.mid + '">#' + r.mid + ' ' + esc(short(d.m.title, 46)) + '</button>' + trackChip(d.m) + '</span></div></div>' +
+    '<button class="td-m" data-a="open" data-v="' + r.mid + '">#' + r.mid + ' ' + esc(short(d.m.title, 46)) + '</button>' + trackChip(d.m) + '</span></div>' +
+    (upd && canEdit() ? '<span class="td-acts mw-upd"><button class="btn btn-s" data-a="qu-open" data-v="' + r.mid + '">' + ic('bolt') + 'Update</button></span>' : '') + '</div>' +
     (ask ? '<div class="tdb-ask" role="group" aria-label="Mark this step done"><b>Mark this step done?</b><span class="muted">The AI updates the next actions. Undo is possible.</span>' +
       '<input id="tdb-note" class="in" maxlength="300" data-i="tdb" data-v="note" value="' + esc(S.tdb.note || '') + '" placeholder="Note (optional)">' +
       '<div class="btns"><button class="btn btn-p" data-a="tdb-go" data-v="' + r.mid + '">Mark done</button><button class="btn btn-q" data-a="tdb-cancel">Cancel</button></div></div>' : '');
@@ -4346,6 +4488,170 @@ function tdBallGo(mid) {
     if (x.helper) runHelper(x.helper, x.id);
   }).catch(function (e) { toast(msg(e), true); });
 }
+
+/* ---------- 0.3.5 (BACKLOG 64; admin, 29 Oct 2026: "Mỗi người nên tự quản công việc của mình"; "nhớ có nút để chọn giao diện
+   cũ và mới"): the New layout. One question, one place: My work (what is mine: the AI's questions, my moves, my own to-do,
+   the manuscripts I am on) and Papers (where every manuscript is); Dashboard, Changes to review and the AI desk under
+   Group. Classic is the app as in 0.3.4, untouched. The layout is the member's choice (Settings, Appearance), kept with
+   the account; until they choose, Meta ui_new_users decides (no row: New). Only what is shown changes: the data, the
+   notifications and the AI are the same. An old view's address (Today, Pipeline, All manuscripts, To-do) opens its new
+   place, and the reverse. */
+function UIN() { var p = prefs().layout; return p === 'classic' ? false : p === 'new' ? true : !!(S.boot && S.boot.uinew); }
+var V_NEW = { today: 'mine', todo: 'mine', board: 'papers', list: 'papers' }, V_OLD = { mine: 'today', papers: 'list' };
+function viewOf(v) { var m = UIN() ? V_NEW : V_OLD; return m[v] || v; }
+function viewFix() { var v = viewOf(S.view); if (v !== S.view) { if (S.view === 'todo') S.mwTo = 'mw-todo'; S.view = v; } }
+function mineView() { return prefs().mineView === 'list' ? 'list' : 'blocks'; }
+function papersView() { return prefs().papersView === 'list' ? 'list' : 'blocks'; }
+function blkView() { return S.view === 'today' ? todayView() === 'blocks' : S.view === 'mine' ? mineView() === 'blocks' : S.view === 'papers' ? papersView() === 'blocks' : false; }
+function layoutRow() {
+  return '<div class="setrow ly-row"><div style="flex:1;min-width:0"><span style="font-weight:500" id="ly-l">Layout</span><div class="muted" style="font-size:var(--fs-xs)">' +
+    (UIN() ? 'New: My work, Papers and Group.' : 'Classic: Today, Pipeline, All manuscripts and To-do.') + ' The data is the same in both.</div></div>' +
+    '<div class="seg seg-s" role="group" aria-labelledby="ly-l">' + [['new', 'New'], ['classic', 'Classic']].map(function (o) {
+      return '<button data-a="layout-set" data-v="' + o[0] + '" aria-pressed="' + (UIN() === (o[0] === 'new')) + '">' + o[1] + '</button>';
+    }).join('') + '</div></div>';
+}
+function pageToolsNew() {
+  var mine = S.view === 'mine', cur = mine ? mineView() : papersView();
+  return '<div class="ptools"><div class="seg seg-s" role="group" aria-label="Layout of ' + (mine ? 'My work' : 'Papers') + '">' +
+    [['list', 'List', 'list'], ['blocks', 'Blocks', 'apps']].map(function (o) { return '<button data-a="' + (mine ? 'mview' : 'pview') + '" data-v="' + o[0] + '" aria-pressed="' + (cur === o[0]) + '" title="Show as ' + o[1].toLowerCase() + '">' + ic(o[2]) + '<span class="lab">' + o[1] + '</span></button>'; }).join('') + '</div>' +
+    (!mine && S.q ? '<button class="fchip" data-a="q-clear" aria-label="Remove the filter ' + esc(S.q) + '">Filter: ' + esc(short(S.q, 24)) + ic('x') + '</button>' : '') +
+    (!mine ? '<button class="btn btn-s" data-a="pop" data-v="export" aria-expanded="' + (S.pop === 'export') + '">' + ic('down') + 'Export</button>' : '') + '</div>';
+}
+/* To confirm: what only the member can settle. For now the quick updates the AI could not apply without one more detail
+   (the 06:00 check and the helper ask in the reply; answering is possible for a day). The bell points to it once. */
+function toConfirm() { return S.boot ? (S.boot.requests || []).filter(canAnswer) : []; }
+function tcUnseen() { var seen = prefs().tcSeen || []; return toConfirm().filter(function (r) { return seen.indexOf(r.id) < 0; }); }
+function tcMarkSeen() {
+  var u = tcUnseen(); if (!u.length) return;
+  var p = S.boot.prefs = S.boot.prefs || {}; p.tcSeen = (p.tcSeen || []).concat(u.map(function (r) { return r.id; })).slice(-40); keepBoot(); render();
+  api('api_setPrefs', { tcSeen: p.tcSeen }).catch(function () { });
+}
+function tcBell() {
+  var tc = toConfirm(); if (!tc.length) return '';
+  return '<button class="nitem' + (tcUnseen().length ? ' unread' : '') + '" data-a="tc-go"><span class="ndot" aria-hidden="true"></span><span><span class="lbl" style="display:block">To confirm' + (UIN() ? ' · My work' : '') + '</span>' +
+    'The AI asks you about ' + (tc.length === 1 ? 'one of your updates' : tc.length + ' of your updates') + '.</span></button>';
+}
+function tcRow(r) {
+  var m = r.manuscript_id ? mById(r.manuscript_id) : null;
+  return '<div class="tc-row"><div class="tc-main"><span class="lbl">' + (m ? '#' + m.id + ' ' + esc(short(m.title, 60)) : 'Quick update') + ' · ' + esc(niceShort(r.ts)) + '</span>' +
+    '<span class="tc-q">' + ic('spark') + '<span>' + esc(fullNames(r.reply || 'The AI needs one more detail.')) + '</span></span>' +
+    '<span class="tc-you">You wrote: “' + esc(short(r.text || '(screenshot only)', 160)) + '”</span></div>' +
+    '<button class="btn btn-p" data-a="q-answer" data-v="' + esc(r.id) + '">Answer</button></div>';
+}
+function ballMine(d) { var k = me().key; return d.m.people.some(function (p) { return p.name === k; }); }
+function mineAll() { var k = me().key; return allDerived().filter(function (d) { return involves(d, k, true); }); }
+function mwBlock(d, i) {
+  var m = d.m, p = progress(m), anim = S.fx.list ? ' fx-in" style="--i:' + Math.min(i, 14) : S.fx.items ? ' fx-new' : '', ask = S.tdb && S.tdb.mid === m.id, step = firstStep(m.next) || 'Decide the next step';
+  return '<div class="block mwb' + (ask ? ' asking' : '') + anim + '" data-a="open" data-v="' + m.id + '" role="button" tabindex="0"' + (S.sel === m.id ? ' aria-current="true"' : '') + '>' +
+    '<span class="bl-top">' + tagHtml(d) + trackChip(m) + '<span class="meta">' + metaHtml(d) + '</span></span>' +
+    '<span class="bl-t">' + esc(m.title) + '</span>' + lockChip(m.id) +
+    '<span class="bl-j">' + esc(m.journal || 'Journal not chosen') + '</span>' +
+    '<span class="bl-step"><b>Your step:</b> ' + esc(fullNames(step)) + '</span>' +
+    '<span class="bl-prog" aria-label="Progress: ' + esc(p[1] === 'prep' ? 'preparing, ' : p[1] === 'jour' ? 'at the journal, ' : '') + esc(p[2]) + '"><span class="prog"><i class="pg-' + p[1] + '" style="width:' + Math.round(p[0] * 100) + '%"></i></span><span class="bl-st">' + esc(p[2]) + '</span></span>' +
+    (!canEdit() ? '' : ask ? '<span class="mw-ask" data-a="mw-in" role="group" aria-label="Mark this step done"><b>Mark this step done?</b><span class="muted">The AI moves the manuscript on. Undo is possible.</span>' +
+      '<input id="tdb-note" class="in" maxlength="300" data-i="tdb" data-v="note" value="' + esc(S.tdb.note || '') + '" placeholder="Note (optional)">' +
+      '<span class="btns"><button class="btn btn-p" data-a="tdb-go" data-v="' + m.id + '">Mark done</button><button class="btn btn-q" data-a="tdb-cancel">Cancel</button></span></span>' :
+      '<span class="mw-acts"><button class="btn btn-s" data-a="tdb-ask" data-v="' + m.id + '" aria-label="Done: ' + esc(short(step, 60)) + '">' + ic('check') + 'Done</button>' +
+      '<button class="btn btn-s" data-a="qu-open" data-v="' + m.id + '" aria-label="Update #' + m.id + '">' + ic('bolt') + 'Update</button></span>') + '</div>';
+}
+/* 0.3.5 (admin, 29 Oct 2026: "to-do nhìn giao diện tốn chỗ quá"): My work's own to-do as one compact list: a line to add
+   (the date and the manuscript appear only while adding), one line per item with its date on the right, the tools at hand
+   on a computer when the mouse is on the line. The To-do page of Classic is unchanged. */
+var WD = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+function mwtWhen(d) {
+  var n = days(d, S.boot.today);
+  return n === 0 ? 'Today' : n === 1 ? 'Tomorrow' : n > 1 && n < 7 ? WD[new Date(dnum(d) * 86400000).getUTCDay()] : niceShort(d);
+}
+function mwtRow(r) {
+  if (S.tde && S.tde.id === r.id) return tdEditRow(true);
+  var m = mById(r.mid), T0 = S.boot.today, late = !r.done && r.date && r.date < T0;
+  return '<div class="td-row mwt-row' + (r.done ? ' done' : '') + '"><button class="td-chk round" data-a="td-done" data-v="' + esc(r.id) + '" role="checkbox" aria-checked="' + !!r.done + '" aria-label="' + (r.done ? 'Mark as not done' : 'Mark as done') + ': ' + esc(short(tdText(r), 60)) + '">' + ic('check') + '</button>' +
+    '<span class="mwt-t"><button class="td-t mwt-e" data-a="td-edit" data-v="' + esc(r.id) + '" aria-label="Edit: ' + esc(short(tdText(r), 60)) + '">' + esc(tdText(r)) + '</button>' + (m ? '<button class="td-m" data-a="open" data-v="' + m.id + '" title="' + esc(m.title) + '">#' + m.id + '</button>' : '') +
+    (r.k !== 't' ? '<span class="td-tag">Reminder</span>' : '') + (r.cal ? '<span class="td-tag">' + ic('cal') + '</span>' : '') + '</span>' +
+    '<span class="td-acts">' + (r.date && !r.done ? '<a class="btn btn-q" data-a="td-gcal" data-v="' + esc(r.id) + '" target="_blank" rel="noopener" href="' + esc(tdGcal(r)) + '" aria-label="Add to Google Calendar"' + tt('Add to Google Calendar') + '>' + ic('cal') + '</a>' : '') +
+    '<button class="btn btn-q" data-a="td-edit" data-v="' + esc(r.id) + '" aria-label="Edit"' + tt('Edit') + '>' + ic('pencil') + '</button>' +
+    '<button class="btn btn-q" data-a="td-del" data-v="' + esc(r.id) + '" aria-label="Delete"' + tt('Delete') + '>' + ic('trash') + '</button></span>' +
+    '<span class="mwt-d' + (late ? ' late' : r.date === T0 ? ' now' : '') + '">' + (r.done && r.dd ? 'Done ' + esc(niceShort(r.dd)) : r.date ? esc(late ? niceShort(r.date) + ', late' : mwtWhen(r.date)) + (r.time ? ' ' + esc(r.time) : '') : '') + '</span></div>';
+}
+function mwTodo() {
+  var a = S.td || (S.td = { note: '', date: '', mid: '' }), items = remList();
+  var openMs = S.boot.manuscripts.filter(function (m) { return ['Published', 'Rejected'].indexOf(m.status) < 0; }).slice().sort(function (x, y) { return x.id - y.id; });
+  var open = items.filter(function (r) { return !r.done; }).sort(tdSort), done = items.filter(function (r) { return r.done; }).sort(function (x, y) { return (x.dd || x.date) < (y.dd || y.date) ? 1 : -1; });
+  return '<div class="box mwt">' + open.map(mwtRow).join('') +
+    '<form class="mwt-add' + (a.note || a.date || a.mid ? ' has' : '') + '" id="td-form" novalidate><span class="mwt-plus" aria-hidden="true">' + ic('plus') + '</span>' +
+    '<input id="td-note" class="mwt-in" data-i="td" data-v="note" maxlength="300" placeholder="Add a to-do" value="' + esc(a.note || '') + '" aria-label="Add a to-do">' +
+    '<span class="mwt-more"><input id="td-date" class="in" type="date" data-i="td" data-v="date" value="' + esc(a.date || '') + '" aria-label="Date (optional)" title="Date (optional)">' +
+    '<select id="td-mid" class="in" data-i="td" data-v="mid" aria-label="Manuscript (optional)"><option value="">No manuscript</option>' +
+    openMs.map(function (m) { return '<option value="' + m.id + '"' + (String(a.mid) === String(m.id) ? ' selected' : '') + '>#' + m.id + ' ' + esc(short(m.title, 48)) + '</option>'; }).join('') + '</select>' +
+    '<button class="btn btn-p" type="submit">Add</button></span></form>' +
+    (done.length ? '<details class="td-done mwt-done" data-keep="tddone"' + (S.keep.tddone ? ' open' : '') + '><summary>Done (' + done.length + ')</summary>' + done.map(mwtRow).join('') + '</details>' : '') + '</div>';
+}
+function mwSec(id, title, hint, n, body, extra) {
+  return '<section class="sec" id="' + id + '"><div class="sec-h"><h2>' + esc(title) + '</h2><span class="mono">' + n + (hint ? ' · ' + esc(hint) : '') + '</span>' + (extra || '') + '</div>' + body + '</section>';
+}
+function viewMine() {
+  var k = me().key, all = allDerived(), open = all.filter(function (d) { return d.tier !== 'closed'; });
+  var move = open.filter(ballMine), other = open.filter(function (d) { return !ballMine(d) && involves(d, k, true); }), tc = toConfirm(), blocks = mineView() === 'blocks';
+  var out = '<h1 class="h1">My work</h1><p class="sub"><span class="mono">' + esc(longDay(S.boot.today)) + '</span>. ' + sinceLine(mineAll()) + '</p>';
+  if (tc.length) out += mwSec('mw-tc', 'To confirm', 'the AI asks you', tc.length, '<div class="box tc-box">' + tc.map(tcRow).join('') + '</div>');
+  out += mwSec('mw-move', 'Your move', 'where you have the ball, the most urgent first', move.length,
+    !move.length ? '<div class="list"><div class="empty">Nothing waits on you.' + (canEdit() ? ' Starting a paper? <button class="linkbtn" data-a="nf-open">New manuscript</button>' : '') + '</div></div>' :
+      blocks ? '<div class="blocks">' + move.map(mwBlock).join('') + '</div>' :
+      '<div class="box td-list mw-list">' + move.map(function (d) { return tdBallRow({ ball: true, id: 'b' + d.m.id, mid: d.m.id, d: d, note: firstStep(d.m.next) || 'Decide the next step', date: d.m.deadline || '' }, true); }).join('') + '</div>');
+  if (todoOn()) {
+    var mode = S.tdMode === 'cal' ? 'cal' : 'list', openTd = remList().filter(function (r) { return !r.done; }).length;
+    out += mwSec('mw-todo', 'Your own to-do', 'only you see these', openTd, '<div class="td-grid m-' + mode + ' mw-td">' + (mode === 'cal' ? tdCalCard() : S.tdWide ? tdListCard(true) : mwTodo()) + '</div>',
+      '<div class="seg seg-s mw-seg" role="group" aria-label="To-do layout">' + [['list', 'List', 'list'], ['cal', 'Calendar', 'cal2']].map(function (o) { return '<button data-a="td-mode" data-v="' + o[0] + '" aria-pressed="' + (mode === o[0]) + '">' + ic(o[2]) + '<span class="lab">' + o[1] + '</span></button>'; }).join('') + '</div>');
+  }
+  if (other.length) out += '<details class="sec mw-else" id="mw-else" data-keep="mwelse"' + (S.keep.mwelse ? ' open' : '') + '><summary class="sec-h"><h2>' + ic('chev') + 'On your manuscripts, the ball is elsewhere</h2><span class="mono">' + other.length + ' · to keep an eye on</span></summary>' +
+    (blocks ? '<div class="blocks">' + other.map(blockHtml).join('') + '</div>' : '<div class="list">' + other.map(rowHtml).join('') + '</div>') + '</details>';
+  return out;
+}
+/* Papers: every manuscript, in four groups by where it is (Pipeline's columns), the most urgent first in each; the
+   urgency tiles of Today stay on top as filters (admin, 29 Oct 2026: kept); Whose counts authors too (All manuscripts).
+   Replaces Today for everyone, Pipeline and All manuscripts (its table is the List). */
+var PP_GROUPS = [['write', 'Being written', 'drafting, internal review, ready to submit, accepted with work left'], ['jour', 'At journals', 'submitted or under review'],
+  ['win', 'Accepted and published', ''], ['rej', 'Rejected', '']];
+var PP_SHOW = 8;
+function ppGroup(d) {
+  if (d.tier === 'closed') return isWin(d.m) ? 'win' : 'rej';
+  return d.m.status === 'Submitted' || d.m.status === 'Under Review' ? 'jour' : 'write';
+}
+function ppBlock(d, i) { var h = blockHtml(d, i); return d.tier === 'closed' && isWin(d.m) ? h.replace('<button class="block', '<button class="block win') : h; }
+/* Admin, 29 Oct 2026 (the tiles take too much room, on a laptop too): "hơi hiện như kiểu cuốn sổ, có các marker bên cạnh, mỗi
+   marker là 1 ô lọc, có 1 nút là all"; of the pictures, B ("Đồng ý B"): a notebook's tabs on the page's right edge, where
+   there is room for them (the free column), else a strip of tabs hanging under the top bar that tucks away while the page
+   is read downwards and comes back on the way up. They replace the tiles and, in Papers, the scrubber. */
+function ppMarks(T, open0, pt, nAll) {
+  var side = fcolOn() && !phoneW();
+  var one = function (t, n, lab) {
+    return '<button class="ptab' + (t ? ' pt-' + t : ' pt-all') + '" data-a="ptier" data-v="' + (t || pt) + '" aria-pressed="' + (t ? pt === t : !pt) + '"' + (t && !n && pt !== t ? ' disabled' : '') + ' aria-label="' + (t ? n + ' ' + lab + (pt === t ? ', show every manuscript' : ', show only these') : 'Every manuscript, ' + nAll) + '">' +
+      '<b>' + n + '</b><span>' + lab + '</span></button>';
+  };
+  var marks = one('', nAll, 'All') + T.map(function (t) { return one(t, open0.filter(function (d) { return d.tier === t; }).length, t === 'chase' ? 'Chase' : TIER_LABEL[t]); }).join('');
+  // admin, 29 Oct 2026: with a card open the tabs stay: beside it where there is room (like the floating buttons), else
+  // under it with the page (dimmed like the blocks, still pressable)
+  return '<nav class="pp-tabs ' + (side ? 'side' : 'strip' + (S.ppTuck ? ' tuck' : '')) + '" aria-label="Urgency">' + marks + '</nav>';
+}
+function viewPapers(list0) {
+  var T = ['due', 'deadline', 'action', 'chase', 'waiting', 'drafting'], pt = T.indexOf(S.ptier) >= 0 ? S.ptier : '', blocks = papersView() === 'blocks';
+  var list = pt ? list0.filter(function (d) { return d.tier === pt; }) : list0, open0 = list0.filter(function (d) { return d.tier !== 'closed'; });
+  var nAll = S.boot.manuscripts.length, nOpen = allDerived().filter(function (d) { return d.tier !== 'closed'; }).length, all = !!(pt || S.q), rows = '';
+  var secs = PP_GROUPS.map(function (g) {
+    var items = list.filter(function (d) { return ppGroup(d) === g[0]; });
+    if (g[0] === 'win' || g[0] === 'rej') items.sort(closedSort);
+    if (!items.length) return pt || g[0] === 'rej' ? '' : '<section class="sec" id="pp-' + g[0] + '"><div class="sec-h"><h2>' + g[1] + '</h2><span class="mono">0</span></div><div class="list"><div class="empty">Nothing here' + (S.who !== 'all' ? ' for ' + esc(S.who === me().key ? 'you' : chipName(S.who)) : '') + '.</div></div></section>';
+    if (!blocks) { rows += '<tr class="ghead pp-h' + (g[0] === 'rej' ? ' rej' : g[0] === 'win' ? ' win' : '') + '"><td colspan="7">' + (g[0] === 'win' ? ic('check') : '') + g[1] + ' · ' + items.length + '</td></tr>' + items.map(tblRow).join(''); return ''; }
+    var more = all || (S.ppAll || {})[g[0]] ? 0 : Math.max(0, items.length - PP_SHOW);
+    return '<section class="sec pp-' + g[0] + '" id="pp-' + g[0] + '"><div class="sec-h"><h2>' + (g[0] === 'win' ? ic('check') : '') + g[1] + '</h2><span class="mono">' + items.length + (g[2] ? ' · ' + g[2] : '') + '</span></div>' +
+      '<div class="blocks">' + items.slice(0, more ? PP_SHOW : items.length).map(ppBlock).join('') + '</div>' +
+      (more ? '<button class="pp-more" data-a="pp-more" data-v="' + g[0] + '">+ ' + more + ' more</button>' : '') + '</section>';
+  }).join('');
+  return '<h1 class="h1">Papers</h1><p class="sub">Every manuscript of the group: ' + nAll + ', of which ' + nOpen + ' in progress. Grouped by where they are; the most urgent first.</p>' +
+    chips(allDerived()) + ppMarks(T, open0, pt, list0.length) +
+    (blocks ? secs : tblHtml(rows));
+}
+setInterval(function () { if (S.boot && !S.stale && S.view === 'mine' && UIN() && document.visibilityState === 'visible' && tcUnseen().length) { if (S.tcOn) tcMarkSeen(); S.tcOn = true; } else S.tcOn = false; }, 2500); // on screen a few seconds: pointed at
 
 /* ---------- 0.3.0 (admin, 24 Oct 2026: "khi ấn vào setting thì ra mục setting, còn khi ấn vào tên thì ra đăng nhập với account
    khác hoặc sign out, hoặc project khác (cái cuối là test, tôi muốn sau này app này không chỉ là vibra mà có thể tạo ra nền
@@ -4495,9 +4801,9 @@ function feedRows() {
 }
 function digestBox() {
   var G = S.boot.digest || {}, u = me(), admin = u.role === 'Admin', n = (person(u.key) || {}).notif || {};
-  var why = !G.on ? 'Switched on by the admin with the helper' : G.mode === 'off' ? 'Paused by the admin' : G.mode === 'admin' && !admin ? 'The admin is trying it first; it starts for everyone after that' : 'Monday 07:00, what waits on you and on the group';
+  var why = !G.on ? 'Switched on by the admin with the helper' : G.mode === 'off' ? 'Paused by the admin' : G.mode === 'admin' && !admin ? 'The admin is trying it first; it starts for everyone after that' : 'Monday 07:00: your move, deadlines this week, what changed';
   var can = G.on && (G.mode === 'all' || (G.mode === 'admin' && admin));
-  var sw = '<div class="setrow' + (can ? '' : ' off') + '"' + (can ? '' : ' aria-disabled="true"') + '><div style="flex:1;min-width:0"><label for="n-digest" style="font-weight:500">Weekly digest by e-mail</label><div class="muted" style="font-size:var(--fs-xs)">' + esc(why) + '</div></div>' + tip('digest', true) +
+  var sw = '<div class="setrow' + (can ? '' : ' off') + '"' + (can ? '' : ' aria-disabled="true"') + '><div style="flex:1;min-width:0"><label for="n-digest" style="font-weight:500">Your week: Monday e-mail and notification</label><div class="muted" style="font-size:var(--fs-xs)">' + esc(why) + '</div></div>' + tip('digest', true) +
     '<input id="n-digest" class="switch" type="checkbox" data-i="notif" data-v="digest"' + (n.digest !== false && can ? ' checked' : '') + (can ? '' : ' disabled') + '></div>';
   var adm = admin && G.on ? '<div class="setrow" style="flex-wrap:wrap"><div style="flex:1;min-width:200px"><span style="font-weight:500">Who receives the digest</span><div class="muted" style="font-size:var(--fs-xs)">Admin setting. Only me = trial' + (G.last ? '. Last sent ' + esc(G.last) : '') + '</div></div>' +
     '<div class="seg" role="group" aria-label="Who receives the digest">' + [['admin', 'Only me'], ['all', 'Everyone'], ['off', 'Nobody']].map(function (o) {
@@ -4576,14 +4882,14 @@ function panel() {
   var histHtml = !hist ? '<div class="skel" style="width:70%"></div><div class="skel" style="width:50%;margin-top:8px"></div>' :
     !hist.length ? '<p class="muted" style="margin:0">No history yet.</p>' : histGroups(hist);
   var stageOk = d.status === 'Submitted' || d.status === 'Under Review';
-  return '<aside class="panel' + (S.fx.panel ? ' fx-panel' : '') + '" aria-label="Manuscript details"><i class="dbar-x" aria-hidden="true"></i>' + // 0.3.1: the bar of a layer that leaves sideways
-    '<div class="p-top"><button class="btn btn-q back" data-a="close">' + ic('back') + 'Back</button>' + tagHtml(dd) + '<span class="mono muted" style="font-size:var(--fs-xs)">#' + m.id + '</span>' +
-    '<span style="margin-left:auto"></span>' + trackBtn(m) + '<button class="ibtn" data-a="pin" data-v="' + m.id + '" aria-pressed="' + (pins().indexOf(m.id) >= 0) + '" aria-label="' + (pins().indexOf(m.id) >= 0 ? 'Unpin from the sidebar' : 'Pin to the sidebar') + '"' + tt(pins().indexOf(m.id) >= 0 ? 'Unpin from the sidebar' : 'Pin to the sidebar') + '>' + ic('pin') + '</button><button class="ibtn close" data-a="close" aria-label="Close details">' + ic('x') + '</button></div>' +
-    (S.confirmClose ? '<div class="warn" style="margin-top:12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center">' + (S.offline ? 'You are offline. Keep your changes on this device and save them later?' : 'You have unsaved changes.') + '<span style="margin-left:auto"></span>' +
+  var P = {
+    top: '<div class="p-top"><button class="btn btn-q back" data-a="close">' + ic('back') + 'Back</button>' + tagHtml(dd) + '<span class="mono muted" style="font-size:var(--fs-xs)">#' + m.id + '</span>' +
+    '<span style="margin-left:auto"></span>' + trackBtn(m) + '<button class="ibtn" data-a="pin" data-v="' + m.id + '" aria-pressed="' + (pins().indexOf(m.id) >= 0) + '" aria-label="' + (pins().indexOf(m.id) >= 0 ? 'Unpin from the sidebar' : 'Pin to the sidebar') + '"' + tt(pins().indexOf(m.id) >= 0 ? 'Unpin from the sidebar' : 'Pin to the sidebar') + '>' + ic('pin') + '</button><button class="ibtn close" data-a="close" aria-label="Close details">' + ic('x') + '</button></div>',
+    head: (S.confirmClose ? '<div class="warn" style="margin-top:12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center">' + (S.offline ? 'You are offline. Keep your changes on this device and save them later?' : 'You have unsaved changes.') + '<span style="margin-left:auto"></span>' +
       (S.offline ? '<button class="btn btn-p" data-a="close-keep">Keep for later</button><button class="btn btn-s" data-a="discard">Discard</button>' : '<button class="btn btn-s" data-a="discard">Discard</button><button class="btn btn-p" data-a="save">Save</button>') + '</div>' : '') +
     lockBanner(m) + delNote(m) + '<h2 class="p-title">' + esc(m.title) + (ce ? '<button type="button" class="p-tedit" data-a="title-edit" aria-label="Edit the title, journal, IF and IDs"' + tt('Edit the title, journal, IF and IDs') + '>' + ic('pencil') + '</button>' : '') + '</h2><div class="muted" style="font-size:var(--fs-sm)">' + esc([m.type, m.journal || 'Journal not chosen', m.ms_id].filter(Boolean).join(' · ')) + '</div>' +
-    '<div class="p-roles">' + (corrName(m) ? '<span><i>Corresponding</i>' + esc(corrName(m)) + '</span>' : '<span class="none"><i>Corresponding</i>not marked yet</span>') + (firstName(m) ? '<span><i>First author</i>' + esc(firstName(m)) + '</span>' : '') + tip('aroles', true) + '</div>' +
-    '<div class="p-grid">' +
+    '<div class="p-roles">' + (corrName(m) ? '<span><i>Corresponding</i>' + esc(corrName(m)) + '</span>' : '<span class="none"><i>Corresponding</i>not marked yet</span>') + (firstName(m) ? '<span><i>First author</i>' + esc(firstName(m)) + '</span>' : '') + tip('aroles', true) + '</div>',
+    grid: '<div class="p-grid">' +
     field('Status', 'status', '<select id="f-status" class="in" data-i="d" data-v="status"' + ro + '>' + st.statuses.map(function (s) { return '<option' + (d.status === s ? ' selected' : '') + '>' + s + '</option>'; }).join('') + '</select>') +
     field('Stage', 'stage', '<select id="f-stage" class="in" data-i="d" data-v="stage"' + (stageOk ? ro : ' disabled') + '><option value="">' + (stageOk ? 'Choose a stage' : 'Only when at a journal') + '</option>' + st.stages.map(function (s) { return '<option' + (d.stage === s ? ' selected' : '') + '>' + s + '</option>'; }).join('') + '</select>', true) +
     field('Deadline', 'deadline', '<input id="f-dl" class="in" type="date" data-i="d" data-v="deadline" value="' + esc(d.deadline) + '"' + ro + '>') +
@@ -4596,31 +4902,92 @@ function panel() {
     (back ? '<div class="warn" style="margin-top:10px">This moves the manuscript back from ' + esc(m.status) + ' to ' + esc(d.status) + '. Save only if it really went back.</div>' : '') +
     '<div class="pact"><button class="btn btn-s" data-a="rem-open" aria-expanded="' + !!(S.rem && S.rem.mid === m.id) + '">' + ic('cal') + 'Remind me</button>' +
     (m.deadline ? '<button class="btn btn-s" data-a="rem-dl">' + ic('cal') + 'Deadline to my calendar</button>' : '') +
-    tip('remind', true) + '</div>' + remEditor(m) +
-    '<div class="p-sec"><div class="frow"><span class="lbl" id="ball-l">Ball is with</span>' + tip('ball') + '</div>' + tagsHtml('ball', d.people) + (ce ? editorHtml('ball') + cbHtml('ball') : '') + '</div>' +
-    '<div class="p-sec"><div class="frow"><label class="lbl" for="f-next">Next actions</label>' + tip('next') + (todoOn() ? '<button class="btn btn-q" style="margin-left:auto;min-height:28px;padding:2px 8px;font-size:var(--fs-sm)" data-a="tdx-open" aria-expanded="' + !!(S.tdx && S.tdx.mid === m.id) + '">' + ic('plus') + 'To-do</button>' : '') + '</div>' +
-    '<textarea id="f-next" class="in" rows="3" data-i="d" data-v="next" data-k="num" placeholder="Type an action and press Enter: the list numbers itself"' + ro + '>' + esc(d.next) + '</textarea>' + stepChips(d) + tdxEditor(m) + linksHtml(m, d, ce) + '</div>' +
-    '<div class="p-sec"><div class="frow"><span class="lbl" id="au-l">Authors, in order</span>' + tip('authors') + '<span class="mono muted" style="margin-left:auto;font-size:var(--fs-2xs)">' + (d.authors.length ? d.authors.length + ' authors' : '') + '</span></div>' +
+    tip('remind', true) + '</div>' + remEditor(m),
+    ball: '<div class="p-sec"><div class="frow"><span class="lbl" id="ball-l">Ball is with</span>' + tip('ball') + '</div>' + tagsHtml('ball', d.people) + (ce ? editorHtml('ball') + cbHtml('ball') : '') + '</div>',
+    au: '<div class="p-sec"><div class="frow"><span class="lbl" id="au-l">Authors, in order</span>' + tip('authors') + '<span class="mono muted" style="margin-left:auto;font-size:var(--fs-2xs)">' + (d.authors.length ? d.authors.length + ' authors' : '') + '</span></div>' +
     (d.authors.length ? tagsHtml('au', d.authors) + (ce ? editorHtml('au') + cbHtml('au') : '') +
       (canEdit() && m.authors && m.authors.length ? '<div class="au-det"><button class="btn btn-s" data-a="ad-open" data-v="' + m.id + '">' + ic('people') + 'Author details</button>' +
         '<button class="btn btn-s" data-a="au-export" data-v="' + m.id + '" title="Author sheet for submission (Excel)">' + ic('down') + 'Author sheet</button>' + tip('audet', true) +
         (m.au && m.au[0] ? '<span class="aum' + (m.au[1] < m.au[0] ? ' warn' : '') + '">' + (m.au[1] === m.au[0] ? 'Complete for all ' + m.au[0] + ' authors' : (m.au[0] - m.au[1]) + ' of ' + m.au[0] + ' authors still miss an affiliation, e-mail or ORCID') + '</span>' : '') + '</div>' : '') :
-      (ce ? '<label for="f-paste" class="muted" style="font-size:var(--fs-sm)">No author list yet. Paste it once, separated by commas or semicolons, and it becomes tags.</label><textarea id="f-paste" class="in" rows="3" placeholder="Y Van Tran, Phong Van Pham, Giustino Varrassi"></textarea><button class="btn btn-s" style="align-self:flex-start" data-a="paste">Make tags</button>' : '<p class="muted" style="margin:0">No author list yet.</p>')) + '</div>' +
-    '<details class="p-sec" data-keep="ids"' + (S.keep.ids ? ' open' : '') + '><summary style="cursor:pointer;font-weight:500;color:var(--accent-text)">Title, journal, IF and IDs</summary><div class="p-grid" style="margin-top:8px">' +
+      (ce ? '<label for="f-paste" class="muted" style="font-size:var(--fs-sm)">No author list yet. Paste it once, separated by commas or semicolons, and it becomes tags.</label><textarea id="f-paste" class="in" rows="3" placeholder="Y Van Tran, Phong Van Pham, Giustino Varrassi"></textarea><button class="btn btn-s" style="align-self:flex-start" data-a="paste">Make tags</button>' : '<p class="muted" style="margin:0">No author list yet.</p>')) + '</div>',
+    ids: '<details class="p-sec" data-keep="ids"' + (S.keep.ids ? ' open' : '') + '><summary style="cursor:pointer;font-weight:500;color:var(--accent-text)">Title, journal, IF and IDs</summary><div class="p-grid" style="margin-top:8px">' +
     '<div style="grid-column:1/-1;display:flex;flex-direction:column;gap:4px"><label class="lbl" for="f-title">Title</label><textarea id="f-title" class="in" rows="2" data-i="d" data-v="title"' + ro + '>' + esc(d.title) + '</textarea></div>' +
     simple('Type', 'type', d.type, ro) + simple('Target journal', 'journal', d.journal, ro) + simple('Journal impact factor', 'impact_factor', d.impact_factor, ro) + simple('First author', 'first_author', d.first_author, ro) +
     simple('MS ID', 'ms_id', d.ms_id, ro) + simple('DOI', 'doi', d.doi, ro) +
     '<div style="display:flex;flex-direction:column;gap:4px"><div class="frow"><label class="lbl" for="f-preprint">Preprint</label>' + tip('preprint', true) + (preprintUrl(d.preprint) ? '<a class="pp-open" href="' + esc(preprintUrl(d.preprint)) + '" target="_blank" rel="noopener">Open</a>' : '') + '</div>' +
     '<input id="f-preprint" class="in" data-i="d" data-v="preprint" value="' + esc(d.preprint) + '" placeholder="ID or DOI"' + ro + '></div>' +
     '<div style="display:flex;flex-direction:column;gap:4px"><label class="lbl" for="f-sub">Submission date</label><input id="f-sub" class="in" type="date" data-i="d" data-v="submission_date" value="' + esc(d.submission_date) + '"' + ro + '></div>' +
-    (ce ? '<div style="grid-column:1/-1;display:flex;align-items:center;gap:8px"><button type="button" class="btn btn-s" data-a="lk-open">' + ic('link') + 'Add a link</button>' + tip('links', true) + '</div>' : '') + '</div></details>' +
-    xlBox(m) +
-    '<div class="p-sec"><div class="frow"><span class="lbl">History</span>' + tip('note', true) + '</div>' +
+    (ce ? '<div style="grid-column:1/-1;display:flex;align-items:center;gap:8px"><button type="button" class="btn btn-s" data-a="lk-open">' + ic('link') + 'Add a link</button>' + tip('links', true) + '</div>' : '') + '</div></details>',
+    hist: '<div class="p-sec"><div class="frow"><span class="lbl">History</span>' + tip('note', true) + '</div>' +
     (canEdit() ? '<div style="display:flex;gap:8px"><label class="sr" for="f-note">Add a note</label><input id="f-note" class="in" placeholder="Add a dated note, e.g. Reviewer comments received"><button class="btn btn-s" data-a="note">Add</button></div>' : '') +
-    '<div class="hist">' + histHtml + '</div></div>' + delZone(m) +
-    (canEdit() ? '<div class="savebar"><span class="state" id="savestate">' + saveStateText() + '</span>' +
-      '<button class="btn btn-s" data-a="discard"' + (dirty() ? '' : ' disabled') + ' id="b-discard">Discard</button><button class="btn btn-p" data-a="save" id="b-save"' + (dirty() && !S.saving && !lk ? '' : ' disabled') + '>' + (S.saving ? 'Saving…' : 'Save') + '</button></div>' : '') +
-    '</aside>';
+    '<div class="hist">' + histHtml + '</div></div>',
+    save: (canEdit() ? '<div class="savebar"><span class="state" id="savestate">' + saveStateText() + '</span>' +
+      '<button class="btn btn-s" data-a="discard"' + (dirty() ? '' : ' disabled') + ' id="b-discard">Discard</button><button class="btn btn-p" data-a="save" id="b-save"' + (dirty() && !S.saving && !lk ? '' : ' disabled') + '>' + (S.saving ? 'Saving…' : 'Save') + '</button></div>' : '')
+  };
+  if (UIN()) return '<aside class="panel' + (S.fx.panel ? ' fx-panel' : '') + ' pnew' + (dirty() || S.saving ? ' pdirty' : '') + '" aria-label="Manuscript details"><i class="dbar-x" aria-hidden="true"></i>' + P.top + P.head + panelNew(m, d, dd, ce, P, '<div class="p-sec"><div class="frow"><label class="lbl" for="f-next">Next actions</label>' + tip('next') + (todoOn() ? '<button class="btn btn-q" style="margin-left:auto;min-height:28px;padding:2px 8px;font-size:var(--fs-sm)" data-a="tdx-open" aria-expanded="' + !!(S.tdx && S.tdx.mid === m.id) + '">' + ic('plus') + 'To-do</button>' : '') + '</div>' +
+    '<textarea id="f-next" class="in" rows="3" data-i="d" data-v="next" data-k="num" placeholder="Type an action and press Enter: the list numbers itself"' + ro + '>' + esc(d.next) + '</textarea>' + stepChips(d) + tdxEditor(m) + '</div>') + delZone(m) + P.save + '</aside>'; // 0.3.5 (BACKLOG 64)
+  return '<aside class="panel' + (S.fx.panel ? ' fx-panel' : '') + '" aria-label="Manuscript details"><i class="dbar-x" aria-hidden="true"></i>' + // 0.3.1: the bar of a layer that leaves sideways
+    P.top + P.head + P.grid + P.ball + '<div class="p-sec"><div class="frow"><label class="lbl" for="f-next">Next actions</label>' + tip('next') + (todoOn() ? '<button class="btn btn-q" style="margin-left:auto;min-height:28px;padding:2px 8px;font-size:var(--fs-sm)" data-a="tdx-open" aria-expanded="' + !!(S.tdx && S.tdx.mid === m.id) + '">' + ic('plus') + 'To-do</button>' : '') + '</div>' +
+    '<textarea id="f-next" class="in" rows="3" data-i="d" data-v="next" data-k="num" placeholder="Type an action and press Enter: the list numbers itself"' + ro + '>' + esc(d.next) + '</textarea>' + stepChips(d) + tdxEditor(m) + linksHtml(m, d, ce) + '</div>' + P.au + P.ids + xlBox(m) + P.hist + delZone(m) + P.save + '</aside>';
+}
+/* 0.3.5 (BACKLOG 64; brief, the card leads with a summary): in the New layout the card answers first where the manuscript
+   is, who has the ball, the next step and the latest news (who or what said it); then Tell the tracker (the news in a
+   few words, or Step done: the AI moves the record on, as a quick update); then the rest folded: Details (the fields),
+   Authors, Links, History. Editing stays one tap away; the Save bar shows while fields are being changed. */
+function newsVal(h) {
+  if (h.field === 'note') return esc(short(fullNames(h.new), 200));
+  if (['note', 'created', 'deleted', 'restored', 'nudge', 'people_json', 'authors_json', 'links_json'].indexOf(h.field) >= 0 || /^author:/.test(h.field)) return histVal(h);
+  if (h.field === 'next_actions') return '<b>Next actions</b> ' + (h.new ? 'updated' : 'cleared'); // the Next step above already says them
+  return '<b>' + esc(LABEL[h.field] || h.field) + '</b> ' + esc(short(fullNames(h.new || '(empty)'), 140));
+}
+function newsHtml(m) {
+  var h = S.hist[m.id];
+  if (!h) return '<div class="skel" style="width:80%"></div>';
+  if (!h.length) return '<span class="muted">Nothing yet.</span>';
+  // the newest save that says something about where the manuscript is (a note, the status, the ball, the next step ...),
+  // not a journal's impact factor filled in
+  var NEWS = ['note', 'status', 'stage', 'deadline', 'next_actions', 'people_json', 'links_json', 'created', 'restored', 'submission_date', 'doi', 'journal', 'nudge'];
+  var f = h.filter(function (x) { return NEWS.indexOf(x.field) >= 0; })[0] || h[0];
+  var g = h.filter(function (x) { return x.ts === f.ts && x.actor === f.actor && NEWS.indexOf(x.field) >= 0; }), note = g.filter(function (x) { return x.field === 'note'; })[0];
+  if (!g.length) g = [f];
+  var what = note ? newsVal(note) : g.slice(0, 2).map(newsVal).join('; ') + (g.length > 2 ? '; ' + (g.length - 2) + ' more' : '');
+  var src = String(f.source || ''), qm = /^Quick update from ([^,]+)/.exec(src);
+  var who = !f.actor || f.actor === 'Imported' ? 'from the Excel workbook' : f.actor === 'AI routine' ? 'AI' + (qm ? ', from ' + (qm[1] === me().key ? 'your' : chipName(qm[1]) + '\'s') + ' quick update' : /routine|06:00|morning/i.test(src) ? ', the morning check' : '') : f.actor || 'Imported';
+  return '<span class="mono">' + esc(niceShort(f.ts)) + '</span> · ' + what + ' <span class="muted">(' + esc(who) + ')</span>';
+}
+function pfold(k, title, sub, body, open) {
+  var on = open || !!S.keep['pf' + k] || S.tour >= 0;
+  return '<details class="p-fold" data-keep="pf' + k + '"' + (on ? ' open' : '') + '><summary><span class="pf-t"><b>' + title + '</b><span class="muted">' + esc(sub) + '</span></span>' + ic('chev') + '</summary><div class="pf-b">' + body + '</div></details>';
+}
+function panelNew(m, d, dd, ce, P, nextHtml) {
+  var step = firstStep(m.next), h = S.hist[m.id], L = liveLinks(m.links || []), tx = S.tt && S.tt.mid === m.id ? S.tt.text : '';
+  var sum = '<dl class="p-sum"><dt>Where</dt><dd>' + esc(m.status + (m.stage && (m.status === 'Submitted' || m.status === 'Under Review') ? ' · ' + m.stage : '')) + ' ' + tagHtml(dd) + '</dd>' +
+    '<dt>Ball</dt><dd>' + esc(peopleText(m.people) || 'Nobody yet') + '</dd>' +
+    '<dt>Next step</dt><dd>' + (step ? esc(fullNames(step)) : '<span class="muted">Not set yet</span>') + '</dd>' +
+    '<dt>Latest news</dt><dd>' + newsHtml(m) + '</dd></dl>';
+  var tell = !canEdit() ? '' : '<div class="p-tell"><div class="frow"><b>' + ic('bolt') + 'Tell the tracker</b><button class="linkbtn pt-more" data-a="qu-open" data-v="' + m.id + '">With a screenshot</button></div>' +
+    '<textarea id="tt-text" class="in" rows="2" data-i="tt" data-v="text" placeholder="What happened? Type, dictate or paste; the AI updates the record.">' + esc(tx) + '</textarea>' +
+    '<div class="btns">' + (step ? '<button class="btn btn-s" data-a="tt-done" title="' + esc('Done: ' + short(fullNames(step), 80)) + '">' + ic('check') + 'Step done</button>' : '') + '<button class="btn btn-p" data-a="tt-save">Save</button></div></div>';
+  var au = (m.authors || []), auSub = [firstName(m) ? 'first ' + short(firstName(m), 28) : '', corrName(m) ? 'corr. ' + short(corrName(m), 28) : ''].filter(Boolean).join(', ') || (au.length ? au.length + ' authors' : 'none yet');
+  return sum + tell +
+    pfold('det', 'Details', 'status, stage, deadline, ball, next actions', P.grid + P.ball + nextHtml + P.ids + xlBox(m), dirty()) +
+    pfold('au', 'Authors', auSub, P.au) +
+    pfold('lk', 'Links', L.length ? L.map(function (l) { return l.kind === 'track' ? 'Track' : l.label; }).join(' · ') : 'none yet', linksHtml(m, d, ce) + (ce ? '<div class="btns"><button type="button" class="btn btn-s" data-a="lk-open">' + ic('link') + 'Add a link</button>' + tip('links', true) + '</div>' : '')) +
+    pfold('hist', 'History', h ? h.length + ' change' + (h.length === 1 ? '' : 's') : '', P.hist);
+}
+function ttGo(done) {
+  var m = curM(); if (!m || !canEdit()) return;
+  var t = String((S.tt && S.tt.mid === m.id && S.tt.text) || '').trim(), step = firstStep(m.next);
+  if (!t && !done) { toast('Write what happened first.', true); var el = document.getElementById('tt-text'); if (el) el.focus(); return; }
+  var o = { mid: m.id, text: done ? 'Done: ' + step.replace(/[.\s]+$/, '') + (t ? '. ' + t : '') : t, images: [] };
+  S.tt = null;
+  if (window.VIBRA_WEB && window.VIBRA_WEB.quick && quickMode() === 'instant' && !S.offline) { sendQuick(o); return; }
+  render(); o.cid = newCid();
+  api('api_quickUpdate', { mid: o.mid, text: o.text, images: [], cid: o.cid }).then(function (x) {
+    S.boot.requests = x.requests; render();
+    toast('Sent: “' + short(o.text, 60) + '”. ' + (x.helper ? 'The tracker will be updated within about a minute.' : 'The 06:00 check applies it.'), false, 8000);
+    if (x.helper) runHelper(x.helper, x.id);
+  }).catch(function (e) { toast(msg(e), true); });
 }
 /* 0.2.5 (admin): links from the publisher (invited submission, revision and reviews, proofs, the journal's portal).
    The row shows only when the manuscript has a link; the AI adds them from quick updates, members add them by hand
@@ -4973,17 +5340,17 @@ document.addEventListener('visibilitychange', function () { if (document.visibil
    at the right edge; their own scroll bar stays) */
 var SC = { el: null, items: [], u: 1, cur: -1, drag: false, hideT: 0 };
 var SC_CLOSED = { Accepted: 'acc', Published: 'pub', Rejected: 'rej' }, SC_LABEL = { acc: 'Accepted', pub: 'Published', rej: 'Rejected', closed: 'Finished' };
-function scOn() { return !!S.boot && (S.view === 'today' || S.view === 'list') && !panelShown() && !S.pop && !S.drawer && !S.pal && !(S.tour >= 0) && !layer.querySelector('.overlay'); }
+function scOn() { return !!S.boot && (S.view === 'today' || S.view === 'list' || false) && !panelShown() && !S.pop && !S.drawer && !S.pal && !(S.tour >= 0) && !layer.querySelector('.overlay'); }
 function scSync() {
   if (!SC.el) {
     SC.el = document.createElement('div'); SC.el.id = 'scrub'; SC.el.setAttribute('aria-hidden', 'true');
     SC.el.innerHTML = '<div class="sc-rail"><b class="sc-thumb"></b></div><div class="sc-bub"></div>'; document.body.appendChild(SC.el); scBind();
   }
   if (SC.drag) return;
-  var tbl = S.view === 'list';
+  var tbl = S.view === 'list' || (S.view === 'papers' && papersView() === 'list');
   var items = scOn() ? Array.prototype.map.call(document.querySelectorAll(tbl ? '.main .tbox tbody tr[data-a="open"][data-v]' : '.main .sec .list > [data-a="open"][data-v], .main .sec .blocks > [data-a="open"][data-v]'), function (el) {
     var tg = el.querySelector('.tag'), m = /\bt-(due|deadline|action|chase|waiting|drafting)\b/.exec(tg ? tg.className : ''), t = el.querySelector(tbl ? '.sr-btn' : '.t');
-    var tier = tbl && el.classList.contains('closed') ? SC_CLOSED[tg ? tg.textContent : ''] || 'closed' : m ? m[1] : 'waiting';
+    var tier = tbl && el.classList.contains('closed') ? SC_CLOSED[tg ? tg.textContent : ''] || 'closed' : m ? m[1] : SC_CLOSED[tg ? tg.textContent : ''] || 'waiting'; // 0.3.5: Papers' finished blocks
     return { el: el, tier: tier, label: tg ? tg.textContent : '', title: t ? t.textContent : '' };
   }) : [];
   var rail = SC.el.querySelector('.sc-rail'), key = S.view + ':' + items.map(function (x) { return x.tier; }).join(',');
@@ -5075,10 +5442,10 @@ function popover() {
       '<button class="nitem' + (relU ? ' unread' : '') + '" data-a="wn-open"><span class="ndot" aria-hidden="true"></span><span><span class="lbl" style="display:block">What\'s new · ' + esc(niceShort(rel.date)) + '</span>' +
       'VIBRA Tracker ' + esc(rel.v) + ': ' + esc(rel.title) + '</span></button>' : '';
     var nm = notesMore(), nu = notesUnreadMore();
-    return '<div class="np-dim" aria-hidden="true"></div><div class="pop sbpop npop" role="dialog" aria-label="Notifications" data-pop><div class="np-scroll"><div class="pop-h"><b>For you</b><button class="btn btn-q" data-a="read-all"' + (relU || notesUnreadMore() || ns.some(function (n) { return !n.read; }) ? '' : ' disabled') + '>Mark all read</button></div>' + remItems + relItem +
+    return '<div class="np-dim" aria-hidden="true"></div><div class="pop sbpop npop" role="dialog" aria-label="Notifications" data-pop><div class="np-scroll"><div class="pop-h"><b>For you</b><button class="btn btn-q" data-a="read-all"' + (relU || notesUnreadMore() || ns.some(function (n) { return !n.read; }) ? '' : ' disabled') + '>Mark all read</button></div>' + tcBell() + remItems + relItem +
       (ns.length ? ns.map(function (n) {
         return '<button class="nitem' + (n.read ? '' : ' unread') + (n.undone ? ' undone' : '') + '" data-a="notif-open" data-v="' + esc(n.id) + '"' + (n.undone ? ' title="This change was undone"' : '') + '><span class="ndot" aria-hidden="true"></span><span><span class="lbl" style="display:block">' + (isReminder(n) ? '<i class="n-rp">' + (n.ack ? 'Answered' : 'Reply') + '</i>' : '') +
-          esc({ nudge: 'Nudge', ball_to_you: 'Ball to you', changed: 'Changed', ai_update: 'AI update', ai_kept_edit: 'Morning check', deadline: 'Deadline', reminder: 'Reminder', inbox: 'Quick update', feedback: 'Feedback', inbox_reply: 'Quick update', feedback_reply: 'App feedback', undone: 'Undone', nudge_reply: 'Reply to your nudge' }[n.kind] || n.kind) + (n.undone ? ' · undone' : '') + ' · ' + esc(niceShort(n.ts)) + ' ' + esc(String(n.ts).slice(11, 16)) + '</span><span>' + esc(fullNames(n.text)) + '</span></span></button>';
+          esc({ nudge: 'Nudge', ball_to_you: 'Ball to you', changed: 'Changed', ai_update: 'AI update', ai_kept_edit: 'Morning check', deadline: 'Deadline', reminder: 'Reminder', inbox: 'Quick update', feedback: 'Feedback', inbox_reply: 'Quick update', feedback_reply: 'App feedback', undone: 'Undone', nudge_reply: 'Reply to your nudge', week: 'Your week' }[n.kind] || n.kind) + (n.undone ? ' · undone' : '') + ' · ' + esc(niceShort(n.ts)) + ' ' + esc(String(n.ts).slice(11, 16)) + '</span><span>' + esc(fullNames(n.text)) + '</span></span></button>';
       }).join('') : due.length || relItem ? '' : '<p class="empty" style="margin:0">Nothing yet. You will see here when the ball is passed to you or a manuscript you are on changes.</p>') +
       // 0.3.1 (BACKLOG 29, admin: "see earlier noti phải hiện khi vuốt tới noti cuối"): the last row of the list, not a footer always
       // in view; reaching it loads the next page by itself (npEnd), so fewer come with the data (10)
@@ -5296,7 +5663,7 @@ function placeCoach() {
 function tourPrepare(i) {
   var st = CO()[i - 1];
   S.pop = null; S.drawer = false; S.tip = null; S.pal = null;
-  if (i >= 1 && S.view !== 'today' && !(st && st.open && S.sel)) { S.view = 'today'; }
+  if (i >= 1 && S.view !== viewOf('today') && !(st && st.open && S.sel)) { S.view = viewOf('today'); } // 0.3.5: My work in New
   if (st && st.open) {
     if (!S.sel) {
       var row = document.querySelector('.main [data-a="open"][data-v]'), id = row ? Number(row.getAttribute('data-v')) : 0;
@@ -5413,6 +5780,7 @@ function updateSaveState() {
   keepDraftSoon();
   var d = dirty(), b = document.getElementById('b-save'), x = document.getElementById('b-discard'), s = document.getElementById('savestate');
   if (b) b.disabled = !d || S.saving || !!(S.sel && lockOther(S.sel)); if (x) x.disabled = !d; if (s) s.textContent = saveStateText();
+  var pn = document.querySelector('.panel.pnew'); if (pn) pn.classList.toggle('pdirty', d || !!S.saving); // 0.3.5: the New card shows its Save bar while fields change
   syncLock();
 }
 
@@ -5476,7 +5844,7 @@ function reduceMotion() { try { return window.matchMedia('(prefers-reduced-motio
 /* 0.2.4 (admin): when the card opens or closes over Today as blocks, the blocks glide to their new places instead of
    jumping (each block starts where it was and moves to where it now is: FLIP) */
 function blockRects(any) {
-  var out = {}; if (S.view !== 'today' || todayView() !== 'blocks' || (!any && !cardSide())) return out;
+  var out = {}; if (!blkView() || (!any && !cardSide())) return out;
   Array.prototype.forEach.call(document.querySelectorAll('.main .block[data-v]'), function (el) { var r = el.getBoundingClientRect(); out[el.getAttribute('data-v') + '|' + (el.closest('.sec') ? Array.prototype.indexOf.call(document.querySelectorAll('.main .sec'), el.closest('.sec')) : 0)] = r; });
   Array.prototype.forEach.call(document.querySelectorAll('.main .sec-h'), function (el, i) { out['h|' + i] = el.getBoundingClientRect(); }); // 0.3.0: the group headings move with them
   return out;
@@ -5507,7 +5875,7 @@ function glideBlocks(before, shift, keep) { // 0.3.0: on the navigation spring (
    trước mắt"; 21: samples A and B). Today as blocks beside the card: which sample, and the chosen block kept in sight. */
 // admin, 25 Oct 2026: "tôi chọn phương án A"; then, after a try with flat blocks where few columns fit: "Block lớn thôi, block
 // dẹt bị thiếu thông tin kìa, nói chung là đảm bảo thông tin không bị mất quá nhiều thôi": always the full blocks
-function blkOn() { return S.view === 'today' && todayView() === 'blocks' && cardSide(); }
+function blkOn() { return blkView() && cardSide(); }
 function blkAnchor() { // the chosen block (the one being opened, or the one whose card is closing) and where it is on screen
   var id = S.sel, el = id && document.querySelector('.main .block[data-v="' + id + '"]');
   if (!el) { el = document.querySelector('.main .block[aria-current="true"]'); id = el && el.getAttribute('data-v'); }
@@ -5677,7 +6045,7 @@ function shapeRects() {
 function shapeShift(o, same) {
   if (!o || reduceMotion()) return;
   if (o.a) { var ae = document.querySelector('.main .sec [data-a="open"][data-v="' + o.a.id + '"]'); if (ae) window.scrollBy(0, ae.getBoundingClientRect().top - o.a.top); }
-  var s = spring(SPR.nav), blocks = todayView() === 'blocks';
+  var s = spring(SPR.nav), blocks = blkView();
   Array.prototype.forEach.call(document.querySelectorAll('.main .sec [data-a="open"][data-v]'), function (el) {
     var id = el.getAttribute('data-v'), a = o.r[id], b = el.getBoundingClientRect();
     if (b.bottom < 0 || b.top > innerHeight) { if (!a || a.bottom < 0 || a.top > innerHeight) return; }
@@ -5773,6 +6141,7 @@ function drawerGo(open) { // the menu button, the strip, Esc and Back: the same 
    ghost: a copy without ids, actions or the classes the app looks for, removed when its movement ends. */
 var LM = { src: null, pull: null, out: null, t: 0, fab: {} };
 document.addEventListener('pointerdown', function (e) { var b = e.target.closest && e.target.closest('button, [data-a]'); if (b && !b.closest('#layer')) { LM.src = b; LM.t = performance.now(); } }, true);
+document.addEventListener('keydown', function (e) { if ((e.key === 'Enter' || e.key === ' ') && e.target.classList && e.target.classList.contains('mwb')) { e.preventDefault(); ACT.open(e.target.getAttribute('data-v')); } }); // 0.3.5
 document.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { var t = e.target; if (t && t.closest && !t.closest('#layer')) { LM.src = t; LM.t = performance.now(); } } }, true);
 function lmSrc() {
   var s = LM.src; if (!s || !document.body.contains(s) || !s.getClientRects().length) return null;
@@ -6368,7 +6737,7 @@ function exportRows(list) {
   });
 }
 function viewName() { return { today: 'Today', board: 'Pipeline', list: 'All manuscripts', dash: 'Dashboard' }[S.view] || 'All manuscripts'; }
-function exportList() { var all = allDerived(); return S.view === 'today' ? filtered(all.filter(function (d) { return d.tier !== 'closed'; })) : S.view === 'list' ? lstFilter(filtered(all), S.lst) : S.view === 'board' ? filtered(all) : all; }
+function exportList() { var all = allDerived(); return S.view === 'papers' ? filtered(all) : S.view === 'today' ? filtered(all.filter(function (d) { return d.tier !== 'closed'; })) : S.view === 'list' ? lstFilter(filtered(all), S.lst) : S.view === 'board' ? filtered(all) : all; }
 function stamp() { return 'Exported ' + longDay(S.boot.today) + ' by ' + dispName(me()) + ' · VIBRA Tracker ' + S.boot.version; }
 
 function exportXlsx() {
@@ -6562,7 +6931,7 @@ function csv() {
   var all = allDerived(), list = filtered(S.view === 'today' ? all.filter(function (d) { return d.tier !== 'closed'; }) : all);
   var q = function (s) { return '"' + String(s === undefined ? '' : s).replace(/"/g, '""') + '"'; };
   var lines = [['ID', 'Title', 'Status', 'Stage', 'Ball is with', 'Corresponding', 'First author', 'Next actions', 'Deadline', 'Journal', 'IF', 'MS ID', 'DOI', 'Preprint', 'Last update'].map(q).join(',')].concat(list.map(function (d) {
-    var m = d.m; return [m.id, m.title, m.status, m.stage, peopleText(m.people), corrName(m), firstName(m), m.next, m.deadline, m.journal, m.impact_factor, m.ms_id, m.doi, m.preprint || '', m.last_update].map(q).join(',');
+    var m = d.m; return [m.id, m.title, m.status, m.stage, peopleText(m.people), corrName(m), firstName(m), fullNames(m.next), m.deadline, m.journal, m.impact_factor, m.ms_id, m.doi, m.preprint || '', m.last_update].map(q).join(',');
   }));
   var a = document.createElement('a'); a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent('﻿' + lines.join('\r\n')); a.download = 'VIBRA_tracker_' + S.boot.today + '.csv'; a.target = '_blank';
   document.body.appendChild(a); a.click(); a.remove(); S.pop = null; render(); toast('CSV of ' + list.length + ' manuscripts downloaded.');
@@ -6591,7 +6960,7 @@ function feedCall(k, fn, args, done) {
 }
 var ACT = {
   view: function (v) {
-    S.drawer = false; S.sbPeek = false;
+    S.drawer = false; S.sbPeek = false; if (v === 'todo' && UIN()) S.mwTo = 'mw-todo'; v = viewOf(v);
     if (v !== S.view) { S.view = v; S.fx.list = true; S.pop = null; if (v === 'settings') { if (dirty()) { S.confirmClose = true; S.view = 'today'; render(); return; } S.sel = null; S.draft = null; } window.scrollTo(0, 0); }
     render();
   },
@@ -6653,7 +7022,8 @@ var ACT = {
   'drawer-close': function () { drawerGo(false); },
   // 0.3.2 (BACKLOG 44): the pencil after the title opens "Title, journal, IF and IDs" and puts the cursor in the title
   'title-edit': function () {
-    S.keep.ids = true; var dt = document.querySelector('.panel details[data-keep="ids"]'), t = document.getElementById('f-title'); if (dt) dt.open = true;
+    S.keep.ids = true; S.keep.pfdet = true; var dt = document.querySelector('.panel details[data-keep="ids"]'), t = document.getElementById('f-title'); if (dt) dt.open = true;
+    var dp = document.querySelector('.panel details[data-keep="pfdet"]'); if (dp) dp.open = true; // 0.3.5: in the New card the fields are folded under Details
     if (!t) return;
     t.scrollIntoView({ block: 'center', behavior: reduceMotion() ? 'auto' : 'smooth' });
     setTimeout(function () { t.focus({ preventScroll: true }); try { t.setSelectionRange(t.value.length, t.value.length); } catch (x) { } }, reduceMotion() ? 0 : 380);
@@ -6771,20 +7141,21 @@ var ACT = {
     if (!to.length) { toast(holders.some(function (x) { return x.name === mine; }) ? 'You are the only member with the ball on this manuscript.' : 'Nobody with the ball has an e-mail on file.', true); return; }
     var names = to.map(function (pp) { return pp.display.split(' (')[0]; });
     var greet = names.length < 3 ? names.join(' and ') : names.slice(0, -1).join(', ') + ' and ' + names[names.length - 1];
-    var body = 'Dear ' + greet + ',\n\nA gentle reminder about "' + m.title + '".\n\nNext actions:\n' + (m.next || '-') + (m.deadline ? '\n\nDeadline: ' + nice(m.deadline) : '') + '\n\nThank you.';
+    var body = 'Dear ' + greet + ',\n\nA gentle reminder about "' + m.title + '".\n\nNext actions:\n' + (fullNames(m.next) || '-') + (m.deadline ? '\n\nDeadline: ' + nice(m.deadline) : '') + '\n\nThank you.';
     window.open('mailto:' + to.map(function (pp) { return encodeURIComponent(pp.email); }).join(',') + '?subject=' + encodeURIComponent('VIBRA: ' + short(m.title, 80)) + '&body=' + encodeURIComponent(body), '_blank');
     toast('Your mail program opens with one draft to ' + names.join(', ') + (left.length ? ' (' + left.join(', ') + ': no e-mail on file, not included)' : '') + '. Nothing is sent until you press Send.', false, 8000);
   },
   'wn-open': function () { S.pop = null; S.wn = { from: 'bell' }; render(); },
   'wn-close': function () { S.wn = null; wnSeen(); render(); },
   'wn-bg': function (v, e) { if (e.target.classList && e.target.classList.contains('overlay')) ACT['wn-close'](); },
-  'wn-go': function (v) { ACT['wn-close'](); ACT['set-tab'](v); setTimeout(function () { var x = document.getElementById('myd'); if (x && x.scrollIntoView) x.scrollIntoView({ block: 'center' }); }, 80); },
+  'wn-go': function (v) { ACT['wn-close'](); ACT['set-tab'](v); setTimeout(function () { var x = document.querySelector('.ly-row') || document.getElementById('myd'); if (x && x.scrollIntoView) x.scrollIntoView({ block: 'center' }); }, 80); }, // 0.3.5: the Layout row
   'read-all': function () { wnSeen(); allNotes().forEach(function (n) { n.read = true; }); S.boot.notifUnreadMore = 0; if (S.nOld) S.nOld.unreadMore = 0; render(); api('api_markRead', 'all').catch(function (e) { toast(msg(e), true); }); },
   'notif-more': function () { loadOlderNotes(); }, // 0.2.7
   'notif-open': function (v) {
     var n = allNotes().filter(function (x) { return x.id === v; })[0]; if (!n) return;
     if (rpOpen(n)) return; // 0.3.0: a nudge or a deadline alert opens the Reply sheet
     n.read = true; S.pop = null; api('api_markRead', [v]).catch(function () { });
+    if (n.kind === 'week') { S.pop = null; ACT.view(UIN() ? 'mine' : 'today'); return; } // 0.3.5: Your week opens My work
     if (!n.manuscript_id || !mById(n.manuscript_id)) { if ((n.kind === 'inbox' || n.kind === 'feedback') && me().role === 'Admin') S.view = 'desk'; else { S.view = 'settings'; S.setTab = 'requests'; } S.desk = null; window.scrollTo(0, 0); render(); return; }
     if (S.view === 'settings' || S.view === 'desk') S.view = 'today';
     openManuscript(n.manuscript_id);
@@ -7151,6 +7522,19 @@ Object.assign(ACT, {
   'rp-open': function () { var r = S.rp; S.rp = null; if (!r) return; if (S.view === 'settings' || S.view === 'desk') S.view = 'today'; openManuscript(r.mid); },
   'tdb-ask': function (v) { S.tdb = S.tdb && S.tdb.mid === Number(v) ? null : { mid: Number(v), note: '' }; render(); var t = document.getElementById('tdb-note'); if (t) t.focus({ preventScroll: true }); },
   'tdb-cancel': function () { S.tdb = null; render(); },
+  // 0.3.5 (BACKLOG 64): the layout, My work and Papers as blocks or a list, To confirm from the bell
+  'layout-set': function (v) {
+    var p = S.boot.prefs = S.boot.prefs || {}, nw = v === 'new'; if (UIN() === nw) return;
+    p.layout = nw ? 'new' : 'classic'; keepBoot(); render(); toast(nw ? 'New layout: My work, Papers and Group.' : 'Classic layout: Today, Pipeline, All manuscripts and To-do.');
+    api('api_setPrefs', { layout: p.layout }).catch(function (e) { toast(msg(e), true); });
+  },
+  mview: function (v) { var p = S.boot.prefs = S.boot.prefs || {}; if (mineView() === v) return; p.mineView = v; var b = shapeRects(); keepBoot(); render(); shapeShift(b); api('api_setPrefs', { mineView: v }).catch(function () { }); },
+  pview: function (v) { var p = S.boot.prefs = S.boot.prefs || {}; if (papersView() === v) return; p.papersView = v; var b = shapeRects(); keepBoot(); render(); shapeShift(b); api('api_setPrefs', { papersView: v }).catch(function () { }); },
+  ptier: function (v) { S.ptier = S.ptier === v ? '' : v; S.fx.list = true; render(); var t = document.querySelector('.main .sec, .main .tbox'); if (t && t.getBoundingClientRect().top < 60) window.scrollTo({ top: t.getBoundingClientRect().top + window.scrollY - (phoneW() ? 120 : 24), behavior: 'instant' }); },
+  'pp-more': function (v) { S.ppAll = S.ppAll || {}; S.ppAll[v] = true; S.fx.items = true; render(); },
+  'tt-save': function () { ttGo(false); },
+  'tt-done': function () { ttGo(true); },
+  'tc-go': function () { S.pop = null; if (UIN()) { S.mwTo = 'mw-tc'; ACT.view('mine'); } else { S.setTab = 'requests'; ACT.view('settings'); } },
   'tdb-go': function (v) { tdBallGo(v); },
   'td-mode': function (v) { S.tdMode = v === 'cal' ? 'cal' : 'list'; render(); },
   'td-day': function (v) { S.tdDay = v && S.tdDay !== v ? v : null; S.td = S.td || { note: '', mid: '' }; S.td.date = S.tdDay || ''; S.tdMode = 'list'; render(); },
@@ -7194,7 +7578,7 @@ Object.assign(ACT, {
   },
   'tdx-open': function () {
     var m = curM(); if (!m) return;
-    var first = String(m.next || '').split('\n')[0].replace(/^\s*\d+\.\s*/, '').trim();
+    var first = fullNames(String(m.next || '').split('\n')[0].replace(/^\s*\d+\.\s*/, '').trim());
     S.tdx = S.tdx && S.tdx.mid === m.id ? null : { mid: m.id, note: first || 'Check ' + short(m.title, 70), date: '' }; render();
     var t = document.getElementById('tdx-note'); if (t) { t.focus(); t.select(); }
   },
@@ -7375,6 +7759,7 @@ document.addEventListener('input', function (e) {
   if (i === 'del' && S.del) { S.del.reason = t.value; return; }
   if (i === 'ng' && S.ng) { S.ng.note = t.value; return; }
   if (i === 'td' && S.td) { S.td[t.getAttribute('data-v')] = t.value; return; }
+  if (i === 'tt') { S.tt = { mid: S.sel, text: t.value }; return; } // 0.3.5: Tell the tracker, in the card
   if (i === 'tdx' && S.tdx) { S.tdx[t.getAttribute('data-v')] = t.value; return; }
   if (i === 'tde' && S.tde) { S.tde[t.getAttribute('data-v')] = t.value; return; }
   if (i === 'ned' && S.ned) { S.ned.text = t.value; return; }
@@ -7481,6 +7866,7 @@ function onAppMsg(d) {
   if (!d || typeof d !== 'object') return;
   if (d.type === 'vibra-push-status') { S.dev = d; if (S.view === 'settings') render(); }
   else if (d.type === 'vibra-push-result') { S.devBusy = false; if (d.status) S.dev = d.status; render(); toast(d.ok ? d.text : (d.error || 'It did not work.'), !d.ok, 8000); }
+  else if (d.type === 'vibra-view' && S.boot && /^(mine|papers)$/.test(String(d.v))) ACT.view(String(d.v)); // 0.3.5: the push "Your week" on an open window
   else if (d.type === 'vibra-open' && S.boot && mById(Number(d.m))) {
     var rn = d.n ? allNotes().filter(function (x) { return x.id === String(d.n); })[0] : null; // 0.3.0: a reminder's notification opens the Reply sheet
     if (rn && rpOpen(rn, d.pre || '')) return;
@@ -7490,7 +7876,8 @@ function onAppMsg(d) {
 function openFromLink() {
   try {
     google.script.url.getLocation(function (loc) {
-      var m = Number((loc && loc.parameter && loc.parameter.m) || 0), r = String((loc && loc.parameter && loc.parameter.r) || '');
+      var m = Number((loc && loc.parameter && loc.parameter.m) || 0), r = String((loc && loc.parameter && loc.parameter.r) || ''), v = String((loc && loc.parameter && loc.parameter.v) || '');
+      if (!m && /^(mine|papers|today|todo|board|list)$/.test(v)) { ACT.view(v); return; } // 0.3.5: the Monday e-mail's "Open My work"
       var rn = r ? allNotes().filter(function (x) { return x.id === r; })[0] : null; // 0.3.0: ?r= a reminder to answer
       if (rn && rpOpen(rn)) return;
       if (m && mById(m)) { if (S.view === 'settings' || S.view === 'desk') S.view = 'today'; openManuscript(m); }
@@ -7555,7 +7942,7 @@ function initSince(b) {
   // view (the 06:00 check works in the AI desk) leaves the line under Today as it was
   var on = 0, t = setInterval(function () {
     if (!S.boot || S.stale) return;
-    on = S.view === 'today' && document.visibilityState === 'visible' ? on + 1 : 0;
+    on = (S.view === 'today' || S.view === 'mine' || S.view === 'papers') && document.visibilityState === 'visible' ? on + 1 : 0;
     if (on < 4) return; clearInterval(t);
     var now = vnTs(); S.boot.prefs = S.boot.prefs || {}; S.boot.prefs.seenAt = now; keepBoot();
     api('api_setPrefs', { seenAt: now }).catch(function () { });
@@ -7574,7 +7961,7 @@ function sinceItems(list) {
   var ids = {}; (list || []).forEach(function (d) { ids[d.m.id] = 1; });
   return (S.boot.recent || []).filter(function (r) {
     if (!(r.ts > S.since)) return false;
-    if (S.who === 'all' || r.toMe) return true;
+    if ((S.who === 'all' && S.view !== 'mine') || r.toMe) return true; // 0.3.5: My work tells only what changed on the member's own manuscripts
     return !!ids[r.mid];
   });
 }
@@ -7601,7 +7988,7 @@ function sinceLine(list) {
     '. <button class="linkbtn" data-a="pop" data-v="since" aria-expanded="' + (S.pop === 'since') + '">See all</button>';
 }
 function sincePop() {
-  var items = sinceItems(filtered(allDerived()));
+  var items = sinceItems(S.view === 'mine' ? mineAll() : filtered(allDerived()));
   return '<div class="pop" role="dialog" aria-label="What is new" data-pop><div class="pop-h"><b>New since ' + esc(sinceLabel()) + '</b></div>' +
     (items.length ? items.map(function (r) {
       var m = mById(r.mid);
