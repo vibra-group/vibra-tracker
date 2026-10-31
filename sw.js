@@ -16,9 +16,11 @@
    3.0.3: page 0.3.3 (Save apart from the AI with a saving bar, the prompt for a member's own AI, the AI moves the ball, one button per row, Ask the tracker).
    3.0.4: page 0.3.4 (finished papers that stand out, Ask AI first in Search, full names, one set of colours, type sizes and icons, touch and hover polish).
    3.0.5: page 0.3.5 (the New layout: My work, Papers, Group, with a Classic switch; the card led by its summary; Your week, whose notification opens My work).
+   3.0.6: page 0.3.6 (Save instant on the page, screenshots in one call, pull down to refresh, a celebration for an accepted or published paper whose
+   notification is titled "Accepted 🎉" or "Published 🎉", the own to-do's tools behind a swipe).
    A push carries no content: on each push the worker asks the admin's helper for the text, with this device's
    own secret, and shows it. Nothing else leaves the device. */
-var CACHE = 'vibra-app-3.0.5';
+var CACHE = 'vibra-app-3.0.6';
 var SHELL = ['./', './app/', './manifest.webmanifest', './icons/app-192.png', './icons/app-512.png', './icons/app-maskable-512.png',
   './icons/app-apple-180.png', './icons/app-badge-96.png', './icons/app-favicon-32.png', './icons/vibra-logo-full.jpg',
   './icons/vibra-logo-light.webp', './icons/vibra-logo-dark.webp']; // 3.0.0: the sign-in logo without its white box, one for each theme
@@ -135,7 +137,7 @@ function onPush() {
       var shown = items.slice(0, 3).map(function (n) {
         var rem = REMIND[n.kind] && n.mid, wk = n.kind === 'week', o = { body: n.text, tag: 'vibra-' + n.id, data: { url: n.mid ? './app/?m=' + encodeURIComponent(n.mid) + (rem ? '&r=' + encodeURIComponent(n.id) : '') : wk ? './app/?v=mine' : './app/', m: Number(n.mid) || 0, n: rem ? String(n.id) : '', v: wk ? 'mine' : '' } };
         if (rem) o.actions = [{ action: 'reply', title: 'Reply' }, { action: 'onit', title: 'On it' }];
-        return self.registration.showNotification(LABEL[n.kind] || 'VIBRA Tracker', Object.assign(o, opts));
+        return self.registration.showNotification(n.kind === 'celebrate' ? (/^Published\b/.test(n.text) ? 'Published' : 'Accepted') + ' 🎉' : LABEL[n.kind] || 'VIBRA Tracker', Object.assign(o, opts)); // 3.0.6 (BACKLOG 73)
       });
       var extra = Math.max(0, items.length - 3) + (j.more || 0);
       if (extra) shown.push(self.registration.showNotification('VIBRA Tracker', Object.assign({ body: 'and ' + extra + ' more update' + (extra > 1 ? 's' : '') + '.', tag: 'vibra-more', data: { url: './app/' } }, opts)));

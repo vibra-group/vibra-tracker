@@ -5,12 +5,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <script>
-/* VIBRA Tracker 0.3.5 on the group's own address (vibra-group.github.io), built by tools/build_web.py from app/Index.html.
+/* VIBRA Tracker 0.3.6 on the group's own address (vibra-group.github.io), built by tools/build_web.py from app/Index.html.
    This page is the VIBRA app: installable, with notifications and the last data readable offline.
    Google confirms who the member is ("Sign in with Google"), or a one-time code made on a signed-in device does; the
    admin's helper checks that once and gives a session; every server call then goes to the helper with that session
    and runs the tracker's own code as the member. */
-window.VIBRA_WEB = { helper: "https://script.google.com/macros/s/AKfycbzNE__5onOmvia3VaFHjybAJ5G35cnDJCN1ysuiNAYlgOC5xsbCi0xyDnmoJP7lEaFR3w/exec", clientId: "619243121375-pi18v7vjgvcue7qo6455uids4v28megi.apps.googleusercontent.com", classic: "https://script.google.com/macros/s/AKfycbzkG5eCrxQvQtJgfksL92G9vtl2I4LLEew-Az4qYlDxX6V1QfgtIrwGjYOGq9CQ0r3aWA/exec", built: "0.3.5" };
+window.VIBRA_WEB = { helper: "https://script.google.com/macros/s/AKfycbzNE__5onOmvia3VaFHjybAJ5G35cnDJCN1ysuiNAYlgOC5xsbCi0xyDnmoJP7lEaFR3w/exec", clientId: "619243121375-pi18v7vjgvcue7qo6455uids4v28megi.apps.googleusercontent.com", classic: "https://script.google.com/macros/s/AKfycbzkG5eCrxQvQtJgfksL92G9vtl2I4LLEew-Az4qYlDxX6V1QfgtIrwGjYOGq9CQ0r3aWA/exec", built: "0.3.6" };
 (function () {
   var W = window.VIBRA_WEB, KEY = 'vibra-web-session', S = null, queue = [], gisInit = false, tries = 0, gateOn = false;
   var ua = navigator.userAgent || '', IOS = /iPad|iPhone|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
@@ -214,7 +214,8 @@ window.VIBRA_WEB = { helper: "https://script.google.com/macros/s/AKfycbzNE__5onO
   W.quick = function (d) { return ask({ api: 'quick', mid: d.mid || '', text: d.text || '', images: d.images || [], reply_to: d.reply_to || '', cid: d.cid || '', note: d.note || '' }); }; // 0.3.0: note = the reminder answered
   /* 0.3.3 (BACKLOG 52): Save apart from the AI: the text, then the pieces of the screenshots, then ready; the
      AI's reading is asked for apart (one call per part of a report) */
-  W.qsave = function (d) { return ask({ api: 'qsave', mid: d.mid || '', text: d.text || '', files: d.files || [], reply_to: d.reply_to || '', cid: d.cid || '', note: d.note || '' }); };
+  W.qsave = function (d) { return ask({ api: 'qsave', mid: d.mid || '', text: d.text || '', images: d.images || [], files: d.files || [], reply_to: d.reply_to || '', cid: d.cid || '', note: d.note || '' }); }; // 0.3.6 (BACKLOG 72): the screenshots in the same call
+  W.ping = function () { return ask({ api: 'ping' }); }; // 0.3.6 (BACKLOG 72): wakes the helper before a Save
   W.qpart = function (d) { return ask({ api: 'qpart', id: d.id, k: d.k, p: d.p, data: d.data }); };
   W.qready = function (d) { return ask({ api: 'qready', id: d.id, lens: d.lens }); };
   W.ask = function (q) { return ask({ api: 'ask', q: String(q || '') }); }; // 0.3.3 (BACKLOG 55 D): read only
@@ -1447,6 +1448,19 @@ html.dragging,html.dragging *{cursor:grabbing!important;-webkit-user-select:none
 @media (prefers-reduced-motion:reduce){#scrub,.sc-n,.sc-thumb{transition:none}}
 /* 0.2.7: a frame of fixed height, the releases scroll inside it */
 .wn-ov{align-items:center}
+/* 0.3.6 (BACKLOG 73): the celebration card, the confetti over everything (no touch), the block's green tick for a week */
+.cel-ov{align-items:center}
+.dialog.cel{max-width:420px;text-align:center;align-items:center;gap:6px;padding:26px 24px 20px}
+.cel-mark{display:grid;place-items:center;width:52px;height:52px;border-radius:50%;background:var(--ok-bg);color:var(--ok-fg);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--ok-fg) 30%,transparent)}
+.cel-mark .ic{width:28px;height:28px;stroke-width:2.4}
+.cel-k{margin:6px 0 0;font-size:var(--fs-xs);letter-spacing:.06em;text-transform:uppercase;color:var(--ok-fg);font-weight:600}
+.dialog.cel h2{margin:2px 0 0;font-size:var(--fs-2xl);line-height:1.3;text-wrap:balance}
+.cel-j{margin:0;color:var(--muted);font-size:var(--fs-sm)}
+.cel-who{margin:8px 0 4px}
+.dialog.cel .btns{justify-content:center;margin-top:8px}
+canvas.confetti{position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:9999}
+.cel-tick{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;background:var(--ok-bg);color:var(--ok-fg);flex:none}
+.cel-tick .ic{width:12px;height:12px;stroke-width:2.6}
 .dialog.wn{padding:0;gap:0;overflow:hidden;max-height:min(640px,calc(100vh - 48px));max-height:min(640px,calc(100dvh - 48px - env(safe-area-inset-top) - env(safe-area-inset-bottom)))}
 .wn-top{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:20px 22px 14px;border-bottom:1px solid var(--line);flex:none}
 .wn-body{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:16px 22px 18px;display:flex;flex-direction:column;gap:16px;outline:none}
@@ -1464,6 +1478,25 @@ html.dragging,html.dragging *{cursor:grabbing!important;-webkit-user-select:none
 @media (max-width:640px){.ad-grid{grid-template-columns:1fr}}
 
 .sb-merow .sb-me{flex:1;min-width:0}
+/* 0.3.6 (BACKLOG 72): Saving… and Saved beside the manuscript's number in its card */
+.p-sv{display:inline-flex;align-items:center;gap:6px;font-size:var(--fs-xs);color:var(--muted);white-space:nowrap}
+.p-sv i{width:7px;height:7px;border-radius:50%;background:var(--accent);animation:psv 1s ease-in-out infinite alternate}
+.p-sv.ok{color:var(--ok-fg)}.p-sv .ic{width:14px;height:14px}
+@keyframes psv{from{opacity:.25}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){.p-sv i{animation:none}}
+/* 0.3.6 (BACKLOG 74): Refresh beside the account; the pull-down arrow at the top of a phone's page */
+@keyframes ref-spin{to{transform:rotate(360deg)}}
+.sb-ref{color:var(--muted)}@media (hover:hover){.sb-ref:hover{background:var(--hover);color:var(--ink)}}
+.sb-ref.spin .ic{animation:ref-spin .8s linear infinite}
+#ptr{position:fixed;left:50%;top:calc(env(safe-area-inset-top) + var(--hdr-h,0px) + 6px);z-index:39;width:36px;height:36px;margin-left:-18px;border-radius:50%;display:grid;place-items:center;
+  background:var(--surface);color:var(--muted);box-shadow:0 2px 10px rgba(0,0,0,.14),0 0 0 1px var(--line);pointer-events:none;opacity:0;
+  transform:translateY(calc(var(--d,0px) - 46px)) rotate(calc(var(--d,0px) * 4.5deg))}
+#ptr .ic{width:20px;height:20px}
+#ptr.ready{color:var(--accent-text)}
+#ptr.spin{opacity:1;color:var(--accent-text);transform:translateY(14px)}
+#ptr.spin .ic{animation:ref-spin .8s linear infinite}
+#ptr.out{opacity:0 !important;transition:opacity .25s ease,transform .25s ease;transform:translateY(-10px) scale(.6)}
+@media (prefers-reduced-motion:reduce){#ptr.spin .ic,.sb-ref.spin .ic{animation-duration:2.4s}}
 .sb-get{color:var(--muted)}
 @media (hover:hover){.sb-get:hover{background:var(--hover);color:var(--ink)}}
 .shell.sbc .sb-merow{flex-direction:column;gap:2px}
@@ -1703,6 +1736,7 @@ html.dragging,html.dragging *{cursor:grabbing!important;-webkit-user-select:none
 .panel.fx-panel,.shell.pshown .panel.fx-panel{animation:none}
 @media (max-width:1023px){.shell.pshown .pscrim{display:block;position:fixed;inset:0;z-index:55;pointer-events:none;background:rgba(12,14,20,.34)}}
 html,body{overscroll-behavior-x:none} /* the browser's own two-finger back swipe never fights the card's swipe */
+@media (pointer:coarse){html{overscroll-behavior-y:contain}} /* 0.3.6 (BACKLOG 74): the page's own pull to refresh, not the browser's reload */
 .shell.pshown .panel{touch-action:pan-y}
 /* Search and Quick update stacked at the bottom right, above every layer (admin, 24 Oct 2026: "icon tìm kiếm và quick
    update giờ xếp dọc ... tìm kiếm và quick update là lớp trên cùng"): Quick update at the bottom, Search above it, a
@@ -2088,8 +2122,27 @@ tr.pp-h td{color:var(--ink)}tr.pp-h.win td{color:var(--ok-fg)}tr.pp-h.rej td{col
 .mwt-more .in[type=date]{width:auto;flex:0 0 160px}.mwt-more select.in{flex:1 1 180px;min-width:0}
 .mwt-done{margin:2px 0 4px}.mwt-done .mwt-row{border-top:1px solid var(--line)}
 @media (hover:none){.mwt .td-acts{display:none}}
+/* 0.3.6 (BACKLOG 70, admin: "mỗi thẻ trong todo có thể trượt để mở các chức năng trên màn hình nhỏ"; "Vuốt dòng todo để edit
+   nữa"): on a phone a swipe to the left on a line of the own to-do shows its tools at its right end, Edit, Calendar (when
+   it has a date) and Delete in solid red; a swipe back or a tap elsewhere hides them. The circle stays Done and a tap on
+   the text still opens the edit line. Only that line moves. */
+.sw-l{display:none}
+@media (hover:none){
+  .mwt .td-row[data-sw]{position:relative;overflow:hidden}
+  .mwt .td-row[data-sw] > :not(.td-acts){transform:translateX(var(--sx,0px));transition:transform .28s cubic-bezier(.2,.8,.2,1)}
+  .mwt .td-row[data-sw].sw-open{--sx:calc(-1 * var(--sw-w,192px))}
+  .mwt .td-row[data-sw]:has(.td-acts[style*="--sw-n:2"]){--sw-w:128px}
+  .mwt .td-row[data-sw].sw-drag > *{transition:none}
+  .mwt .td-row[data-sw] .td-acts{display:flex;opacity:1;gap:0;position:absolute;top:0;bottom:0;right:0;transform:translateX(calc(100% + var(--sx,0px)));transition:transform .28s cubic-bezier(.2,.8,.2,1)}
+  .mwt .td-row[data-sw] .td-acts .btn{min-height:0;min-width:0;height:100%;width:64px;flex:0 0 64px;margin:0;padding:0;border:0;border-radius:0;box-shadow:none;flex-direction:column;justify-content:center;gap:3px;font-size:var(--fs-2xs);font-weight:600;color:var(--on-solid) !important;opacity:1}
+  .mwt .td-row[data-sw] .td-acts .ic{width:18px;height:18px}
+  .mwt .td-row[data-sw] .sw-l{display:block}
+  .mwt .td-row[data-sw] .sw-ed{background:var(--muted)}
+  .mwt .td-row[data-sw] .sw-cal{background:var(--accent)}
+  .mwt .td-row[data-sw] .sw-del{background:var(--danger-solid)}
+}
 .mwt-e{all:unset;cursor:text;overflow-wrap:anywhere}.mwt-e:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
-.mwt-del{margin-left:auto;color:var(--danger)}
+.mwt-del{margin-left:auto}
 /* 0.3.5 Papers: the urgency marks (A chips, B a notebook's tabs) */
 .ptab{all:unset;box-sizing:border-box;cursor:pointer;display:inline-flex;align-items:baseline;gap:6px;font:500 var(--fs-sm)/1.2 var(--sans);color:var(--ink-2);--pc:var(--line-2)}
 .ptab b{font:650 var(--fs-md)/1 var(--sans);font-variant-numeric:tabular-nums;color:var(--ink)}
@@ -2132,6 +2185,30 @@ tr.pp-h td{color:var(--ink)}tr.pp-h.win td{color:var(--ok-fg)}tr.pp-h.rej td{col
 .wn-map{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 .wn-mp{display:flex;flex-direction:column;gap:3px;padding:10px 12px;border-radius:12px;background:var(--accent-soft);box-shadow:inset 0 0 0 1px var(--accent-line);min-width:0}
 .wn-mp .ic{width:18px;height:18px;color:var(--accent-text)}.wn-mp b{font-weight:600}.wn-mp span{font-size:var(--fs-xs);color:var(--ink-2)}
+/* 0.3.6 (BACKLOG 67, admin: "Chọn B"): Done as a circle beside the step, as in the to-do; Update as a small ⚡ */
+.bl-step.mw-step{display:flex;align-items:flex-start;gap:10px;-webkit-line-clamp:unset;overflow:visible}
+.mw-st{min-width:0;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.mw-done{all:unset;box-sizing:border-box;cursor:pointer;flex:none;display:flex;flex-direction:column;align-items:center;gap:2px;margin-top:1px;position:relative}
+.mw-done::after{content:"";position:absolute;inset:-12px -10px} /* admin: "Thu nhỏ cái nút done lại 1 xíu ... dù vùng ấn có thể hơn cái nút" */
+.mw-o{width:18px;height:18px;border-radius:999px;border:1.5px solid var(--accent);display:grid;place-items:center;color:transparent;background:var(--surface);transition:color .15s,background .15s}
+.mw-o .ic{width:11px;height:11px}
+.mw-done{margin-top:1px}
+@media (hover:hover){.mw-done:hover .mw-o{color:var(--accent-text);background:var(--accent-soft)}}
+.mw-done:focus-visible .mw-o{outline:2px solid var(--accent);outline-offset:2px}
+.mw-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:32px}
+.mw-qu{all:unset;box-sizing:border-box;cursor:pointer;flex:none;width:26px;height:26px;border-radius:999px;display:grid;place-items:center;color:var(--muted);position:relative;transition:color .15s,background .15s}
+.mw-qu::after{content:"";position:absolute;inset:-9px} /* admin: "nhỏ hơn xíu ... để thấy chớp không thì nhức mắt quá": quiet, grey, no ring; the touch area stays */
+.mw-qu .ic{width:15px;height:15px}
+@media (hover:hover){.mw-qu:hover{background:var(--accent-soft);color:var(--accent-text)}}
+.mw-qu:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.td-row.mw-row{align-items:flex-start}.td-row.mw-row .mw-qu{align-self:center;margin-left:auto}
+/* 0.3.6 (admin, 29 Oct 2026: "Với delete luôn là nút đỏ chói nha"): every Delete with a word is a solid red button; the small
+   trash and cross buttons that delete are red too */
+.ic-del{color:var(--danger-solid)!important}
+@media (hover:hover){.ic-del:hover{background:color-mix(in srgb,var(--danger-solid) 12%,transparent)!important}}
+.ritem-go{cursor:pointer;border-radius:8px}
+@media (hover:hover){.ritem-go:hover{background:var(--hover)}}
+.ritem-go:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 </style>
 </head>
 <body>
@@ -2222,8 +2299,15 @@ var TIPS = {
 /* 0.3.4 (admin: "không cần what's new vì chỉ là chỉnh giao diện nhỏ, sửa lại các what's new, cái nào nhỏ quá hoặc sửa
    bug nhỏ nhỏ thì ghi chung chung ngắn gọn thôi"): a release gets a card only when members will notice something new;
    small changes and fixes are one short line. The page's own version is PAGE_VERSION, not the latest card. */
-var PAGE_VERSION = '0.3.5'; // = APP_VERSION in Code.gs (test/server_test.js checks)
+var PAGE_VERSION = '0.3.6'; // = APP_VERSION in Code.gs (test/server_test.js checks)
 var RELEASES = [
+  { v: '0.3.6', date: '2026-10-31', title: 'Saved at once, and a celebration', items: [ // 0.3.6 (BACKLOG 67 to 74)
+    ['check', 'Save is instant: the change shows at once and "Saving…" turns into "Saved". If someone else was editing, your changes come back into the boxes.'],
+    ['spark', 'Quick update with screenshots goes in one step, much faster; the screenshots are deleted once the AI has read them.'],
+    ['refresh', 'Pull a page down from its top to refresh it (phone), or press Refresh beside your name (computer). Back in the app, it reconnects by itself.'],
+    ['ball', 'A paper accepted or published: the members on it are told, with a short celebration.'],
+    ['user', 'My work on a phone: Done is the circle beside your step, Update the small ⚡; swipe a to-do line to the left for Edit, Calendar and Delete.', 'new'],
+    ['bell2', 'A quick update\'s answer under the bell opens the manuscript it changed.']] },
   { v: '0.3.5', date: '2026-10-29', title: 'A new layout: My work, Papers, Group', map: true, go: ['general', 'Layout settings'], items: [ // 0.3.5 (BACKLOG 64)
     ['user', 'My work is your home: what the AI asks you to confirm, your move with each step (Done, Update), your own to-do and the manuscripts you are on.', 'new'],
     ['book', 'Papers: every manuscript, grouped by where it is; the tabs on the side filter by urgency.', 'new'],
@@ -2298,8 +2382,58 @@ function vcmp(a, b) { var x = String(a).split('.').map(Number), y = String(b).sp
 function relSeenV() { return (S.boot && S.boot.prefs && S.boot.prefs.relSeen) || '0.2.0'; }
 function relNew() { var v = relSeenV(); return RELEASES.filter(function (r) { return vcmp(r.v, v) > 0; }); }
 function maybeWhatsNew() {
-  if (!S.boot || S.stale || S.tour >= 0 || S.tourShown || S.wnShown || S.wn || S.ga || S.ad || S.del || S.rp || S.qu || S.fb || S.nf || !relNew().length) return;
+  if (!S.boot || S.stale || S.tour >= 0 || S.tourShown || S.wnShown || S.wn || S.cel || S.ga || S.ad || S.del || S.rp || S.qu || S.fb || S.nf || !relNew().length) return;
   S.wn = { auto: true }; S.wnShown = true;
+}
+/* 0.3.6 (BACKLOG 73, admin: "nào mà bài được accepted thì gửi tin nhắn noti hết ... và hiện hiệu ứng chúc mừng"; "chỉ những
+   người trong bài, cả published, có công tắc"): a paper of mine became Accepted or Published: once per member and paper, a
+   short burst of confetti (about 1.5 s; none when the device asks for less motion) and a card with the title, the
+   journal, the day and the members on it, Open and Close. Afterwards it is calm: the paper's block keeps a small green
+   tick for a week. Only the members on that paper get it (their notification); the admin's switch is in the AI desk. */
+function celKey(n) { return Number(n.manuscript_id) + ':' + (/^Published\b/.test(n.text || '') ? 'Published' : 'Accepted'); }
+function celNotes() {
+  if (!S.boot || S.boot.celebrate === false) return [];
+  return allNotes().filter(function (n) { var m = mById(n.manuscript_id); return n.kind === 'celebrate' && !n.undone && m && isWin(m); });
+}
+function maybeCelebrate() {
+  if (!S.boot || S.stale || S.cel || S.tour >= 0 || S.wn || S.ga || S.ad || S.del || S.rp || S.qu || S.fb || S.nf) return false;
+  var seen = (S.boot.prefs && S.boot.prefs.celSeen) || [], n = celNotes().filter(function (x) { return seen.indexOf(celKey(x)) < 0; })[0];
+  if (!n) return false;
+  var k = celKey(n); S.cel = { mid: Number(n.manuscript_id), st: k.split(':')[1], ts: n.ts, text: n.text };
+  S.boot.prefs = S.boot.prefs || {}; S.boot.prefs.celSeen = seen.concat([k]).slice(-60); keepBoot();
+  api('api_setPrefs', { celSeen: S.boot.prefs.celSeen }).catch(function () { });
+  setTimeout(confetti, 120);
+  return true;
+}
+function celTick(m) {
+  var wk = new Date(Date.now() - 7 * 86400000).toISOString().slice(0, 10);
+  return celNotes().some(function (n) { return Number(n.manuscript_id) === m.id && String(n.ts).slice(0, 10) >= wk; }) ? '<span class="cel-tick" title="' + esc(m.status) + ' this week">' + ic('check') + '</span>' : '';
+}
+function celDialog() {
+  var c = S.cel, m = mById(c.mid) || { title: '', journal: '' }, who = (/Congratulations to (.+?)!?$/.exec(c.text || '') || [])[1] || '';
+  return '<div class="overlay cel-ov" data-a="cel-bg"><div class="dialog cel" role="dialog" aria-modal="true" aria-labelledby="cel-h">' +
+    '<span class="cel-mark" aria-hidden="true">' + ic('check') + '</span>' +
+    '<p class="cel-k">' + esc(c.st) + ' · ' + esc(nice(String(c.ts).slice(0, 10))) + '</p>' +
+    '<h2 id="cel-h">' + esc(m.title) + '</h2>' + (m.journal ? '<p class="cel-j">' + esc(m.journal) + '</p>' : '') +
+    '<p class="cel-who">' + (who ? 'Congratulations to ' + esc(fullNames(who)) + '!' : 'Congratulations!') + '</p>' +
+    '<div class="btns"><button class="btn btn-s" data-a="cel-close">Close</button><button class="btn btn-p" data-a="cel-open" data-v="' + c.mid + '">Open</button></div></div></div>';
+}
+function confetti() {
+  try { if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return; } catch (e) { }
+  var cv = document.createElement('canvas'), W = window.innerWidth, H = window.innerHeight, dpr = Math.min(2, window.devicePixelRatio || 1);
+  cv.className = 'confetti'; cv.width = W * dpr; cv.height = H * dpr; cv.setAttribute('aria-hidden', 'true'); document.body.appendChild(cv);
+  var g = cv.getContext('2d'); if (!g) { cv.remove(); return; } g.scale(dpr, dpr);
+  var css = getComputedStyle(document.documentElement), col = ['--ok-fg', '--accent', '--danger', '--accent-line', '--ok-bg'].map(function (v) { return css.getPropertyValue(v).trim(); }).filter(Boolean);
+  if (col.length < 3) col = ['#2e9b63', '#3b6fd8', '#e0a12b', '#d95c8a'];
+  var P = []; for (var i = 0; i < 90; i++) P.push({ x: W / 2 + (Math.random() - 0.5) * 80, y: H * 0.38, vx: (Math.random() - 0.5) * 9, vy: -Math.random() * 9 - 3, r: Math.random() * 6.28, vr: (Math.random() - 0.5) * 0.3, w: 5 + Math.random() * 5, c: col[i % col.length] });
+  var t0 = performance.now();
+  (function frame(t) {
+    var k = (t - t0) / 1500; g.clearRect(0, 0, W, H);
+    if (k >= 1) { cv.remove(); return; }
+    g.globalAlpha = k < 0.7 ? 1 : 1 - (k - 0.7) / 0.3;
+    P.forEach(function (p) { p.vy += 0.28; p.vx *= 0.99; p.x += p.vx; p.y += p.vy; p.r += p.vr; g.save(); g.translate(p.x, p.y); g.rotate(p.r); g.fillStyle = p.c; g.fillRect(-p.w / 2, -p.w / 4, p.w, p.w / 2); g.restore(); });
+    requestAnimationFrame(frame);
+  })(t0);
 }
 function wnSeen() {
   var v = RELEASES[0].v; if (!S.boot || vcmp(v, relSeenV()) <= 0) return;
@@ -2438,7 +2572,8 @@ var ICON2 = {
   chat: '<path d="M5 18.5V7a2.5 2.5 0 0 1 2.5-2.5h9A2.5 2.5 0 0 1 19 7v6.5a2.5 2.5 0 0 1-2.5 2.5H9z"/>',
   cal: '<rect x="4" y="5" width="16" height="15" rx="2.5"/><path d="M8 3v4M16 3v4M4 10h16"/>',
   pencil: '<path d="M4 20h4.2L19.4 8.8a2 2 0 0 0 0-2.8l-1.4-1.4a2 2 0 0 0-2.8 0L4 15.8z"/><path d="M13.5 6.5l4 4"/>',
-  spark: '<path d="M13 3L5 13.5h6L10 21l8-10.5h-6z"/>'
+  spark: '<path d="M13 3L5 13.5h6L10 21l8-10.5h-6z"/>',
+  refresh: '<path d="M19.5 12a7.5 7.5 0 1 1-2.3-5.4"/><path d="M19.8 4.2v4.4h-4.4"/>' // 0.3.6 (BACKLOG 74)
 };
 function ic(n) { return '<svg class="ic ic2" viewBox="0 0 24 24" aria-hidden="true">' + (ICON2[n] || '') + '</svg>'; }
 
@@ -2661,7 +2796,7 @@ function render() {
   // Animate only what is new (a view, filter or search result, or a layer that just opened); plain
   // re-renders (typing, toggles, saves, live refresh, tour steps) repaint without replaying animations.
   app.classList.toggle('calm', !S.fx.list && !!S.painted);
-  var pk = S.pop || '', dk = S.wn ? 'wn' : S.ga ? 'ga' : S.ad ? 'ad' : S.del ? 'del' : S.rp ? 'rp' : S.qu ? 'qu' : S.fb ? 'fb' : S.nf ? 'nf' : '', tk = S.tour >= 0 ? 'tour' + S.tour : '', sk = S.pal ? 'pal' : '';
+  var pk = S.pop || '', dk = S.cel ? 'cel' : S.wn ? 'wn' : S.ga ? 'ga' : S.ad ? 'ad' : S.del ? 'del' : S.rp ? 'rp' : S.qu ? 'qu' : S.fb ? 'fb' : S.nf ? 'nf' : '', tk = S.tour >= 0 ? 'tour' + S.tour : '', sk = S.pal ? 'pal' : '';
   layer.className = (pk && pk === S.lk[0] ? 'calm-pop ' : '') + (dk && dk === S.lk[1] ? 'calm-dlg ' : '') + (tk && tk === S.lk[2] ? 'calm-tour ' : '') + (sk && sk === S.lk[3] ? 'calm-pal' : '');
   var prevDk = S.lk[1], prevPk = S.lk[0], prevSk = S.lk[3]; S.lk = [pk, dk, tk, sk]; S.painted = true;
   var segK = S.view, segB = segK === S.segK ? segRects() : {}; S.segK = segK; // 0.2.8; 0.3.3 (BACKLOG 40): another view has other switches: nothing to slide, so nothing measured (it forced a layout of the old page)
@@ -2860,6 +2995,7 @@ function sidebar() {
     '<button class="sb-item" data-a="pop" data-v="notif" aria-expanded="' + (S.pop === 'notif') + '" aria-label="Notifications, ' + unread + ' unread"' + (sbCollapsed() ? tt('Notifications') : '') + '>' + ic('bell2') + '<span class="lab">Notifications</span>' + (unread ? '<span class="badge" aria-hidden="true">' + unread + '</span>' : '') + '</button>' +
     '<button class="sb-item" data-a="view" data-v="settings"' + (S.view === 'settings' ? ' aria-current="page"' : '') + (sbCollapsed() ? tt('Settings') : '') + '>' + ic('gear') + '<span class="lab">Settings</span></button>' +
     '<div class="sb-merow"><button class="sb-me" data-a="pop" data-v="acct" aria-haspopup="menu" aria-expanded="' + (S.pop === 'acct') + '" aria-label="Account: ' + esc(dispName(me())) + '"' + (sbCollapsed() ? tt(me().display) : '') + '><span class="av">' + esc(me().initials) + avImg(myPhoto()) + '</span><span class="who"><b>' + esc(me().full_name || me().display) + '</b><span>' + esc(me().role) + '</span></span></button>' +
+    '<button class="sb-ib sb-ref' + (S.refreshing ? ' spin' : '') + '" data-a="refresh" aria-label="Refresh: the latest data"' + tt('Refresh') + '>' + ic('refresh') + '</button>' + // 0.3.6 (BACKLOG 74)
     '<button class="sb-ib sb-get" data-a="get-app" aria-label="Get the VIBRA app"' + tt('Get the app') + '>' + ic('apps') + '</button></div>' +
     '</div></aside>';
 }
@@ -2887,12 +3023,13 @@ function statusChip() {
   if (qp && qp.phase === 'save') x += '<span class="stale-pill qp" role="progressbar" aria-label="Saving your update" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + (qp.pct || 0) + '"><span data-qp>' + esc(qprogText()) + '</span><span class="qp-bar" aria-hidden="true"><span style="width:' + (qp.pct || 0) + '%"></span></span></span>';
   else if (qp && qp.phase === 'saved') x += '<span class="stale-pill ok" role="status">' + ic('check') + '<span data-qp>Saved</span></span>';
   else if (qp) x += '<span class="stale-pill busy" role="status"' + ph + '><i aria-hidden="true"></i><span data-qp>' + esc(qprogText()) + '</span></span>';
+  x += savePill(); // 0.3.6 (BACKLOG 72)
   if (S.updReady) x += '<button class="stale-pill upd" data-a="reload" title="A new version of VIBRA Tracker is ready">' + ic('restore') + 'New version · Reload</button>';
   return x;
 }
 /* 0.2.6: the floating label slides in only when what it says changes, not at every repaint */
 function fsNew() {
-  var k = [S.offline, S.stale, S.staleErr, !!(S.freshAt && Date.now() - S.freshAt < 1800), S.qprog ? S.qprog.phase : '', !!S.updReady].join();
+  var k = [S.offline, S.stale, S.staleErr, !!(S.freshAt && Date.now() - S.freshAt < 1800), S.qprog ? S.qprog.phase : '', S.sprog ? S.sprog.phase : '', !!S.updReady].join();
   var n = k !== S.fsKey; S.fsKey = k; return n ? ' fsnew' : '';
 }
 function qprogText() { var q = S.qprog; return !q ? '' : q.phase === 'save' ? 'Saving… ' + (q.pct || 0) + '%' : q.phase === 'saved' ? 'Saved' : 'The AI is reading…'; } // 0.3.3 (BACKLOG 52)
@@ -2910,7 +3047,7 @@ function keepDraftNow() {
     var orig = JSON.parse(d.orig), f = {}, m = curM();
     DRAFT_F.forEach(function (k) { if (JSON.stringify(d[k]) !== JSON.stringify(orig[DRAFT_PK[k] || k])) f[k] = d[k]; });
     all.m[d.id] = { id: d.id, base: d.base, orig: d.orig, f: f, at: (all.m[d.id] && all.m[d.id].at) || Date.now(), title: m ? m.title : '' };
-  } else if (all.m[d.id]) delete all.m[d.id];
+  } else if (all.m[d.id] && S.saving !== d.id) delete all.m[d.id]; // 0.3.6: kept while its save is on its way
   else return;
   setDrafts(all);
 }
@@ -2919,8 +3056,12 @@ function keepDraftSoon() { clearTimeout(draftT); draftT = setTimeout(keepDraftNo
 function dropDraft(id) { var all = drafts(); if (all.m && all.m[id]) { delete all.m[id]; setDrafts(all); } }
 /* Puts kept changes back into the boxes of a manuscript just opened; someone else's newer save is merged as usual and a
    clash on the same field is left to the server's version check (it asks which to keep). */
+/* 0.3.6: kept changes the server already has (a save that went through while the app was closed) are no changes */
+function keptSame(k, m) { return !!(k && m) && Object.keys(k.f || {}).every(function (f) { return JSON.stringify(k.f[f]) === JSON.stringify(makeDraft(m)[f]); }); }
 function restoreDraft(id) {
   var k = (drafts().m || {})[id]; if (!k || !S.draft || S.draft.id !== id) return false;
+  if (S.saving === id) return false;
+  if (keptSame(k, mById(id))) { dropDraft(id); return false; }
   Object.keys(k.f || {}).forEach(function (f) { S.draft[f] = clone(k.f[f]); });
   S.draft.orig = k.orig; S.draft.base = k.base;
   var m = curM(); if (m && m.version !== k.base) rebaseDraft(m, true);
@@ -2936,7 +3077,7 @@ function keepReq(key, o) {
 function isNetErr(e) { return S.offline || /No connection|fetch|network|load failed/i.test(msg(e)); }
 function draftBar() {
   if (!S.boot || S.view === 'settings' || S.view === 'desk') return '';
-  var ms = drafts().m || {}, ids = Object.keys(ms).map(Number).filter(function (id) { return mById(id) && S.sel !== id; });
+  var ms = drafts().m || {}, ids = Object.keys(ms).map(Number).filter(function (id) { return mById(id) && S.sel !== id && S.saving !== id && !keptSame(ms[id], mById(id)); });
   return ids.map(function (id) {
     var k = ms[id];
     return '<div class="draft-bar" role="status">' + ic('pen') + '<span><b>Unsaved changes to #' + id + '</b> ' + esc(short(k.title || mById(id).title, 70)) + ' <span class="muted">· kept on this device since ' + esc(keptWhen(k.at)) + '</span></span>' +
@@ -3413,7 +3554,7 @@ function todayView() { var v = prefs().todayView; return v === 'blocks' ? 'block
 function blockHtml(d, i) {
   var m = d.m, p = progress(m), anim = S.fx.list ? ' fx-in" style="--i:' + Math.min(i, 14) : S.fx.items ? ' fx-new' : '';
   return '<button class="block' + anim + '" data-a="open" data-v="' + m.id + '"' + (S.sel === m.id ? ' aria-current="true"' : '') + '>' +
-    '<span class="bl-top">' + tagHtml(d) + trackChip(m) + '<span class="meta">' + metaHtml(d) + '</span></span>' +
+    '<span class="bl-top">' + tagHtml(d) + celTick(m) + trackChip(m) + '<span class="meta">' + metaHtml(d) + '</span></span>' +
     '<span class="bl-t">' + esc(m.title) + '</span>' + lockChip(m.id) +
     '<span class="bl-j">' + esc(m.journal || 'Journal not chosen') + '</span>' +
     '<span class="bl-p">' + ic('ball') + '<span>' + esc(peopleText(m.people)) + '</span></span>' +
@@ -3957,18 +4098,28 @@ function sendQuick(o) {
      first, then the screenshots in pieces, three at a time; the pill counts what the server has
      written ("Saving… 60%"), says "Saved" when all of it is in the Sheet, and the update leaves this device. The AI's
      reading is asked for apart (one call per part of a report, at the same time): "The AI is reading…", no time. */
-  var media = d.images.map(function (u) { return { kind: 'image', data: u }; });
-  d.files = media.map(function (m) { return { kind: m.kind, len: m.data.length }; }); delete d.images;
+  /* 0.3.6 (BACKLOG 72, admin: "save 2 ảnh chắc hơn 30 giây"; "vừa lưu vào sheet vừa gửi gemini 1 lúc"): the screenshots go
+     with the text in one call (no pieces, one write to the Sheet); "Saved" when that call answers, then the AI reads them
+     and the helper deletes them. One call cannot tell how far it is, so the bar follows the time it usually takes for that
+     size and fills up when the server answers. The update stays kept on this device until "Saved". */
+  d.files = d.images.map(function (u) { return { kind: 'image', len: u.length }; }); // for a helper of before 0.14.0, which asks for the pieces
   keepReq('qu', o); S.qu = null;
-  var total = text.length + 400 + media.reduce(function (a, m) { return a + m.data.length; }, 0), sent = 0;
+  var size = text.length + d.images.reduce(function (a, u) { return a + u.length; }, 0);
   var qp = S.qprog = { at: Date.now(), phase: 'save', pct: 0, cid: o.cid }; render();
-  var step = function (n) { sent += n; if (S.qprog !== qp) return; qp.pct = Math.min(99, Math.floor(sent * 100 / total)); qpPaint(); };
+  var guess = 1500 + size / 120, tick = setInterval(function () { // about 120 characters a millisecond on a phone's upload
+    if (S.qprog !== qp || qp.phase !== 'save') { clearInterval(tick); return; }
+    qp.pct = Math.min(92, Math.round(92 * (1 - Math.exp(-(Date.now() - qp.at) / guess)))); qpPaint();
+  }, 250);
+  var t0 = Date.now();
   W.qsave(d).then(function (x) {
+    clearInterval(tick); noteRt('Quick update', t0);
     var sv = x.saved || {}; if (sv.requests) S.boot.requests = sv.requests; if (sv.mode) S.boot.quick = { mode: sv.mode };
-    step(text.length + 400);
     if (sv.done) { quickSaved(qp, o, sv, null); helperDone({ ok: true, already: true, status: sv.status, reply: sv.reply }, sv.id); return; }
-    return (sv.status === 'up' ? quickUpload(sv.id, media, step) : Promise.resolve({ status: sv.status })).then(function (r) { quickSaved(qp, o, sv, r.status); });
-  }).catch(function (e) { if (S.qprog === qp) S.qprog = null; render(); quickKept(e); });
+    if (sv.status !== 'up') { quickSaved(qp, o, sv, sv.status); return; }
+    // a helper of before 0.14.0 asks for the pieces, as before
+    var media = d.images.map(function (u) { return { kind: 'image', data: u }; });
+    return quickUpload(sv.id, media, function () { }).then(function (r) { quickSaved(qp, o, sv, r.status); });
+  }).catch(function (e) { clearInterval(tick); if (S.qprog === qp) S.qprog = null; render(); quickKept(e); });
 }
 /* 0.3.3 (BACKLOG 55, admin: "để nút bật tắt trong AI desk của tôi để kiểm soát"; on the pictures: B and C dropped, "Tắt sẵn"):
    Ask the tracker, with a switch in the AI desk (Meta ai_ask; off until the admin turns it on = gone from the members'
@@ -4295,14 +4446,14 @@ function tdRow(r) {
     '<span class="td-acts">' + (r.date && !r.done ? '<a class="btn btn-q" data-a="td-gcal" data-v="' + esc(r.id) + '" target="_blank" rel="noopener" href="' + esc(tdGcal(r)) + '" aria-label="Add to Google Calendar"' + tt('Add to Google Calendar') + '>' + ic('cal') + '</a>' +
       '<button class="btn btn-q" data-a="td-ics" data-v="' + esc(r.id) + '" aria-label="Apple or Outlook calendar file"' + tt('Apple or Outlook (.ics)') + '>' + ic('down') + '</button>' : '') +
     '<button class="btn btn-q" data-a="td-edit" data-v="' + esc(r.id) + '" aria-label="Edit"' + tt('Edit') + '>' + ic('pencil') + '</button>' +
-    '<button class="btn btn-q" data-a="td-del" data-v="' + esc(r.id) + '" aria-label="Delete"' + tt('Delete') + '>' + ic('trash') + '</button></span></div>';
+    '<button class="btn btn-q ic-del" data-a="td-del" data-v="' + esc(r.id) + '" aria-label="Delete"' + tt('Delete') + '>' + ic('trash') + '</button></span></div>';
 }
 function tdEditRow(del) {
   var e = S.tde;
   return '<div class="td-row td-editing"><div class="td-main" style="display:grid;gap:8px;width:100%"><input id="tde-note" class="in" data-i="tde" data-v="note" maxlength="300" value="' + esc(e.note) + '" aria-label="What is to be done">' +
     '<div class="td-add2"><input class="in" type="date" data-i="tde" data-v="date" value="' + esc(e.date || '') + '" aria-label="Date (optional)"><input class="in" type="time" data-i="tde" data-v="time" value="' + esc(e.time || '') + '" aria-label="Time (optional)">' +
     '<button class="btn btn-p" data-a="tde-save">Save</button><button class="btn btn-q" data-a="tde-cancel">Cancel</button>' +
-    (del ? '<button class="btn btn-q mwt-del" data-a="td-del" data-v="' + esc(e.id) + '">' + ic('trash') + 'Delete</button>' : '') + '</div></div></div>';
+    (del ? '<button class="btn btn-red mwt-del" data-a="td-del" data-v="' + esc(e.id) + '">' + ic('trash') + 'Delete</button>' : '') + '</div></div></div>';
 }
 function tdCalCard() {
   var T0 = S.boot.today, mk = S.tdMonth || T0.slice(0, 7), y = Number(mk.slice(0, 4)), mo = Number(mk.slice(5, 7)) - 1;
@@ -4462,11 +4613,11 @@ function tdSort(a, b) {
 }
 function tdBallRow(r, upd) {
   var T0 = S.boot.today, late = r.date && r.date < T0, d = r.d, ask = S.tdb && S.tdb.mid === r.mid;
-  return '<div class="td-row ball' + (ask ? ' asking' : '') + '"><button class="td-chk round" data-a="tdb-ask" data-v="' + r.mid + '" role="checkbox" aria-checked="false" aria-label="Mark this step done: ' + esc(short(r.note, 60)) + '">' + ic('check') + '</button>' +
+  return '<div class="td-row ball' + (ask ? ' asking' : '') + (upd ? ' mw-row' : '') + '">' + (upd ? (canEdit() ? mwDone(r.mid, r.note) : '') : '<button class="td-chk round" data-a="tdb-ask" data-v="' + r.mid + '" role="checkbox" aria-checked="false" aria-label="Mark this step done: ' + esc(short(r.note, 60)) + '">' + ic('check') + '</button>') + // 0.3.6: My work's List as its Blocks
     '<div class="td-main">' + (upd ? '' : '<span class="td-src">' + ic('ball') + 'Ball with me</span>') + '<span class="td-t">' + esc(fullNames(r.note)) + '</span>' +
     '<span class="td-meta">' + (r.date ? '<span class="td-d' + (late ? ' late' : r.date === T0 ? ' now' : '') + '">' + esc(niceShort(r.date)) + '</span>' : '') + tagHtml(d) +
     '<button class="td-m" data-a="open" data-v="' + r.mid + '">#' + r.mid + ' ' + esc(short(d.m.title, 46)) + '</button>' + trackChip(d.m) + '</span></div>' +
-    (upd && canEdit() ? '<span class="td-acts mw-upd"><button class="btn btn-s" data-a="qu-open" data-v="' + r.mid + '">' + ic('bolt') + 'Update</button></span>' : '') + '</div>' +
+    (upd && canEdit() ? mwQu(r.mid) : '') + '</div>' +
     (ask ? '<div class="tdb-ask" role="group" aria-label="Mark this step done"><b>Mark this step done?</b><span class="muted">The AI updates the next actions. Undo is possible.</span>' +
       '<input id="tdb-note" class="in" maxlength="300" data-i="tdb" data-v="note" value="' + esc(S.tdb.note || '') + '" placeholder="Note (optional)">' +
       '<div class="btns"><button class="btn btn-p" data-a="tdb-go" data-v="' + r.mid + '">Mark done</button><button class="btn btn-q" data-a="tdb-cancel">Cancel</button></div></div>' : '');
@@ -4543,17 +4694,21 @@ function mineAll() { var k = me().key; return allDerived().filter(function (d) {
 function mwBlock(d, i) {
   var m = d.m, p = progress(m), anim = S.fx.list ? ' fx-in" style="--i:' + Math.min(i, 14) : S.fx.items ? ' fx-new' : '', ask = S.tdb && S.tdb.mid === m.id, step = firstStep(m.next) || 'Decide the next step';
   return '<div class="block mwb' + (ask ? ' asking' : '') + anim + '" data-a="open" data-v="' + m.id + '" role="button" tabindex="0"' + (S.sel === m.id ? ' aria-current="true"' : '') + '>' +
-    '<span class="bl-top">' + tagHtml(d) + trackChip(m) + '<span class="meta">' + metaHtml(d) + '</span></span>' +
+    '<span class="bl-top">' + tagHtml(d) + celTick(m) + trackChip(m) + '<span class="meta">' + metaHtml(d) + '</span></span>' +
     '<span class="bl-t">' + esc(m.title) + '</span>' + lockChip(m.id) +
     '<span class="bl-j">' + esc(m.journal || 'Journal not chosen') + '</span>' +
-    '<span class="bl-step"><b>Your step:</b> ' + esc(fullNames(step)) + '</span>' +
-    '<span class="bl-prog" aria-label="Progress: ' + esc(p[1] === 'prep' ? 'preparing, ' : p[1] === 'jour' ? 'at the journal, ' : '') + esc(p[2]) + '"><span class="prog"><i class="pg-' + p[1] + '" style="width:' + Math.round(p[0] * 100) + '%"></i></span><span class="bl-st">' + esc(p[2]) + '</span></span>' +
+    // 0.3.6 (BACKLOG 67, admin: B): Done is the circle beside the step (as in the List), Update a small ⚡: no wide buttons
+    '<span class="bl-step mw-step">' + (canEdit() && !ask ? mwDone(m.id, step) : '') + '<span class="mw-st"><b>Your step:</b> ' + esc(fullNames(step)) + '</span></span>' +
+    '<span class="bl-prog" aria-label="Progress: ' + esc(p[1] === 'prep' ? 'preparing, ' : p[1] === 'jour' ? 'at the journal, ' : '') + esc(p[2]) + '"><span class="prog"><i class="pg-' + p[1] + '" style="width:' + Math.round(p[0] * 100) + '%"></i></span>' +
+    '<span class="mw-foot"><span class="bl-st">' + esc(p[2]) + '</span>' + (canEdit() ? mwQu(m.id) : '') + '</span></span>' +
     (!canEdit() ? '' : ask ? '<span class="mw-ask" data-a="mw-in" role="group" aria-label="Mark this step done"><b>Mark this step done?</b><span class="muted">The AI moves the manuscript on. Undo is possible.</span>' +
       '<input id="tdb-note" class="in" maxlength="300" data-i="tdb" data-v="note" value="' + esc(S.tdb.note || '') + '" placeholder="Note (optional)">' +
-      '<span class="btns"><button class="btn btn-p" data-a="tdb-go" data-v="' + m.id + '">Mark done</button><button class="btn btn-q" data-a="tdb-cancel">Cancel</button></span></span>' :
-      '<span class="mw-acts"><button class="btn btn-s" data-a="tdb-ask" data-v="' + m.id + '" aria-label="Done: ' + esc(short(step, 60)) + '">' + ic('check') + 'Done</button>' +
-      '<button class="btn btn-s" data-a="qu-open" data-v="' + m.id + '" aria-label="Update #' + m.id + '">' + ic('bolt') + 'Update</button></span>') + '</div>';
+      '<span class="btns"><button class="btn btn-p" data-a="tdb-go" data-v="' + m.id + '">Mark done</button><button class="btn btn-q" data-a="tdb-cancel">Cancel</button></span></span>' : '') + '</div>';
 }
+function mwDone(mid, step) {
+  return '<button class="mw-done" data-a="tdb-ask" data-v="' + mid + '" aria-label="Done: ' + esc(short(fullNames(step), 60)) + '"' + tt('Mark this step done') + '><i class="mw-o">' + ic('check') + '</i></button>'; // admin: "cũng đâu cần chữ done đâu he, ở todo cũng đâu cần"
+}
+function mwQu(mid) { return '<button class="mw-qu" data-a="qu-open" data-v="' + mid + '" aria-label="Update #' + mid + ': tell the tracker what happened"' + tt('Update: tell the tracker') + '>' + ic('bolt') + '</button>'; }
 /* 0.3.5 (admin, 29 Oct 2026: "to-do nhìn giao diện tốn chỗ quá"): My work's own to-do as one compact list: a line to add
    (the date and the manuscript appear only while adding), one line per item with its date on the right, the tools at hand
    on a computer when the mouse is on the line. The To-do page of Classic is unchanged. */
@@ -4565,12 +4720,13 @@ function mwtWhen(d) {
 function mwtRow(r) {
   if (S.tde && S.tde.id === r.id) return tdEditRow(true);
   var m = mById(r.mid), T0 = S.boot.today, late = !r.done && r.date && r.date < T0;
-  return '<div class="td-row mwt-row' + (r.done ? ' done' : '') + '"><button class="td-chk round" data-a="td-done" data-v="' + esc(r.id) + '" role="checkbox" aria-checked="' + !!r.done + '" aria-label="' + (r.done ? 'Mark as not done' : 'Mark as done') + ': ' + esc(short(tdText(r), 60)) + '">' + ic('check') + '</button>' +
+  return '<div class="td-row mwt-row' + (r.done ? ' done' : '') + (S.sw === r.id ? ' sw-open' : '') + '" data-sw="' + esc(r.id) + '"><button class="td-chk round" data-a="td-done" data-v="' + esc(r.id) + '" role="checkbox" aria-checked="' + !!r.done + '" aria-label="' + (r.done ? 'Mark as not done' : 'Mark as done') + ': ' + esc(short(tdText(r), 60)) + '">' + ic('check') + '</button>' +
     '<span class="mwt-t"><button class="td-t mwt-e" data-a="td-edit" data-v="' + esc(r.id) + '" aria-label="Edit: ' + esc(short(tdText(r), 60)) + '">' + esc(tdText(r)) + '</button>' + (m ? '<button class="td-m" data-a="open" data-v="' + m.id + '" title="' + esc(m.title) + '">#' + m.id + '</button>' : '') +
     (r.k !== 't' ? '<span class="td-tag">Reminder</span>' : '') + (r.cal ? '<span class="td-tag">' + ic('cal') + '</span>' : '') + '</span>' +
-    '<span class="td-acts">' + (r.date && !r.done ? '<a class="btn btn-q" data-a="td-gcal" data-v="' + esc(r.id) + '" target="_blank" rel="noopener" href="' + esc(tdGcal(r)) + '" aria-label="Add to Google Calendar"' + tt('Add to Google Calendar') + '>' + ic('cal') + '</a>' : '') +
-    '<button class="btn btn-q" data-a="td-edit" data-v="' + esc(r.id) + '" aria-label="Edit"' + tt('Edit') + '>' + ic('pencil') + '</button>' +
-    '<button class="btn btn-q" data-a="td-del" data-v="' + esc(r.id) + '" aria-label="Delete"' + tt('Delete') + '>' + ic('trash') + '</button></span>' +
+    // 0.3.6 (BACKLOG 70): on a phone these are the tray a swipe to the left shows (Edit, Calendar, Delete), each with its word
+    '<span class="td-acts" style="--sw-n:' + (r.date && !r.done ? 3 : 2) + '">' + '<button class="btn btn-q sw-ed" data-a="td-edit" data-v="' + esc(r.id) + '" aria-label="Edit"' + tt('Edit') + '>' + ic('pencil') + '<span class="sw-l">Edit</span></button>' +
+    (r.date && !r.done ? '<a class="btn btn-q sw-cal" data-a="td-gcal" data-v="' + esc(r.id) + '" target="_blank" rel="noopener" href="' + esc(tdGcal(r)) + '" aria-label="Add to Google Calendar"' + tt('Add to Google Calendar') + '>' + ic('cal') + '<span class="sw-l">Calendar</span></a>' : '') +
+    '<button class="btn btn-q ic-del sw-del" data-a="td-del" data-v="' + esc(r.id) + '" aria-label="Delete"' + tt('Delete') + '>' + ic('trash') + '<span class="sw-l">Delete</span></button></span>' +
     '<span class="mwt-d' + (late ? ' late' : r.date === T0 ? ' now' : '') + '">' + (r.done && r.dd ? 'Done ' + esc(niceShort(r.dd)) : r.date ? esc(late ? niceShort(r.date) + ', late' : mwtWhen(r.date)) + (r.time ? ' ' + esc(r.time) : '') : '') + '</span></div>';
 }
 function mwTodo() {
@@ -4706,7 +4862,7 @@ function viewDesk() {
     '<div class="ogrid"><div class="box"><h2>Quick updates waiting (' + D.inbox.length + ')</h2><p class="muted" style="margin:0;font-size:var(--fs-sm)">' +
     (D.quick && D.quick.mode === 'instant' ? 'Instant AI updates are on: the helper applies new quick updates within about a minute; what it cannot settle waits here.' : 'Instant AI updates are off (no helper in the Meta tab): every quick update waits here for this check.') + '</p>' + (D.inbox.map(function (x) { return item(x, true); }).join('') || '<p class="muted" style="margin:0">None.</p>') + '</div>' +
     '<div class="box"><h2>Feedback waiting (' + D.feedback.length + ')</h2>' + (D.feedback.map(function (x) { return item(x, false); }).join('') || '<p class="muted" style="margin:0">None.</p>') + '</div></div>' +
-    deskAi(D) + deskDeletions(D) + deskNames(D) + deskAuthors(D) +
+    deskAi(D) + deskCel() + deskSaves(D) + deskDeletions(D) + deskNames(D) + deskAuthors(D) +
     '<div class="box" style="margin-top:12px"><h2>Excel workbook import</h2><p class="muted" style="margin:0;font-size:var(--fs-sm)">One-time import of what the first migration left out of Manuscripts_tracker.xlsx: the IF and first-author columns, the full original row of every manuscript (read-only, under each manuscript), and the Authors tab in the Sheet (reference only, never shown in the app). Safe to run again: it never overwrites a value entered in the app.</p>' +
     '<div class="btns"><button class="btn btn-s" data-a="seed-xl"' + (S.seedBusy ? ' disabled' : '') + '>' + ic('sheet') + (S.seedBusy ? 'Importing…' : 'Run the Excel import') + '</button></div>' +
     (S.seedReport ? '<pre class="desk-pre">' + esc(JSON.stringify(S.seedReport, null, 2)) + '</pre>' : '') + '</div>' +
@@ -4727,6 +4883,26 @@ function deskAi(D) {
       return '<div class="setrow"><div style="flex:1;min-width:0"><label for="ai-' + f[0] + '" style="font-weight:600">' + f[1] + '</label><div class="muted" style="font-size:var(--fs-xs)">' + esc(f[2]) + '</div></div>' +
         '<input id="ai-' + f[0] + '" class="switch" type="checkbox" data-i="aisw" data-v="' + f[0] + '"' + (a[f[0]] === true ? ' checked' : '') + '></div>';
     }).join('') + '</div>';
+}
+/* 0.3.6 (BACKLOG 73): the admin's switch for the celebrations (Meta celebrate) */
+function deskCel() {
+  var on = !(S.boot && S.boot.celebrate === false);
+  return '<div class="box" style="margin-top:12px"><h2>Celebrations</h2><div class="setrow"><div style="flex:1;min-width:0"><label for="cel-sw" style="font-weight:600">Celebrate accepted and published papers</label>' +
+    '<div class="muted" style="font-size:var(--fs-xs)">The members on the paper get a notification and, once, a short celebration in the app.</div></div>' +
+    '<input id="cel-sw" class="switch" type="checkbox" data-i="celsw"' + (on ? ' checked' : '') + '></div></div>';
+}
+/* 0.3.6 (BACKLOG 72, admin: "ok" to measuring): how long saves take, as the helper counted them (waiting for the lock,
+   reading and writing the Sheet) and as this device saw them (network and Google's start-up included) */
+function deskSaves(D) {
+  var L = (D.saves || []).filter(function (x) { return x && x.ms >= 0; }), sec = function (v) { return v < 100 ? 'under 0.1 s' : (v / 1000).toFixed(1) + ' s'; };
+  var med = function (a) { a = a.slice().sort(function (x, y) { return x - y; }); return a.length ? a[Math.floor((a.length - 1) / 2)] : 0; };
+  var pick = function (k) { return L.map(function (x) { return Number(x[k]) || 0; }); };
+  var srv = L.length ? 'The helper, last ' + L.length + ' save' + (L.length === 1 ? '' : 's') + ' (6 hours): typical ' + sec(med(pick('ms'))) + ', slowest ' + sec(Math.max.apply(null, pick('ms'))) +
+    '; of which waiting for the lock ' + sec(med(pick('lock'))) + ', reading the Sheet ' + sec(med(pick('read'))) + ', writing ' + sec(med(pick('write'))) + '.' :
+    'The helper has counted no save in the last 6 hours (it counts saves made in the VIBRA app).';
+  var mine = RT.length ? 'This device, last ' + RT.length + ': typical ' + sec(med(RT.map(function (x) { return x.ms; }))) + ', slowest ' + sec(Math.max.apply(null, RT.map(function (x) { return x.ms; }))) + ' (network and Google\'s start-up included).' : '';
+  return '<div class="box" style="margin-top:12px" id="desk-saves"><h2>Saving time</h2><p class="muted" style="margin:0;font-size:var(--fs-sm)">' + esc(srv) + '</p>' +
+    (mine ? '<p class="muted" style="margin:4px 0 0;font-size:var(--fs-sm)">' + esc(mine) + '</p>' : '') + '</div>';
 }
 /* 0.1.12: author names. One button links every author list to the Authors tab; names the rules cannot settle are
    listed with the people they could be, and the admin says who it is. */
@@ -4769,7 +4945,7 @@ function remBox() {
       '<div style="font-weight:500">' + esc(r.note || 'Reminder') + '</div>' + (m ? '<button class="btn btn-q" style="padding:0;min-height:24px;text-align:left;white-space:normal" data-a="open-from-me" data-v="' + m.id + '">' + esc(short(m.title, 70)) + '</button>' : '') + '</div>' +
       '<div class="rm">' + (m ? '<a class="btn btn-q" target="_blank" rel="noopener" href="' + esc(gcalUrl(r, m)) + '" aria-label="Add to Google Calendar"' + tt('Add to Google Calendar') + '>' + ic('cal') + '</a>' : '') +
       (r.done ? '' : '<button class="btn btn-q" data-a="rem-done" data-v="' + esc(r.id) + '" aria-label="Mark done"' + tt('Mark done') + '>' + ic('check') + '</button>') +
-      '<button class="btn btn-q" data-a="rem-del" data-v="' + esc(r.id) + '" aria-label="Delete the reminder"' + tt('Delete') + '>' + ic('x') + '</button></div></div>';
+      '<button class="btn btn-q ic-del" data-a="rem-del" data-v="' + esc(r.id) + '" aria-label="Delete the reminder"' + tt('Delete') + '>' + ic('x') + '</button></div></div>';
   }).join('') : '<p class="muted" style="margin:0;font-size:var(--fs-sm)">No reminders yet. Open a manuscript and choose <b>Remind me</b>.</p>';
   var myDl = myDeadlines();
   return '<div class="box"><div class="frow"><h2>Reminders and calendar</h2>' + tip('remind', true) + '</div><div>' + list + '</div>' +
@@ -4829,10 +5005,20 @@ function canAnswer(r) {
   var t = Date.parse(String(r.processed_at || r.ts).replace(' ', 'T') + ':00+07:00');
   return !isNaN(t) && Date.now() - t < 23.5 * 3600000;
 }
+/* 0.3.6 (BACKLOG 69, admin: "ấn vào notification thì chạy tới ngay chỗ đã sửa nhé"): the manuscript a notification or a quick
+   update is about: its own number, else the first "#n" of a manuscript that exists in its text (the AI's answer to a quick
+   update sent without choosing one names it: "Updated manuscript #28 to Accepted ...") */
+function noteMid(n) {
+  var id = Number(n && n.manuscript_id) || 0; if (id && mById(id)) return id;
+  var t = String((n && (n.text || n.reply)) || ''), rx = /#(\d{1,5})\b/g, x;
+  while ((x = rx.exec(t))) if (mById(Number(x[1]))) return Number(x[1]);
+  return 0;
+}
 function reqBox() {
   var reqs = S.boot.requests || [];
   return '<div class="box"><div class="frow"><h2>My quick updates and feedback</h2>' + tip('requests', true) + '</div><div>' + (reqs.length ? reqs.map(function (r) {
-    return '<div class="ritem"><div style="min-width:0"><div class="mono muted" style="font-size:var(--fs-xs)">' + esc(r.what) + (r.kind ? ' · ' + esc(r.kind) : '') + (r.manuscript_id ? ' · #' + r.manuscript_id : '') + ' · ' + esc(niceShort(r.ts)) + (r.images ? ' · ' + r.images + ' image' + (r.images > 1 ? 's' : '') : '') + '</div>' +
+    var go = r.what !== 'Feedback' ? noteMid(r) : 0; // 0.3.6 (BACKLOG 69, admin: "ấn vào là mở được rồi, trừ khi ấn undo"): the line opens its manuscript
+    return '<div class="ritem' + (go ? ' ritem-go" data-a="open-sb" data-v="' + go + '" role="button" tabindex="0" title="Open #' + go : '') + '"><div style="min-width:0"><div class="mono muted" style="font-size:var(--fs-xs)">' + esc(r.what) + (r.kind ? ' · ' + esc(r.kind) : '') + (r.manuscript_id ? ' · #' + r.manuscript_id : '') + ' · ' + esc(niceShort(r.ts)) + (r.images ? ' · ' + r.images + ' image' + (r.images > 1 ? 's' : '') : '') + '</div>' +
       '<div>' + esc(short(r.text || '(screenshot only)', 180)) + '</div>' + (r.reply ? '<div style="font-size:var(--fs-sm);color:var(--ok-fg);margin-top:3px">' + esc(r.reply) + '</div>' : '') +
       (r.undo && canEdit() ? '<div class="btns" style="margin-top:6px"><button class="btn btn-s" style="min-height:30px" data-a="q-undo" data-v="' + esc(r.id) + '">' + ic('undo') + 'Undo this update</button></div>' : '') +
       (canAnswer(r) ? '<div class="btns" style="margin-top:6px"><button class="btn btn-p" style="min-height:30px" data-a="q-answer" data-v="' + esc(r.id) + '">Answer</button><span class="muted" style="font-size:var(--fs-xs);align-self:center">Your screenshot is used again; it is kept until tomorrow.</span></div>' : '') + '</div>' +
@@ -4883,7 +5069,7 @@ function panel() {
     !hist.length ? '<p class="muted" style="margin:0">No history yet.</p>' : histGroups(hist);
   var stageOk = d.status === 'Submitted' || d.status === 'Under Review';
   var P = {
-    top: '<div class="p-top"><button class="btn btn-q back" data-a="close">' + ic('back') + 'Back</button>' + tagHtml(dd) + '<span class="mono muted" style="font-size:var(--fs-xs)">#' + m.id + '</span>' +
+    top: '<div class="p-top"><button class="btn btn-q back" data-a="close">' + ic('back') + 'Back</button>' + tagHtml(dd) + '<span class="mono muted" style="font-size:var(--fs-xs)">#' + m.id + '</span>' + cardSaving(m.id) +
     '<span style="margin-left:auto"></span>' + trackBtn(m) + '<button class="ibtn" data-a="pin" data-v="' + m.id + '" aria-pressed="' + (pins().indexOf(m.id) >= 0) + '" aria-label="' + (pins().indexOf(m.id) >= 0 ? 'Unpin from the sidebar' : 'Pin to the sidebar') + '"' + tt(pins().indexOf(m.id) >= 0 ? 'Unpin from the sidebar' : 'Pin to the sidebar') + '>' + ic('pin') + '</button><button class="ibtn close" data-a="close" aria-label="Close details">' + ic('x') + '</button></div>',
     head: (S.confirmClose ? '<div class="warn" style="margin-top:12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center">' + (S.offline ? 'You are offline. Keep your changes on this device and save them later?' : 'You have unsaved changes.') + '<span style="margin-left:auto"></span>' +
       (S.offline ? '<button class="btn btn-p" data-a="close-keep">Keep for later</button><button class="btn btn-s" data-a="discard">Discard</button>' : '<button class="btn btn-s" data-a="discard">Discard</button><button class="btn btn-p" data-a="save">Save</button>') + '</div>' : '') +
@@ -4924,7 +5110,7 @@ function panel() {
     save: (canEdit() ? '<div class="savebar"><span class="state" id="savestate">' + saveStateText() + '</span>' +
       '<button class="btn btn-s" data-a="discard"' + (dirty() ? '' : ' disabled') + ' id="b-discard">Discard</button><button class="btn btn-p" data-a="save" id="b-save"' + (dirty() && !S.saving && !lk ? '' : ' disabled') + '>' + (S.saving ? 'Saving…' : 'Save') + '</button></div>' : '')
   };
-  if (UIN()) return '<aside class="panel' + (S.fx.panel ? ' fx-panel' : '') + ' pnew' + (dirty() || S.saving ? ' pdirty' : '') + '" aria-label="Manuscript details"><i class="dbar-x" aria-hidden="true"></i>' + P.top + P.head + panelNew(m, d, dd, ce, P, '<div class="p-sec"><div class="frow"><label class="lbl" for="f-next">Next actions</label>' + tip('next') + (todoOn() ? '<button class="btn btn-q" style="margin-left:auto;min-height:28px;padding:2px 8px;font-size:var(--fs-sm)" data-a="tdx-open" aria-expanded="' + !!(S.tdx && S.tdx.mid === m.id) + '">' + ic('plus') + 'To-do</button>' : '') + '</div>' +
+  if (UIN()) return '<aside class="panel' + (S.fx.panel ? ' fx-panel' : '') + ' pnew' + (dirty() ? ' pdirty' : '') + '" aria-label="Manuscript details"><i class="dbar-x" aria-hidden="true"></i>' + P.top + P.head + panelNew(m, d, dd, ce, P, '<div class="p-sec"><div class="frow"><label class="lbl" for="f-next">Next actions</label>' + tip('next') + (todoOn() ? '<button class="btn btn-q" style="margin-left:auto;min-height:28px;padding:2px 8px;font-size:var(--fs-sm)" data-a="tdx-open" aria-expanded="' + !!(S.tdx && S.tdx.mid === m.id) + '">' + ic('plus') + 'To-do</button>' : '') + '</div>' +
     '<textarea id="f-next" class="in" rows="3" data-i="d" data-v="next" data-k="num" placeholder="Type an action and press Enter: the list numbers itself"' + ro + '>' + esc(d.next) + '</textarea>' + stepChips(d) + tdxEditor(m) + '</div>') + delZone(m) + P.save + '</aside>'; // 0.3.5 (BACKLOG 64)
   return '<aside class="panel' + (S.fx.panel ? ' fx-panel' : '') + '" aria-label="Manuscript details"><i class="dbar-x" aria-hidden="true"></i>' + // 0.3.1: the bar of a layer that leaves sideways
     P.top + P.head + P.grid + P.ball + '<div class="p-sec"><div class="frow"><label class="lbl" for="f-next">Next actions</label>' + tip('next') + (todoOn() ? '<button class="btn btn-q" style="margin-left:auto;min-height:28px;padding:2px 8px;font-size:var(--fs-sm)" data-a="tdx-open" aria-expanded="' + !!(S.tdx && S.tdx.mid === m.id) + '">' + ic('plus') + 'To-do</button>' : '') + '</div>' +
@@ -4935,9 +5121,10 @@ function panel() {
    few words, or Step done: the AI moves the record on, as a quick update); then the rest folded: Details (the fields),
    Authors, Links, History. Editing stays one tap away; the Save bar shows while fields are being changed. */
 function newsVal(h) {
-  if (h.field === 'note') return esc(short(fullNames(h.new), 200));
+  if (h.field === 'note') return esc(short(fullNames(String(h.new).replace(/^\d{1,2} [A-Z][a-z]{2} \d{4}(\s*\([^)]*\))?:\s*/, '')), 200)); // 0.3.6: the date and "(quick update from ...)" are said once, around it
   if (['note', 'created', 'deleted', 'restored', 'nudge', 'people_json', 'authors_json', 'links_json'].indexOf(h.field) >= 0 || /^author:/.test(h.field)) return histVal(h);
   if (h.field === 'next_actions') return '<b>Next actions</b> ' + (h.new ? 'updated' : 'cleared'); // the Next step above already says them
+  if ((h.field === 'deadline' || h.field === 'submission_date') && h.new) return '<b>' + esc(LABEL[h.field]) + '</b> ' + esc(nice(h.new)); // 0.3.6: a date as dates are shown
   return '<b>' + esc(LABEL[h.field] || h.field) + '</b> ' + esc(short(fullNames(h.new || '(empty)'), 140));
 }
 function newsHtml(m) {
@@ -5183,7 +5370,7 @@ function histItem(h, own, inGroup) {
   var noteOk = canEdit() && h.field === 'note' && h.mine && !/deleted by its author/.test(h.new);
   if (noteOk && !(S.ned && S.ned.row === h.row)) {
     acts += '<button class="btn btn-q" data-a="note-edit" data-v="' + h.row + '" aria-label="Edit my note"' + tt('Edit my note') + '>' + ic('pencil') + '</button>';
-    acts += S.ndel === h.row ? '<button class="btn btn-q" style="color:var(--del-fg)" data-a="note-del" data-v="' + h.row + '">Delete?</button>' :
+    acts += S.ndel === h.row ? '<button class="btn btn-red" data-a="note-del" data-v="' + h.row + '">Delete?</button>' :
       '<button class="btn btn-q" data-a="note-ask" data-v="' + h.row + '" aria-label="Delete my note"' + tt('Delete my note') + '>' + ic('trash') + '</button>';
   }
   if (noteOk && S.ned && S.ned.row === h.row) {
@@ -5205,7 +5392,7 @@ function delNote(m) {
 function delZone(m) {
   if (!canEdit()) return '';
   var now = canDelNow(m), pend = pendingDel(m.id);
-  return '<div class="dzone"><button class="btn btn-s btn-del" data-a="del-open"' + (pend && !now ? ' disabled' : '') + '>' + ic('trash') + (now ? 'Delete manuscript' : pend ? 'Deletion requested' : 'Ask to delete') + '</button>' +
+  return '<div class="dzone"><button class="btn btn-red" data-a="del-open"' + (pend && !now ? ' disabled' : '') + '>' + ic('trash') + (now ? 'Delete manuscript' : pend ? 'Deletion requested' : 'Ask to delete') + '</button>' +
     '<span class="muted">' + (now ? (isSup() ? 'As ' + (me().role === 'Admin' ? 'admin' : 'supervisor') + ' you can delete any manuscript.' : 'You created this manuscript, so you can delete it.') + ' The admin can restore it from the trash.' : 'Only the admin, or the person who created it, can delete a manuscript. Your request goes to the admin.') + '</span></div>';
 }
 function delDialog() {
@@ -5277,15 +5464,17 @@ var polling = false;
    new notifications, who is editing what, and fresh data whenever anyone changed something. A change you are making
    is never overwritten: your open draft is kept, and the version check at Save tells you if someone saved in between. */
 function poll() {
+  if (polling && Date.now() - (S.lastPoll || 0) > NET_MS + 5000) polling = false; // 0.3.6 (BACKLOG 74): a check that never came back
   if (polling || !S.boot || S.stale) return; polling = true; S.lastPoll = Date.now();
-  api('api_poll').then(function (r) {
+  apiT('api_poll').then(function (r) {
     polling = false;
     var known = {}; allNotes().forEach(function (n) { known[n.id] = 1; });
     var fresh = r.notifications.filter(function (n) { return !known[n.id] && !n.read; });
     if (fresh.length) {
       S.boot.notifications = fresh.concat(S.boot.notifications).sort(noteCmp);
       var ball = fresh.filter(function (n) { return n.kind === 'ball_to_you'; }), ngN = fresh.filter(function (n) { return n.kind === 'nudge'; })[0];
-      if (ngN) { showNudge(ngN); chime(); } // 0.2.3: a nudge from the admin is a card, not a toast
+      if (fresh.some(function (n) { return n.kind === 'celebrate'; }) && maybeCelebrate()) { render(); chime(); } // 0.3.6 (BACKLOG 73)
+      else if (ngN) { showNudge(ngN); chime(); } // 0.2.3: a nudge from the admin is a card, not a toast
       else { toast((fresh.length > 1 ? fresh.length + ' new: ' : '') + fresh[0].text); if (ball.length) chime(); }
     }
     var delChanged = JSON.stringify(r.deletions) !== JSON.stringify(S.boot.deletions || []);
@@ -5293,9 +5482,10 @@ function poll() {
     var lockChanged = r.locks && JSON.stringify(r.locks) !== JSON.stringify(S.boot.locks || {});
     if (r.locks) S.boot.locks = r.locks;
     var ae = document.activeElement, typing = ae && /INPUT|TEXTAREA|SELECT/.test(ae.tagName) && !(ae.closest && ae.closest('.panel'));
-    var busy = S.nf || S.qu || S.rp || S.tdb || S.fb || S.del || S.rem || S.ned || S.pal || S.ed || S.cb || S.tour >= 0 || typing;
+    var busy = S.nf || S.qu || S.rp || S.tdb || S.fb || S.del || S.rem || S.ned || S.pal || S.ed || S.cb || S.tour >= 0 || typing || S.saving; // 0.3.6: not while a save is on its way
     if (r.stamp !== S.boot.stamp && !busy) {
-      return api('api_bootstrap').then(function (b) {
+      return apiT('api_bootstrap').then(function (b) {
+        if (S.saving) return; // 0.3.6 (BACKLOG 72): data read before my save landed; the next check brings both
         var keepDesk = S.desk, keepDraft = dirty() ? S.draft : null;
         S.boot = b; S.desk = keepDesk; mydFresh();
         if (S.sel) {
@@ -5304,6 +5494,7 @@ function poll() {
           else if (keepDraft) { S.draft = keepDraft; if (m.version !== keepDraft.base) rebaseDraft(m, true); } // your unsaved changes stay; their changes to other fields come in
           else { openDraft(m); loadHistory(m.id); }
         }
+        if (maybeCelebrate()) chime(); // 0.3.6 (BACKLOG 73): a celebration that came with the fresh data
         render(); keepBoot();
       });
     }
@@ -5331,7 +5522,106 @@ setInterval(function () {
     }).catch(function () { });
   }
 }, 20000);
-document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') poll(); });
+/* 0.3.6 (BACKLOG 74, admin: "app iphone khi để chạy nền thì sau đó quay lại không tự kết nối"): an iPhone freezes a web app in
+   the background, and a check or a load on its way then may never answer nor fail, so every later check was skipped.
+   Now each one gives up after 20 s, and coming back (the app shown again, restored from memory, online, focused)
+   clears one that is stuck and checks at once. */
+var NET_MS = 20000;
+function withTimeout(p, ms) {
+  return new Promise(function (res, rej) {
+    var t = setTimeout(function () { rej(new Error('No answer from the server. Check the connection and try again.')); }, ms || NET_MS);
+    p.then(function (x) { clearTimeout(t); res(x); }, function (e) { clearTimeout(t); rej(e); });
+  });
+}
+function apiT() { return withTimeout(api.apply(null, arguments)); }
+function wake() {
+  if (!S.boot) return;
+  if (polling && Date.now() - (S.lastPoll || 0) > NET_MS) polling = false;
+  if (S.refreshing && Date.now() - S.refreshing > NET_MS + 2000) { S.refreshing = 0; ptrDone(); }
+  if (S.stale) { retryBoot(); return; }
+  if (Date.now() - (S.lastPoll || 0) > 4000) poll();
+}
+document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') wake(); });
+window.addEventListener('pageshow', function (e) { if (e.persisted) wake(); });
+window.addEventListener('focus', wake);
+/* 0.3.6 (BACKLOG 74, admin: "chỉ cần thêm tính năng kéo xuống để refresh thôi, trong laptop cũng có nút refresh để mọi
+   người có cảm giác được mới"): pull the page down from its top on a phone (a round arrow follows the finger and turns,
+   then spins while the data loads), or press Refresh beside the account on a computer: the latest data, at once. Only on
+   the page itself: a card, a sheet, Search or a menu that is open keeps its own pull (they close by a pull down). */
+function refreshNow() {
+  if (!S.boot || S.refreshing) return;
+  polling = false; S.refreshing = Date.now(); render();
+  withTimeout(api('api_bootstrap')).then(function (b) {
+    S.refreshing = 0; S.booting = 0; S.lastPoll = Date.now();
+    if (!S.saving) {
+      var was = S.stale; freshBoot(b);
+      if (!was) { S.freshAt = Date.now(); setTimeout(function () { if (S.freshAt && Date.now() - S.freshAt >= 1800) { S.freshAt = 0; render(); } }, 1900); }
+    }
+    ptrDone(); render();
+  }).catch(function (e) {
+    S.refreshing = 0; ptrDone(); render();
+    toast(isNetErr(e) || /No answer/.test(msg(e)) ? 'No connection: the data could not be refreshed. It tries again by itself.' : msg(e), true, 8000);
+  });
+}
+var TSW = null;
+function tswClose(except) {
+  document.querySelectorAll('.td-row.sw-open').forEach(function (r) { if (r !== except) r.classList.remove('sw-open'); });
+  if (!except) S.sw = null;
+}
+document.addEventListener('touchstart', function (e) { // 0.3.6 (BACKLOG 70): a swipe on a line of the own to-do
+  TSW = null;
+  var row = e.touches.length === 1 && e.target.closest ? e.target.closest('.mwt .td-row[data-sw]') : null;
+  if (S.sw && !(row && row.classList.contains('sw-open')) && !(e.target.closest && e.target.closest('.td-row.sw-open .td-acts'))) tswClose(null); // a tap elsewhere hides the tools
+  if (!row || (window.matchMedia && window.matchMedia('(hover:hover)').matches)) return;
+  var acts = row.querySelector('.td-acts'), w = acts ? acts.scrollWidth || 192 : 192;
+  TSW = { row: row, x: e.touches[0].clientX, y: e.touches[0].clientY, lock: 0, open: row.classList.contains('sw-open'), w: w, sx: 0 };
+}, { passive: true });
+document.addEventListener('touchmove', function (e) {
+  var g = TSW; if (!g || e.touches.length !== 1) return;
+  var dx = e.touches[0].clientX - g.x, dy = e.touches[0].clientY - g.y;
+  if (!g.lock) {
+    if (Math.abs(dx) < 10 && Math.abs(dy) < 10) return;
+    if (Math.abs(dx) > 1.5 * Math.abs(dy) && (dx < 0 || g.open)) { g.lock = 1; tswClose(g.row); g.row.style.setProperty('--sw-w', g.w + 'px'); g.row.classList.add('sw-drag'); }
+    else { TSW = null; return; }
+  }
+  g.sx = Math.max(-g.w - 24, Math.min(0, (g.open ? -g.w : 0) + dx));
+  g.row.style.setProperty('--sx', g.sx + 'px');
+}, { passive: true });
+function tswEnd() {
+  var g = TSW; TSW = null; if (!g || !g.lock) return;
+  var open = g.sx < -g.w / 2;
+  g.row.classList.remove('sw-drag'); g.row.style.removeProperty('--sx'); g.row.classList.toggle('sw-open', open);
+  S.sw = open ? g.row.getAttribute('data-sw') : null;
+}
+document.addEventListener('touchend', tswEnd); document.addEventListener('touchcancel', tswEnd);
+var PTR = { on: false, y0: 0, x0: 0, d: 0, el: null };
+function ptrEl() {
+  if (!PTR.el) { PTR.el = document.createElement('div'); PTR.el.id = 'ptr'; PTR.el.setAttribute('aria-hidden', 'true'); PTR.el.innerHTML = ic('refresh'); document.body.appendChild(PTR.el); }
+  return PTR.el;
+}
+function ptrShow(d) { var e = ptrEl(); e.classList.remove('spin', 'out'); e.style.setProperty('--d', d.toFixed(1) + 'px'); e.style.opacity = Math.min(1, d / 50).toFixed(2); e.classList.toggle('ready', d >= 60); }
+function ptrDone() { if (!PTR.el) return; PTR.el.classList.remove('spin', 'ready'); PTR.el.classList.add('out'); }
+function ptrOk(e) {
+  var t = e.target;
+  return !!S.boot && !S.refreshing && window.scrollY <= 0 && !layerN() && !(S.tour >= 0) && !(DRAG && DRAG.on) &&
+    !(t && t.closest && t.closest('.overlay,.pop,.panel,.sheet,.sb,input,textarea,select,[contenteditable],#scrub,.fabs,.td-row'));
+}
+document.addEventListener('touchstart', function (e) {
+  PTR.on = e.touches.length === 1 && ptrOk(e); PTR.d = 0;
+  if (PTR.on) { PTR.y0 = e.touches[0].clientY; PTR.x0 = e.touches[0].clientX; }
+}, { passive: true });
+document.addEventListener('touchmove', function (e) {
+  if (!PTR.on || e.touches.length !== 1) return;
+  var dy = e.touches[0].clientY - PTR.y0, dx = e.touches[0].clientX - PTR.x0;
+  if (window.scrollY > 0 || (PTR.d === 0 && (dy < 0 || Math.abs(dx) > Math.abs(dy)))) { PTR.on = false; if (PTR.d) ptrDone(); PTR.d = 0; return; }
+  PTR.d = Math.max(0, Math.min(100, dy * 0.45)); ptrShow(PTR.d);
+}, { passive: true });
+document.addEventListener('touchend', function () {
+  if (!PTR.on) return; PTR.on = false;
+  if (PTR.d >= 60) { var e = ptrEl(); e.style.setProperty('--d', '60px'); e.classList.add('spin'); refreshNow(); } else if (PTR.d) ptrDone();
+  PTR.d = 0;
+}, { passive: true });
+document.addEventListener('touchcancel', function () { if (PTR.on && PTR.d) ptrDone(); PTR.on = false; PTR.d = 0; }, { passive: true });
 ['keydown', 'pointerdown', 'input'].forEach(function (t) { document.addEventListener(t, function () { S.lastAct = Date.now(); }, true); });
 
 /* ---------- 0.2.7: the urgency scrubber (phones, Today); see the CSS of #scrub. 0.3.1 (BACKLOG 20, admin: "nút cuộn nhanh
@@ -5445,7 +5735,7 @@ function popover() {
     return '<div class="np-dim" aria-hidden="true"></div><div class="pop sbpop npop" role="dialog" aria-label="Notifications" data-pop><div class="np-scroll"><div class="pop-h"><b>For you</b><button class="btn btn-q" data-a="read-all"' + (relU || notesUnreadMore() || ns.some(function (n) { return !n.read; }) ? '' : ' disabled') + '>Mark all read</button></div>' + tcBell() + remItems + relItem +
       (ns.length ? ns.map(function (n) {
         return '<button class="nitem' + (n.read ? '' : ' unread') + (n.undone ? ' undone' : '') + '" data-a="notif-open" data-v="' + esc(n.id) + '"' + (n.undone ? ' title="This change was undone"' : '') + '><span class="ndot" aria-hidden="true"></span><span><span class="lbl" style="display:block">' + (isReminder(n) ? '<i class="n-rp">' + (n.ack ? 'Answered' : 'Reply') + '</i>' : '') +
-          esc({ nudge: 'Nudge', ball_to_you: 'Ball to you', changed: 'Changed', ai_update: 'AI update', ai_kept_edit: 'Morning check', deadline: 'Deadline', reminder: 'Reminder', inbox: 'Quick update', feedback: 'Feedback', inbox_reply: 'Quick update', feedback_reply: 'App feedback', undone: 'Undone', nudge_reply: 'Reply to your nudge', week: 'Your week' }[n.kind] || n.kind) + (n.undone ? ' · undone' : '') + ' · ' + esc(niceShort(n.ts)) + ' ' + esc(String(n.ts).slice(11, 16)) + '</span><span>' + esc(fullNames(n.text)) + '</span></span></button>';
+          esc({ nudge: 'Nudge', ball_to_you: 'Ball to you', changed: 'Changed', ai_update: 'AI update', ai_kept_edit: 'Morning check', celebrate: 'Congratulations', deadline: 'Deadline', reminder: 'Reminder', inbox: 'Quick update', feedback: 'Feedback', inbox_reply: 'Quick update', feedback_reply: 'App feedback', undone: 'Undone', nudge_reply: 'Reply to your nudge', week: 'Your week' }[n.kind] || n.kind) + (n.undone ? ' · undone' : '') + ' · ' + esc(niceShort(n.ts)) + ' ' + esc(String(n.ts).slice(11, 16)) + '</span><span>' + esc(fullNames(n.text)) + '</span></span></button>';
       }).join('') : due.length || relItem ? '' : '<p class="empty" style="margin:0">Nothing yet. You will see here when the ball is passed to you or a manuscript you are on changes.</p>') +
       // 0.3.1 (BACKLOG 29, admin: "see earlier noti phải hiện khi vuốt tới noti cuối"): the last row of the list, not a footer always
       // in view; reaching it loads the next page by itself (npEnd), so fewer come with the data (10)
@@ -5464,6 +5754,7 @@ function popover() {
   return '';
 }
 function dialog() {
+  if (S.cel) return celDialog(); // 0.3.6 (BACKLOG 73)
   if (S.wn) return wnDialog();
   if (S.ga) return gaDialog();
   if (S.ad) return adDialog();
@@ -5780,7 +6071,7 @@ function updateSaveState() {
   keepDraftSoon();
   var d = dirty(), b = document.getElementById('b-save'), x = document.getElementById('b-discard'), s = document.getElementById('savestate');
   if (b) b.disabled = !d || S.saving || !!(S.sel && lockOther(S.sel)); if (x) x.disabled = !d; if (s) s.textContent = saveStateText();
-  var pn = document.querySelector('.panel.pnew'); if (pn) pn.classList.toggle('pdirty', d || !!S.saving); // 0.3.5: the New card shows its Save bar while fields change
+  var pn = document.querySelector('.panel.pnew'); if (pn) pn.classList.toggle('pdirty', d); // 0.3.6: the bar closes at Save (BACKLOG 72) // 0.3.5: the New card shows its Save bar while fields change
   syncLock();
 }
 
@@ -5791,6 +6082,7 @@ function openManuscript(id) {
   if (S.sel && S.sel !== id && dirty()) { S.confirmClose = true; render(); toast('Save or discard your changes first.'); return; }
   var was = S.sel;
   S.sel = id; openDraft(m); restoreDraft(id); S.pop = null; S.drawer = false; if (S.rem && S.rem.mid !== id) S.rem = null;
+  if (editable()) warmSoon(); // 0.3.6 (BACKLOG 72)
   noteRecent(id);
   if (was !== id) S.fx.panel = true;
   render();
@@ -6141,7 +6433,7 @@ function drawerGo(open) { // the menu button, the strip, Esc and Back: the same 
    ghost: a copy without ids, actions or the classes the app looks for, removed when its movement ends. */
 var LM = { src: null, pull: null, out: null, t: 0, fab: {} };
 document.addEventListener('pointerdown', function (e) { var b = e.target.closest && e.target.closest('button, [data-a]'); if (b && !b.closest('#layer')) { LM.src = b; LM.t = performance.now(); } }, true);
-document.addEventListener('keydown', function (e) { if ((e.key === 'Enter' || e.key === ' ') && e.target.classList && e.target.classList.contains('mwb')) { e.preventDefault(); ACT.open(e.target.getAttribute('data-v')); } }); // 0.3.5
+document.addEventListener('keydown', function (e) { if ((e.key === 'Enter' || e.key === ' ') && e.target.classList && (e.target.classList.contains('mwb') || e.target.classList.contains('ritem-go'))) { e.preventDefault(); ACT[e.target.classList.contains('mwb') ? 'open' : 'open-sb'](e.target.getAttribute('data-v')); } }); // 0.3.5; 0.3.6
 document.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { var t = e.target; if (t && t.closest && !t.closest('#layer')) { LM.src = t; LM.t = performance.now(); } } }, true);
 function lmSrc() {
   var s = LM.src; if (!s || !document.body.contains(s) || !s.getClientRects().length) return null;
@@ -6337,6 +6629,7 @@ document.addEventListener('touchstart', function (e) {
     return;
   }
   if (fld && (fld === document.activeElement || fld.type === 'range')) return;
+  if (t.closest && t.closest('.td-row.sw-open, .td-row.sw-drag')) return; // 0.3.6 (BACKLOG 70): that swipe closes the line's tools
   if (!S.drawer) { var mw = t.closest && t.closest('.mainwrap'); if (!mw || (c.clientX > 24 && hScroll(t, mw))) return; } // where the page scrolls sideways itself: from the left edge
   else if (!(t.closest && t.closest('.sb, .scrim'))) return;
   DR.g = { x: c.clientX, y: c.clientY, p0: S.drawer ? 1 : 0, w: drawerW() - (layName() === 'short' ? 60 : 0), lock: 0, pts: [[c.clientX, Date.now()]] };
@@ -6649,7 +6942,7 @@ var HB = { n: 0, skip: 0, on: (function () { try { return window.top === window 
 // browser's history must not move the page: the browser restored the scroll position it had kept for that step, after the
 // app had kept the chosen block in sight (Esc, Back, and sometimes the close button)
 try { if (HB.on && 'scrollRestoration' in history) history.scrollRestoration = 'manual'; } catch (e) { }
-function layerN() { return (panelShown() && !S.closing ? 1 : 0) + (S.drawer || S.sbPeek ? 1 : 0) + (S.pop ? 1 : 0) + (S.pal ? 1 : 0) + (S.wn || S.ga || S.ad || S.del || S.rp || S.qu || S.fb || S.nf ? 1 : 0); }
+function layerN() { return (panelShown() && !S.closing ? 1 : 0) + (S.drawer || S.sbPeek ? 1 : 0) + (S.pop ? 1 : 0) + (S.pal ? 1 : 0) + (S.cel || S.wn || S.ga || S.ad || S.del || S.rp || S.qu || S.fb || S.nf ? 1 : 0); }
 function histSync() {
   if (!HB.on || !S.boot || HB.skip) return; // a step back still on its way: wait for it (the browser does it later)
   var n = layerN();
@@ -6661,7 +6954,7 @@ function histSync() {
 try { if (HB.on && history.state && history.state.vibra) history.replaceState(null, ''); } catch (e) { } // a reload starts with no layer
 /* close the top layer (Esc and Back); false when there was none */
 function closeTop() {
-  if (S.tour >= 0) endTour(); else if (S.wn) ACT['wn-close'](); else if (S.ga) ACT['ga-close'](); else if (S.ad) ACT['ad-close'](); else if (S.del) ACT['del-close'](); else if (S.ned) ACT['note-cancel']();
+  if (S.tour >= 0) endTour(); else if (S.cel) ACT['cel-close'](); else if (S.wn) ACT['wn-close'](); else if (S.ga) ACT['ga-close'](); else if (S.ad) ACT['ad-close'](); else if (S.del) ACT['del-close'](); else if (S.ned) ACT['note-cancel']();
   else if (S.rp) ACT['rp-close'](); else if (S.qu) ACT['qu-close'](); else if (S.fb) ACT['fb-close'](); else if (S.nf) ACT['nf-close'](); else if (S.pal) { S.pal = null; render(); } else if (S.pop) { S.pop = null; render(); } else if (S.tip) ACT.tip(S.tip);
   else if (S.ed) { S.ed = null; render(); } else if (S.drawer) { drawerGo(false); } else if (S.sbPeek) { peekTo(false); } else if (S.sel) closePanel(false); else return false;
   return true;
@@ -6678,32 +6971,95 @@ function applyRow(row) {
   var list = S.boot.manuscripts, i = list.map(function (m) { return m.id; }).indexOf(row.id);
   if (i >= 0) list[i] = row; else list.push(row);
 }
+/* 0.3.6 (BACKLOG 72, admin: "mấy cái này ấn save cái save liền chứ ta"; "có người đang sửa thì khóa từ chối thay đổi mà ...
+   chỉ cần giải bài toán delay giữa các máy các mạng thôi"): Save is instant on the page. The change shows at once (the
+   card, the blocks, the lists), the Save bar closes, and a small "Saving…" turns into "Saved" when the server has written
+   it. If the server refuses (someone else is editing, someone saved first, no connection), the manuscript goes back to
+   what the server has and the member's changes go back into the boxes (or, the card closed meanwhile, are kept on this
+   device with "Review and save"), with the same messages as before. While a save is on its way the changes stay kept on
+   this device too, so closing the app at that moment loses nothing. */
 function save() {
   if (!S.draft || S.saving) return;
   var d = S.draft, cur = draftPatch(d), orig = JSON.parse(d.orig), patch = {};
   Object.keys(cur).forEach(function (k) { if (JSON.stringify(cur[k]) !== JSON.stringify(orig[k])) patch[k] = cur[k]; });
   if (!Object.keys(patch).length) return;
-  S.saving = true; updateSaveState();
-  api('api_save', d.id, patch, d.base).then(function (r) {
-    S.saving = false;
-    if (r.locked) { gotLocks(r); S.myLock = null; render(); toast(lockWho(r.holder) + ' is editing this manuscript. Your changes stay in the boxes; save them when ' + lockWho(r.holder) + ' has saved.', true, 9000); return; }
+  var id = d.id, m0 = mById(id); if (!m0) return;
+  var before = clone(m0), mine = clone(d), opt = clone(m0);
+  keepDraftNow(); // kept on this device until the server says Saved
+  DRAFT_F.forEach(function (f) { opt[f] = clone(d[f]); });
+  if (opt.status !== 'Submitted' && opt.status !== 'Under Review') opt.stage = '';
+  opt.last_update = (S.boot && S.boot.today) || opt.last_update; opt.updated_by = me().key;
+  S.saving = id; applyRow(opt); openDraft(opt); S.confirmClose = false;
+  var sp = S.sprog = { id: id, phase: 'save', at: Date.now() }; render();
+  var t0 = Date.now();
+  var mineBack = function () { // my changes back where they can be saved again
+    if (S.draft && S.draft.id === id && S.sel === id) { S.draft.orig = mine.orig; S.draft.base = mine.base; keepDraftNow(); return true; }
+    var all = drafts(), f = {}, o = JSON.parse(mine.orig); all.m = all.m || {};
+    DRAFT_F.forEach(function (k) { if (JSON.stringify(mine[k]) !== JSON.stringify(o[DRAFT_PK[k] || k])) f[k] = mine[k]; });
+    all.m[id] = { id: id, base: mine.base, orig: mine.orig, f: f, at: Date.now(), title: before.title };
+    setDrafts(all); return false;
+  };
+  var endPill = function (ok) {
+    if (S.sprog !== sp) return;
+    if (!ok) { S.sprog = null; return; }
+    sp.phase = 'saved'; setTimeout(function () { if (S.sprog === sp) { S.sprog = null; render(); } }, 1600);
+  };
+  api('api_save', id, patch, mine.base).then(function (r) {
+    S.saving = false; noteRt('Save', t0);
+    if (r.locked) {
+      applyRow(before); mineBack(); gotLocks(r); S.myLock = null; endPill(false); render();
+      toast(lockWho(r.holder) + ' is editing this manuscript. Your changes stay in the boxes; save them when ' + lockWho(r.holder) + ' has saved.', true, 9000); return;
+    }
     if (r.conflict) {
       // 0.2.2: my own save went through but its answer was lost (connection dropped): it is saved, not a clash
-      var fr = makeDraft(r.row), mineAlready = r.by === me().key && DRAFT_F.every(function (f) { return JSON.stringify(fr[f]) === JSON.stringify(d[f]); });
-      if (mineAlready) { applyRow(r.row); openDraft(r.row); S.confirmClose = false; render(); loadHistory(r.row.id); toast('Saved. Everyone sees it now.'); return; }
-      applyRow(r.row); var clash = rebaseDraft(r.row, false); var who = dispName(person(r.by)) || chipName(r.by) || 'Someone', at = String(r.at || '').slice(11, 16) || 'the same time';
-      render(); toast(clash ? who + ' saved this manuscript at ' + at + ' and changed some of the same fields. Your version is in the boxes: press Save to keep it, or Discard to take theirs.' :
+      var fr = makeDraft(r.row), mineAlready = r.by === me().key && DRAFT_F.every(function (f) { return JSON.stringify(fr[f]) === JSON.stringify(mine[f]); });
+      if (mineAlready) { savedRow(r.row); endPill(true); render(); loadHistory(id); return; }
+      applyRow(r.row); var open = mineBack(), clash = open ? rebaseDraft(r.row, false) : false;
+      var who = dispName(person(r.by)) || chipName(r.by) || 'Someone', at = String(r.at || '').slice(11, 16) || 'the same time';
+      endPill(false); render();
+      toast(clash ? who + ' saved this manuscript at ' + at + ' and changed some of the same fields. Your version is in the boxes: press Save to keep it, or Discard to take theirs.' :
         who + ' saved this manuscript at ' + at + '. Their changes are in, and yours are still in the boxes: press Save again to add yours.', true, 10000);
-      loadHistory(d.id); return;
+      loadHistory(id); return;
     }
     if (S.myLock === r.row.id) S.myLock = null; // the server let go of it with the save
-    applyRow(r.row); openDraft(r.row); S.confirmClose = false; render(); loadHistory(r.row.id);
-    toast(r.changed ? 'Saved. Everyone sees it now.' : 'Nothing to save.');
+    savedRow(r.row); endPill(true); render(); loadHistory(id);
   }).catch(function (e) {
-    S.saving = false; updateSaveState();
-    if (isNetErr(e)) { keepDraftNow(); toast('No connection. Your changes are kept on this device: press Save again when you are back online.', true, 10000); }
+    S.saving = false; applyRow(before); mineBack(); endPill(false); render();
+    if (isNetErr(e)) toast('No connection. Your changes are kept on this device: press Save again when you are back online.', true, 10000);
     else toast(msg(e), true);
   });
+}
+/* the server's row after my save: the card shows it; what I typed meanwhile stays in the boxes */
+function savedRow(row) {
+  applyRow(row);
+  if (S.draft && S.draft.id === row.id) { if (dirty()) rebaseDraft(row, false); else openDraft(row); }
+  if (!(S.draft && S.draft.id === row.id && dirty())) dropDraft(row.id);
+}
+/* in the card itself (on a phone it covers the floating label) */
+function cardSaving(id) {
+  var p = S.sprog; if (!p || p.id !== id) return '';
+  return '<span class="p-sv' + (p.phase === 'saved' ? ' ok' : '') + '" role="status">' + (p.phase === 'saved' ? ic('check') + 'Saved' : '<i aria-hidden="true"></i>Saving…') + '</span>';
+}
+function savePill() {
+  var p = S.sprog; if (!p || (p.id === S.sel && panelShown())) return '';
+  return p.phase === 'saved' ? '<span class="stale-pill ok" role="status">' + ic('check') + 'Saved</span>' :
+    '<span class="stale-pill busy" role="status" style="--ph:-' + ((Date.now() % 1600) / 1000).toFixed(2) + 's"><i aria-hidden="true"></i>Saving…</span>';
+}
+/* 0.3.6 (BACKLOG 72): the whole wait this device saw for its last saves (network and Google's start-up included), shown
+   to the admin in the AI desk beside the helper's own count */
+var RT = [];
+function noteRt(what, t0) { RT.push({ what: what, ms: Date.now() - t0, at: Date.now() }); if (RT.length > 20) RT.shift(); }
+/* 0.3.6 (BACKLOG 72, admin: "ủa nếu mở popup là mở khóa chờ đó luôn thì sao?"): a card or Quick update that stays open a
+   moment wakes the admin's helper (at most once every 30 seconds; nothing is read or written), so the Save that follows
+   does not pay Google's start-up. Opening and closing quickly, or moving between blocks, sends nothing. */
+var WARM = { at: 0, t: null };
+function warmSoon() {
+  clearTimeout(WARM.t);
+  var W = window.VIBRA_WEB; if (!W || !W.ping || S.offline) return;
+  WARM.t = setTimeout(function () {
+    if (!(S.sel || S.qu) || Date.now() - WARM.at < 30000 || document.hidden) return;
+    WARM.at = Date.now(); W.ping().catch(function () { });
+  }, 1200);
 }
 /* ---------- VIBRA logo, and branded exports (logo on top, VIBRA watermark) made in the browser: no extra permission */
 var LOGO_MARK = 'data:image/webp;base64,UklGRtQEAABXRUJQVlA4IMgEAACwGQCdASpgAGAAPj0ai0OiIaEXGIWYIAPEtABoX/u9J/Gb2Sq5/M/vH+U2YB8k/5b7afYA9ov2ze4B+mHS+8wv67frd7xvoK9AD9W+sm9ADyxv26+FP9tfSxhhPaxDirao01XWNQ8jH1EbqPmHBEPuM6xOO3yn8nlygcs8kxFAjHlZKa6dSSABrvWEtKD8ZvwkQSnwEEgp/Mw40FZBc8d9hnWqSHgfMxKTC9Q+ngANxKGvHIQFsceh/4FfMDlbhLTW+fXgrCIG9OvId73dB4RwU06kmQgAAP7/2+dWdikTToqIglrMkaY/0O4r5HNTMv7t1FE/zS3tnWBa+sxfhmPi3+9+CdotK8ce1YmjgzEN+GAoY+xkI7VJI7Ap/cPUZ8MQI7gnUPcPuN3g7FgONdasuoPj31LuOYt0b4ACtSK4GQqbIySqINet43fAVjIng6/yep+B0Rjmj1IXOxbCr2kwiYF9LN19cCtE7wCISQ9mxxGL75EGuZkDIloKOcgERd/KPhIIW6hh83RqOmxJpdq9+DWiVEUf+5ILQC9UQj86epOgfWY9F8vj41WVjjhI69I+7g6iodk6KlcD+SyeXxerLCo0h//z6Is7NIT++xBr3QLExx4hwggBi++97UHgn9x3GRUXdwltbtiN0nr8hf/eWjjnuJxdrFLqurkRAodh4wCzd8AfeFNPzyYmOxxJWc0JwH4wbEfta06M3mQfVR6M06N3v/v/b7Vg8kQoCUEYXh1G7YBAUHTx4a+M6Rfo2gNC5bVl6U/Qi8qJRh0PRyCl5JussVhe02BU46M5YeBr5oiUfSV9lq8j8owwaYK3MHsCkzZ0F9DLNR4DXA5JgWBpkj6aVj/NPc3NyEIc1MMftK3KE0Eu8oiNf9kBeQ2MPVM4eAK2WmrQyBxl1ULOp9+lY2tGrcHnNBrJP/HpC/3rwRahB6UQ+CqSoRzyPeMP6lMG3s3b/6b8q26yxV/N7AwVP6kpYHK4Alqgvuq4Vz07Nl4vbLfavT+GXoHcZV/e2uCUoB4e8VFAbK37PsF/fs1JME/t1QALYyUQKpIT8qWJyTz4xSYheX+VXbKDjPNlrCUYsBznSisx1uvOx/mzjGGa64dSy6jACh5/bJdtcw97NYixIPQa2wJOxjx79WzNwb9XA2S25X1OhP4u4YcOHGd9KCJqnjJRUrdjyOONepGL9dLREOpHkaWGSmU75w/Tsnnv+MzbDySEW7Xlal/zXcEWZ9GEvBdBL3BKo3dTCRwcyB8P3wyvIsYpjRz5xzQK/aRtI3ks1Gmbh7X9oyUW6XlqoEDtyRTAZ7yMToH2CGPo//RmRAjghMY0bGtwA/HrqT8c6vj+RWrczr/C6CsoZdNy93IoKPkHnLqAsvjNQbAIfouy+8Kxa+TE4DMboinpwtQf+W6/aDhOZV4j69aUFauvzoJ5T1GcFDPHF+wVwacT3HT3Od9nrw+RfZ5kOsZjgZPaN0rf2v8WBA9LiY49Z5KfsgWaODWJm41v+fhogCQH/gvxoM4JFXQpjWFmXc9QIUEvhUhwEb3979LwE2Lxtbm9PxXEwplv7Kjb63JertUDaOn0Z/rw+y1laYCipH06tqnc0QPV61xK/ZskP15545D58T7AnsAAAAA='; // 0.2.5: the new VIBRA mark (V and dot), as on the app icon
@@ -7147,6 +7503,10 @@ var ACT = {
   },
   'wn-open': function () { S.pop = null; S.wn = { from: 'bell' }; render(); },
   'wn-close': function () { S.wn = null; wnSeen(); render(); },
+  refresh: function () { refreshNow(); }, // 0.3.6 (BACKLOG 74)
+  'cel-close': function () { S.cel = null; maybeWhatsNew(); render(); },
+  'cel-bg': function (v, e) { if (e.target.classList && e.target.classList.contains('overlay')) ACT['cel-close'](); },
+  'cel-open': function (v) { S.cel = null; if (S.view === 'settings' || S.view === 'desk') S.view = 'today'; openManuscript(Number(v)); render(); },
   'wn-bg': function (v, e) { if (e.target.classList && e.target.classList.contains('overlay')) ACT['wn-close'](); },
   'wn-go': function (v) { ACT['wn-close'](); ACT['set-tab'](v); setTimeout(function () { var x = document.querySelector('.ly-row') || document.getElementById('myd'); if (x && x.scrollIntoView) x.scrollIntoView({ block: 'center' }); }, 80); }, // 0.3.5: the Layout row
   'read-all': function () { wnSeen(); allNotes().forEach(function (n) { n.read = true; }); S.boot.notifUnreadMore = 0; if (S.nOld) S.nOld.unreadMore = 0; render(); api('api_markRead', 'all').catch(function (e) { toast(msg(e), true); }); },
@@ -7156,6 +7516,7 @@ var ACT = {
     if (rpOpen(n)) return; // 0.3.0: a nudge or a deadline alert opens the Reply sheet
     n.read = true; S.pop = null; api('api_markRead', [v]).catch(function () { });
     if (n.kind === 'week') { S.pop = null; ACT.view(UIN() ? 'mine' : 'today'); return; } // 0.3.5: Your week opens My work
+    var nm = noteMid(n); if (nm) n = { manuscript_id: nm }; // 0.3.6 (BACKLOG 69): a quick update's answer opens the manuscript it changed
     if (!n.manuscript_id || !mById(n.manuscript_id)) { if ((n.kind === 'inbox' || n.kind === 'feedback') && me().role === 'Admin') S.view = 'desk'; else { S.view = 'settings'; S.setTab = 'requests'; } S.desk = null; window.scrollTo(0, 0); render(); return; }
     if (S.view === 'settings' || S.view === 'desk') S.view = 'today';
     openManuscript(n.manuscript_id);
@@ -7306,7 +7667,7 @@ var ACT = {
   'qu-ai-copy': function () { copyText(AI_PROMPT); },
   'qu-open': function (v) { var pre = v ? Number(v) : (panelShown() ? S.sel : ''), kq = keptReq('qu'), on = S.qprog && S.qprog.phase === 'save' && kq && kq.cid === S.qprog.cid; // 0.3.3 (BACKLOG 47): the update being sent stays out of the box
     if (on) kq = null;
-    S.qu = kq ? { mid: kq.mid || pre, pre: pre, text: kq.text, images: kq.images || [], cid: kq.cid || '', err: 'Not sent yet: kept on this device since ' + keptWhen(kq.at) + (kq.noImg ? ' (without its screenshots: too big to keep)' : '') + '. Press Send, or clear the text to drop it.' } : { mid: pre, pre: pre, text: '', images: [], err: '', sending: !!on }; S.pop = null; S.tip = null; render(); var t = document.getElementById('qu-text'); if (t) t.focus(); },
+    S.qu = kq ? { mid: kq.mid || pre, pre: pre, text: kq.text, images: kq.images || [], cid: kq.cid || '', err: 'Not sent yet: kept on this device since ' + keptWhen(kq.at) + (kq.noImg ? ' (without its screenshots: too big to keep)' : '') + '. Press Send, or clear the text to drop it.' } : { mid: pre, pre: pre, text: '', images: [], err: '', sending: !!on }; S.pop = null; S.tip = null; render(); warmSoon(); var t = document.getElementById('qu-text'); if (t) t.focus(); },
   'au-export': function (v) { exportAuthors(Number(v)); },
   'ad-open': function (v) { adOpen(Number(v)); },
   'ad-sheet': function () { var A = S.ad; if (!A || A.loading) return; if (adChanged().length) { A.err = 'Save first: the author sheet is made from the saved details.'; render(); return; } exportAuthors(A.id); },
@@ -7548,8 +7909,9 @@ Object.assign(ACT, {
     var was = remList().filter(function (r) { return r.id === v; })[0]; if (!was) return;
     persistRem(remList().map(function (r) { if (r.id === v) { r = clone(r); r.done = !r.done; r.dd = r.done ? S.boot.today : ''; } return r; }), was.done ? 'Back on your list.' : 'Done.');
   },
-  'td-del': function (v) { if (S.tde && S.tde.id === v) S.tde = null; persistRem(remList().filter(function (r) { return r.id !== v; }), 'Deleted.'); },
+  'td-del': function (v) { S.sw = null; if (S.tde && S.tde.id === v) S.tde = null; persistRem(remList().filter(function (r) { return r.id !== v; }), 'Deleted.'); },
   'td-edit': function (v) {
+    S.sw = null;
     var r = remList().filter(function (x) { return x.id === v; })[0]; if (!r) return;
     S.tde = { id: r.id, note: tdText(r), date: r.date || '', time: r.time || '' }; render();
     var t = document.getElementById('tde-note'); if (t) t.focus();
@@ -7567,6 +7929,7 @@ Object.assign(ACT, {
     }), 'Saved.');
   },
   'td-gcal': function (v) {
+    S.sw = null;
     toast('Google Calendar opens in a new tab with the event filled in. Press Save there.');
     setTimeout(function () { persistRem(remList().map(function (r) { if (r.id === v && !r.cal) { r = clone(r); r.cal = true; } return r; })); }, 60);
   },
@@ -7781,6 +8144,7 @@ document.addEventListener('change', function (e) {
     saveDash(dp);
   }
   if (i === 'nfmem') { nfTick(t.getAttribute('data-v'), t.checked); return; } // 0.3.3 (BACKLOG 53)
+  if (i === 'celsw') { var con = t.checked; api('api_setCelebrate', con).then(function (r) { S.boot.celebrate = !!r.celebrate; toast(con ? 'Celebrations are on.' : 'Celebrations are off for everyone.'); render(); }).catch(function (e) { t.checked = !con; toast(msg(e), true); }); return; } // 0.3.6 (BACKLOG 73)
   if (i === 'aisw') { var k = t.getAttribute('data-v'), on = t.checked; api('api_setAiSwitch', k, on).then(function (a) { S.boot.ai = a; if (S.desk) S.desk.ai = a; toast((AI_FEATS.filter(function (f) { return f[0] === k; })[0] || [0, 'The feature'])[1] + (on ? ' is on.' : ' is off for everyone.')); render(); }).catch(function (e2) { t.checked = !on; toast(msg(e2), true); }); } // 0.3.3 (BACKLOG 55)
   if (i === 'role') { api('api_setRole', t.getAttribute('data-v'), t.value).then(function () { var p = person(t.getAttribute('data-v')); if (p) p.role = t.value; toast('Role updated.'); }).catch(function (e2) { toast(msg(e2), true); render(); }); }
 });
@@ -7918,7 +8282,7 @@ function started(b) {
   try { if (window.VIBRA_WEB && window.VIBRA_WEB.noteMe && b.me) window.VIBRA_WEB.noteMe(b.me.full_name || b.me.display, b.me.initials); } catch (e) { } // 0.3.0: the name for Switch account
   if (!b.prefs || !b.prefs.tour2) { S.tour = 0; S.tourShown = true; S.tourSet = 'full'; S.tourAuto = true; } // 0.2.0: everyone sees the welcome and tour once
   else if (!b.prefs.tour3) { S.tour = 0; S.tourShown = true; S.tourSet = 'new'; } // 0.2.3: a short tour of what was added since
-  maybeWhatsNew(); // 0.2.1: what changed since this member's last release (not after the tour: the bell keeps it)
+  maybeCelebrate(); maybeWhatsNew(); // 0.2.1: what changed since this member's last release (not after the tour: the bell keeps it)
   render();
   if (EMBED) toApp({ type: 'vibra-ready', version: b.version, kept: !!S.stale, head: window.__T0 || 0, t: Math.round(performance.now()) });
   if (EMBED || localApp()) toApp({ type: 'vibra-push-status' });
@@ -8009,7 +8373,7 @@ function freshBoot(b) {
     else openDraft(m);
     if (m) loadHistory(m.id);
   }
-  settleKeptQuick(); maybeWhatsNew(); applyTheme(); render(); keepBoot(); afterFresh();
+  settleKeptQuick(); maybeCelebrate(); maybeWhatsNew(); applyTheme(); render(); keepBoot(); afterFresh();
 }
 /* 0.2.6 (admin, iPhone: the keyboard covered the text box of Quick update): while typing in a dialog on a phone, the
    dialog fits the part of the screen above the keyboard (visualViewport), the lead text and the example fold away,
@@ -8078,7 +8442,11 @@ function fldSync() {
 document.addEventListener('focusin', fldSync); document.addEventListener('focusout', function () { setTimeout(fldSync, 60); });
 document.addEventListener('focusin', function () { setTimeout(vvFit, 60); setTimeout(vvFit, 400); });
 document.addEventListener('focusout', function () { setTimeout(vvFit, 120); });
-function retryBoot() { if (S.stale) api('api_bootstrap').then(freshBoot).catch(function () { setTimeout(retryBoot, 30000); }); }
+function retryBoot() { // 0.3.6 (BACKLOG 74): one load at a time, given up after 20 s
+  if (!S.stale || (S.booting && Date.now() - S.booting < NET_MS)) return;
+  S.booting = Date.now();
+  apiT('api_bootstrap').then(function (b) { S.booting = 0; freshBoot(b); }).catch(function () { S.booting = 0; clearTimeout(S.rbT); S.rbT = setTimeout(retryBoot, 30000); });
+}
 document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'hidden') keepBoot(); });
 window.addEventListener('pagehide', keepBoot);
 // 0.2.2: online and offline
@@ -8115,8 +8483,10 @@ if (window.__VIBRA_BLOCKED) {
     '<p class="sub">For your safety the tracker does not run inside other websites. Open it from its own address or from the installed VIBRA app.</p></div>';
 } else {
   var kept = keptBoot();
-  if (kept) { S.boot = kept; S.boot.locks = {}; S.stale = true; started(kept); }
-  (window.__bootP || api('api_bootstrap')).then(freshBoot).catch(function (e) {
+  if (kept) { S.boot = kept; S.boot.locks = {}; S.stale = true; started(kept); S.booting = Date.now(); }
+  var bootP = window.__bootP || api('api_bootstrap');
+  (kept ? withTimeout(bootP) : bootP).then(function (b) { S.booting = 0; freshBoot(b); }).catch(function (e) { // 0.3.6 (BACKLOG 74): with last visit's copy on screen, a load that does not answer in 20 s is tried again
+    S.booting = 0;
     var m = msg(e);
     if (S.boot && !/member list|did not say which account/i.test(m)) { S.staleErr = true; render(); toast('The latest data could not be loaded (' + m + '). You are looking at the copy from your last visit; it refreshes by itself.', true, 12000); setTimeout(retryBoot, 20000); return; }
     S.boot = null; S.err = m; render(); toApp({ type: 'vibra-error', error: S.err });
