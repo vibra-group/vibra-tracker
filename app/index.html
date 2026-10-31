@@ -5,12 +5,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <script>
-/* VIBRA Tracker 0.3.6 on the group's own address (vibra-group.github.io), built by tools/build_web.py from app/Index.html.
+/* VIBRA Tracker 0.3.7 on the group's own address (vibra-group.github.io), built by tools/build_web.py from app/Index.html.
    This page is the VIBRA app: installable, with notifications and the last data readable offline.
    Google confirms who the member is ("Sign in with Google"), or a one-time code made on a signed-in device does; the
    admin's helper checks that once and gives a session; every server call then goes to the helper with that session
    and runs the tracker's own code as the member. */
-window.VIBRA_WEB = { helper: "https://script.google.com/macros/s/AKfycbzNE__5onOmvia3VaFHjybAJ5G35cnDJCN1ysuiNAYlgOC5xsbCi0xyDnmoJP7lEaFR3w/exec", clientId: "619243121375-pi18v7vjgvcue7qo6455uids4v28megi.apps.googleusercontent.com", classic: "https://script.google.com/macros/s/AKfycbzkG5eCrxQvQtJgfksL92G9vtl2I4LLEew-Az4qYlDxX6V1QfgtIrwGjYOGq9CQ0r3aWA/exec", built: "0.3.6" };
+window.VIBRA_WEB = { helper: "https://script.google.com/macros/s/AKfycbzNE__5onOmvia3VaFHjybAJ5G35cnDJCN1ysuiNAYlgOC5xsbCi0xyDnmoJP7lEaFR3w/exec", clientId: "619243121375-pi18v7vjgvcue7qo6455uids4v28megi.apps.googleusercontent.com", classic: "https://script.google.com/macros/s/AKfycbzkG5eCrxQvQtJgfksL92G9vtl2I4LLEew-Az4qYlDxX6V1QfgtIrwGjYOGq9CQ0r3aWA/exec", built: "0.3.7" };
 (function () {
   var W = window.VIBRA_WEB, KEY = 'vibra-web-session', S = null, queue = [], gisInit = false, tries = 0, gateOn = false;
   var ua = navigator.userAgent || '', IOS = /iPad|iPhone|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
@@ -84,7 +84,7 @@ window.VIBRA_WEB = { helper: "https://script.google.com/macros/s/AKfycbzNE__5onO
         el = document.createElement('div'); el.id = 'vw-gate'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-modal', 'true'); el.setAttribute('aria-labelledby', 'vw-h');
         var iosApp = IOS && STANDALONE;
         el.innerHTML = '<div class="vw-card"><div class="vw-logo"><img class="lt" src="../icons/vibra-logo-light.webp" width="760" height="692" alt="VIBRA, Visionary International Board for Research and Analgesia"><img class="dk" src="../icons/vibra-logo-dark.webp" width="760" height="692" alt=""></div>' + // 0.3.0: no white box, one logo for each theme
-          '<h1 id="vw-h">Manuscript Tracker</h1>' +
+          '<h1 id="vw-h">Workspace</h1>' + // 0.3.7 (BACKLOG 75): VIBRA Workspace (the logo says VIBRA)
           '<div id="vw-btn" class="vw-btn"></div><p id="vw-msg" role="status" aria-live="polite"></p>' +
           '<div class="vw-or"><span>or</span></div>' +
           '<button type="button" id="vw-code-open" class="vw-link"' + (iosApp ? ' hidden' : '') + '>Sign in with a code</button>' +
@@ -94,7 +94,7 @@ window.VIBRA_WEB = { helper: "https://script.google.com/macros/s/AKfycbzNE__5onO
           '<button type="submit" id="vw-code-go">Sign in</button></div>' +
           '<p id="vw-code-hint" class="vw-hint">On that device (computer or browser): Settings, General, <b>Sign in another device with a code</b>. The code works once, for 10 minutes.</p></form>' +
           '<p class="vw-note">Use the Google account that is on the VIBRA member list. The app receives only your name and e-mail address.</p>' +
-          (W.classic ? '<p class="vw-note vw-small"><a href="' + W.classic + '?classic=1" target="_top">Trouble signing in? Open the classic tracker</a></p>' : '') + '</div>';
+          (W.classic ? '<p class="vw-note vw-small"><a href="' + W.classic + '?classic=1" target="_top">Trouble signing in? Open the classic page</a></p>' : '') + '</div>';
         document.body.appendChild(el);
         $('vw-code-open').addEventListener('click', function () { $('vw-code').hidden = false; this.hidden = true; $('vw-code-in').focus(); });
         $('vw-code').addEventListener('submit', function (e) { e.preventDefault(); codeLogin(); });
@@ -214,8 +214,12 @@ window.VIBRA_WEB = { helper: "https://script.google.com/macros/s/AKfycbzNE__5onO
   W.quick = function (d) { return ask({ api: 'quick', mid: d.mid || '', text: d.text || '', images: d.images || [], reply_to: d.reply_to || '', cid: d.cid || '', note: d.note || '' }); }; // 0.3.0: note = the reminder answered
   /* 0.3.3 (BACKLOG 52): Save apart from the AI: the text, then the pieces of the screenshots, then ready; the
      AI's reading is asked for apart (one call per part of a report) */
-  W.qsave = function (d) { return ask({ api: 'qsave', mid: d.mid || '', text: d.text || '', images: d.images || [], files: d.files || [], reply_to: d.reply_to || '', cid: d.cid || '', note: d.note || '' }); }; // 0.3.6 (BACKLOG 72): the screenshots in the same call
+  W.qsave = function (d) { return ask({ api: 'qsave', mid: d.mid || '', text: d.text || '', images: d.images || [], files: d.files || [], reply_to: d.reply_to || '', cid: d.cid || '', note: d.note || '', pre: d.pre || [] }); }; // 0.3.6 (BACKLOG 72): the screenshots in the same call; 0.3.7 (BACKLOG 81): pre = those sent when picked
   W.ping = function () { return ask({ api: 'ping' }); }; // 0.3.6 (BACKLOG 72): wakes the helper before a Save
+  /* 0.3.7 (BACKLOG 80 c): the manuscript's versions and the files, kept in the helper's Drive (sent whole, base64) */
+  W.fput = function (d) { return ask({ api: 'fput', mid: d.mid, kind: d.kind, name: d.name, mime: d.mime, data: d.data }).then(function (x) { return x.r; }); };
+  W.fget = function (id) { return ask({ api: 'fget', doc: id }).then(function (x) { return x.r; }); };
+  W.fdel = function (id) { return ask({ api: 'fdel', doc: id }).then(function (x) { return x.r; }); };
   W.qpart = function (d) { return ask({ api: 'qpart', id: d.id, k: d.k, p: d.p, data: d.data }); };
   W.qready = function (d) { return ask({ api: 'qready', id: d.id, lens: d.lens }); };
   W.ask = function (q) { return ask({ api: 'ask', q: String(q || '') }); }; // 0.3.3 (BACKLOG 55 D): read only
@@ -303,7 +307,7 @@ window.VIBRA_WEB = { helper: "https://script.google.com/macros/s/AKfycbzNE__5onO
     }).then(drop).then(function () { return 'Notifications are off on this device.'; });
   }
   function setTheme(dark) {
-    Array.prototype.forEach.call(document.querySelectorAll('meta[name="theme-color"]'), function (m) { m.removeAttribute('media'); m.setAttribute('content', dark ? '#1F1E1D' : '#F1EEE6'); });
+    Array.prototype.forEach.call(document.querySelectorAll('meta[name="theme-color"]'), function (m) { m.removeAttribute('media'); m.setAttribute('content', dark ? '#1F1E1D' : '#F5F4F0'); });
   }
   W.app = function (m, reply) {
     if (!m || typeof m !== 'object') return;
@@ -343,7 +347,7 @@ window.VIBRA_WEB = { helper: "https://script.google.com/macros/s/AKfycbzNE__5onO
 <link rel="manifest" href="../manifest.webmanifest">
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="VIBRA">
-<meta name="theme-color" content="#F1EEE6" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#1F1E1D" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#F5F4F0" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#1F1E1D" media="(prefers-color-scheme: dark)">
 <meta name="robots" content="noindex">
 <link rel="icon" type="image/png" sizes="32x32" href="../icons/app-favicon-32.png"><link rel="apple-touch-icon" href="../icons/app-apple-180.png"><link rel="preload" as="image" href="../icons/vibra-logo-light.webp">
 <style>
@@ -381,13 +385,13 @@ if(top==="https://script.google.com")return;if(top==="https://vibra-group.github
 <script>window.__VIBRA_U=window.__VIBRA_U||"";window.__VIBRA_V=window.__VIBRA_V||"";window.__T0=Math.round(performance.now());</script>
 <script>/* Ask the server for the data at once, before the rest of the page is read (saves a few hundred ms). */
 try{if(!window.__VIBRA_BLOCKED&&window.google&&google.script&&google.script.run){window.__bootP=new Promise(function(res,rej){google.script.run.withSuccessHandler(res).withFailureHandler(rej).api_bootstrap();});}}catch(e){}</script>
-<script>try{var t=localStorage.getItem("vibra-theme");if(t){document.documentElement.setAttribute("data-theme",t==="system"?(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"):t);}var z=localStorage.getItem("vibra-fs");z={s:"2",m:"3",l:"5"}[z]||z;if(/^[124-6]$/.test(z||""))document.documentElement.setAttribute("data-fs",z);var c=localStorage.getItem("vibra-pal");if(/^(navy|sage|sky|teal)$/.test(c||""))document.documentElement.setAttribute("data-pal",c);}catch(e){}</script>
+<script>try{var t=localStorage.getItem("vibra-theme");if(t){document.documentElement.setAttribute("data-theme",t==="system"?(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"):t);}var z=localStorage.getItem("vibra-fs");z={s:"2",m:"3",l:"5"}[z]||z;if(/^[124-6]$/.test(z||""))document.documentElement.setAttribute("data-fs",z);var c=localStorage.getItem("vibra-pal");if(/^(navy|sage|sky|teal|vibra)$/.test(c||""))document.documentElement.setAttribute("data-pal",c);else if(c!=="paper")document.documentElement.setAttribute("data-pal","vibra");}catch(e){}</script>
 <script>/* BACKLOG 45 (for 0.3.3, admin: "Ấn ấn vào các ô nhập, tự nhiên pop up zoom lên 1 tí rồi không tự thu lại"): iPhone and iPad
    Safari zoom in on a box whose text is under 16 px when it is tapped, and stay zoomed; maximum-scale=1 stops that zoom
    only (iOS still lets a person pinch to zoom). Not on Android, where it would stop pinching. */
 (function(){try{var ua=navigator.userAgent,vp;if(/iPad|iPhone|iPod/.test(ua)||(/Macintosh/.test(ua)&&navigator.maxTouchPoints>1)){vp=document.querySelector('meta[name="viewport"]');if(vp&&!/maximum-scale/.test(vp.content))vp.setAttribute('content',vp.content+', maximum-scale=1');}}catch(e){}})();</script>
 <script>/* 0.2.8: slim scroll bars on Windows and Linux (Macs and phones keep their own) */try{var pl=(navigator.userAgentData&&navigator.userAgentData.platform)||navigator.platform||"";if(/win|linux/i.test(pl)&&!/android/i.test(navigator.userAgent))document.documentElement.classList.add("sb-thin");}catch(e){}</script>
-<title>VIBRA Tracker</title>
+<title>VIBRA Workspace</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400..800&family=Geist+Mono:wght@400..500&family=Source+Serif+4:opsz,wght@8..60,400..600&display=swap" media="print" onload="this.media='all'">
@@ -396,7 +400,8 @@ try{if(!window.__VIBRA_BLOCKED&&window.google&&google.script&&google.script.run)
 :root{
   /* 0.3.4 (BACKLOG 61-2): the one set of colour tokens, light (was three layers: 0.1.8, 0.2.0, 0.2.3); --muted a step darker for small text (60-2);
      Drafting teal, green kept for success only (61-1 B, admin: "Chọn B") */
-  --bg:#F8F6F1;--surface:#FFFFFF;--surface-2:#F4F1EA;--line:rgba(31,30,27,.10);--line-2:rgba(31,30,27,.18);
+  --bg:#FCFBF9;--surface:#FFFFFF;--surface-2:#F6F5F1; /* 0.3.7 (BACKLOG 78, admin: "Đổi nền của theme light sáng hơn"): was #F8F6F1, #F4F1EA */
+ --line:rgba(31,30,27,.10);--line-2:rgba(31,30,27,.18);
   --ink:#1F1E1B;--ink-2:#3D3B36;--muted:#6B6860;--accent:#17407F;--accent-fg:#FFFFFF;--accent-text:#1F4A8A;
   --accent-soft:#E9EDF4;--accent-line:#B7C5DD;--danger:#8E2417;--ok-bg:#E3F1E6;--ok-fg:#245A33;--t-due-bg:#FBE4E0;
   --t-due-fg:#8E2417;--t-dl-bg:#FAEFCF;--t-dl-fg:#684B00;--t-act-bg:#E3EBF7;--t-act-fg:#14396E;--t-chase-bg:#ECE5F6;
@@ -408,7 +413,7 @@ try{if(!window.__VIBRA_BLOCKED&&window.google&&google.script&&google.script.run)
   --c-stale:#ec835a;--grid:#ecebe7;--axis:#cfcdc6;--shell:transparent;--shell-ring:transparent;
   --hi:inset 0 0 0 0 transparent;--bezel:0 0 0 1px var(--line),var(--shadow-1);
   --bezel-2:0 0 0 1px var(--line),var(--shadow-2);--glass:rgba(255,255,255,.74);
-  --code:'Geist Mono',ui-monospace,'SF Mono',Menlo,monospace;--side:#F1EEE6;--hover:rgba(31,30,27,.05);
+  --code:'Geist Mono',ui-monospace,'SF Mono',Menlo,monospace;--side:#F5F4F0;--hover:rgba(31,30,27,.05);
   --sel:rgba(31,30,27,.08);--sbw:264px;--serif:'Source Serif 4','Source Serif Pro',Georgia,'Times New Roman',serif;
   --sc-due:#E0483B;--sc-deadline:#DE9C12;--sc-action:#2A78D6;--sc-chase:#7A5BD8;--sc-waiting:#A3A098;
   --sc-drafting:#1AA0B0;
@@ -788,8 +793,11 @@ a.btn{text-decoration:none}
 .drop.over{border-color:var(--accent);background:var(--accent-soft)}@media (hover:hover){.drop:hover{border-color:var(--accent);background:var(--accent-soft)}}
 .thumbs{display:flex;flex-wrap:wrap;gap:8px}
 .thumbs:empty{display:none}
-.thumb{position:relative;width:96px;height:72px;border-radius:var(--r-sm);overflow:hidden;border:1px solid var(--line);animation:tagIn .25s var(--ease) both}
+.thumb{position:relative;width:96px;height:72px;border-radius:var(--r-sm);overflow:hidden;border:1px solid oklch(0 0 0 / .1);animation:tagIn .25s var(--ease) both}
 .thumb img{width:100%;height:100%;object-fit:cover}
+.thumb.th-up img{filter:brightness(.7)}.th-ring{position:absolute;left:50%;top:50%;width:26px;height:26px;margin:-13px 0 0 -13px;border-radius:999px;border:2.5px solid rgba(255,255,255,.35);border-top-color:#fff;animation:spin .8s linear infinite}
+.th-ok{position:absolute;left:4px;bottom:4px;width:20px;height:20px;border-radius:999px;display:grid;place-items:center;background:var(--accent);color:var(--accent-fg)}.th-ok .ic{width:13px;height:13px}
+.th-retry{position:absolute!important;left:50%!important;top:50%!important;right:auto!important;transform:translate(-50%,-50%);width:auto!important;height:26px!important;padding:0 10px;border-radius:999px!important;background:var(--danger)!important;font-size:var(--fs-xs)}
 .thumb button{position:absolute;top:3px;right:3px;width:24px;height:24px;border-radius:999px;border:0;background:rgba(0,0,0,.6);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center}
 .seg3{display:flex;gap:6px}
 .desk-item{padding:14px 0;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:8px}
@@ -1095,6 +1103,12 @@ html[data-fs="6"]{--fz:1.18}
 /* 0.2.6: Paste inside the text box; the box keeps room for it */
 .ta-wrap{position:relative}
 .ta-wrap textarea{width:100%;padding-bottom:40px}
+.ta-tools{position:absolute;right:8px;bottom:8px;display:flex;align-items:center;gap:6px}.ta-tools .paste-btn{position:static} /* 0.3.7 (BACKLOG 82) */
+.img-btn{display:inline-grid;place-items:center;width:30px;height:28px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink-2);cursor:pointer;box-shadow:0 1px 2px rgba(16,24,40,.06)}.img-btn .ic{width:16px;height:16px}
+@media (hover:hover){.img-btn:hover{border-color:var(--accent);color:var(--accent-text)}}.img-btn:focus-within{outline:2px solid var(--accent);outline-offset:2px}
+.ta-wrap.over textarea{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.thumbs.th-in{margin-top:-2px}.th-note{margin:0;font-size:var(--fs-xs);color:var(--muted)}
+.tt-wrap textarea{padding-bottom:38px}
 .qu-ai .ic{width:14px;height:14px;vertical-align:-2px;margin-right:4px;color:var(--accent-text)}
 .nf-mem{display:flex;flex-direction:column;gap:6px;margin-top:2px}
 .nf-mh{font-size:var(--fs-xs);color:var(--muted)}
@@ -1913,7 +1927,7 @@ html.nav3[data-lay="side"] .shell.tvb{--pw:clamp(340px,calc(100vw - var(--sbw) -
    Settings, Appearance (admin: "nó có thể là tùy chọn trong settings ... cho tôi 5 phương án màu (cả màu cũ)").
    Each set gives the menu, the page and the card a colour of their own: Paper (the old one), Navy, Sage, Sky and sand,
    Teal. Dark menus (Navy, Teal) carry their own light text inside .sb. */
-:root{--d-top:0 0 0 1px rgba(31,30,27,.07),0 2px 6px rgba(31,30,27,.06),0 28px 64px -20px rgba(31,30,27,.38);--d-lift:0 0 0 1px var(--line),0 1px 2px rgba(31,30,27,.05),0 6px 16px -10px rgba(31,30,27,.22);--side:#ECE8DF}
+:root{--d-top:0 0 0 1px rgba(31,30,27,.07),0 2px 6px rgba(31,30,27,.06),0 28px 64px -20px rgba(31,30,27,.38);--d-lift:0 0 0 1px var(--line),0 1px 2px rgba(31,30,27,.05),0 6px 16px -10px rgba(31,30,27,.22);--side:#F3F2EE}
 :root[data-theme="dark"]{--d-top:0 0 0 1px rgba(255,255,255,.09),inset 0 1px 0 rgba(255,255,255,.06),0 2px 6px rgba(0,0,0,.4),0 32px 70px -18px rgba(0,0,0,.9);--d-lift:0 0 0 1px var(--line),inset 0 1px 0 rgba(255,255,255,.05),0 8px 18px -10px rgba(0,0,0,.8);--side:#080807}
 .sb{background:var(--side)}
 .tile,.kpi,.list,.box{box-shadow:var(--d-lift)}
@@ -1944,10 +1958,10 @@ html.nav3[data-lay="stack"] .sb,html.nav3[data-lay="stack"] .drshade{will-change
 :root[data-pal="navy"] .sb .sb-brand b,:root[data-pal="teal"] .sb .sb-brand b{color:var(--accent-text)}
 :root[data-pal="navy"][data-theme="dark"] .panel{background:#23262C}
 :root[data-pal="teal"][data-theme="dark"] .panel{background:#23272A}
-:root[data-pal="sage"]{--side:#DCE7DD;--bg:#FAF8F3} :root[data-pal="sage"][data-theme="dark"]{--side:#0F1C15;--bg:#141413}
+:root[data-pal="sage"]{--side:#E4EEE5;--bg:#FDFCFA} :root[data-pal="sage"][data-theme="dark"]{--side:#0F1C15;--bg:#141413}
 :root[data-pal="sage"] .sb{--hover:rgba(30,70,45,.06);--sel:rgba(30,70,45,.11);--line:rgba(30,70,45,.13);--surface:#F4F8F4}
 :root[data-pal="sage"][data-theme="dark"] .sb{--hover:rgba(160,230,180,.07);--sel:rgba(160,230,180,.12);--line:rgba(160,230,180,.12);--surface:#18291F}
-:root[data-pal="sky"]{--side:#E0E7F1;--bg:#F6F0E4} :root[data-pal="sky"][data-theme="dark"]{--side:#0E141E;--bg:#17140F}
+:root[data-pal="sky"]{--side:#E7EDF5;--bg:#FCFAF6} :root[data-pal="sky"][data-theme="dark"]{--side:#0E141E;--bg:#17140F}
 :root[data-pal="sky"] .sb{--hover:rgba(23,64,127,.06);--sel:rgba(23,64,127,.11);--line:rgba(23,64,127,.12);--surface:#F5F8FC}
 :root[data-pal="sky"][data-theme="dark"] .sb{--hover:rgba(140,180,255,.07);--sel:rgba(140,180,255,.12);--line:rgba(140,180,255,.12);--surface:#172030}
 :root[data-pal="sky"][data-theme="dark"] .panel{background:#262A31}
@@ -2174,12 +2188,110 @@ tr.pp-h td{color:var(--ink)}tr.pp-h.win td{color:var(--ok-fg)}tr.pp-h.rej td{col
 .p-fold{border-top:1px solid var(--line)}.p-fold:last-of-type{border-bottom:1px solid var(--line)}
 .p-fold>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;padding:12px 2px;min-height:24px}
 .p-fold>summary::-webkit-details-marker{display:none}
-.pf-t{flex:1;min-width:0;display:flex;align-items:baseline;gap:8px;overflow:hidden}.pf-t .muted{font-size:var(--fs-sm);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pf-t{flex:1;min-width:0;display:flex;align-items:baseline;gap:8px;overflow:hidden}.pf-t b{white-space:nowrap}.pf-t .muted{font-size:var(--fs-sm);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .p-fold>summary .ic{width:18px;height:18px;color:var(--muted);flex:none;transition:transform .18s var(--ease)}.p-fold[open]>summary .ic{transform:rotate(180deg)}
 @media (hover:hover){.p-fold>summary:hover b{color:var(--accent-text)}}
 .p-fold>summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
 .pf-b{padding:0 0 14px}.pf-b>.p-grid:first-child{margin-top:0}
 .panel.pnew:not(.pdirty) .savebar{display:none}
+/* 0.3.7 (BACKLOG 85): VIBRA, the logo's colours */
+:root[data-pal="vibra"]{--bg:#F3F2F8;--surface:#FBFBFD;--surface-2:#ECEAF4;--side:#E9E7F2;--glass:rgba(251,251,253,.78); /* admin: "Eh sáng quá, hơi chói mắt á, dịu lại tí" (was #FCFCFE, white, #F5F4FB) */--line:rgba(40,30,90,.10);--line-2:rgba(40,30,90,.18);--hover:rgba(80,60,200,.05);--sel:rgba(80,60,200,.09);
+  --accent:#5B45D6;--accent-text:#4A33BE;--accent-soft:#E6E2F8;--accent-line:#C3B9EE;--brand-ink:#3A2A9E;--brand-2:#3F7BE6;--brand-3:#2BB2D8;
+  --brand-grad:linear-gradient(120deg,#7E4BE8,#4F62E6 50%,#2BB2D8);--brand-dot:linear-gradient(135deg,#7E4BE8,#3F7BE6);
+  --t-act-bg:#E6E4F8;--t-act-fg:#3A2AAE;--t-chase-bg:#EEE5FA;--t-chase-fg:#6327A8;--pg-jour:#4B5BFF;--c-action:#4B5BFF;--sc-action:#4B5BFF;--c-dot:#5534E6;--ink:#1C1A2B;--ink-2:#3A3750;--muted:#686579}
+:root[data-pal="vibra"][data-theme="dark"]{--bg:#0E0D16;--surface:#1A1830;--surface-2:#232042;--side:#08070F;--line:rgba(200,190,255,.12);--line-2:rgba(200,190,255,.22);--hover:rgba(160,140,255,.08);--sel:rgba(160,140,255,.14);
+  --accent:#6E4EF5;--accent-text:#CFC3FF; /* white on it 5.2:1 (ui_test_034: small text at least 4.5:1) */--accent-soft:#2D2560;--accent-line:#6A55D8;--brand-2:#4B8DFF;--brand-3:#3ED4FF;--brand-grad:linear-gradient(120deg,#9B57FF,#5B6BFF 50%,#3ED4FF);
+  --t-act-bg:#2A2763;--t-act-fg:#D5CEFF;--t-chase-bg:#3A2364;--t-chase-fg:#E6D2FF;--pg-jour:#6B7BFF;--c-action:#6B7BFF;--sc-action:#6B7BFF;--c-dot:#7B5CFF;--ink:#F3F1FF;--ink-2:#DCD8F2;--muted:#ABA6C8;--glass:rgba(14,13,22,.72)}
+:root[data-pal="vibra"] .sb .sb-brand b,:root[data-pal="vibra"] .tb-brand b{background:linear-gradient(100deg,#7E4BE8,#3F7BE6 60%,#2BB2D8);-webkit-background-clip:text;background-clip:text;color:transparent}
+/* 0.3.7 (BACKLOG 75): the steps, the reviewers' points, Before submitting, CRediT, Decisions, the greeting */
+.p-where{display:flex;flex-direction:column;gap:7px}
+.pw-line{display:flex;align-items:baseline;gap:10px}.pw-t{flex:1;min-width:0}.pw-t b{font-weight:600}.pw-rej{color:var(--danger)}
+.pw-chg{flex:none;font-size:var(--fs-sm)}
+.pw-bar{display:grid;grid-template-columns:repeat(8,1fr);gap:3px;max-width:420px}.pw-bar i{height:3px;border-radius:2px;background:var(--line-2)}
+.pw-bar i.done{background:var(--accent);opacity:.45}.pw-bar i.now{background:var(--accent)}.pw-bar.rej i{background:var(--danger);opacity:.35}
+.pw-pick{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}.pw-pick .chip-t:disabled{cursor:default}.pw-pick .pw-x{color:var(--danger);border-color:var(--danger)}
+.stp-ask{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin-top:2px;padding:10px 12px;border-radius:10px;background:var(--surface-2);font-size:var(--fs-sm)}.stp-ask .btns{display:flex;gap:8px;margin-left:auto}
+.rv-r{margin:0 0 14px}.rv-r:last-of-type{margin-bottom:10px}
+.rv-h{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;padding:2px 0 6px}.rv-h .muted{font-size:var(--fs-sm)}.rv-n{margin-left:auto;font-size:var(--fs-xs);color:var(--muted)}
+.rv-dec{font-size:var(--fs-xs);font-weight:600;padding:2px 8px;border-radius:999px;background:var(--warn-bg);color:var(--warn-fg)}
+.rv-g{margin:8px 0 2px;font-size:var(--fs-2xs);font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.rv-p{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-top:1px solid var(--line)}.rv-g+.rv-p{border-top:0}
+.rv-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}.rv-t{line-height:1.45;overflow-wrap:anywhere}.rv-p.done .rv-t{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--line-2)}
+.rv-meta{font-size:var(--fs-xs);color:var(--muted)}.rv-meta .td-m{font-size:inherit}
+.rv-line{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;margin-top:4px}
+.rv-who{flex:none;display:inline-flex;align-items:center;gap:6px;max-width:100%;min-height:28px;padding:2px 10px 2px 3px;border-radius:999px;border:1px solid var(--line);background:var(--surface);font:inherit;font-size:var(--fs-xs);color:var(--ink);cursor:pointer;white-space:nowrap}.rv-wn{min-width:0;overflow:hidden;text-overflow:ellipsis}
+.rv-who.none{padding-left:10px;color:var(--muted);border-style:dashed}
+.rv-av{flex:none;width:22px;height:22px;border-radius:999px;display:grid;place-items:center;background:var(--accent-soft,var(--surface-2));color:var(--accent-text);font-size:var(--fs-2xs);font-weight:600}
+.rv-pick{display:flex;flex-wrap:wrap;gap:6px;padding:4px 0 10px 32px}.rv-del{min-height:30px;padding:2px 10px;font-size:var(--fs-xs)}
+.chip-t{min-height:30px;padding:2px 11px;border-radius:999px;border:1px solid var(--line-2);background:var(--surface);font:inherit;font-size:var(--fs-xs);color:var(--ink);cursor:pointer}
+.chip-t[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
+.rv-add{display:flex;gap:8px;margin-top:8px}.rv-add .in{flex:1;min-width:0}
+.rv-none,.dec-none,.cr-none,.ck-lead{margin:0 0 8px;font-size:var(--fs-sm)}
+.rv-mine{padding:4px 14px}.rv-open{border:0;background:none;padding:0;font:inherit;color:inherit;text-align:left;cursor:pointer}@media (hover:hover){.rv-open:hover{color:var(--accent-text)}}.rv-mine .rv-p:first-child{border-top:0}
+.ck-g{margin:0 0 10px}.ck-g .lbl{display:block;margin:6px 0 2px}
+.ck-r{display:flex;align-items:flex-start;gap:10px;padding:7px 0;border-top:1px solid var(--line)}.ck-g .lbl+.ck-r{border-top:0}
+.ck-r .td-chk.on{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}.ck-r .td-chk:disabled{cursor:default}
+.ck-t{flex:1;min-width:0;line-height:1.45}.ck-v{display:block;width:100%;margin-top:6px;min-height:34px;font-size:var(--fs-sm)}.ck-na{flex:none;font-size:var(--fs-xs);color:var(--muted)}
+.tk-add .in:first-child{flex:2}.tk-add select,.tk-add input[type=date]{flex:1;min-width:0}.tk-late{color:var(--danger)}.tk-due{width:auto;min-height:30px;font-size:var(--fs-xs)}
+.tk-done>summary{cursor:pointer;margin-top:8px;font-size:var(--fs-sm);color:var(--muted)}
+@media (max-width:599px){.tk-add{flex-wrap:wrap}.tk-add .in:first-child{flex-basis:100%}}
+.doc-sec{margin:0 0 16px}.doc-sec>.lbl{display:block;margin:2px 0 6px}.doc-sec .frow .lbl{margin:0}
+.doc-cur{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:12px;background:var(--surface-2)}
+.doc-ic{flex:none;width:36px;height:36px;border-radius:9px;display:grid;place-items:center;background:var(--surface);color:var(--accent-text)}.doc-ic .ic{width:18px;height:18px}
+.doc-n{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}.doc-n b{font-weight:600;overflow-wrap:anywhere}.doc-n small{font-size:var(--fs-xs);color:var(--muted)}
+.doc-v{font-style:normal;font-family:var(--mono);font-size:var(--fs-2xs);padding:1px 6px;border-radius:999px;background:var(--accent-soft);color:var(--accent-text);margin-left:4px}
+.doc-btns{margin-top:10px;justify-content:flex-start;flex-wrap:wrap}.doc-btns label,.doc-add{cursor:pointer}
+.doc-r{display:flex;align-items:center;gap:8px;padding:8px 0;border-top:1px solid var(--line)}.doc-g{margin:8px 0 2px;font-size:var(--fs-2xs);font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.doc-g+.doc-r{border-top:0}.doc-b{flex:none;min-height:34px;width:34px;padding:0;justify-content:center}.doc-del{color:var(--danger)}
+.doc-hist>summary{cursor:pointer;margin-top:10px;font-size:var(--fs-sm);color:var(--muted)}.doc-up .th-ring.dk{position:static;margin:0;border-color:var(--line-2);border-top-color:var(--accent);flex:none}
+.doc-add{margin-top:10px}.doc-max{display:inline-block;margin:10px 0 0 10px;font-size:var(--fs-xs)}
+.cm-seg{margin-left:auto}.cm-r{display:flex;flex-direction:column;gap:4px;padding:10px 0;border-top:1px solid var(--line)}.cm-r.done .cm-t{color:var(--muted)}
+.cm-tags{display:flex;gap:6px;flex-wrap:wrap}.cm-tags i{font-style:normal;font-size:var(--fs-2xs);font-weight:600;padding:1px 8px;border-radius:999px;background:var(--surface-2);color:var(--ink)}.cm-tags i.ty{background:var(--accent-soft);color:var(--accent-text)}.cm-tags i.vv{font-family:var(--mono)}
+.cm-t{line-height:1.45;overflow-wrap:anywhere}.cm-acts{display:flex;gap:14px;font-size:var(--fs-sm)}.cm-del{color:var(--danger)}
+.cm-add{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}.cm-add select{flex:1;min-width:120px}.cm-add input{flex:3;min-width:200px}
+.rr-form{display:grid;gap:10px;margin-top:12px;padding:12px;border-radius:12px;border:1px solid var(--line)}.rr-form .btns{display:flex;gap:8px}
+.rv-rbtn{display:inline-flex;align-items:center;gap:4px;margin-top:10px;font-size:var(--fs-sm)}.rv-rbtn .ic{width:14px;height:14px}.rv-rnd{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}.rv-rnd select,.rv-rnd input{flex:1;min-width:130px}.ck-t small{display:block;font-size:var(--fs-xs);color:var(--muted)}.ck-r.done .ck-t{color:var(--muted)}
+.cr-list{margin-top:12px}.cr-list ol{margin:6px 0 10px;padding-left:20px;display:grid;gap:6px}.cr-list li span{display:block;font-size:var(--fs-sm);color:var(--muted)}
+.cr-pick{flex-basis:100%;margin-top:6px}.cr-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.dec-list{list-style:none;margin:0 0 6px;padding:0}.dec-list li{display:grid;grid-template-columns:auto 1fr;gap:2px 12px;padding:8px 0;border-top:1px solid var(--line)}.dec-list li:first-child{border-top:0}
+.dec-list .mono{font-size:var(--fs-xs);color:var(--muted);padding-top:2px}.dec-list .muted{grid-column:2;font-size:var(--fs-xs)}.dec-t{line-height:1.45}
+.p-reg{display:flex;align-items:center;gap:10px 12px;flex-wrap:wrap;margin:10px 0 0;padding:10px 12px;border-radius:12px;background:var(--warn-bg);color:var(--warn-fg);font-size:var(--fs-sm);line-height:1.45}
+.p-reg>span{flex:1;min-width:200px;display:flex;gap:8px;align-items:flex-start}.p-reg .ic{flex:none;width:16px;height:16px;margin-top:2px}.p-reg .btn{min-height:32px}
+.bl-foot{display:flex;align-items:center;gap:8px;min-height:22px}.bl-foot .bl-st{flex:1;min-width:0}
+.bl-avs{display:inline-flex;flex:none;padding-left:6px}.mw-foot .bl-avs{margin-left:auto}
+.bav{position:relative;display:grid;place-items:center;width:24px;height:24px;margin-left:-3px;border-radius:999px;overflow:hidden;background:var(--surface-2);color:var(--muted);box-shadow:0 0 0 2px var(--surface);font:600 calc(8px*var(--fz,1))/1 var(--sans);font-style:normal;letter-spacing:-.02em;white-space:nowrap}
+.bav,.rv-av{position:relative;overflow:hidden;color:#fff;font-weight:700;background:#C2410C} /* BACKLOG 84, 85: one solid colour per person, ten clearly different ones (admin: "Avatar thì màu đơn thôi"; "nhìn khó phân biệt ghê á") */
+.bav[style*="--h:1;"],.rv-av[style*="--h:1;"]{background:#2563EB}.bav[style*="--h:2;"],.rv-av[style*="--h:2;"]{background:#15803D}.bav[style*="--h:3;"],.rv-av[style*="--h:3;"]{background:#9333EA}.bav[style*="--h:4;"],.rv-av[style*="--h:4;"]{background:#B45309}.bav[style*="--h:5;"],.rv-av[style*="--h:5;"]{background:#0E7490}.bav[style*="--h:6;"],.rv-av[style*="--h:6;"]{background:#BE185D}.bav[style*="--h:7;"],.rv-av[style*="--h:7;"]{background:#4F46E5}.bav[style*="--h:8;"],.rv-av[style*="--h:8;"]{background:#4D7C0F}.bav[style*="--h:9;"],.rv-av[style*="--h:9;"]{background:#B91C1C}
+.rv-av .avp{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+@media (max-width:599px){.bl-avs{display:none}}
+.bl-foot,.mw-foot{container-type:inline-size}.bav.more{display:none}
+.bav.a5,.bav.a6,.bav.a7,.bav.a8,.bav.a9,.bav.a10{display:none}.bav.c4{display:grid}
+@container (max-width:219px){.bav.a4{display:none}.bav.c4{display:none}.bav.c3{display:grid}}
+@container (min-width:300px){.bav.a5,.bav.a6{display:grid}.bav.c4{display:none}.bav.c6{display:grid}}
+@container (min-width:360px){.bav.a7,.bav.a8{display:grid}.bav.c6{display:none}.bav.c8{display:grid}}
+@container (min-width:430px){.bav.a9,.bav.a10{display:grid}.bav.c8{display:none}.bav.c10{display:grid}}.bav .avp{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.bav.more{background:var(--surface);color:var(--muted);box-shadow:0 0 0 2px var(--surface),inset 0 0 0 1px var(--line-2)}
+/* 0.3.7 (BACKLOG 83, admin: "Làm hết 6 điểm luôn đi"): the polish review's six points */
+@media (pointer:coarse){ /* (1) a 44 px touch area around the small new controls; what is seen stays the same */
+  .rv-p .td-chk,.ck-r .td-chk,.img-btn,.doc-b,.chip-t,.rv-who,.ck-na,.pw-chg,.rv-rbtn{position:relative}
+  .rv-p .td-chk::before,.ck-r .td-chk::before{content:'';position:absolute;left:50%;top:50%;width:44px;height:44px;transform:translate(-50%,-50%)}
+  .img-btn::before,.doc-b::before,.chip-t::before,.rv-who::before,.ck-na::before,.pw-chg::before,.rv-rbtn::before{content:'';position:absolute;left:50%;top:50%;width:max(100%,44px);height:max(100%,44px);transform:translate(-50%,-50%)}
+}
+.tbb,.img-btn,.chip-t,.rv-who,.rv-av,.bav{-webkit-tap-highlight-color:transparent}
+.tbb .tbi,.tb-q .tbq,.img-btn,.chip-t,.rv-who,.ck-r .td-chk,.rv-p .td-chk{transition-property:transform,background-color,border-color,color;transition-duration:.15s;transition-timing-function:ease-out}
+.tbb:active .tbi,.tb-q:active .tbq,.img-btn:active,.chip-t:active:not(:disabled),.rv-who:active:not(:disabled){transform:scale(.96)} /* (2) the project's press */
+.pf-t .muted{font-variant-numeric:tabular-nums} /* (3) counts that change keep their place */
+.rv-t,.ck-t,.dec-t,.cm-t,.p-reg>span,.th-note,.rv-none,.ck-lead{text-wrap:pretty} /* (4) */
+:root[data-theme="dark"] .thumb{border-color:oklch(1 0 0 / .1)} /* (6) */
+.mw-hi{letter-spacing:-.01em}.mw-wait{font-weight:600;color:var(--ink)}
+/* 0.3.7 (BACKLOG 75, idea 6, a test): the phone's tab bar */
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:66;display:grid;grid-template-columns:repeat(5,1fr);align-items:end;padding:6px 6px max(8px,env(safe-area-inset-bottom));background:color-mix(in srgb,var(--surface) 88%,transparent);-webkit-backdrop-filter:saturate(1.6) blur(14px);backdrop-filter:saturate(1.6) blur(14px);border-top:1px solid var(--line)}
+.tbb{display:flex;flex-direction:column;align-items:center;gap:3px;min-height:48px;padding:4px 0 0;border:0;background:none;color:var(--muted);font:inherit;font-size:var(--fs-2xs);font-weight:500;cursor:pointer}
+.tbb .tbi{position:relative;display:grid;place-items:center;width:44px;height:28px;border-radius:999px;transition:background-color .15s var(--ease)}.tbb .tbi .ic{width:22px;height:22px}
+.tbb.on{color:var(--accent-text)}.tbb.on .tbi{background:var(--accent-soft,var(--surface-2))}
+.tbb .badge{position:absolute;top:-3px;right:4px}
+.tb-q .tbq{display:grid;place-items:center;width:50px;height:50px;margin-top:-22px;border-radius:999px;background:var(--brand-grad);color:#fff;box-shadow:0 8px 20px -8px rgba(23,64,127,.6),0 0 0 4px var(--surface)}.tb-q .tbq .ic{width:22px;height:22px}.tb-q{color:var(--ink)}
+.shell:has(~ .tabbar) .main{padding-bottom:84px}
+.shell.pshown ~ .tabbar{display:none}
 @media (max-width:599px){.p-tell .btns{justify-content:flex-start}.p-sum{grid-template-columns:1fr}.p-sum dt{padding:9px 0 0}.p-sum dd{border-top:0;padding-top:2px}.p-sum dt:not(:first-of-type){border-top:1px solid var(--line)}}
 /* 0.3.5: What's new, the new map */
 .wn-map{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
@@ -2250,6 +2362,7 @@ var LABEL = { title: 'Title', type: 'Type', journal: 'Journal', status: 'Status'
   next_actions: 'Next actions', deadline: 'Deadline', submission_date: 'Submission date', ms_id: 'MS ID', doi: 'DOI', authors_json: 'Authors', impact_factor: 'Journal IF', first_author: 'First author', note: 'Note', created: 'Created', deleted: 'Deleted', restored: 'Restored' };
 var EDITABLE = ['title', 'type', 'journal', 'status', 'stage', 'people_json', 'next_actions', 'deadline', 'submission_date', 'ms_id', 'doi', 'authors_json', 'impact_factor', 'first_author', 'preprint', 'links_json'];
 LABEL.preprint = 'Preprint'; LABEL.links_json = 'Links'; // 0.2.5
+LABEL.review_json = 'Reviewers\' points'; LABEL.checklist_json = 'Before submitting'; EDITABLE.push('review_json', 'checklist_json'); // 0.3.7 (BACKLOG 75)
 var TIPS = {
   preprint: 'The preprint\'s ID or DOI, as the preprint server gives it (Preprints.org, medRxiv, Research Square, SSRN…). A DOI or a Preprints.org ID opens with Open. The AI fills it from the server\'s e-mail.',
   links: 'Tracking: the journal\'s page for the manuscript (one Track button). Steps: a link for one next action; name it in that action and it leaves when the step is done. Only you: a link that acts as you, kept in your settings, never in the shared Sheet. The AI adds links from quick updates.',
@@ -2277,12 +2390,12 @@ var TIPS = {
   calfile: 'One calendar file with the deadlines of every open manuscript where you are tagged (ball or author). Open it to import them into Google, Apple or Outlook calendar. It is a snapshot: download it again after deadlines change.',
   feed: 'A private calendar address that your calendar app subscribes to: the deadlines appear as all-day events and move by themselves when a deadline changes, with no file to download again. Google Calendar refreshes subscribed calendars on its own schedule, sometimes only once a day; Apple Calendar and Outlook let you choose how often. Keep the address to yourself: anyone who has it sees these deadlines (titles, journal, ball, next actions). Make a new link if it was shared by mistake: the old one stops at once. It gives no access to the app or the database.',
   mailrem: 'Your reminders are private: they are kept in your own Google account, not in the shared database, so they are not sent by e-mail. Add a reminder to your calendar with the calendar button and your calendar alerts you, by e-mail too if you set it so.',
-  digest: 'Your week, every Monday at 07:00 (Vietnam time): a short e-mail like My work (your move, deadlines this week, what changed on your manuscripts, a button to open My work) and a notification on your phone. It is sent from the admin\'s helper with the sender name VIBRA Tracker (or from the group\'s own account once the helper runs there). The admin tries it alone first, then opens it to everyone; you can switch it off for yourself at any time.',
+  digest: 'Your week, every Monday at 07:00 (Vietnam time): a short e-mail like My work (your move, deadlines this week, what changed on your manuscripts, a button to open My work) and a notification on your phone. It is sent from the admin\'s helper with the sender name VIBRA Workspace (or from the group\'s own account once the helper runs there). The admin tries it alone first, then opens it to everyone; you can switch it off for yourself at any time.',
   dlalert: 'A notification under the bell (and on your phone if you paired the VIBRA app) 7 days and 1 day before a deadline, when you have the ball. Sent at 07:00 Vietnam time.',
   permweb: 'You sign in with Google on the group\'s own page. Google tells the app only your name and e-mail address; the app gets no permission on your Google account. Sign out on this device in Settings, General. You can also remove the sign-in in your Google account at any time.',
   perm: 'Google asked you for these two permissions the first time you opened the app. They cover only this database and your e-mail address. You can remove the access at any time in your Google account; the app then asks again next time.',
   requests: 'What you sent with Quick update or Feedback, and what happened to it. With the AI helper switched on, a quick update is applied within about a minute; anything that needs a closer look, and everything when the helper is off, is applied by the 06:00 check (Vietnam time).',
-  pwa: 'The VIBRA app is a small page you install once (it lives on GitHub Pages and holds no group data). It opens this tracker, shows your own manuscripts when you are offline, and receives notifications. To pair a device, get a one-time code here and type it in the app. Turn notifications off in the app at any time.',
+  pwa: 'The VIBRA app is a small page you install once (it lives on GitHub Pages and holds no group data). It opens VIBRA Workspace, shows your own manuscripts when you are offline, and receives notifications. To pair a device, get a one-time code here and type it in the app. Turn notifications off in the app at any time.',
   audet: 'Affiliations, e-mails and ORCID of this manuscript\'s authors, filled in together. Type them, look up an ORCID, or paste a screenshot of the title page and the AI proposes them (the name rules decide who is who; nothing is saved until you press Save). They are kept once per person, so every manuscript of that author benefits. Each change is logged with your name and can be undone. Members fill in their own in Settings, General. Author sheet downloads an Excel file for the journal submission: the authors in order with numbered affiliations, e-mails and ORCID, and a title page; it holds personal details, so share it only for the submission.',
   auexp: 'An Excel file to fill in a journal submission quickly: every author in order with full name, given and family name, role (first, equal contribution, corresponding), numbered affiliations, e-mails and ORCID, plus a title page with the author line and affiliations. Details come from the Authors tab of the Sheet; anything missing is listed under To check. The file holds personal details: share it only for the submission.',
   att: 'Built from deadlines, journals silent for over 90 days, manuscripts ready but not yet submitted, and manuscripts where a guest holds the ball. Click a number to filter the list; the calendar button sets a private reminder.',
@@ -2299,8 +2412,15 @@ var TIPS = {
 /* 0.3.4 (admin: "không cần what's new vì chỉ là chỉnh giao diện nhỏ, sửa lại các what's new, cái nào nhỏ quá hoặc sửa
    bug nhỏ nhỏ thì ghi chung chung ngắn gọn thôi"): a release gets a card only when members will notice something new;
    small changes and fixes are one short line. The page's own version is PAGE_VERSION, not the latest card. */
-var PAGE_VERSION = '0.3.6'; // = APP_VERSION in Code.gs (test/server_test.js checks)
+var PAGE_VERSION = '0.3.7'; // = APP_VERSION in Code.gs (test/server_test.js checks)
 var RELEASES = [
+  { v: '0.3.7', date: '2026-10-31', title: 'VIBRA Workspace: everything a paper needs', items: [ // 0.3.7 (BACKLOG 75, 77 to 85)
+    ['book', 'A new name, VIBRA Workspace, and the logo\'s colours. Each card shows where the paper is in eight steps; Change moves it.', 'new'],
+    ['check', 'Reviewers\' points from the decision letter (the AI lists them), who answers each, ticked when addressed; tasks per paper with who and by when. Yours are in My work.', 'new'],
+    ['sheet', 'The manuscript and its files in the card: each upload is the next version, comments by section, Request review.', 'new'],
+    ['pen', 'Before submitting: what the paper\'s type needs, with the registration ID or the ethics number; a reminder to register the protocol (PROSPERO, OSF).'],
+    ['people', 'Authors & roles: the CRediT contributions, copied as a statement; Decisions keeps what the group chose and why.'],
+    ['phone', 'On a phone, a tab bar: My work, Papers, Update, the bell, More (Settings can switch it off). A screenshot goes up as soon as you pick it.']] },
   { v: '0.3.6', date: '2026-10-31', title: 'Saved at once, and a celebration', items: [ // 0.3.6 (BACKLOG 67 to 74)
     ['check', 'Save is instant: the change shows at once and "Saving…" turns into "Saved". If someone else was editing, your changes come back into the boxes.'],
     ['spark', 'Quick update with screenshots goes in one step, much faster; the screenshots are deleted once the AI has read them.'],
@@ -2465,7 +2585,7 @@ function wnDialog() {
   var shown = list.slice(0, 3), go = (shown.filter(function (r) { return r.go; })[0] || {}).go;
   // 0.2.7 (admin: "làm khung rồi scrolling đi"): the title and the buttons stay put; the list scrolls inside a frame
   return '<div class="overlay wn-ov" data-a="wn-bg"><div class="dialog wn" role="dialog" aria-modal="true" aria-labelledby="wn-h">' +
-    '<div class="wn-top"><h2 id="wn-h">What\'s new in VIBRA Tracker ' + esc(RELEASES[0].v) + '</h2><button type="button" class="ibtn" data-a="wn-close" aria-label="Close">' + ic('x') + '</button></div>' +
+    '<div class="wn-top"><h2 id="wn-h">What\'s new in VIBRA Workspace ' + esc(RELEASES[0].v) + '</h2><button type="button" class="ibtn" data-a="wn-close" aria-label="Close">' + ic('x') + '</button></div>' +
     '<div class="wn-body" tabindex="0">' + shown.map(relBlock).join('') + (list.length > 3 ? '<p class="muted" style="margin:0;font-size:var(--fs-sm)">Earlier changes: Settings, Help, What\'s new.</p>' : '') + '</div>' +
     '<div class="btns wn-foot">' + (go ? '<button class="btn btn-s" data-a="wn-go" data-v="' + go[0] + '">' + esc(go[1]) + '</button>' : '') + '<button class="btn btn-p" data-a="wn-close">Got it</button></div></div></div>';
 }
@@ -2481,28 +2601,28 @@ var COACH = [
   { p: 0, sel: ['.main [data-a="open"][data-v]'], t: 'One row, one manuscript', k: 'How urgent, the title, who has the ball, the next action.', b: 'Click a row to open its card. The tour opens this one for you.' },
   { p: 1, sel: ['#f-status'], open: true, t: 'Status and stage', k: 'Where the paper is, from Drafting to Published.', b: 'While it is at a journal, the stage says whose move it is: Reviews back or Returned to authors means ours.' },
   { p: 1, sel: ['#f-dl'], open: true, t: 'Deadline', k: 'Only a real date, set by the journal or by Giustino Varrassi.', b: 'Whoever has the ball gets an alert 7 days and 1 day before.' },
-  { p: 1, key: true, sel: ['.panel .p-sec:has(#ball-l)', '#ball-l'], open: true, t: 'Ball is with', k: 'Who must make the next move. The heart of the tracker.', b: 'Not the author list. Whoever has the ball sees the manuscript under Me and in their To-do, and the primary person gets the alerts. When your part is done, pass the ball on.' },
+  { p: 1, key: true, sel: ['.panel .p-sec:has(#ball-l)', '#ball-l'], open: true, t: 'Ball is with', k: 'Who must make the next move. What everything turns on.', b: 'Not the author list. Whoever has the ball sees the manuscript under Me and in their To-do, and the primary person gets the alerts. When your part is done, pass the ball on.' },
   { p: 1, sel: ['#f-next'], open: true, t: 'Next actions', k: 'What happens next, step by step.', b: 'A numbered list: press Enter and the next number appears.' },
   { id: 'save', p: 1, sel: ['#b-save'], open: true, t: 'Save', k: 'Nothing changes until you save.', b: 'Everyone sees it at once, with your name, and you can undo your own change. No connection? What you change waits on this device: press Save when you are back online.' },
-  { p: 2, key: true, sel: ['.fab'], t: 'Quick update', k: 'The fastest way: tell the tracker what happened, the AI does the rest.', b: 'Say it in any language, or paste the journal\'s e-mail or a screenshot. No need to open the card or edit fields: the AI updates the manuscript and tells you what changed, and you can undo.' },
+  { p: 2, key: true, sel: ['.fab', '.tabbar .tb-q'], t: 'Quick update', k: 'The fastest way: say what happened, the AI does the rest.', b: 'Say it in any language, or paste the journal\'s e-mail or a screenshot. No need to open the card or edit fields: the AI updates the manuscript and tells you what changed, and you can undo.' },
   { id: 'todo', p: 2, sel: ['.sb nav [data-v="todo"]', '.topbar [data-a="drawer-open"]'], when: function () { return todoOn(); }, t: 'Your to-do', k: 'What you have to do, in one list.', b: 'A line comes by itself for each manuscript where you have the ball and leaves when the step is done. Add your own lines too: only you see them. On a phone it is in the menu.' },
-  { p: 2, sel: ['.sb-foot [data-v="notif"]', '.topbar [data-v="notif"]'], t: 'Notifications', k: 'Know when the ball comes to you.', b: 'The ball passed to you, a change on your manuscripts, a deadline close. Turn them on for each phone or computer in Settings, Notifications.' },
+  { p: 2, sel: ['.sb-foot [data-v="notif"]', '.topbar [data-v="notif"]', '.tabbar [data-v="notif"]'], t: 'Notifications', k: 'Know when the ball comes to you.', b: 'The ball passed to you, a change on your manuscripts, a deadline close. Turn them on for each phone or computer in Settings, Notifications.' },
   { id: 'feedback', p: 2, sel: ['.sb-fb', '.topbar [data-a="fb-open"]'], t: 'Send feedback', k: 'While we test the app, tell us what goes wrong.', b: 'Or what would help, in any language; the answer comes under your bell. Settings, Help replays this tour.' },
   { id: 'author', more: true, sel: ['.panel .au-det'], open: true, when: function () { return canEdit(); }, t: 'Author details and the author sheet', b: 'Fill in every author\'s affiliation, e-mail and ORCID together: look up an ORCID, or paste a screenshot of the title page and the AI proposes the details for you to check. Then download the Author sheet for the submission.' },
-  { id: 'getapp', more: true, sel: ['.sb-get', '.topbar [data-a="drawer-open"]'], t: 'Get the app', b: 'Install VIBRA on this computer or phone: its own icon and window, and notifications. It also shows the address and a QR code for your other devices. On a phone it sits beside your name in the menu.' },
-  { id: 'settings', more: true, sel: ['.sb-foot [data-v="settings"]', '.topbar [data-a="drawer-open"]'], t: 'Settings', b: 'Notifications on this device, your private calendar link, the Monday e-mail, light or dark. Help replays this tour. Under General, add My details (affiliation, e-mail, ORCID) once: they serve every manuscript you are on.' }
+  { id: 'getapp', more: true, sel: ['.sb-get', '.topbar [data-a="drawer-open"]', '.tabbar [data-a="drawer-open"]'], t: 'Get the app', b: 'Install VIBRA on this computer or phone: its own icon and window, and notifications. It also shows the address and a QR code for your other devices. On a phone it sits beside your name in the menu.' },
+  { id: 'settings', more: true, sel: ['.sb-foot [data-v="settings"]', '.topbar [data-a="drawer-open"]', '.tabbar [data-a="drawer-open"]'], t: 'Settings', b: 'Notifications on this device, your private calendar link, the Monday e-mail, light or dark. Help replays this tour. Under General, add My details (affiliation, e-mail, ORCID) once: they serve every manuscript you are on.' }
 ];
 /* 0.3.5 (BACKLOG 64): the same tour for the New layout: My work, the card led by its summary, Papers */
 var COACH_NEW = [
-  { p: 0, key: true, sel: ['.sb nav [data-v="mine"]', '.topbar [data-a="drawer-open"]'], t: 'Start with My work', k: 'Everything that is yours, in one place.', b: 'What the AI asks you to confirm, your move, your own to-do, and the manuscripts you are on. Papers and Group sit beside it; on a phone they are behind this menu button.' },
+  { p: 0, key: true, sel: ['.sb nav [data-v="mine"]', '.tabbar [data-v="mine"]', '.topbar [data-a="drawer-open"]'], t: 'Start with My work', k: 'Everything that is yours, in one place.', b: 'What the AI asks you to confirm, your move, your own to-do, and the manuscripts you are on. Papers and Group sit beside it; on a phone they are behind this menu button.' },
   { p: 0, key: true, sel: ['#mw-move .sec-h', '#mw-move'], t: 'Your move', k: 'Where you have the ball, the most urgent first.', b: 'Each block says your step. Done: the step is done and the AI moves the manuscript on. Update: tell the tracker what happened.' },
   { p: 0, sel: ['.main [data-a="open"][data-v]'], t: 'One block, one manuscript', k: 'How urgent, the title, your step.', b: 'Click a block to open its card. The tour opens this one for you.' },
   { p: 1, key: true, sel: ['.panel .p-sum'], open: true, t: 'The summary', k: 'Where it is, who has the ball, the next step, the latest news.', b: 'Read this first: it answers most questions without opening anything.' },
-  { p: 1, key: true, sel: ['.panel .p-tell'], open: true, when: function () { return canEdit(); }, t: 'Tell the tracker', k: 'Say what happened; the AI updates the record.', b: 'Step done when your step is finished. You can undo what the AI changed.' },
-  { p: 1, sel: ['.panel details[data-keep="pfdet"] > summary'], open: true, t: 'Details', k: 'Status, stage, deadline, ball, next actions.', b: 'Ball is with is the heart of the tracker: who must make the next move. Save appears when you change a field.' },
-  { p: 2, key: true, sel: ['.fab'], t: 'Quick update', k: 'The fastest way: tell the tracker what happened, the AI does the rest.', b: 'Say it in any language, or paste the journal\'s e-mail or a screenshot, about any manuscript.' },
-  { p: 2, sel: ['.sb nav [data-v="papers"]', '.topbar [data-a="drawer-open"]'], t: 'Papers', k: 'Every manuscript, grouped by where it is.', b: 'The tabs on the side filter by urgency; Whose shows one person\'s manuscripts. List shows them as a table.' },
-  { p: 2, sel: ['.sb-foot [data-v="notif"]', '.topbar [data-v="notif"]'], t: 'Notifications', k: 'Know when the ball comes to you.', b: 'The ball passed to you, a change on your manuscripts, a deadline close, and Your week on Mondays. Turn them on for each phone or computer in Settings, Notifications.' },
+  { p: 1, key: true, sel: ['.panel .p-tell'], open: true, when: function () { return canEdit(); }, t: 'What happened?', k: 'Say what happened; the AI updates the record.', b: 'Step done when your step is finished. You can undo what the AI changed.' },
+  { p: 1, sel: ['.panel details[data-keep="pfdet"] > summary'], open: true, t: 'Details', k: 'Status, stage, deadline, ball, next actions.', b: 'Ball is with matters most: who must make the next move. Save appears when you change a field.' },
+  { p: 2, key: true, sel: ['.fab', '.tabbar .tb-q'], t: 'Quick update', k: 'The fastest way: say what happened, the AI does the rest.', b: 'Say it in any language, or paste the journal\'s e-mail or a screenshot, about any manuscript.' },
+  { p: 2, sel: ['.sb nav [data-v="papers"]', '.tabbar [data-v="papers"]', '.topbar [data-a="drawer-open"]'], t: 'Papers', k: 'Every manuscript, grouped by where it is.', b: 'The tabs on the side filter by urgency; Whose shows one person\'s manuscripts. List shows them as a table.' },
+  { p: 2, sel: ['.sb-foot [data-v="notif"]', '.topbar [data-v="notif"]', '.tabbar [data-v="notif"]'], t: 'Notifications', k: 'Know when the ball comes to you.', b: 'The ball passed to you, a change on your manuscripts, a deadline close, and Your week on Mondays. Turn them on for each phone or computer in Settings, Notifications.' },
   { id: 'feedback', p: 2, sel: ['.sb-fb', '.topbar [data-a="fb-open"]'], t: 'Send feedback', k: 'While we test the app, tell us what goes wrong.', b: 'Or what would help, in any language; the answer comes under your bell. Settings, Help replays this tour. Settings, General, Appearance switches back to the Classic layout.' }];
 /* 0.2.3: the steps of the tour in progress: the full tour (0.3.0: the steps not marked more), or for members who saw the
    0.2.0 tour a short one with what was added since (author details, offline, feedback, the app, my details) */
@@ -2518,6 +2638,9 @@ function CO() {
    the first versions (256 grid) were drawn again in it. */
 
 var ICON2 = {
+  file: '<path d="M14 3.5H7.5a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2V8z"/><path d="M14 3.5V8h4.5M9 12.5h6M9 16h6"/>', // 0.3.7 (BACKLOG 80 c)
+  upload: '<path d="M12 15V4.5M7.5 9 12 4.5 16.5 9"/><path d="M4.5 14.5v3a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-3"/>',
+  send: '<path d="M20.5 3.5 10 14"/><path d="m20.5 3.5-6.5 17-4-6.5-6.5-4z"/>',
   copy: '<rect x="8.5" y="8.5" width="11" height="12" rx="2.2"/><path d="M15.5 8.5V6.2a2 2 0 0 0-2-2h-7a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h2"/>',
   paste: '<rect x="6" y="4.5" width="12" height="16" rx="2.2"/><path d="M9.5 4.5V3.8a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v.7"/><path d="M9.5 11h5M9.5 14.5h5"/>',
   pen: '<path d="M4 20h4.2L19.4 8.8a2 2 0 0 0 0-2.8l-1.4-1.4a2 2 0 0 0-2.8 0L4 15.8z"/><path d="M13.5 6.5l4 4"/>',
@@ -2805,7 +2928,7 @@ function render() {
   var sbOver = sbCollapsed() && N3() && (S.sbPeek || S.sbSlide); // the full sidebar over (peek) or under (slide) the rail
   var appHtml = '<div class="shell' + (sbCollapsed() && !sbOver ? ' sbc' : '') + (sbOver ? (S.sbSlide ? ' sbslide' : ' sbpeek') : '') + (S.sbShow ? ' sbshow' : '') + (S.drawer ? ' drawer' : '') + (panelShown() ? ' pshown' : '') + (blkView() ? ' tvb blkA' : '') + '">' + sidebar() + '<div class="scrim" data-a="drawer-close"></div><div class="drshade" aria-hidden="true"></div>' + (panelShown() ? '<div class="pscrim" aria-hidden="true"></div>' : '') +
     '<div class="mainwrap">' + topbar() + '<div class="wrap"><div class="cols"><div class="main">' + pageTools() + draftBar() + main + '</div></div></div></div>' + (panelShown() ? panel() : '') + // 0.2.9: the card is its own layer
-    '<div class="fstat' + fsNew() + '" aria-live="polite">' + statusChip() + '</div></div>' + fab();
+    '<div class="fstat' + fsNew() + '" aria-live="polite">' + statusChip() + '</div></div>' + (tabOn() ? tabbar() : fab());
   morph(app, appHtml); // 0.2.8: only what changed is touched
   document.documentElement.style.setProperty('--sbw', sbCollapsed() ? '60px' : '264px');
   var sbs2 = document.querySelector('.sb-scroll'); if (sbs2) sbs2.scrollTop = sbScroll;
@@ -2981,7 +3104,7 @@ function sidebar() {
   };
   var unread = unreadCount();
   return '<aside class="sb" aria-label="Sidebar">' +
-    '<div class="sb-top"><button class="sb-brand" data-a="view" data-v="today" aria-label="VIBRA Tracker, go to ' + (nw ? 'My work' : 'Today') + '" title="VIBRA Tracker ' + esc(S.boot.version) + '"><b>VIBRA</b><span>Tracker</span></button>' +
+    '<div class="sb-top"><button class="sb-brand" data-a="view" data-v="today" aria-label="VIBRA Workspace, go to ' + (nw ? 'My work' : 'Today') + '" title="VIBRA Workspace ' + esc(S.boot.version) + '"><b>VIBRA</b><span>Workspace</span></button>' +
     '<button class="sb-ib sb-hide" data-a="sb-toggle" aria-label="' + (S.drawer ? 'Close the sidebar' : sbCollapsed() ? 'Show the sidebar' : 'Hide the sidebar') + '"' + tt(sbCollapsed() ? 'Show the sidebar' : 'Hide the sidebar', 'Ctrl .') + '>' + ic('sidebar') + '</button></div>' +
     (canEdit() ? '<button class="sb-item sb-new" data-a="nf-open"' + (sbCollapsed() ? tt('New manuscript') : '') + '><span class="plus">' + ic('plus') + '</span><span class="lab">New manuscript</span></button>' : '') +
     '<div class="sb-mid"><nav aria-label="Views">' + navHtml + '</nav>' +
@@ -2999,10 +3122,30 @@ function sidebar() {
     '<button class="sb-ib sb-get" data-a="get-app" aria-label="Get the VIBRA app"' + tt('Get the app') + '>' + ic('apps') + '</button></div>' +
     '</div></aside>';
 }
+/* 0.3.7 (BACKLOG 75, idea 6): a tab bar at the bottom of a phone, in the New layout. A test for the admin's decision
+   (admin: "Có nên thay không, có tiện lợi không, giao diện giữa bản laptop và bản mobile thế nào?"): off for everyone
+   (preference tabbar, only set by the pictures). On: My work, Papers, Update (the quick update) in the middle, the bell,
+   More (the sidebar: Group, Settings ...); the floating buttons go (Search moves to the top bar); laptops keep the sidebar.
+   BACKLOG 79 (admin: "bật thanh tab trên điện thoại, có nút bật tắt cho tôi nhé"): on for everyone, a switch in Settings,
+   Appearance (preference tabbar = false turns it off). */
+function tabOn() { return !!(S.boot && UIN() && phoneW() && prefs().tabbar !== false); }
+function tabbar() {
+  var u = unreadCount(), v = S.view, nf = S.pop === 'notif';
+  var t = function (a, val, icon, lab, on, extra) {
+    return '<button type="button" class="tbb' + (on ? ' on' : '') + '" data-a="' + a + '"' + (val ? ' data-v="' + val + '"' : '') + (on ? ' aria-current="page"' : '') + '><span class="tbi">' + ic(icon) + (extra || '') + '</span><span class="tbl">' + lab + '</span></button>';
+  };
+  return '<nav class="tabbar" aria-label="Main">' + t('view', 'mine', 'user', 'My work', v === 'mine' && !nf && !S.drawer) + t('view', 'papers', 'book', 'Papers', v === 'papers' && !nf && !S.drawer) +
+    (canEdit() ? '<button type="button" class="tbb tb-q" data-a="qu-open" aria-label="Quick update: say what happened"><span class="tbq">' + ic('spark') + '</span><span class="tbl">Update</span></button>' : '') +
+    t('pop', 'notif', 'bell2', 'Bell', nf, u ? '<span class="badge" aria-hidden="true">' + u + '</span>' : '') + t('drawer-open', '', 'menu', 'More', !!S.drawer) + '</nav>';
+}
 function topbar() {
   var unread = unreadCount();
+  if (tabOn()) return '<div class="topbar tb-tabs"><button class="sb-brand tb-brand" data-a="view" data-v="mine" aria-label="VIBRA Workspace"><b>VIBRA</b></button><span class="sp"></span>' + // 0.3.7: with the tab bar
+    (canEdit() ? '<button class="tb-new" data-a="nf-open" aria-label="New manuscript"><span class="plus" aria-hidden="true">' + ic('plus') + '</span>New</button>' : '') +
+    '<button class="sb-ib" data-a="pal-open" aria-label="Search manuscripts, people and commands">' + ic('find') + '</button>' +
+    '<button class="sb-ib" data-a="fb-open" aria-label="Send feedback on the app (test phase)">' + ic('chat2') + '</button></div>';
   return '<div class="topbar"><button class="sb-ib" data-a="drawer-open" aria-label="Open the sidebar">' + ic('menu') + '</button>' +
-    '<button class="sb-brand tb-brand" data-a="view" data-v="today" aria-label="VIBRA Tracker"><b>VIBRA</b></button><span class="sp"></span>' +
+    '<button class="sb-brand tb-brand" data-a="view" data-v="today" aria-label="VIBRA Workspace"><b>VIBRA</b></button><span class="sp"></span>' +
     (canEdit() ? '<button class="tb-new" data-a="nf-open" aria-label="New manuscript"><span class="plus" aria-hidden="true">' + ic('plus') + '</span>New</button>' : '') + // 0.2.7 (admin)
     '<button class="sb-ib" data-a="fb-open" aria-label="Send feedback on the app (test phase)">' + ic('chat2') + '</button>' + // 0.2.7: Search floats at the bottom
 
@@ -3024,7 +3167,7 @@ function statusChip() {
   else if (qp && qp.phase === 'saved') x += '<span class="stale-pill ok" role="status">' + ic('check') + '<span data-qp>Saved</span></span>';
   else if (qp) x += '<span class="stale-pill busy" role="status"' + ph + '><i aria-hidden="true"></i><span data-qp>' + esc(qprogText()) + '</span></span>';
   x += savePill(); // 0.3.6 (BACKLOG 72)
-  if (S.updReady) x += '<button class="stale-pill upd" data-a="reload" title="A new version of VIBRA Tracker is ready">' + ic('restore') + 'New version · Reload</button>';
+  if (S.updReady) x += '<button class="stale-pill upd" data-a="reload" title="A new version of VIBRA Workspace is ready">' + ic('restore') + 'New version · Reload</button>';
   return x;
 }
 /* 0.2.6: the floating label slides in only when what it says changes, not at every repaint */
@@ -3135,9 +3278,9 @@ function palEntries(q) {
     recents().concat(myWork().map(function (d) { return d.m.id; })).forEach(function (id) { if (!seen[id] && pick.length < 7) { seen[id] = 1; pick.push(id); } });
     ms = pick.map(function (id) { return all.filter(function (d) { return d.m.id === id; })[0]; }).filter(Boolean);
   } else ms = msFind(toks, all, 12);
-  var askE = askOk() && askLooks(q) ? { g: 'Ask the tracker', a: 'pal-ask', v: q.trim(), icon: 'spark', title: 'Ask: “' + short(q.trim(), 80) + '”', sub: 'The AI answers from the manuscripts and their history. It changes nothing.' } : null; // 0.3.3 (BACKLOG 55 D)
+  var askE = askOk() && askLooks(q) ? { g: 'Ask AI', a: 'pal-ask', v: q.trim(), icon: 'spark', title: 'Ask: “' + short(q.trim(), 80) + '”', sub: 'The AI answers from the manuscripts and their history. It changes nothing.' } : null; // 0.3.3 (BACKLOG 55 D)
   if (askE && askFirst(q)) { out.push(askE); askE = null; } // a question comes first; a few words of a title stay a search first
-  if (!toks.length && askOk()) out.push({ g: 'Ask the tracker', a: 'pal-ask-hint', v: '', icon: 'spark', title: 'Ask AI', sub: 'For example: which papers are waiting on me?' }); // 0.3.4 (BACKLOG 58): shown first, so members know it is there
+  if (!toks.length && askOk()) out.push({ g: 'Ask AI', a: 'pal-ask-hint', v: '', icon: 'spark', title: 'Ask AI', sub: 'For example: which papers are waiting on me?' }); // 0.3.4 (BACKLOG 58): shown first, so members know it is there
   ms.forEach(function (d) {
     out.push({ g: toks.length ? 'Manuscripts' : 'Recent and waiting on you', a: 'pal-m', v: d.m.id, icon: '', tag: tagHtml(d), title: '#' + d.m.id + ' ' + d.m.title,
       sub: [d.m.journal, d.m.status + (d.m.stage ? ' · ' + d.m.stage : ''), 'Ball: ' + peopleText(d.m.people)].filter(Boolean).join(' · ') });
@@ -3149,7 +3292,7 @@ function palEntries(q) {
   if (todoOn()) cmds.push(['view', 'todo', 'Open my to-do', 'check']);
   if (isSup()) cmds.push(['view', 'review', 'Changes to review', 'undo']);
   if (canEdit()) cmds.push(['nf-open', '', 'New manuscript', 'plus']);
-  cmds.push(['qu-open', '', 'Quick update: tell the tracker what happened', 'spark'], ['xlsx', '', 'Export this view to Excel', 'sheet'], ['pdf', '', 'Export this view to PDF', 'down'],
+  cmds.push(['qu-open', '', 'Quick update: say what happened', 'spark'], ['xlsx', '', 'Export this view to Excel', 'sheet'], ['pdf', '', 'Export this view to PDF', 'down'],
     ['csv', '', 'Export this view to CSV', 'down'], ['theme-toggle', '', curTheme() === 'dark' ? 'Switch to the light appearance' : 'Switch to the dark appearance', curTheme() === 'dark' ? 'sun' : 'moon'],
     ['sb-toggle', '', sbCollapsed() ? 'Show the sidebar' : 'Hide the sidebar', 'sidebar'], ['tour', '', 'Start the tour', 'help2'], ['fb-open', '', 'Send feedback on the app', 'chat2']);
   cmds.filter(function (c) { return !toks.length || toks.every(function (t) { return fold(c[2]).indexOf(t) >= 0; }); }).slice(0, toks.length ? 6 : 12).forEach(function (c) {
@@ -3168,8 +3311,8 @@ function askLooks(q) { var w = String(q || '').trim().split(/\s+/).filter(Boolea
 function askHtml() {
   var A = S.pal && S.pal.ask; if (!A) return '';
   var ms = (A.ids || []).map(function (id) { return mById(id); }).filter(Boolean);
-  return '<div class="pal-ask" role="region" aria-label="Answer from the tracker" aria-live="polite"><div class="pa-q">' + ic('spark') + '<b>' + esc(A.q) + '</b><button type="button" class="ibtn" data-a="pal-ask-x" aria-label="Close the answer">' + ic('x') + '</button></div>' +
-    (A.busy ? '<p class="pa-busy"><i aria-hidden="true"></i>Reading the tracker…</p>' : A.err ? '<p class="err" style="margin:0">' + esc(A.err) + '</p>' :
+  return '<div class="pal-ask" role="region" aria-label="Answer from the AI" aria-live="polite"><div class="pa-q">' + ic('spark') + '<b>' + esc(A.q) + '</b><button type="button" class="ibtn" data-a="pal-ask-x" aria-label="Close the answer">' + ic('x') + '</button></div>' +
+    (A.busy ? '<p class="pa-busy"><i aria-hidden="true"></i>Reading the manuscripts…</p>' : A.err ? '<p class="err" style="margin:0">' + esc(A.err) + '</p>' :
       '<div class="pa-a">' + esc(A.answer || '').replace(/\n/g, '<br>') + '</div>' + (ms.length ? '<div class="pa-ms">' + ms.map(function (m) { return '<button type="button" class="pa-m" data-a="pal-ask-m" data-v="' + m.id + '">' + tagHtml(derive(m)) + '<span>#' + m.id + ' ' + esc(short(m.title, 52)) + '</span></button>'; }).join('') + '</div>' : '') +
       '<p class="pa-foot">From the manuscripts and their history only. Nothing was changed.</p>') + '</div>';
 }
@@ -3256,7 +3399,7 @@ function viewSettings() {
       PALS.map(function (o) { var c = o[curTheme() === 'dark' ? 3 : 2]; return '<button class="cs-o" data-a="cs-set" data-v="' + o[0] + '" aria-pressed="' + (palPref() === o[0]) + '"><span class="cs-sw" aria-hidden="true"><i style="background:' + c[0] + '"></i><i style="background:' + c[1] + '"></i><b style="background:' + c[2] + '"></b></span>' + o[1] + '</button>'; }).join('') +
       '</div></div>' + (window.VIBRA_WEB ? '<div class="fs-row"><label class="lbl" for="fs-range" id="fs-l">Text size</label><div class="fs-sl"><span class="fs-a" style="font-size:var(--fs-xs)" aria-hidden="true">A</span>' +
         '<input type="range" class="fs-rng" id="fs-range" min="1" max="6" step="1" value="' + fontPref() + '" aria-valuetext="' + fsPct(fontPref()) + '"><span class="fs-a" style="font-size:var(--fs-3xl)" aria-hidden="true">A</span><span class="fs-v mono" id="fs-v">' + fsPct(fontPref()) + '</span></div></div>' : '') +
-      layoutRow() +
+      layoutRow() + tabbarRow() +
       '<div class="setrow"><div style="flex:1;min-width:0"><label for="p-sb" style="font-weight:500">Keep the sidebar hidden</label><div class="muted" style="font-size:var(--fs-xs)">Only the icons stay on the left (Ctrl + .).</div></div>' +
       '<input id="p-sb" class="switch" type="checkbox" data-i="pref" data-v="sbCollapsed"' + (prefs().sbCollapsed ? ' checked' : '') + '></div>' +
       '<p class="muted" style="margin:0;font-size:var(--fs-xs)">Remembered for your account, on every device.</p></div>' +
@@ -3268,7 +3411,7 @@ function viewSettings() {
       '<div class="setrow off" aria-disabled="true"><div style="flex:1;min-width:0"><span style="font-weight:500">One of my deadlines is close</span><div class="muted" style="font-size:var(--fs-xs)">Switched on by the admin with the helper</div></div><input class="switch" type="checkbox" disabled aria-label="One of my deadlines is close, not available yet"></div>';
     body = '<div class="box"><div class="frow"><h2>Notify me when</h2>' + tip('notif') + '</div><div>' + sw('ball', 'The ball is passed to me') + sw('mine', 'A manuscript I am tagged on changes', 'As ball holder or author') +
       sw('ai', 'The AI updates one of mine', 'From a quick update or the morning check') + swOff +
-      '<div class="setrow"><div style="flex:1;min-width:0"><label for="p-sound" style="font-weight:500">Soft sound when the ball is passed to me</label><div class="muted" style="font-size:var(--fs-xs)">While the tracker is open, even in a background tab</div></div>' + tip('live', true) +
+      '<div class="setrow"><div style="flex:1;min-width:0"><label for="p-sound" style="font-weight:500">Soft sound when the ball is passed to me</label><div class="muted" style="font-size:var(--fs-xs)">While the app is open, even in a background tab</div></div>' + tip('live', true) +
       '<input id="p-sound" class="switch" type="checkbox" data-i="pref" data-v="sound"' + (prefs().sound === false ? '' : ' checked') + '></div></div></div>' + devBox();
   } else if (tab === 'reminders') body = remBox();
   else if (tab === 'requests') body = reqBox();
@@ -3291,7 +3434,7 @@ function viewSettings() {
       '<div>When you start changing a manuscript, the others see ' + ic('pen') + ' your name on it and can only read it until you save or discard (or 5 minutes after you stop). The page refreshes itself every 20 seconds.</div></div>' +
       '<div class="btns"><button class="btn btn-s" data-a="tour">' + ic('help') + 'Start the tour</button><button class="btn btn-s" data-a="fb-open">' + ic('chat') + 'Send feedback on the app</button></div></div>' +
       '<div class="box" id="whatsnew"><h2>What\'s new</h2>' + relFrame() + '</div>' +
-      permBox() + '<div class="box"><h2>About</h2><p class="muted" style="margin:0;font-size:var(--fs-sm)">VIBRA Tracker ' + esc(S.boot.version) + ', test release. Every change is logged with who made it and can be undone.' +
+      permBox() + '<div class="box"><h2>About</h2><p class="muted" style="margin:0;font-size:var(--fs-sm)">VIBRA Workspace ' + esc(S.boot.version) + ', test release. Every change is logged with who made it and can be undone.' +
       ' One editor at a time: ' + (S.boot.locksOn === false ? 'not available right now (saves are still checked for clashes)' : 'on') + '.</p></div>';
   }
   return '<h1 class="h1">Settings</h1><p class="sub">Only you see these choices.</p>' +
@@ -3475,8 +3618,8 @@ function fabFold() { if (fabFolded) return; fabFolded = true; var f = document.q
 function fab() {
   if (!fabFolded && S.boot && !fab.t) fab.t = setTimeout(fabFold, FAB_FULL_MS);
   return '<div class="fabs"><button type="button" class="fab-s" data-a="pal-open" aria-label="Search manuscripts, people and commands (Ctrl+K)"' + tt('Search manuscripts, people, journals and commands', 'Ctrl K') + '>' + ic('find') + '</button>' +
-    '<button type="button" class="fab' + (fabRound() ? ' round' : '') + (S.fabPeek ? ' peek' : '') + '" data-a="qu-open" aria-label="Quick update: tell the tracker what happened"' +
-    tt('Tell the tracker what happened, in any language: the AI updates the fields') + '>' + ic('spark') + '<span>Quick update</span></button></div>';
+    '<button type="button" class="fab' + (fabRound() ? ' round' : '') + (S.fabPeek ? ' peek' : '') + '" data-a="qu-open" aria-label="Quick update: say what happened"' +
+    tt('Say what happened, in any language: the AI updates the fields') + '>' + ic('spark') + '<span>Quick update</span></button></div>';
 }
 
 function tip(key, right) {
@@ -3551,6 +3694,29 @@ function progress(m) {
   return [1, 'off', st];
 }
 function todayView() { var v = prefs().todayView; return v === 'blocks' ? 'blocks' : 'list'; }
+/* 0.3.7 (BACKLOG 80 d, admin: "chỉ thấy thiếu avatar tác giả"): the authors' round avatars at the foot of a block, in the
+   New layout (photos for members who have one, else initials; at most four, then +n). */
+/* BACKLOG 84 (admin: "mỗi người ava 1 màu được không, hoặc là ava của người đó"): each person keeps one colour, the same on
+   every screen (a hue from their key or name), under their Google photo when they have one. */
+/* admin: "Ủa ý là avatar cũng đâu nhất thiết màu như theme, nhìn khó phân biệt ghê á": ten clearly different colours,
+   not the theme's; members each get their own in the members' order (no two alike), other authors one from their name */
+function avHue(n) {
+  var P = (S.boot && S.boot.people) || [], k = -1;
+  P.forEach(function (p, i) { if (k < 0 && (p.key === n || p.full_name === n || p.display === n)) k = i; });
+  if (k >= 0) return k % 10;
+  var h = 0, s = String(n || '').toLowerCase(); for (var i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) % 997; return h % 10;
+}
+function auAvatars(m) {
+  if (!UIN()) return '';
+  var A = (m.authors || []).filter(function (a) { return a && a.name; }); if (!A.length) return '';
+  var av = function (a) { var k = a.key && person(a.key) ? a.key : '', ph = k ? photoOf(k) : ''; return '<i class="bav" style=\"--h:' + avHue(k || a.name) + ';\" title="' + esc(a.name) + '">' + esc(initials(a.name)) + avImg(ph) + '</i>'; };
+  // admin: "Laptop mà giới hạn 4 avatar thì có ít không, giao co giãn dựa vào kích thước màn hình đi": as many as the block's
+  // width holds (3 to 10, a container query), the rest as +n
+  var caps = [3, 4, 6, 8, 10], shown = A.slice(0, 10);
+  return '<span class="bl-avs" aria-label="' + esc(A.length + ' author' + (A.length === 1 ? '' : 's') + ': ' + A.slice(0, 6).map(function (a) { return a.name; }).join(', ') + (A.length > 6 ? ' …' : '')) + '">' +
+    shown.map(function (a, i) { return av(a).replace('<i class="bav"', '<i class="bav a' + (i + 1) + '"'); }).join('') +
+    caps.map(function (c) { return A.length > c ? '<i class="bav more c' + c + '">+' + (A.length - c) + '</i>' : ''; }).join('') + '</span>';
+}
 function blockHtml(d, i) {
   var m = d.m, p = progress(m), anim = S.fx.list ? ' fx-in" style="--i:' + Math.min(i, 14) : S.fx.items ? ' fx-new' : '';
   return '<button class="block' + anim + '" data-a="open" data-v="' + m.id + '"' + (S.sel === m.id ? ' aria-current="true"' : '') + '>' +
@@ -3559,7 +3725,7 @@ function blockHtml(d, i) {
     '<span class="bl-j">' + esc(m.journal || 'Journal not chosen') + '</span>' +
     '<span class="bl-p">' + ic('ball') + '<span>' + esc(peopleText(m.people)) + '</span></span>' +
     (m.next ? '<span class="bl-n">' + esc(fullNames(String(m.next).split('\n')[0])) + '</span>' : '') +
-    '<span class="bl-prog" aria-label="Progress: ' + esc(p[1] === 'prep' ? 'preparing, ' : p[1] === 'jour' ? 'at the journal, ' : '') + esc(p[2]) + '"><span class="prog"><i class="pg-' + p[1] + '" style="width:' + Math.round(p[0] * 100) + '%"></i></span><span class="bl-st">' + esc(p[2]) + '</span></span></button>';
+    '<span class="bl-prog" aria-label="Progress: ' + esc(p[1] === 'prep' ? 'preparing, ' : p[1] === 'jour' ? 'at the journal, ' : '') + esc(p[2]) + '"><span class="prog"><i class="pg-' + p[1] + '" style="width:' + Math.round(p[0] * 100) + '%"></i></span><span class="bl-foot"><span class="bl-st">' + esc(p[2]) + '</span>' + auAvatars(m) + '</span></span></button>';
 }
 function viewToday(list) {
   var count = function (t) { return list.filter(function (d) { return d.tier === t; }).length; };
@@ -3870,7 +4036,7 @@ function timed(r) { return !r.allDay && /^\d{2}:\d{2}$/.test(r.time || ''); }
 function calTitle(r, m) { return 'VIBRA: ' + short(r.note || m.title, 90); }
 function calDetails(r, m) {
   return m.title + (m.journal ? '\n' + m.journal : '') + (r.note ? '\n\n' + r.note : '') + (m.next ? '\n\nNext actions:\n' + fullNames(m.next) : '') +
-    (m.deadline ? '\n\nDeadline: ' + nice(m.deadline) : '') + (S.boot.appUrl ? '\n\nOpen the VIBRA Tracker: ' + S.boot.appUrl : '');
+    (m.deadline ? '\n\nDeadline: ' + nice(m.deadline) : '') + (S.boot.appUrl ? '\n\nOpen VIBRA Workspace: ' + S.boot.appUrl : '');
 }
 function gcalUrl(r, m) {
   var dates;
@@ -3892,7 +4058,7 @@ function icsEvent(r, m, uid) {
   L.push('BEGIN:VALARM', 'ACTION:DISPLAY', 'DESCRIPTION:' + icsEsc(calTitle(r, m)), 'TRIGGER:' + (timed(r) ? '-PT10M' : '-PT15H'), 'END:VALARM', 'END:VEVENT');
   return L.map(icsFold).join('\r\n');
 }
-function icsFile(events) { return 'BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//VIBRA//Tracker//EN\r\nCALSCALE:GREGORIAN\r\nMETHOD:PUBLISH\r\n' + events.join('\r\n') + '\r\nEND:VCALENDAR\r\n'; }
+function icsFile(events) { return 'BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//VIBRA//Workspace//EN\r\nCALSCALE:GREGORIAN\r\nMETHOD:PUBLISH\r\n' + events.join('\r\n') + '\r\nEND:VCALENDAR\r\n'; }
 function download(name, mime, text) {
   var a = document.createElement('a'); a.href = 'data:' + mime + ';charset=utf-8,' + encodeURIComponent(text); a.download = name; a.target = '_blank';
   document.body.appendChild(a); a.click(); a.remove();
@@ -3957,14 +4123,65 @@ function addImages(key, files) {
   var list = Array.prototype.slice.call(files || []).filter(function (f) { return /^image\//.test(f.type); }).slice(0, Math.max(0, imgMax(key) - o.images.length));
   if (!list.length) return false;
   list.forEach(function (f) {
-    shrink(f).then(function (u) { if (S[key] && S[key].images.length < imgMax(key)) { S[key].images.push(u); render(); } }).catch(function () { toast('This image could not be read.', true); });
+    shrink(f).then(function (u) { var q = S[key]; if (q && q.images.length < imgMax(key)) { q.images.push(u); preStart(key, q, q.images.length - 1); render(); } }).catch(function () { toast('This image could not be read.', true); });
   });
   return true;
 }
+/* 0.3.7 (BACKLOG 81, admin: "Khi tôi ấn chọn file ảnh thì tự động gửi đi luôn, có dấu xoay ngay trong ảnh, để nếu còn chọn cái
+   khác và text thì không đợi quá lâu"): in Quick update and Feedback each picked screenshot goes up at once (a turning ring
+   on it, then a tick; a failed one offers Retry); Send then sends the text and the screenshots' names, waiting only for
+   one still going up. A screenshot that did not go up is sent with the update as before. o.up runs beside o.images. */
+function preOn(key) { return (key === 'qu' || key === 'fb') && !S.offline && !!S.boot; }
+function preStart(key, o, i) {
+  if (!preOn(key)) return;
+  o.up = o.up || []; while (o.up.length < o.images.length) o.up.push(null);
+  var slot = o.up[i] = { st: 'up' }, u = o.images[i];
+  api('api_preImage', u).then(function (r) { slot.st = 'ok'; slot.id = r.id; render(); }, function () { slot.st = 'err'; render(); });
+}
+function preReady(o) {
+  var up = o.up || [];
+  return new Promise(function (res) {
+    var t0 = Date.now(), check = function () {
+      if (up.some(function (x) { return x && x.st === 'up'; }) && Date.now() - t0 < 60000) { setTimeout(check, 200); return; }
+      var pre = [], imgs = [];
+      o.images.forEach(function (u, i) { var x = up[i]; if (x && x.st === 'ok' && x.id) pre.push(x.id); else imgs.push(u); });
+      res({ pre: pre, images: imgs });
+    };
+    check();
+  });
+}
+/* 0.3.7 (BACKLOG 82, admin: "Mục paste a screenshot hơi dư, có thể tích hợp vô ô type luôn không, còn trên điện thoại thì làm sao
+   để mở chọn nhỉ"): in Quick update and Feedback the screenshots go into the text box itself: paste or drop them there, or
+   the image button in the box's corner (on a phone it opens the phone's own choice: photo library, camera, files); the
+   pictures in a row under the box. */
+var IMG_INLINE = { qu: 1, fb: 1 };
+function imgBtn(key) {
+  var o = S[key]; if (!o || o.images.length >= imgMax(key)) return '';
+  return '<label class="img-btn" aria-label="Add a screenshot or a photo"' + tt('Add a screenshot or a photo') + '>' + ic('img') + '<input type="file" accept="image/*" multiple class="sr" data-file="' + key + '"></label>';
+}
+function taTools(key) { return '<span class="ta-tools">' + imgBtn(key) + pasteBtn(key) + '</span>'; }
+/** BACKLOG 82: a picture given to the card's box opens Quick update for this manuscript with the words already typed. */
+function ttToQu(files) {
+  var m = curM(); if (!m) return;
+  var t = S.tt && S.tt.mid === m.id ? S.tt.text : ''; S.tt = null;
+  var F = Array.prototype.slice.call(files || []);
+  ACT['qu-open'](String(m.id));
+  setTimeout(function () { if (!S.qu) return; if (t && !String(S.qu.text || '').trim()) S.qu.text = t; addImages('qu', F); render(); }, 0);
+}
 function imgZone(o, key) {
-  return '<div class="thumbs">' + o.images.map(function (u, i) {
-    return '<div class="thumb"><img alt="Screenshot ' + (i + 1) + '" src="' + esc(u) + '"><button type="button" data-a="img-del" data-v="' + key + ':' + i + '" aria-label="Remove screenshot ' + (i + 1) + '">' + ic('x') + '</button></div>';
-  }).join('') + '</div>' + (o.images.length < imgMax(key) ? '<label class="drop" data-drop="' + key + '">' + ic('img') + '<span><b>Paste a screenshot</b> (Ctrl+V or Cmd+V), drop it here, or click to choose</span><span style="font-size:var(--fs-xs)">Up to ' + imgMax(key) + ' images, made smaller before sending. ' + (key === 'adtp' ? 'Read once by the AI, not kept.' : key === 'fb' ? 'Deleted once your feedback is answered (a bug report\'s once it is fixed).' : 'Deleted as soon as the AI has read them.') + '</span><input type="file" accept="image/*" multiple class="sr" data-file="' + key + '"></label>' : '');
+  if (IMG_INLINE[key]) return o.images.length ? '<div class="thumbs th-in">' + thumbsHtml(o, key) + '</div><p class="th-note">' + (key === 'fb' ? 'Deleted once your feedback is answered (a bug report\'s once it is fixed).' : 'Deleted as soon as the AI has read them.') + '</p>' : '';
+  return '<div class="thumbs">' + thumbsHtml(o, key) + '</div>' + imgDrop(o, key);
+}
+function thumbsHtml(o, key) {
+  return o.images.map(function (u, i) {
+    var x = (o.up || [])[i], st = x ? x.st : ''; // 0.3.7 (BACKLOG 81): going up, sent, or failed
+    return '<div class="thumb' + (st ? ' th-' + st : '') + '"><img alt="Screenshot ' + (i + 1) + '" src="' + esc(u) + '">' +
+      (st === 'up' ? '<i class="th-ring" role="status" aria-label="Sending screenshot ' + (i + 1) + '"></i>' : st === 'ok' ? '<i class="th-ok" aria-label="Screenshot ' + (i + 1) + ' sent">' + ic('check') + '</i>' : st === 'err' ? '<button type="button" class="th-retry" data-a="img-retry" data-v="' + key + ':' + i + '">Retry</button>' : '') +
+      '<button type="button" data-a="img-del" data-v="' + key + ':' + i + '" aria-label="Remove screenshot ' + (i + 1) + '">' + ic('x') + '</button></div>';
+  }).join('');
+}
+function imgDrop(o, key) {
+  return (o.images.length < imgMax(key) ? '<label class="drop" data-drop="' + key + '">' + ic('img') + '<span><b>Paste a screenshot</b> (Ctrl+V or Cmd+V), drop it here, or click to choose</span><span style="font-size:var(--fs-xs)">Up to ' + imgMax(key) + ' images, made smaller before sending. ' + (key === 'adtp' ? 'Read once by the AI, not kept.' : key === 'fb' ? 'Deleted once your feedback is answered (a bug report\'s once it is fixed).' : 'Deleted as soon as the AI has read them.') + '</span><input type="file" accept="image/*" multiple class="sr" data-file="' + key + '"></label>' : '');
 }
 /* 0.2.6 (admin: "nút paste nhỏ nhỏ ngay trong ô viết"): Paste puts what was copied into the box: text at the cursor, or a
    copied screenshot among the images. The browser may ask once to allow it (on an iPhone, a small Paste bubble). */
@@ -3991,7 +4208,7 @@ function quDialog() {
     (q.reply ? '<div class="qu-ans"><span class="lbl">Answering the AI</span><b>' + esc(q.reply.q || 'Which manuscript is it about?') + '</b><span class="muted" style="font-size:var(--fs-sm)">Your earlier update' + (q.reply.n ? ' and its screenshot' + (q.reply.n > 1 ? 's' : '') : '') + ' go with your answer: pick the manuscript or add one line.</span></div>' : '') +
     '<div style="display:flex;flex-direction:column;gap:4px"><label class="lbl" for="' + (q.mid ? 'qu-msx' : 'qu-ms') + '">Manuscript</label>' + quMsBox(q, ms) +
     '<p class="qu-hint">' + (q.pre && String(q.mid) === String(q.pre) ? 'The manuscript you have open.' : q.mid ? 'Only this manuscript is updated.' : 'Not sure? The AI finds the manuscript.') + '</p></div>' +
-    '<div style="display:flex;flex-direction:column;gap:4px"><label class="lbl" for="qu-text">What happened</label><div class="ta-wrap"><textarea id="qu-text" class="in" rows="5" data-i="qu" data-v="text" placeholder="Any language. E.g. reviews received today, revision due 15 Nov.">' + esc(q.text) + '</textarea>' + pasteBtn('qu') + '</div></div>' +
+    '<div style="display:flex;flex-direction:column;gap:4px"><label class="lbl" for="qu-text">What happened</label><div class="ta-wrap" data-drop="qu"><textarea id="qu-text" class="in" rows="5" data-i="qu" data-v="text" placeholder="Any language. E.g. reviews received today, revision due 15 Nov.">' + esc(q.text) + '</textarea>' + taTools('qu') + '</div></div>' +
     imgZone(q, 'qu') + aiPromptBox(q) + (q.err ? '<p class="err" role="alert" style="margin:0">' + esc(q.err) + '</p>' : '') +
     '<p class="qu-fb">About the app itself? <button type="button" data-a="qu-to-fb">Send feedback instead</button></p>' +
     '<p class="muted" style="margin:0;font-size:var(--fs-xs)">' + (inst ? 'The AI applies it at once and tells you what changed; Undo is possible.' : 'The 06:00 check applies it and tells you what changed; Undo is possible.') + '</p>' +
@@ -4036,7 +4253,7 @@ function fbDialog() {
     '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h2 id="fb-h">Feedback</h2><button type="button" class="ibtn" data-a="fb-close" aria-label="Close">' + ic('x') + '</button></div>' +
     '<p class="fb-lead" style="margin:0;color:var(--ink-2)">A bug, an idea, anything, in any language. The answer comes under your bell.</p>' +
     '<div class="seg3" role="group" aria-label="Kind of feedback">' + ['Bug', 'Idea', 'Other'].map(function (k) { return '<button type="button" class="chip" data-a="fb-kind" data-v="' + k + '" aria-pressed="' + (f.kind === k) + '">' + k + '</button>'; }).join('') + '</div>' +
-    '<div style="display:flex;flex-direction:column;gap:4px"><label class="lbl" for="fb-text">Your feedback</label><div class="ta-wrap"><textarea id="fb-text" class="in" rows="5" data-i="fb" data-v="text" placeholder="What happened, or what would help?">' + esc(f.text) + '</textarea>' + pasteBtn('fb') + '</div></div>' +
+    '<div style="display:flex;flex-direction:column;gap:4px"><label class="lbl" for="fb-text">Your feedback</label><div class="ta-wrap" data-drop="fb"><textarea id="fb-text" class="in" rows="5" data-i="fb" data-v="text" placeholder="What happened, or what would help?">' + esc(f.text) + '</textarea>' + taTools('fb') + '</div></div>' +
     (f.kind === 'Bug' ? '<p class="fb-ctx">Sent with it: the screen, the app version and your device. Deleted once the bug is fixed.</p>' : '') +
     imgZone(f, 'fb') + (f.err ? '<p class="err" role="alert" style="margin:0">' + esc(f.err) + '</p>' : '') +
     '<div style="display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap"><button type="button" class="btn btn-s" data-a="fb-close">Cancel</button><button type="submit" class="btn btn-p"' + (f.busy ? ' disabled' : '') + '>' + (f.busy ? 'Sending…' : 'Send feedback') + '</button></div></form></div>';
@@ -4050,21 +4267,28 @@ function bugContext() {
   return [S.view + (S.view === 'settings' ? '/' + (S.setTab || 'general') : ''), S.sel ? 'manuscript #' + S.sel : '', br + ' on ' + os,
     'screen ' + screen.width + 'x' + screen.height + ', window ' + innerWidth + 'x' + innerHeight, inst ? 'installed app' : W ? 'browser' : 'classic link', navigator.onLine ? '' : 'offline'].filter(Boolean).join(' · ');
 }
-function submitReq(key) {
+function submitReq(key) { // 0.3.7 (BACKLOG 81): the screenshots sent early are named; one still going up is waited for
+  var o = S[key]; if (!o || o.busy) return;
+  if (!(o.up || []).some(Boolean)) { o.send = null; submitNow(key); return; }
+  o.busy = true; o.err = ''; render();
+  preReady(o).then(function (P) { if (S[key] !== o) return; o.busy = false; o.send = P; submitNow(key); });
+}
+function submitNow(key) {
   var o = S[key]; if (!o || o.busy) return;
   if (!String(o.text || '').trim() && !o.images.length && !(key === 'qu' && o.reply)) { o.err = key === 'qu' ? 'Write what happened or add a screenshot first.' : 'Write your feedback or add a screenshot first.'; render(); return; }
-  if (key === 'qu' && quickReport(o.text || '') && !quickReport(o.text || '').kept && !o.images.length) { o.err = 'Nothing in this report is about a manuscript in the tracker, so nothing was sent.'; render(); return; } // 0.3.3 (BACKLOG 51)
+  if (key === 'qu' && quickReport(o.text || '') && !quickReport(o.text || '').kept && !o.images.length) { o.err = 'Nothing in this report is about one of the group\'s manuscripts, so nothing was sent.'; render(); return; } // 0.3.3 (BACKLOG 51)
   if (key === 'qu' && window.VIBRA_WEB && window.VIBRA_WEB.quick && quickMode() === 'instant' && !S.offline) { sendQuick(o); return; }
   o.busy = true; o.err = ''; render();
   if (key === 'qu') o.cid = o.cid || newCid();
-  var call = key === 'qu' ? api('api_quickUpdate', { mid: o.mid || '', text: quickReport(o.text || '') ? quickReport(o.text).text : o.text, images: o.images, reply_to: o.reply ? o.reply.id : '', cid: o.cid }) :
-    api('api_feedback', { kind: o.kind, text: o.text, images: o.images, page: o.kind === 'Bug' ? bugContext() : '' });
+  var sd = o.send || { pre: [], images: o.images };
+  var call = key === 'qu' ? api('api_quickUpdate', { mid: o.mid || '', text: quickReport(o.text || '') ? quickReport(o.text).text : o.text, images: sd.images, pre: sd.pre, reply_to: o.reply ? o.reply.id : '', cid: o.cid }) :
+    api('api_feedback', { kind: o.kind, text: o.text, images: sd.images, pre: sd.pre, page: o.kind === 'Bug' ? bugContext() : '' });
   call.then(function (r) {
     keepReq(key, null); S.boot.requests = r.requests; S[key] = null; render();
     if (key !== 'qu') { toast('Thank you. You will see the answer under your bell.'); return; }
     if (r.mode) S.boot.quick = { mode: r.mode };
-    toast(r.helper ? 'Saved. Your update was received: the tracker will be updated within about a minute.' :
-      'Saved. Your update was received: the tracker will be updated at the 06:00 check (Vietnam time).', false, 8000);
+    toast(r.helper ? 'Saved. Your update was received: the AI updates the record within about a minute.' :
+      'Saved. Your update was received: the record is updated at the 06:00 check (Vietnam time).', false, 8000);
     if (r.helper) runHelper(r.helper, r.id);
   }).catch(function (e) {
     o.busy = false;
@@ -4082,7 +4306,8 @@ function newCid() { var a = new Uint8Array(5); try { crypto.getRandomValues(a); 
 function sendQuick(o) {
   o.cid = o.cid || newCid(); // 0.2.6: the same update sent again is recognised by the server (no second copy)
   var W = window.VIBRA_WEB, rep = quickReport(o.text || ''), text = rep ? rep.text : String(o.text || '');
-  var d = { mid: o.mid || '', text: text, images: o.images || [], reply_to: o.reply ? o.reply.id : '', cid: o.cid, note: o.note || '' }; // 0.3.0: note = the reminder answered
+  var sd = o.send || { pre: [], images: o.images || [] }; // 0.3.7 (BACKLOG 81)
+  var d = { mid: o.mid || '', text: text, images: sd.images, pre: sd.pre, reply_to: o.reply ? o.reply.id : '', cid: o.cid, note: o.note || '' }; // 0.3.0: note = the reminder answered
   if (!W.qsave) { // the page and the helper of before 0.3.3 (one call)
     keepReq('qu', o); S.qu = null;
     var qp0 = S.qprog = { at: Date.now(), phase: 'read', imgs: d.images.length }; render();
@@ -4132,10 +4357,10 @@ function aiPromptBox(q) {
   if (!q || q.reply) return '';
   return '<p class="qu-fb qu-ai">' + ic('spark') + 'Your own AI can read your mailbox for the journals\' news: <button type="button" data-a="qu-ai-copy">Copy the prompt</button>, then paste its answer here. Only news of our manuscripts is sent.</p>';
 }
-function copyText(t) {
-  var done = function () { toast('Copied. Paste it into your own AI.', false, 5000); };
-  if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(t).then(done, function () { copyOld(t) ? done() : toast('Could not copy. Show the prompt and copy it by hand.', true); }); return; }
-  if (copyOld(t)) done(); else toast('Could not copy. Show the prompt and copy it by hand.', true);
+function copyText(t, said, fail) { // 0.3.7: the words can change (the CRediT statement)
+  var done = function () { toast(said || 'Copied. Paste it into your own AI.', false, 5000); }, no = fail || 'Could not copy. Show the prompt and copy it by hand.';
+  if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(t).then(done, function () { copyOld(t) ? done() : toast(no, true); }); return; }
+  if (copyOld(t)) done(); else toast(no, true);
 }
 function copyOld(t) { var a = document.createElement('textarea'); a.value = t; a.setAttribute('readonly', ''); a.style.cssText = 'position:fixed;top:-100px;opacity:0'; document.body.appendChild(a); a.select(); var ok = false; try { ok = document.execCommand('copy'); } catch (e) { } a.remove(); return ok; }
 function quickKept(e) { toast((isNetErr(e) ? 'No connection. ' : msg(e) + ' ') + 'Your update is kept on this device: open Quick update to send it again.', true, 12000, [['Open', 'qu-open', '']]); }
@@ -4259,7 +4484,7 @@ function helperText(r) {
   }).join('; ') + '.';
   if (st === 'for_routine') return r.reply || 'Received. This one needs a closer look, so the 06:00 check will handle it.';
   if (st === 'unclear') return 'The AI needs one more detail: ' + (r.reply || 'which manuscript is it about?') + ' Answer it in Settings, Updates and feedback (your screenshot is kept until tomorrow).';
-  if (st === 'no_change') return r.reply || 'Nothing to change: the tracker already says that.';
+  if (st === 'no_change') return r.reply || 'Nothing to change: the record already says that.';
   return r.reply || 'Your quick update was handled.';
 }
 function helperDone(r, qid) {
@@ -4528,7 +4753,7 @@ function rpSend() {
   r.busy = true; r.err = ''; render(); o.cid = newCid();
   api('api_quickUpdate', { mid: o.mid, text: o.text, images: [], note: o.note, cid: o.cid }).then(function (x) {
     S.rp = null; S.boot.requests = x.requests; render();
-    toast('Sent. ' + (x.helper ? 'The tracker will be updated within about a minute.' : 'The 06:00 check (Vietnam time) applies it.'), false, 8000);
+    toast('Sent. ' + (x.helper ? 'The AI updates the record within about a minute.' : 'The 06:00 check (Vietnam time) applies it.'), false, 8000);
     if (x.helper) runHelper(x.helper, x.id);
   }).catch(function (e) { r.busy = false; r.err = isNetErr(e) ? 'No connection. Your reply is still here: press Send again when you are back online.' : msg(e); render(); });
 }
@@ -4635,7 +4860,7 @@ function tdBallGo(mid) {
   render(); o.cid = newCid();
   api('api_quickUpdate', { mid: o.mid, text: o.text, images: [], cid: o.cid }).then(function (x) {
     S.boot.requests = x.requests; render();
-    toast('Sent: “' + short(o.text, 60) + '”. ' + (x.helper ? 'The tracker will be updated within about a minute.' : 'The 06:00 check applies it.'), false, 8000);
+    toast('Sent: “' + short(o.text, 60) + '”. ' + (x.helper ? 'The AI updates the record within about a minute.' : 'The 06:00 check applies it.'), false, 8000);
     if (x.helper) runHelper(x.helper, x.id);
   }).catch(function (e) { toast(msg(e), true); });
 }
@@ -4654,6 +4879,14 @@ function viewFix() { var v = viewOf(S.view); if (v !== S.view) { if (S.view === 
 function mineView() { return prefs().mineView === 'list' ? 'list' : 'blocks'; }
 function papersView() { return prefs().papersView === 'list' ? 'list' : 'blocks'; }
 function blkView() { return S.view === 'today' ? todayView() === 'blocks' : S.view === 'mine' ? mineView() === 'blocks' : S.view === 'papers' ? papersView() === 'blocks' : false; }
+function tabbarRow() { // BACKLOG 79
+  if (!UIN()) return '';
+  var on = prefs().tabbar !== false;
+  return '<div class="setrow tb-row"><div style="flex:1;min-width:0"><span style="font-weight:500" id="tbs-l">Tab bar on phones</span><div class="muted" style="font-size:var(--fs-xs)">My work, Papers, Update, the bell and More at the bottom of a phone. Computers keep the sidebar.</div></div>' +
+    '<div class="seg seg-s" role="group" aria-labelledby="tbs-l">' + [['on', 'On'], ['off', 'Off']].map(function (o) {
+      return '<button data-a="tabbar-set" data-v="' + o[0] + '" aria-pressed="' + (on === (o[0] === 'on')) + '">' + o[1] + '</button>';
+    }).join('') + '</div></div>';
+}
 function layoutRow() {
   return '<div class="setrow ly-row"><div style="flex:1;min-width:0"><span style="font-weight:500" id="ly-l">Layout</span><div class="muted" style="font-size:var(--fs-xs)">' +
     (UIN() ? 'New: My work, Papers and Group.' : 'Classic: Today, Pipeline, All manuscripts and To-do.') + ' The data is the same in both.</div></div>' +
@@ -4700,7 +4933,7 @@ function mwBlock(d, i) {
     // 0.3.6 (BACKLOG 67, admin: B): Done is the circle beside the step (as in the List), Update a small ⚡: no wide buttons
     '<span class="bl-step mw-step">' + (canEdit() && !ask ? mwDone(m.id, step) : '') + '<span class="mw-st"><b>Your step:</b> ' + esc(fullNames(step)) + '</span></span>' +
     '<span class="bl-prog" aria-label="Progress: ' + esc(p[1] === 'prep' ? 'preparing, ' : p[1] === 'jour' ? 'at the journal, ' : '') + esc(p[2]) + '"><span class="prog"><i class="pg-' + p[1] + '" style="width:' + Math.round(p[0] * 100) + '%"></i></span>' +
-    '<span class="mw-foot"><span class="bl-st">' + esc(p[2]) + '</span>' + (canEdit() ? mwQu(m.id) : '') + '</span></span>' +
+    '<span class="mw-foot"><span class="bl-st">' + esc(p[2]) + '</span>' + auAvatars(m) + (canEdit() ? mwQu(m.id) : '') + '</span></span>' +
     (!canEdit() ? '' : ask ? '<span class="mw-ask" data-a="mw-in" role="group" aria-label="Mark this step done"><b>Mark this step done?</b><span class="muted">The AI moves the manuscript on. Undo is possible.</span>' +
       '<input id="tdb-note" class="in" maxlength="300" data-i="tdb" data-v="note" value="' + esc(S.tdb.note || '') + '" placeholder="Note (optional)">' +
       '<span class="btns"><button class="btn btn-p" data-a="tdb-go" data-v="' + m.id + '">Mark done</button><button class="btn btn-q" data-a="tdb-cancel">Cancel</button></span></span>' : '') + '</div>';
@@ -4708,7 +4941,7 @@ function mwBlock(d, i) {
 function mwDone(mid, step) {
   return '<button class="mw-done" data-a="tdb-ask" data-v="' + mid + '" aria-label="Done: ' + esc(short(fullNames(step), 60)) + '"' + tt('Mark this step done') + '><i class="mw-o">' + ic('check') + '</i></button>'; // admin: "cũng đâu cần chữ done đâu he, ở todo cũng đâu cần"
 }
-function mwQu(mid) { return '<button class="mw-qu" data-a="qu-open" data-v="' + mid + '" aria-label="Update #' + mid + ': tell the tracker what happened"' + tt('Update: tell the tracker') + '>' + ic('bolt') + '</button>'; }
+function mwQu(mid) { return '<button class="mw-qu" data-a="qu-open" data-v="' + mid + '" aria-label="Update #' + mid + ': say what happened"' + tt('Update: say what happened') + '>' + ic('bolt') + '</button>'; }
 /* 0.3.5 (admin, 29 Oct 2026: "to-do nhìn giao diện tốn chỗ quá"): My work's own to-do as one compact list: a line to add
    (the date and the manuscript appear only while adding), one line per item with its date on the right, the tools at hand
    on a computer when the mouse is on the line. The To-do page of Classic is unchanged. */
@@ -4748,12 +4981,16 @@ function mwSec(id, title, hint, n, body, extra) {
 function viewMine() {
   var k = me().key, all = allDerived(), open = all.filter(function (d) { return d.tier !== 'closed'; });
   var move = open.filter(ballMine), other = open.filter(function (d) { return !ballMine(d) && involves(d, k, true); }), tc = toConfirm(), blocks = mineView() === 'blocks';
-  var out = '<h1 class="h1">My work</h1><p class="sub"><span class="mono">' + esc(longDay(S.boot.today)) + '</span>. ' + sinceLine(mineAll()) + '</p>';
+  var pts = myPoints(), regs = myRegs(), tks = myTasks(), wait = move.length + pts.length + regs.length + tks.length + tc.length; // BACKLOG 77: protocols to register; 80 a: tasks // 0.3.7 (BACKLOG 75): a greeting that says how much waits
+  var out = '<h1 class="h1 mw-hi">' + esc(hello()) + '</h1><p class="sub"><b class="mw-wait">' + (wait ? wait + (wait === 1 ? ' thing waits' : ' things wait') + ' on you.' : 'Nothing waits on you.') + '</b> <span class="mono">' + esc(longDay(S.boot.today)) + '</span>. ' + sinceLine(mineAll()) + '</p>';
   if (tc.length) out += mwSec('mw-tc', 'To confirm', 'the AI asks you', tc.length, '<div class="box tc-box">' + tc.map(tcRow).join('') + '</div>');
   out += mwSec('mw-move', 'Your move', 'where you have the ball, the most urgent first', move.length,
     !move.length ? '<div class="list"><div class="empty">Nothing waits on you.' + (canEdit() ? ' Starting a paper? <button class="linkbtn" data-a="nf-open">New manuscript</button>' : '') + '</div></div>' :
       blocks ? '<div class="blocks">' + move.map(mwBlock).join('') + '</div>' :
       '<div class="box td-list mw-list">' + move.map(function (d) { return tdBallRow({ ball: true, id: 'b' + d.m.id, mid: d.m.id, d: d, note: firstStep(d.m.next) || 'Decide the next step', date: d.m.deadline || '' }, true); }).join('') + '</div>');
+  if (tks.length) out += mwSec('mw-tk', 'Tasks', 'yours on the group\'s papers, the soonest first', tks.length, '<div class="box rv-mine">' + tks.map(function (y) { return tkRow(y.m, y.x, canEdit(), true); }).join('') + '</div>');
+  if (regs.length) out += mwSec('mw-reg', 'Register the protocol', 'before screening starts; tick when registered', regs.length, '<div class="box rv-mine">' + regs.map(regRow).join('') + '</div>');
+  if (pts.length) out += mwSec('mw-pts', 'Reviewers\' points', 'yours to answer, tick when done', pts.length, '<div class="box rv-mine">' + pts.map(function (x) { return rvPoint(x.m, x, canEdit(), true); }).join('') + '</div>');
   if (todoOn()) {
     var mode = S.tdMode === 'cal' ? 'cal' : 'list', openTd = remList().filter(function (r) { return !r.done; }).length;
     out += mwSec('mw-todo', 'Your own to-do', 'only you see these', openTd, '<div class="td-grid m-' + mode + ' mw-td">' + (mode === 'cal' ? tdCalCard() : S.tdWide ? tdListCard(true) : mwTodo()) + '</div>',
@@ -4875,7 +5112,7 @@ function viewDesk() {
 
 /* 0.3.3 (BACKLOG 55): a switch for each AI feature (Ask the tracker; B and C were dropped), off until the admin turns it on;
    off = gone from every member's screen at their next refresh */
-var AI_FEATS = [['ask', 'Ask the tracker', 'A question in plain words in Search ("which papers are waiting on me?"), answered from the manuscripts and their history only. It changes nothing.']];
+var AI_FEATS = [['ask', 'Ask AI', 'A question in plain words in Search ("which papers are waiting on me?"), answered from the manuscripts and their history only. It changes nothing.']];
 function deskAi(D) {
   var a = D.ai || (S.boot && S.boot.ai) || {};
   return '<div class="box" style="margin-top:12px"><h2>AI features</h2><p class="muted" style="margin:0 0 4px;font-size:var(--fs-sm)">Switched off, a feature is gone from every member\'s screen. Quick updates themselves stay on (the helper\'s own pause is in the Meta tab).</p>' +
@@ -4994,7 +5231,7 @@ function permBox() {
     '<div class="perm"><span class="no">' + ic('lock') + '</span><div><b>No access</b> to your Gmail, Drive files, Calendar, contacts or other spreadsheets.<div class="muted" style="font-size:var(--fs-xs)">The VIBRA database is read and written for you by the group\'s server, which checks your sign-in on every request and records your name on every change.</div></div></div>' +
     '<a class="btn btn-q" style="align-self:flex-start;padding:0" target="_blank" rel="noopener" href="https://myaccount.google.com/connections">Review or remove this sign-in in your Google account</a></div>';
   return '<div class="box"><div class="frow"><h2>Google permissions</h2>' + tip('perm', true) + '</div><p class="muted" style="margin:0;font-size:var(--fs-sm)">What this app can do with your Google account:</p>' +
-    '<div class="perm"><span class="ok">' + ic('check') + '</span><div><b>See and edit one spreadsheet</b><div class="muted" style="font-size:var(--fs-xs)">The VIBRA Tracker database, nothing else. Needed to show and save manuscripts.</div></div></div>' +
+    '<div class="perm"><span class="ok">' + ic('check') + '</span><div><b>See and edit one spreadsheet</b><div class="muted" style="font-size:var(--fs-xs)">The group\'s database (one Google Sheet), nothing else. Needed to show and save manuscripts.</div></div></div>' +
     '<div class="perm"><span class="ok">' + ic('check') + '</span><div><b>See your e-mail address</b><div class="muted" style="font-size:var(--fs-xs)">So the app knows who you are, shows your own list and signs your changes.</div></div></div>' +
     '<div class="perm"><span class="no">' + ic('lock') + '</span><div><b>No access</b> to your Gmail, Drive files, Calendar or contacts.<div class="muted" style="font-size:var(--fs-xs)">Calendar reminders open your own calendar with the event filled in; you save it yourself.</div></div></div>' +
     '<a class="btn btn-q" style="align-self:flex-start;padding:0" target="_blank" rel="noopener" href="https://myaccount.google.com/connections">Review or remove this access in your Google account</a></div>';
@@ -5148,17 +5385,24 @@ function pfold(k, title, sub, body, open) {
 }
 function panelNew(m, d, dd, ce, P, nextHtml) {
   var step = firstStep(m.next), h = S.hist[m.id], L = liveLinks(m.links || []), tx = S.tt && S.tt.mid === m.id ? S.tt.text : '';
-  var sum = '<dl class="p-sum"><dt>Where</dt><dd>' + esc(m.status + (m.stage && (m.status === 'Submitted' || m.status === 'Under Review') ? ' · ' + m.stage : '')) + ' ' + tagHtml(dd) + '</dd>' +
+  var sum = '<dl class="p-sum"><dt>Where</dt><dd class="p-where">' + whereHtml(m, ce, dd) + '</dd>' + // 0.3.7: one line, a thin bar under it
     '<dt>Ball</dt><dd>' + esc(peopleText(m.people) || 'Nobody yet') + '</dd>' +
     '<dt>Next step</dt><dd>' + (step ? esc(fullNames(step)) : '<span class="muted">Not set yet</span>') + '</dd>' +
     '<dt>Latest news</dt><dd>' + newsHtml(m) + '</dd></dl>';
-  var tell = !canEdit() ? '' : '<div class="p-tell"><div class="frow"><b>' + ic('bolt') + 'Tell the tracker</b><button class="linkbtn pt-more" data-a="qu-open" data-v="' + m.id + '">With a screenshot</button></div>' +
-    '<textarea id="tt-text" class="in" rows="2" data-i="tt" data-v="text" placeholder="What happened? Type, dictate or paste; the AI updates the record.">' + esc(tx) + '</textarea>' +
+  var tell = !canEdit() ? '' : '<div class="p-tell"><div class="frow"><b>' + ic('bolt') + 'What happened?</b></div>' + // BACKLOG 82: the picture button in the box
+    '<div class="ta-wrap tt-wrap" data-drop="tt"><textarea id="tt-text" class="in" rows="2" data-i="tt" data-v="text" placeholder="Type, dictate or paste; a screenshot too. The AI updates the record.">' + esc(tx) + '</textarea>' +
+    '<span class="ta-tools"><label class="img-btn" aria-label="Add a screenshot or a photo"' + tt('Add a screenshot or a photo') + '>' + ic('img') + '<input type="file" accept="image/*" multiple class="sr" data-file="tt"></label></span></div>' +
     '<div class="btns">' + (step ? '<button class="btn btn-s" data-a="tt-done" title="' + esc('Done: ' + short(fullNames(step), 80)) + '">' + ic('check') + 'Step done</button>' : '') + '<button class="btn btn-p" data-a="tt-save">Save</button></div></div>';
   var au = (m.authors || []), auSub = [firstName(m) ? 'first ' + short(firstName(m), 28) : '', corrName(m) ? 'corr. ' + short(corrName(m), 28) : ''].filter(Boolean).join(', ') || (au.length ? au.length + ' authors' : 'none yet');
-  return sum + tell +
+  var nOpen = rvPts(m).filter(function (x) { return !x.p.done; }).length, reg = regLine(m, ce), kv = function (k, def) { return S.keep['pf' + k] === undefined ? def : S.keep['pf' + k]; }; // 0.3.7: open by itself while points wait
+  return sum + reg + tell +
     pfold('det', 'Details', 'status, stage, deadline, ball, next actions', P.grid + P.ball + nextHtml + P.ids + xlBox(m), dirty()) +
-    pfold('au', 'Authors', auSub, P.au) +
+    (rvShow(m) ? pfold('rv', 'Reviewers\' points', rvSub(m), rvBody(m, ce), kv('rv', nOpen > 0)) : '') + // 0.3.7 (BACKLOG 75)
+    pfold('tk', 'Tasks', tkSub(m), tkBody(m, ce)) + // BACKLOG 80 a
+    pfold('doc', 'Manuscript & files', docsSub(m), docsBody(m, ce)) + // BACKLOG 80 c
+    (ckShow(m) ? pfold('ck', 'Before submitting', ckSub(m), ckBody(m, ce)) : '') +
+    pfold('au', 'Authors & roles', auSub + (crSub(m) ? ' · ' + crSub(m) : ''), P.au + crList(m)) +
+    pfold('dec', 'Decisions', decSub(m), decBody(m, ce)) +
     pfold('lk', 'Links', L.length ? L.map(function (l) { return l.kind === 'track' ? 'Track' : l.label; }).join(' · ') : 'none yet', linksHtml(m, d, ce) + (ce ? '<div class="btns"><button type="button" class="btn btn-s" data-a="lk-open">' + ic('link') + 'Add a link</button>' + tip('links', true) + '</div>' : '')) +
     pfold('hist', 'History', h ? h.length + ' change' + (h.length === 1 ? '' : 's') : '', P.hist);
 }
@@ -5172,9 +5416,322 @@ function ttGo(done) {
   render(); o.cid = newCid();
   api('api_quickUpdate', { mid: o.mid, text: o.text, images: [], cid: o.cid }).then(function (x) {
     S.boot.requests = x.requests; render();
-    toast('Sent: “' + short(o.text, 60) + '”. ' + (x.helper ? 'The tracker will be updated within about a minute.' : 'The 06:00 check applies it.'), false, 8000);
+    toast('Sent: “' + short(o.text, 60) + '”. ' + (x.helper ? 'The AI updates the record within about a minute.' : 'The 06:00 check applies it.'), false, 8000);
     if (x.helper) runHelper(x.helper, x.id);
   }).catch(function (e) { toast(msg(e), true); });
+}
+/* 0.3.7 (BACKLOG 75, admin: "Đồng ý cả 6 cho 0.3.7, tôi muốn gộp để app tôi tốt nhất"): what a paper needs besides where
+   it is, in this app's way (the AI fills it from the mail and quick updates; folded until there is something).
+   (1) Where it is as eight numbered steps (admin: "Tách thêm Revision": Revision is read from the stage); a tap on a
+   step asks, then saves it like Save (undoable). (2) The reviewers' points per round, with who answers each and how many
+   are addressed; mine come to My work. (3) CRediT roles beside the authors. (4) Before submitting: what the paper's type
+   needs, ticked when ready. (5) Decisions: notes that start "Decision:". */
+var STEPS = [['Drafting', 'Drafting'], ['Internal review', 'Internal review'], ['Ready to Submit', 'Ready to submit'], ['Submitted', 'Submitted'],
+  ['Under Review', 'Under review'], ['Revision', 'Revision'], ['Accepted', 'Accepted'], ['Published', 'Published']];
+var REV_RX = /^(Reviews back|Minor rev|Major rev|Revising)/;
+function stepAt(m) {
+  if (m.status === 'Rejected') return -1;
+  if (m.status === 'Under Review' && REV_RX.test(m.stage || '')) return 5;
+  for (var i = 0; i < STEPS.length; i++) if (STEPS[i][0] === m.status) return i;
+  return 0;
+}
+function stepPatch(m, i) {
+  var st = m.stage || '', n = /R(\d)$/.exec(st);
+  if (i === 'rej') return { status: 'Rejected', stage: '' };
+  if (i === 5) return { status: 'Under Review', stage: REV_RX.test(st) ? st : n && +n[1] < 3 ? 'Reviews back R' + n[1] : 'Revising' };
+  if (i === 4) return { status: 'Under Review', stage: REV_RX.test(st) ? (n && +n[1] < 3 ? 'Resubmitted R' + n[1] : 'Resubmitted R1') : m.status === 'Under Review' && st ? st : 'Review R1' };
+  if (i === 3) return { status: 'Submitted', stage: m.status === 'Submitted' && st ? st : 'Awaiting editor' };
+  return { status: STEPS[i][0], stage: '' };
+}
+/* admin, on the pictures: "Không ổn, có 2 phần chỉ vị trí luôn, quá thừa thải, bỏ mấy cái block"; then "Một dòng và vạch
+   mảnh ngay dưới dòng đó": the summary's first line says where it is, a thin bar of eight parts right under it; Change
+   (editors) lists the steps, a step asks, Move saves. */
+function whereHtml(m, ce, dd) {
+  var at = stepAt(m), rej = at < 0, st = S.stp && S.stp.mid === m.id ? S.stp : null;
+  var shown = m.status === 'Submitted' || m.status === 'Under Review' ? m.stage : '';
+  var line = (rej ? '<b class="pw-rej">Rejected</b>' : '<b>' + (at + 1) + '. ' + esc(STEPS[at][1]) + '</b>') + (shown ? ' · ' + esc(shown) : '') + ' ' + tagHtml(dd);
+  var bar = '<span class="pw-bar' + (rej ? ' rej' : '') + '" role="img" aria-label="' + esc(rej ? 'Rejected' : 'Step ' + (at + 1) + ' of 8') + '">' + STEPS.map(function (s, i) {
+    return '<i class="' + (rej ? '' : i < at ? 'done' : i === at ? 'now' : '') + '" title="' + esc((i + 1) + '. ' + s[1]) + '"></i>';
+  }).join('') + '</span>';
+  var pick = '';
+  if (st && ce) {
+    if (st.i === null || st.i === undefined) pick = '<div class="pw-pick" role="group" aria-label="Move the paper to">' + STEPS.map(function (s, i) {
+      return '<button type="button" class="chip-t" data-a="stp" data-v="' + i + '"' + (i === at ? ' aria-pressed="true" disabled' : '') + '>' + (i + 1) + '. ' + esc(s[1]) + '</button>';
+    }).join('') + (rej ? '' : '<button type="button" class="chip-t pw-x" data-a="stp" data-v="rej">Rejected</button>') + '</div>';
+    else {
+      var P = stepPatch(m, st.i), to = st.i === 'rej' ? 'Rejected' : STEPS[st.i][1];
+      pick = '<div class="stp-ask" role="group" aria-label="Move the paper"><span><b>Move to ' + esc(to) + '?</b> <span class="muted">Status ' + esc(P.status) + (P.stage ? ', stage ' + esc(P.stage) : '') + '. You can undo it.</span></span>' +
+        '<span class="btns"><button type="button" class="btn ' + (st.i === 'rej' ? 'btn-red' : 'btn-p') + '" data-a="stp-go">Move</button><button type="button" class="btn btn-q" data-a="stp-no">Cancel</button></span></div>';
+    }
+  }
+  return '<span class="pw-line"><span class="pw-t">' + line + '</span>' + (ce ? '<button type="button" class="linkbtn pw-chg" data-a="stp-open" aria-expanded="' + !!st + '">' + (st ? 'Cancel' : 'Change') + '</button>' : '') + '</span>' + bar + pick;
+}
+function stepGo() {
+  var m = curM(); if (!m || !S.stp || S.stp.mid !== m.id || !S.draft) return;
+  if (dirty()) { toast('Save or discard your changes first.', true); return; }
+  var P = stepPatch(m, S.stp.i); S.stp = null;
+  S.draft.status = P.status; S.draft.stage = P.stage;
+  if (!dirty()) { render(); return; }
+  save();
+}
+/* (2) the reviewers' points */
+function rvPts(m) { var o = []; (m.review || []).forEach(function (r) { r.pts.forEach(function (p) { o.push({ r: r, p: p }); }); }); return o; }
+function isMe(who) { var w = String(who || '').trim().toLowerCase(), x = me(); return !!w && [x.key, x.display, x.full_name].some(function (n) { return n && String(n).toLowerCase() === w; }); }
+function whoLabel(w) { return person(w) ? (chipName(w) === w ? (person(w).full_name || w) : chipName(w)) : w; }
+function whoShort(w) { var p = person(w); return p && /^[A-Z]{2,3}$/.test(w) && p.full_name ? p.full_name : w; } // the name the group uses (the member's key), never initials
+function rvShow(m) { return (m.review || []).length > 0 || m.status === 'Under Review'; }
+function rvSub(m) {
+  var A = rvPts(m), d = A.filter(function (x) { return x.p.done; }).length, last = (m.review || [])[(m.review || []).length - 1];
+  if (!A.length) return 'none yet';
+  return d + '/' + A.length + ' addressed' + (last && last.due ? ' · due ' + niceShort(last.due) : '');
+}
+function rvPoint(m, x, ce, mine) {
+  var p = x.p, pick = S.rvw === p.id;
+  var who = p.who ? '<span class="rv-av" style=\"--h:' + avHue(p.who) + ';\">' + esc(initials(p.who)) + avImg(photoOf(p.who)) + '</span>' + '<span class="rv-wn">' + esc(short(whoShort(p.who), 24)) + '</span>' : 'Who answers?';
+  return '<div class="rv-p' + (p.done ? ' done' : '') + '"><button type="button" class="td-chk round' + (p.done ? ' on' : '') + '" data-a="rv-tick" data-v="' + m.id + ':' + p.id + '" role="checkbox" aria-checked="' + !!p.done + '" aria-label="' + esc((p.done ? 'Addressed: ' : 'Mark addressed: ') + short(p.t, 80)) + '"' + (ce ? '' : ' disabled') + '>' + ic('check') + '</button>' +
+    '<div class="rv-main"><span class="rv-t">' + esc(p.t) + '</span>' + (mine ? '<span class="rv-meta"><button class="td-m" data-a="open" data-v="' + m.id + '">#' + m.id + ' ' + esc(short(m.title, 46)) + '</button> · ' + esc((p.rev || 'Point') + ', round ' + x.r.r) + '</span>' : '') +
+    (mine ? '' : '<span class="rv-line"><button type="button" class="rv-who' + (p.who ? '' : ' none') + '" data-a="rv-who" data-v="' + p.id + '" aria-expanded="' + pick + '"' + (ce ? '' : ' disabled') + ' aria-label="' + esc(p.who ? 'Answered by ' + whoLabel(p.who) + '. Change' : 'Choose who answers it') + '">' + who + '</button>' +
+      (p.done ? '<span class="rv-meta">addressed ' + esc(niceShort(p.done)) + (p.by ? ' by ' + esc(p.by === 'AI routine' ? 'the AI' : whoShort(p.by)) : '') + '</span>' : '') + '</span>') + '</div></div>' +
+    (pick && ce && !mine ? '<div class="rv-pick" role="group" aria-label="Who answers this point">' + S.boot.people.map(function (q) {
+      return '<button type="button" class="chip-t" data-a="rv-set" data-v="' + p.id + '|' + esc(q.key) + '" aria-pressed="' + (p.who === q.key) + '">' + esc(chipName(q.key) === q.key ? q.full_name || q.key : chipName(q.key)) + '</button>';
+    }).join('') + '<button type="button" class="chip-t" data-a="rv-set" data-v="' + p.id + '|" aria-pressed="' + !p.who + '">Nobody yet</button><button type="button" class="btn btn-red rv-del" data-a="rv-del" data-v="' + p.id + '">' + ic('trash') + 'Delete point</button></div>' : '');
+}
+function rvBody(m, ce) {
+  var R = m.review || [];
+  var rounds = R.slice().reverse().map(function (r) {
+    var d = r.pts.filter(function (p) { return p.done; }).length, by = [], groups = {};
+    r.pts.forEach(function (p) { var g = p.rev || 'Points'; if (!groups[g]) { groups[g] = []; by.push(g); } groups[g].push(p); });
+    return '<div class="rv-r"><div class="rv-h"><b>Round ' + r.r + '</b>' + (r.decision ? '<span class="rv-dec">' + esc(r.decision) + '</span>' : '') +
+      '<span class="muted">' + esc([r.received ? 'received ' + niceShort(r.received) : '', r.due ? 'due ' + niceShort(r.due) : ''].filter(Boolean).join(' · ')) + '</span><span class="mono rv-n">' + d + '/' + r.pts.length + '</span></div>' +
+      by.map(function (g) { return '<div class="rv-g">' + esc(g) + '</div>' + groups[g].map(function (p) { return rvPoint(m, { r: r, p: p }, ce); }).join(''); }).join('') + '</div>';
+  }).join('');
+  return (rounds || '<p class="muted rv-none">No points yet. Send the decision letter as a quick update (text or screenshot): the AI lists each point here.</p>') +
+    (ce ? '<div class="rv-add"><label class="sr" for="rv-new">Add a point</label><input id="rv-new" class="in" maxlength="800" placeholder="Add a point, e.g. R2: Report the dropouts per round"><button type="button" class="btn btn-s" data-a="rv-add">Add</button></div>' +
+      (S.rvr ? '<div class="rv-rnd" role="group" aria-label="Add a round"><label class="sr" for="rr-dec">Decision</label><select id="rr-dec" class="in"><option value="">Decision</option>' + ['Minor revision', 'Major revision', 'Reject and resubmit', 'Reviews back'].map(function (x) { return '<option>' + x + '</option>'; }).join('') + '</select>' +
+        '<label class="sr" for="rr-due">Due</label><input id="rr-due" class="in" type="date"><button type="button" class="btn btn-p" data-a="rv-round">Add round ' + ((R.length ? R[R.length - 1].r : 0) + 1) + '</button><button type="button" class="btn btn-q" data-a="rv-round-open">Cancel</button></div>' :
+        '<button type="button" class="linkbtn rv-rbtn" data-a="rv-round-open">' + ic('plus') + 'Add round ' + ((R.length ? R[R.length - 1].r : 0) + 1) + '</button>') : '');
+}
+function rvParse(t) {
+  t = String(t || '').trim(); var m = /^(?:R|Rev\.?|Reviewer)\s*(\d+)\s*[:.\-–]\s*/i.exec(t), e = /^(?:Editor|AE|EiC)\s*[:.\-–]\s*/i.exec(t);
+  if (m) return { rev: 'Reviewer ' + m[1], t: t.slice(m[0].length) };
+  if (e) return { rev: 'Editor', t: t.slice(e[0].length) };
+  return { rev: '', t: t };
+}
+function myPoints() {
+  var o = [];
+  S.boot.manuscripts.forEach(function (m) { if (m.status === 'Under Review' || m.status === 'Submitted') rvPts(m).forEach(function (x) { if (!x.p.done && isMe(x.p.who)) o.push({ m: m, r: x.r, p: x.p }); }); });
+  return o;
+}
+/** One change to the points or the ticks: shown at once, then saved (back as it was if refused). */
+function partGo(mid, op, local) {
+  var m = mById(mid); if (!m) return;
+  var keep = JSON.stringify({ review: m.review || [], checklist: m.checklist || {} });
+  if (local) { local(m); render(); }
+  api('api_part', mid, op).then(function (r) {
+    applyRow(r.row);
+    if (S.draft && S.draft.id === mid) { if (!dirty()) openDraft(r.row); else S.draft.base = r.row.version; }
+    render(); if (S.sel === mid) loadHistory(mid);
+  }).catch(function (e) { var k = JSON.parse(keep); m.review = k.review; m.checklist = k.checklist; render(); toast(msg(e), true); });
+}
+/* (3) CRediT */
+function crSub(m) { var A = m.authors || [], n = A.filter(function (a) { return a.credit && a.credit.length; }).length; return A.length ? (n === A.length ? 'roles for all' : n ? 'roles ' + n + '/' + A.length : 'no roles yet') : ''; }
+function crList(m) {
+  var A = (m.authors || []).filter(function (a) { return a.credit && a.credit.length; });
+  if (!A.length) return '<p class="muted cr-none">Contributions (CRediT): none yet. Tap an author to choose their roles.</p>';
+  return '<div class="cr-list"><span class="lbl">Contributions (CRediT)</span><ol>' + (m.authors || []).map(function (a, i) {
+    return '<li><b>' + esc(a.name) + '</b><span>' + (a.credit && a.credit.length ? esc(a.credit.join(', ')) : '<i class="muted">not chosen yet</i>') + '</span></li>';
+  }).join('') + '</ol><button type="button" class="btn btn-s" data-a="cr-copy" data-v="' + m.id + '">' + ic('copy') + 'Copy the statement</button></div>';
+}
+function crText(m) { return 'Author contributions (CRediT): ' + (m.authors || []).filter(function (a) { return a.credit && a.credit.length; }).map(function (a) { return a.name + ': ' + a.credit.join(', '); }).join('; ') + '.'; }
+function crPick(a) {
+  var C = S.boot.vocab.credit || [], on = a.credit || [];
+  return '<div class="cr-pick"><span class="lbl">Contributions (CRediT)</span><div class="cr-chips">' + C.map(function (c, i) {
+    return '<button type="button" class="chip-t" data-a="cr-tog" data-v="' + i + '" aria-pressed="' + (on.indexOf(c) >= 0) + '">' + esc(c) + '</button>';
+  }).join('') + '</div></div>';
+}
+/* (4) Before submitting */
+function ckItems(m) {
+  var V = S.boot.vocab.checklist || [], t = (S.boot.vocab.types || []).indexOf(m.type) >= 0 ? m.type : 'Review';
+  return V.filter(function (c) { return !c.types || c.types.indexOf(t) >= 0; }).map(function (c) { return { k: c.k, g: c.g, t: (c.by && c.by[t]) || c.t, auto: c.auto, val: c.val }; });
+}
+function ckAuto(m, a) {
+  if (a === 'authors') return !!(m.au && m.au[0] && m.au[1] === m.au[0]);
+  if (a === 'credit') return !!((m.authors || []).length && m.authors.every(function (x) { return x.credit && x.credit.length; }));
+  return false;
+}
+function ckOn(m, c) { return c.auto && ckAuto(m, c.auto) || !!(m.checklist || {})[c.k]; }
+function ckShow(m) { return ['Drafting', 'Internal review', 'Ready to Submit'].indexOf(m.status) >= 0 || m.stage === 'Returned to authors'; }
+function ckSub(m) { var I = ckItems(m); return I.filter(function (c) { return ckOn(m, c); }).length + '/' + I.length + ' ready'; }
+function ckBody(m, ce) {
+  // 0.3.7 (BACKLOG 80 b, admin chose "Compliance có giá trị"): a value where it matters (the registration ID, the ethics
+  // committee and number, the statements' words), kept with the tick; Not applicable counts as ready
+  var I = ckItems(m), row = function (c) {
+    var on = ckOn(m, c), x = (m.checklist || {})[c.k], auto = c.auto && ckAuto(m, c.auto);
+    var meta = auto ? 'from the authors\' details' : x ? (x.na ? 'Not applicable · ' : '') + whoLabel(x.by) + ', ' + niceShort(x.at) : c.auto ? (c.auto === 'credit' ? 'ticks itself when every author has a role' : 'ticks itself when every author\'s details are complete') : '';
+    return '<div class="ck-r' + (on ? ' done' : '') + '"><button type="button" class="td-chk' + (on ? ' on' : '') + '" data-a="ck-tick" data-v="' + m.id + ':' + c.k + '" role="checkbox" aria-checked="' + on + '" aria-label="' + esc(c.t) + '"' + (ce && !auto ? '' : ' disabled') + '>' + ic('check') + '</button>' +
+      '<span class="ck-t">' + esc(c.t) + (meta ? '<small>' + esc(meta) + '</small>' : '') +
+      (c.val && !(x && x.na) ? '<input class="in ck-v" data-ckv="' + m.id + ':' + c.k + '" maxlength="300" value="' + esc(x && x.v || '') + '" placeholder="' + esc(c.val) + '" aria-label="' + esc(c.t + ': value') + '"' + (ce ? '' : ' disabled') + '>' : '') + '</span>' +
+      (ce && !auto && !on ? '<button type="button" class="linkbtn ck-na" data-a="ck-na" data-v="' + m.id + ':' + c.k + '" title="Not applicable to this paper">N/A</button>' : '') + '</div>';
+  };
+  return '<p class="muted ck-lead">For a ' + esc((m.type || 'paper').toLowerCase()) + '. Tick what is ready; write the number or the words where asked; N/A when it does not apply.</p>' +
+    [['files', 'To send'], ['statements', 'To declare']].map(function (g) {
+      var L = I.filter(function (c) { return c.g === g[0]; }); return L.length ? '<div class="ck-g"><span class="lbl">' + g[1] + '</span>' + L.map(row).join('') + '</div>' : '';
+    }).join('');
+}
+/* BACKLOG 77 (admin: "Nhắc đăng ký Prospero, OFS,… với các bài tương ứng cần thiết"; "Trong app + 1 thông báo"): a paper
+   being written whose type registers a protocol, "Protocol registered" not ticked: a line in the card and in the authors'
+   My work, with Done (ticks it); the helper's notification comes the first morning, then every 14 days. */
+var REG_ST = { Drafting: 1, 'Internal review': 1, 'Ready to Submit': 1 };
+function regWhere(m) { var R = (S.boot.vocab.register || {})[m.type]; return R && REG_ST[m.status || 'Drafting'] && !(m.checklist || {}).reg ? R.where : ''; }
+function regLine(m, ce) {
+  var w = regWhere(m); if (!w) return '';
+  return '<div class="p-reg" role="note"><span>' + ic('warn') + '<span><b>Register the protocol</b> before screening starts: ' + esc(w) + '.</span></span>' +
+    (ce ? '<button type="button" class="btn btn-s" data-a="ck-tick" data-v="' + m.id + ':reg">' + ic('check') + 'Done</button>' : '') + '</div>';
+}
+function myRegs() { var k = me().key; return allDerived().filter(function (d) { return regWhere(d.m) && involves(d, k, true); }); }
+function regRow(d) {
+  return '<div class="rv-p"><button type="button" class="td-chk round" data-a="ck-tick" data-v="' + d.m.id + ':reg" role="checkbox" aria-checked="false" aria-label="' + esc('Registered: ' + short(d.m.title, 60)) + '"' + (canEdit() ? '' : ' disabled') + '>' + ic('check') + '</button>' +
+    '<div class="rv-main"><button class="rv-t rv-open" data-a="open" data-v="' + d.m.id + '">' + esc(short(d.m.title, 110)) + '</button><span class="rv-meta">' + esc(d.m.type + ' · ' + regWhere(d.m).split(' (')[0]) + '</span></div></div>';
+}
+/* BACKLOG 80 a (admin chose "Tasks theo bài"): a paper's tasks (what, who, by when, done); mine in My work; the next
+   actions can be turned into tasks in one go (who from the line's start, the date from "by 22 Oct"). */
+function tkOpen(m) { return (m.tasks || []).filter(function (x) { return !x.done; }); }
+function tkSub(m) { var L = m.tasks || [], o = tkOpen(m).length; return L.length ? o + ' open' + (L.length > o ? ', ' + (L.length - o) + ' done' : '') : 'none yet'; }
+function nextAsTasks(m) {
+  var have = (m.tasks || []).map(function (x) { return x.t.toLowerCase(); }), T0 = S.boot.today, yr = +T0.slice(0, 4);
+  return String(m.next || '').split('\n').map(function (l) { return l.replace(/^\s*\d+[.)]\s*/, '').trim(); }).filter(function (l) { return l && !/^await/i.test(l) && have.indexOf(l.toLowerCase()) < 0; }).map(function (l) {
+    var who = '', due = '', P = S.boot.people.slice().sort(function (a, b) { return String(b.full_name || '').length - String(a.full_name || '').length; });
+    P.some(function (p) { return [p.full_name, p.display, p.key].some(function (n) { if (n && l.toLowerCase().indexOf(String(n).toLowerCase()) === 0) { who = p.key; return true; } }); });
+    var d = /\bby (\d{1,2}) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\b/.exec(l);
+    if (d) { var mo = MON.indexOf(d[2]) + 1, iso = yr + '-' + ('0' + mo).slice(-2) + '-' + ('0' + d[1]).slice(-2); if (iso < T0 && (Date.parse(T0) - Date.parse(iso)) > 60 * 86400000) iso = (yr + 1) + iso.slice(4); due = iso; }
+    return { t: l, who: who, due: due };
+  });
+}
+function tkRow(m, x, ce, mine) {
+  var pick = S.tkw === x.id, late = x.due && !x.done && x.due < S.boot.today;
+  return '<div class="rv-p tk-r' + (x.done ? ' done' : '') + '"><button type="button" class="td-chk round' + (x.done ? ' on' : '') + '" data-a="tk-tick" data-v="' + m.id + ':' + x.id + '" role="checkbox" aria-checked="' + !!x.done + '" aria-label="' + esc((x.done ? 'Done: ' : 'Mark done: ') + short(x.t, 80)) + '"' + (ce ? '' : ' disabled') + '>' + ic('check') + '</button>' +
+    '<div class="rv-main"><span class="rv-t">' + esc(fullNames(x.t)) + '</span>' +
+    (mine ? '<span class="rv-meta"><button class="td-m" data-a="open" data-v="' + m.id + '">#' + m.id + ' ' + esc(short(m.title, 46)) + '</button>' + (x.due ? ' · <span class="' + (late ? 'tk-late' : '') + '">by ' + esc(niceShort(x.due)) + '</span>' : '') + '</span>' :
+      '<span class="rv-line"><button type="button" class="rv-who' + (x.who ? '' : ' none') + '" data-a="tk-who" data-v="' + x.id + '" aria-expanded="' + pick + '"' + (ce ? '' : ' disabled') + '>' + (x.who ? '<span class="rv-av" style=\"--h:' + avHue(x.who) + ';\">' + esc(initials(x.who)) + avImg(photoOf(x.who)) + '</span>' + '<span class="rv-wn">' + esc(short(whoShort(x.who), 24)) + '</span>' : 'Who does it?') + '</button>' +
+      (x.due ? '<span class="rv-meta' + (late ? ' tk-late' : '') + '">by ' + esc(niceShort(x.due)) + '</span>' : '') + (x.done ? '<span class="rv-meta">done ' + esc(niceShort(x.done)) + (x.dby ? ' by ' + esc(whoShort(x.dby)) : '') + '</span>' : '') + '</span>') + '</div></div>' +
+    (pick && ce && !mine ? '<div class="rv-pick" role="group" aria-label="Who does this task">' + S.boot.people.map(function (q) {
+      return '<button type="button" class="chip-t" data-a="tk-set" data-v="' + x.id + '|' + esc(q.key) + '" aria-pressed="' + (x.who === q.key) + '">' + esc(whoShort(q.key)) + '</button>';
+    }).join('') + '<label class="sr" for="tk-due-' + x.id + '">By</label><input id="tk-due-' + x.id + '" class="in tk-due" type="date" data-tkdue="' + x.id + '" value="' + esc(x.due || '') + '"><button type="button" class="btn btn-red rv-del" data-a="tk-del" data-v="' + x.id + '">' + ic('trash') + 'Delete task</button></div>' : '');
+}
+function tkBody(m, ce) {
+  var L = m.tasks || [], open = L.filter(function (x) { return !x.done; }), done = L.filter(function (x) { return x.done; }), nx = ce ? nextAsTasks(m) : [];
+  open.sort(function (a, b) { return (a.due || '9') < (b.due || '9') ? -1 : 1; });
+  return (L.length ? open.map(function (x) { return tkRow(m, x, ce); }).join('') + (done.length ? '<details class="tk-done" data-keep="tkdone"' + (S.keep.tkdone ? ' open' : '') + '><summary>Done (' + done.length + ')</summary>' + done.map(function (x) { return tkRow(m, x, ce); }).join('') + '</details>' : '') :
+      '<p class="muted rv-none">No tasks yet. A task has a name, who does it and a date; theirs come to their My work.</p>') +
+    (ce ? '<div class="rv-add tk-add"><label class="sr" for="tk-new">Add a task</label><input id="tk-new" class="in" maxlength="300" placeholder="Add a task, e.g. Check the references">' +
+      '<label class="sr" for="tk-who">Who</label><select id="tk-who" class="in"><option value="">Who?</option>' + S.boot.people.map(function (q) { return '<option value="' + esc(q.key) + '"' + (q.key === me().key ? ' selected' : '') + '>' + esc(whoShort(q.key)) + '</option>'; }).join('') + '</select>' +
+      '<label class="sr" for="tk-dd">By</label><input id="tk-dd" class="in" type="date"><button type="button" class="btn btn-s" data-a="tk-add">Add</button></div>' +
+      (nx.length ? '<button type="button" class="linkbtn rv-rbtn" data-a="tk-next">' + ic('plus') + 'Make ' + (nx.length === 1 ? 'a task' : nx.length + ' tasks') + ' from the next actions</button>' : '') : '');
+}
+function myTasks() {
+  var o = [];
+  S.boot.manuscripts.forEach(function (m) { (m.tasks || []).forEach(function (x) { if (!x.done && isMe(x.who)) o.push({ m: m, x: x }); }); });
+  return o.sort(function (a, b) { return (a.x.due || '9') < (b.x.due || '9') ? -1 : 1; });
+}
+/* BACKLOG 80 c (admin: "File làm luôn"): Manuscript & files. The manuscript (.docx) with its versions (the newest is
+   current), the other files sorted by kind, comments tied to a section and a type (open, resolved), Request review (a
+   task for each member asked). The bytes live in the helper's Drive: only in the VIBRA app. */
+function docsWeb() { return !!(window.VIBRA_WEB && window.VIBRA_WEB.fput); }
+function docsLoad(mid, force) {
+  S.docs = S.docs || {}; if (!force && (S.docs[mid] || S.docsBusy === mid)) return;
+  S.docsBusy = mid;
+  api('api_docs', mid).then(function (r) { S.docs[mid] = r; S.docsBusy = null; render(); }, function (e) { S.docsBusy = null; S.docs[mid] = { err: msg(e), ms: [], files: [], comments: [] }; render(); });
+}
+function fsize(n) { n = Number(n) || 0; return n >= 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(n / 1024)) + ' KB'; }
+function docLine(d, cur) { return esc(whoShort(d.by)) + ' · ' + esc(niceShort(d.ts)) + ' ' + esc(String(d.ts).slice(11, 16)) + ' · ' + fsize(d.size); }
+function docsSub(m) {
+  var D = S.docs && S.docs[m.id]; if (!docsWeb()) return 'in the VIBRA app';
+  if (!D) return ''; var c = (D.comments || []).filter(function (x) { return x.status === 'open'; }).length;
+  return [D.ms.length ? 'v' + D.ms[0].version + ' current' : 'no manuscript yet', D.files.length ? D.files.length + ' file' + (D.files.length === 1 ? '' : 's') : '', c ? c + ' open comment' + (c === 1 ? '' : 's') : ''].filter(Boolean).join(' · ');
+}
+function docsBody(m, ce) {
+  if (!docsWeb()) return '<p class="muted rv-none">The manuscript and its files open in the VIBRA app (they are kept in the group\'s Drive through it).</p>';
+  var D = S.docs && S.docs[m.id]; if (!D) { docsLoad(m.id); return '<div class="skel" style="width:70%"></div>'; }
+  if (D.err) return '<p class="err">' + esc(D.err) + ' <button class="linkbtn" data-a="docs-reload">Try again</button></p>';
+  var up = (S.docUp || []).filter(function (x) { return x.mid === m.id; }), cur = D.ms[0];
+  var upRows = up.map(function (x) { return '<div class="doc-r doc-up"><i class="th-ring dk" aria-hidden="true"></i><span class="doc-n"><b>' + esc(x.name) + '</b><small>' + (x.err ? '<span class="err">' + esc(x.err) + '</span>' : 'Sending · ' + fsize(x.size)) + '</small></span></div>'; }).join('');
+  var dl = function (d) { return '<button type="button" class="btn btn-q doc-b" data-a="doc-get" data-v="' + d.id + '" aria-label="Download ' + esc(d.name) + '"' + tt('Download') + '>' + ic('down') + '</button>'; };
+  var del = function (d) { return ce && (d.by === me().key || me().role === 'Admin' || me().role === 'Supervisor') ? '<button type="button" class="btn btn-q doc-b doc-del" data-a="doc-del" data-v="' + d.id + '" aria-label="Delete ' + esc(d.name) + '"' + tt('Delete') + '>' + ic('trash') + '</button>' : ''; };
+  var ms = '<div class="doc-sec"><span class="lbl">Manuscript</span>' + (cur ?
+    '<div class="doc-cur"><span class="doc-ic">' + ic('file') + '</span><span class="doc-n"><b>' + esc(cur.name) + ' <i class="doc-v">v' + cur.version + '</i></b><small>' + docLine(cur) + '</small></span></div>' +
+    '<div class="btns doc-btns"><button type="button" class="btn btn-p" data-a="doc-get" data-v="' + cur.id + '">' + ic('down') + 'Download v' + cur.version + '</button>' +
+    (ce ? '<label class="btn btn-s">' + ic('upload') + 'Upload new version<input type="file" class="sr" data-doc="ms" accept=".doc,.docx,.odt,.rtf,.pdf"></label><button type="button" class="btn btn-s" data-a="rr-open" aria-expanded="' + !!S.rrq + '">' + ic('send') + 'Request review</button>' : '') + '</div>' :
+    '<p class="muted rv-none">No manuscript yet. Upload the Word file; each new upload becomes the next version.</p>' + (ce ? '<label class="btn btn-s">' + ic('upload') + 'Upload the manuscript<input type="file" class="sr" data-doc="ms" accept=".doc,.docx,.odt,.rtf,.pdf"></label>' : '')) +
+    (S.rrq && ce ? rrForm(m) : '') +
+    (D.ms.length > 1 ? '<details class="doc-hist" data-keep="dochist"' + (S.keep.dochist ? ' open' : '') + '><summary>Earlier versions (' + (D.ms.length - 1) + ')</summary>' + D.ms.slice(1).map(function (d) { return '<div class="doc-r"><span class="doc-n"><b>v' + d.version + ' · ' + esc(d.name) + '</b><small>' + docLine(d) + '</small></span>' + dl(d) + del(d) + '</div>'; }).join('') + '</details>' : '') + '</div>';
+  var groups = {}; D.files.forEach(function (d) { (groups[d.group] = groups[d.group] || []).push(d); });
+  var files = '<div class="doc-sec"><span class="lbl">Files</span>' + upRows + (D.files.length ? Object.keys(groups).sort().map(function (g) {
+    return '<div class="doc-g">' + esc(g) + '</div>' + groups[g].map(function (d) { return '<div class="doc-r"><span class="doc-n"><b>' + esc(d.name) + '</b><small>' + docLine(d) + '</small></span>' + dl(d) + del(d) + '</div>'; }).join('');
+  }).join('') : (upRows ? '' : '<p class="muted rv-none">No files yet: data, figures, scripts, the journal\'s forms.</p>')) +
+    (ce ? '<label class="btn btn-s doc-add">' + ic('plus') + 'Add files<input type="file" class="sr" data-doc="file" multiple></label><span class="muted doc-max">Up to ' + (D.max_mb || 15) + ' MB each; sorted by kind.</span>' : '') + '</div>';
+  var f = S.cmf || 'open', C = (D.comments || []).filter(function (c) { return f === 'all' || c.status === f; });
+  var com = '<div class="doc-sec"><div class="frow"><span class="lbl">Comments</span><div class="seg seg-s cm-seg" role="group" aria-label="Which comments">' + [['open', 'Open'], ['resolved', 'Resolved'], ['all', 'All']].map(function (o) { return '<button data-a="cm-f" data-v="' + o[0] + '" aria-pressed="' + (f === o[0]) + '">' + o[1] + '</button>'; }).join('') + '</div></div>' +
+    (C.length ? C.map(function (c) {
+      return '<div class="cm-r' + (c.status === 'resolved' ? ' done' : '') + '"><span class="cm-tags"><i>' + esc(c.section) + '</i><i class="ty">' + esc(c.type) + '</i>' + (c.version ? '<i class="vv">v' + c.version + '</i>' : '') + '</span><span class="cm-t">' + esc(c.text) + '</span>' +
+        '<span class="rv-meta">' + esc(whoShort(c.by)) + ' · ' + esc(niceShort(c.ts)) + (c.status === 'resolved' ? ' · resolved by ' + esc(whoShort(c.resolved_by)) : '') + '</span>' +
+        (ce ? '<span class="cm-acts"><button type="button" class="linkbtn" data-a="cm-res" data-v="' + c.id + ':' + (c.status === 'resolved' ? '0' : '1') + '">' + (c.status === 'resolved' ? 'Open again' : 'Resolve') + '</button>' + (c.by === me().key ? '<button type="button" class="linkbtn cm-del" data-a="cm-del" data-v="' + c.id + '">Delete</button>' : '') + '</span>' : '') + '</div>';
+    }).join('') : '<p class="muted rv-none">' + (f === 'open' ? 'No open comments. A comment names its section and type, so nobody has to guess what the problem is.' : 'None.') + '</p>') +
+    (ce ? '<div class="cm-add"><label class="sr" for="cm-sec">Section</label><select id="cm-sec" class="in">' + (D.sections || []).map(function (x) { return '<option>' + esc(x) + '</option>'; }).join('') + '</select>' +
+      '<label class="sr" for="cm-ty">Type</label><select id="cm-ty" class="in">' + (D.types || []).map(function (x) { return '<option>' + esc(x) + '</option>'; }).join('') + '</select>' +
+      '<label class="sr" for="cm-tx">Comment</label><input id="cm-tx" class="in" maxlength="2000" placeholder="Add a comment on ' + (cur ? 'v' + cur.version : 'the manuscript') + '"><button type="button" class="btn btn-s" data-a="cm-add">Add</button></div>' : '') + '</div>';
+  return ms + files + com;
+}
+function rrForm(m) {
+  var on = S.rrq.keys || [];
+  return '<div class="rr-form" role="group" aria-label="Request review"><span class="lbl">Who reviews it</span><div class="rv-pick" style="padding:0">' + S.boot.people.filter(function (q) { return q.key !== me().key; }).map(function (q) {
+    return '<button type="button" class="chip-t" data-a="rr-tog" data-v="' + esc(q.key) + '" aria-pressed="' + (on.indexOf(q.key) >= 0) + '">' + esc(whoShort(q.key)) + '</button>';
+  }).join('') + '</div><div class="rv-add"><label class="sr" for="rr-due2">By</label><input id="rr-due2" class="in" type="date" style="flex:0 0 170px"><label class="sr" for="rr-note">What to look at</label><input id="rr-note" class="in" maxlength="200" placeholder="What to look at (optional)"></div>' +
+    '<div class="btns"><button type="button" class="btn btn-p" data-a="rr-send"' + (on.length ? '' : ' disabled') + '>Send the request</button><button type="button" class="btn btn-q" data-a="rr-open">Cancel</button></div><p class="muted" style="margin:0;font-size:var(--fs-xs)">Each one gets a task "Review the manuscript" with the date, in their My work and under their bell.</p></div>';
+}
+function docUpload(kind, files) {
+  var m = curM(), W = window.VIBRA_WEB; if (!m || !W || !W.fput) return;
+  var max = ((S.docs && S.docs[m.id] && S.docs[m.id].max_mb) || 15) * 1048576;
+  S.docUp = S.docUp || [];
+  Array.prototype.slice.call(files || []).slice(0, kind === 'ms' ? 1 : 10).forEach(function (f) {
+    if (f.size > max) { toast(f.name + ' is larger than ' + (max / 1048576) + ' MB.', true); return; }
+    var job = { mid: m.id, name: f.name, size: f.size }; S.docUp.push(job); render();
+    var rd = new FileReader();
+    rd.onload = function () {
+      var data = String(rd.result).replace(/^data:[^,]*,/, '');
+      W.fput({ mid: m.id, kind: kind, name: f.name, mime: f.type || 'application/octet-stream', data: data }).then(function (r) {
+        S.docUp = S.docUp.filter(function (x) { return x !== job; }); toast(kind === 'ms' ? 'Uploaded: v' + r.version + ' is now the current version.' : 'Added: ' + r.name + '.'); docsLoad(m.id, true); loadHistory(m.id);
+      }, function (e) { job.err = msg(e); render(); setTimeout(function () { S.docUp = S.docUp.filter(function (x) { return x !== job; }); render(); }, 8000); });
+    };
+    rd.onerror = function () { job.err = 'This file could not be read.'; render(); };
+    rd.readAsDataURL(f);
+  });
+}
+function docGet(id) {
+  var W = window.VIBRA_WEB; if (!W || !W.fget) return;
+  toast('Downloading…', false, 3000);
+  W.fget(id).then(function (r) {
+    var bin = atob(r.data), a = new Uint8Array(bin.length); for (var i = 0; i < bin.length; i++) a[i] = bin.charCodeAt(i);
+    saveBlob(r.name, new Blob([a], { type: r.mime || 'application/octet-stream' }));
+  }, function (e) { toast(msg(e), true); });
+}
+/* (5) Decisions */
+var DEC_RX = /^(\d{1,2} [A-Z][a-z]{2} \d{4})(\s*\([^)]*\))?:\s*Decision:\s*/;
+function decList(m) { return (S.hist[m.id] || []).filter(function (h) { return h.field === 'note' && DEC_RX.test(h.new); }); }
+function decBody(m, ce) {
+  var h = S.hist[m.id], L = h ? decList(m) : null;
+  var rows = !L ? '<div class="skel" style="width:60%"></div>' : !L.length ? '<p class="muted dec-none">None yet. Write what the group decided and why (a journal, an author order, how to answer a reviewer); the AI also adds them from quick updates.</p>' :
+    '<ol class="dec-list">' + L.map(function (x) {
+      var q = /quick update from ([^)]+)\)/.exec(x.new), who = x.actor === 'AI routine' ? 'AI' + (q ? ', from ' + (isMe(q[1]) ? 'your' : whoShort(q[1]) + '\'s') + ' quick update' : '') : isMe(x.actor) ? 'You' : whoLabel(x.actor);
+      return '<li><span class="mono">' + esc(niceShort(x.ts)) + '</span><span class="dec-t">' + esc(fullNames(x.new.replace(DEC_RX, ''))) + '</span><span class="muted">' + esc(who) + '</span></li>';
+    }).join('') + '</ol>';
+  return rows + (ce ? '<div class="rv-add"><label class="sr" for="dec-new">Add a decision</label><input id="dec-new" class="in" maxlength="400" placeholder="Add a decision, e.g. Target Pain and Therapy first"><button type="button" class="btn btn-s" data-a="dec-add">Add</button></div>' : '');
+}
+function decSub(m) { var h = S.hist[m.id]; if (!h) return ''; var n = decList(m).length; return n ? n + ' decision' + (n === 1 ? '' : 's') : 'none yet'; }
+/* (6) the greeting in My work */
+function hello() {
+  var h = +new Date(Date.now() + 7 * 3600000).toISOString().slice(11, 13), x = me();
+  var name = whoShort(x.key); // the name the group uses, never initials (BACKLOG 59)
+  return (h >= 4 && h < 12 ? 'Good morning' : h >= 12 && h < 18 ? 'Good afternoon' : 'Good evening') + ', ' + name + '.';
 }
 /* 0.2.5 (admin): links from the publisher (invited submission, revision and reviews, proofs, the journal's portal).
    The row shows only when the manuscript has a link; the AI adds them from quick updates, members add them by hand
@@ -5244,6 +5801,7 @@ function editorHtml(kind) {
   var btns = kind === 'ball' ?
     '<button class="btn ' + (p.primary ? 'btn-p' : 'btn-s') + '" data-a="ed-prim">' + (p.primary ? 'Primary' : 'Make primary') + '</button>' :
     '<button class="btn ' + (p.corr ? 'btn-p' : 'btn-s') + '" data-a="ed-corr">' + (p.corr ? 'Corresponding' : 'Mark corresponding') + '</button><button class="btn btn-s" data-a="ed-up">Move earlier</button><button class="btn btn-s" data-a="ed-down">Move later</button>';
+  if (kind === 'au' && UIN()) btns += crPick(p); // 0.3.7 (BACKLOG 75): the author's CRediT roles
   return '<div class="edbox"><div style="display:flex;justify-content:space-between;gap:8px;align-items:baseline"><b>' + esc(chipName(p.name)) + '</b><span class="mono muted" style="font-size:var(--fs-2xs)">' + (member ? 'Member, gets notifications' : 'Guest, no notifications') + '</span></div>' +
     '<label class="lbl" for="ed-note">Note on this tag</label><input id="ed-note" class="in" data-i="ed-note" value="' + esc(p.note || '') + '" placeholder="' + (kind === 'ball' ? 'corr., submitting, picks the journal' : 'equal first, surname to confirm') + '">' +
     '<div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center">' + btns + '<button class="btn btn-d" data-a="ed-del">Remove</button><button class="btn btn-q" style="margin-left:auto" data-a="ed-done">Done</button></div></div>';
@@ -5329,6 +5887,7 @@ function histVal(h) {
   else if (h.field === 'restored') val = '<b>Restored</b> it from the trash.';
   else if (h.field === 'people_json' || h.field === 'authors_json') val = '<b>' + lab + '</b>: ' + esc(short(listNames(h.new), 160));
   else if (h.field === 'links_json') { var ln = function (s) { try { return JSON.parse(s).map(function (x) { return x.label; }).join(', '); } catch (e) { return ''; } }; val = '<b>Links</b>: ' + esc(short(ln(h.new) || 'none', 160)); }
+  else if (h.field === 'review_json' || h.field === 'checklist_json') val = '<b>' + lab + '</b>: ' + esc(/^Quick update from/.test(h.source || '') || !h.source ? partDiff(h) : short(fullNames(h.source), 200)); // 0.3.7
   else if (/^author:/.test(h.field)) val = '<b>Author details</b>: ' + esc(dirName(h.field.slice(7))) + ' <span class="muted">(' + esc(String(h.new || 'no change').replace(/\borcid\b/g, 'ORCID').replace(/\bemail\b/g, 'e-mail')) + ')</span>';
   else val = '<b>' + esc(lab) + '</b>: ' + (h.old ? '<span class="muted">' + esc(short(fullNames(h.old), 80)) + '</span> → ' : '') + esc(short(fullNames(h.new || '(empty)'), 220));
   return val;
@@ -5343,6 +5902,17 @@ function undoDone(r, id) {
 function undoToast(r) {
   if (r.error && !r.undone) { toast(r.error, true); return; }
   toast('Undone' + (r.undone > 1 ? ' (' + r.undone + ' changes)' : '') + '.' + (r.skipped && r.skipped.length ? ' Left as it is, changed again since: ' + r.skipped.join(', ') + '.' : '') + ' It no longer shows in History.', false, r.skipped && r.skipped.length ? 9000 : 5000);
+}
+function partDiff(h) {
+  var J = function (s) { try { return JSON.parse(s || 'null'); } catch (e) { return null; } };
+  if (h.field === 'checklist_json') { var a = Object.keys(J(h.old) || {}).length, b = Object.keys(J(h.new) || {}).length; return b + ' item' + (b === 1 ? '' : 's') + ' ready' + (b !== a ? ' (was ' + a + ')' : ''); }
+  var cnt = function (v) { var n = 0, d = 0, r = 0; (v || []).forEach(function (x) { r = Math.max(r, x.r); (x.pts || []).forEach(function (p) { n++; if (p.done) d++; }); }); return { n: n, d: d, r: r }; };
+  var A = cnt(J(h.old)), B = cnt(J(h.new)), o = [];
+  if (B.n > A.n) o.push((B.n - A.n) + ' new point' + (B.n - A.n === 1 ? '' : 's') + ', round ' + B.r);
+  if (B.n < A.n) o.push((A.n - B.n) + ' removed');
+  if (B.d > A.d) o.push((B.d - A.d) + ' addressed');
+  if (B.d < A.d) o.push((A.d - B.d) + ' open again');
+  return o.join('; ') || (B.d + '/' + B.n + ' addressed');
 }
 function histGroups(hist) {
   var groups = [], cur = null;
@@ -5401,8 +5971,8 @@ function delDialog() {
   return '<div class="overlay" data-a="del-bg"><form class="dialog" role="alertdialog" aria-modal="true" aria-labelledby="del-h" aria-describedby="del-b" id="del-form" novalidate style="max-width:520px">' +
     '<div style="display:flex;gap:12px;align-items:flex-start"><span style="color:var(--danger-solid);margin-top:2px">' + ic('warn') + '</span><div style="flex:1"><h2 id="del-h" style="margin:0">' + (now ? 'Delete this manuscript?' : 'Ask the admin to delete it?') + '</h2>' +
     '<p id="del-b" style="margin:6px 0 0;color:var(--ink-2)">“' + esc(short(m.title, 110)) + '”</p></div></div>' +
-    '<p style="margin:0;color:var(--muted);font-size:var(--fs-sm)">' + (now ? 'It disappears from the tracker for everyone and the people tagged on it are told. Its history is kept, and the admin can restore it from the trash.' :
-      'You did not create this manuscript, so the admin decides. It stays in the tracker until then, and you will see the answer under your bell.') + '</p>' +
+    '<p style="margin:0;color:var(--muted);font-size:var(--fs-sm)">' + (now ? 'It disappears for everyone and the people tagged on it are told. Its history is kept, and the admin can restore it from the trash.' :
+      'You did not create this manuscript, so the admin decides. It stays until then, and you will see the answer under your bell.') + '</p>' +
     '<div style="display:flex;flex-direction:column;gap:4px"><label class="lbl" for="del-reason">' + (now ? 'Reason (optional)' : 'Why should it be deleted?') + '</label><textarea id="del-reason" class="in" rows="2" data-i="del" data-v="reason" placeholder="For example: duplicate of #31, or the project was stopped">' + esc(d.reason) + '</textarea></div>' +
     (d.err ? '<p class="err" role="alert" style="margin:0">' + esc(d.err) + '</p>' : '') +
     '<div style="display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap"><button type="button" class="btn btn-s" data-a="del-close">Cancel</button><button type="submit" class="btn btn-red"' + (d.busy ? ' disabled' : '') + '>' + (d.busy ? 'Working…' : now ? 'Delete for everyone' : 'Send the request') + '</button></div></form></div>';
@@ -5428,12 +5998,15 @@ function setFont(f) {
   api('api_setPrefs', { fontSize: f }).catch(function () { });
 }
 /* 0.2.9: five colour sets for the menu, the page and the card (Paper is the old one), kept with the account */
-var PALS = [['paper', 'Paper', ['#ECE8DF', '#F8F6F1', '#FFFFFF'], ['#080807', '#131312', '#242422']], ['navy', 'Navy', ['#16305A', '#F8F6F1', '#FFFFFF'], ['#0B1730', '#131312', '#23262C']],
+/* 0.3.7 (BACKLOG 85, admin: "Màu xấu quá, logo màu neon mà, làm cho giống tí, có thể thay đổi cả màu sắc của theme bây giờ
+   luôn"): VIBRA, the logo's colours (violet, blue, cyan) on a cool white page or a deep indigo night; the set for everyone
+   who has not chosen another one. */
+var PALS = [['vibra', 'VIBRA', ['#E9E7F2', '#F3F2F8', '#FBFBFD'], ['#08070F', '#0E0D16', '#1A1830']], ['paper', 'Paper', ['#ECE8DF', '#F8F6F1', '#FFFFFF'], ['#080807', '#131312', '#242422']], ['navy', 'Navy', ['#16305A', '#F8F6F1', '#FFFFFF'], ['#0B1730', '#131312', '#23262C']],
   ['sage', 'Sage', ['#DCE7DD', '#FAF8F3', '#FFFFFF'], ['#0F1C15', '#141413', '#242422']], ['sky', 'Sky and sand', ['#E0E7F1', '#F6F0E4', '#FFFFFF'], ['#0E141E', '#17140F', '#262A31']],
   ['teal', 'Teal', ['#123F3C', '#F7F6F2', '#FFFFFF'], ['#082725', '#121313', '#23272A']]];
-function palPref() { var c = S.boot && S.boot.prefs && S.boot.prefs.palette; return PALS.some(function (x) { return x[0] === c; }) ? c : 'paper'; }
+function palPref() { var c = S.boot && S.boot.prefs && S.boot.prefs.palette; return PALS.some(function (x) { return x[0] === c; }) ? c : 'vibra'; }
 function applyPal() {
-  var c = palPref(); if (c === 'paper') document.documentElement.removeAttribute('data-pal'); else document.documentElement.setAttribute('data-pal', c);
+  var c = palPref(); if (c === 'paper') document.documentElement.removeAttribute('data-pal'); else document.documentElement.setAttribute('data-pal', c); // 0.3.7: vibra is the default
   try { localStorage.setItem('vibra-pal', c); } catch (e) { }
 }
 function setPal(c) {
@@ -5730,12 +6303,12 @@ function popover() {
     }).join('');
     var rel = RELEASES[0], relU = relNew().length > 0, relItem = relU || (Date.now() - new Date(rel.date + 'T00:00:00').getTime()) < 14 * 86400000 ?
       '<button class="nitem' + (relU ? ' unread' : '') + '" data-a="wn-open"><span class="ndot" aria-hidden="true"></span><span><span class="lbl" style="display:block">What\'s new · ' + esc(niceShort(rel.date)) + '</span>' +
-      'VIBRA Tracker ' + esc(rel.v) + ': ' + esc(rel.title) + '</span></button>' : '';
+      'VIBRA Workspace ' + esc(rel.v) + ': ' + esc(rel.title) + '</span></button>' : '';
     var nm = notesMore(), nu = notesUnreadMore();
     return '<div class="np-dim" aria-hidden="true"></div><div class="pop sbpop npop" role="dialog" aria-label="Notifications" data-pop><div class="np-scroll"><div class="pop-h"><b>For you</b><button class="btn btn-q" data-a="read-all"' + (relU || notesUnreadMore() || ns.some(function (n) { return !n.read; }) ? '' : ' disabled') + '>Mark all read</button></div>' + tcBell() + remItems + relItem +
       (ns.length ? ns.map(function (n) {
         return '<button class="nitem' + (n.read ? '' : ' unread') + (n.undone ? ' undone' : '') + '" data-a="notif-open" data-v="' + esc(n.id) + '"' + (n.undone ? ' title="This change was undone"' : '') + '><span class="ndot" aria-hidden="true"></span><span><span class="lbl" style="display:block">' + (isReminder(n) ? '<i class="n-rp">' + (n.ack ? 'Answered' : 'Reply') + '</i>' : '') +
-          esc({ nudge: 'Nudge', ball_to_you: 'Ball to you', changed: 'Changed', ai_update: 'AI update', ai_kept_edit: 'Morning check', celebrate: 'Congratulations', deadline: 'Deadline', reminder: 'Reminder', inbox: 'Quick update', feedback: 'Feedback', inbox_reply: 'Quick update', feedback_reply: 'App feedback', undone: 'Undone', nudge_reply: 'Reply to your nudge', week: 'Your week' }[n.kind] || n.kind) + (n.undone ? ' · undone' : '') + ' · ' + esc(niceShort(n.ts)) + ' ' + esc(String(n.ts).slice(11, 16)) + '</span><span>' + esc(fullNames(n.text)) + '</span></span></button>';
+          esc({ nudge: 'Nudge', ball_to_you: 'Ball to you', changed: 'Changed', ai_update: 'AI update', ai_kept_edit: 'Morning check', celebrate: 'Congratulations', deadline: 'Deadline', register: 'Register the protocol', task: 'Task', reminder: 'Reminder', inbox: 'Quick update', feedback: 'Feedback', inbox_reply: 'Quick update', feedback_reply: 'App feedback', undone: 'Undone', nudge_reply: 'Reply to your nudge', week: 'Your week' }[n.kind] || n.kind) + (n.undone ? ' · undone' : '') + ' · ' + esc(niceShort(n.ts)) + ' ' + esc(String(n.ts).slice(11, 16)) + '</span><span>' + esc(fullNames(n.text)) + '</span></span></button>';
       }).join('') : due.length || relItem ? '' : '<p class="empty" style="margin:0">Nothing yet. You will see here when the ball is passed to you or a manuscript you are on changes.</p>') +
       // 0.3.1 (BACKLOG 29, admin: "see earlier noti phải hiện khi vuốt tới noti cuối"): the last row of the list, not a footer always
       // in view; reaching it loads the next page by itself (npEnd), so fewer come with the data (10)
@@ -5811,7 +6384,7 @@ function nfAiBox() {
     (a.busy ? '<span class="muted" style="font-size:var(--fs-sm)">Usually 5 to 20 seconds.</span>' : '') + '</div>' +
     (done ? '<div class="nfai-ok" role="status">' + ic('check') + '<div><b>Filled by the AI: ' + esc(a.filled.map(function (k) { return NF_LABEL[k] || k; }).join(', ')) + '.</b> Check the fields marked AI.' +
       (a.missing.length ? ' <span class="muted">Not found: ' + esc(a.missing.join(', ')) + '.</span>' : '') + '</div></div>' : '') +
-    (a.dup ? '<div class="warn">This looks like a manuscript already in the tracker: <b>#' + a.dup.id + ' ' + esc(short(a.dup.title, 90)) + '</b>. <button type="button" class="linkbtn" data-a="nf-dup" data-v="' + a.dup.id + '">Open it instead</button></div>' : '') + '</div>';
+    (a.dup ? '<div class="warn">This looks like a manuscript the group already has: <b>#' + a.dup.id + ' ' + esc(short(a.dup.title, 90)) + '</b>. <button type="button" class="linkbtn" data-a="nf-dup" data-v="' + a.dup.id + '">Open it instead</button></div>' : '') + '</div>';
 }
 function nfValues() {
   var f = S.nf; return { title: f.title, type: f.type, journal: f.journal, status: f.status, stage: f.stage, deadline: f.deadline, next: f.next, people: f.people,
@@ -5888,10 +6461,10 @@ function welcomeHtml() {
   return '<div class="overlay tour-ov wel-ov"><div class="dialog tour-dlg wel" role="dialog" aria-modal="true" aria-labelledby="wel-h">' +
     '<div class="wel-logo"><img src="' + LOGO_FULL + '" alt="VIBRA, Visionary International Board for Research and Analgesia"></div>' +
     '<h2 id="wel-h">Welcome' + (first ? ', ' + esc(first) : '') + '</h2>' +
-    '<p class="wel-lead">VIBRA Tracker keeps every manuscript of the group in one shared list: where it stands, who has the ball, what comes next and what is due. What you change, everyone sees, with your name on it.</p>' +
+    '<p class="wel-lead">VIBRA Workspace keeps every manuscript of the group in one shared list: where it stands, who has the ball, what comes next and what is due. What you change, everyone sees, with your name on it.</p>' +
     '<ul class="wel-points">' + pt('list', 'Today shows what needs you. ', 'The whole group in one list, the most urgent first; choose Me for your own work.') +
       pt('ball', 'The ball shows who acts next. ', 'Alerts reach whoever has it, on the phone too.') +
-      pt('spark', 'Quick update. ', 'Tell the tracker what happened, in any language; the AI updates the fields.') + '</ul>' +
+      pt('spark', 'Quick update. ', 'Say what happened, in any language; the AI updates the fields.') + '</ul>' +
     '<div class="wel-btns"><button class="btn btn-p" data-a="onb-next">Show me around (1 minute)</button><button class="btn btn-s" data-a="tour-end">Skip tour</button></div>' +
     '<p class="muted" style="margin:0;font-size:var(--fs-xs);text-align:center">You can replay it any time: Settings, Help.</p></div></div>';
 }
@@ -5996,7 +6569,7 @@ function toastOut() { // 0.2.9: it sinks away instead of vanishing
   g.animate([{ opacity: 1 }, { opacity: 0, translate: '0 16px' }], { duration: 200, easing: 'ease-in', fill: 'forwards' }).onfinish = function () { g.remove(); };
 }
 function errorPage() {
-  return '<div class="wrap" style="max-width:620px;padding-top:56px"><b style="font:700 var(--fs-3xl) var(--sans);color:var(--accent-text);letter-spacing:.04em">VIBRA</b><h1 class="h1" style="margin-top:16px">The tracker could not open</h1><p class="sub">' + esc(S.err) + '</p>' +
+  return '<div class="wrap" style="max-width:620px;padding-top:56px"><b style="font:700 var(--fs-3xl) var(--sans);color:var(--accent-text);letter-spacing:.04em">VIBRA</b><h1 class="h1" style="margin-top:16px">VIBRA Workspace could not open</h1><p class="sub">' + esc(S.err) + '</p>' +
     '<p>If several Google accounts are signed in, open the link in a browser profile or private window where only your VIBRA account is signed in.</p><button class="btn btn-p" data-a="reload">Try again</button></div>';
 }
 
@@ -7094,19 +7667,19 @@ function exportRows(list) {
 }
 function viewName() { return { today: 'Today', board: 'Pipeline', list: 'All manuscripts', dash: 'Dashboard' }[S.view] || 'All manuscripts'; }
 function exportList() { var all = allDerived(); return S.view === 'papers' ? filtered(all) : S.view === 'today' ? filtered(all.filter(function (d) { return d.tier !== 'closed'; })) : S.view === 'list' ? lstFilter(filtered(all), S.lst) : S.view === 'board' ? filtered(all) : all; }
-function stamp() { return 'Exported ' + longDay(S.boot.today) + ' by ' + dispName(me()) + ' · VIBRA Tracker ' + S.boot.version; }
+function stamp() { return 'Exported ' + longDay(S.boot.today) + ' by ' + dispName(me()) + ' · VIBRA Workspace ' + S.boot.version; }
 
 function exportXlsx() {
   S.pop = null; render(); toast('Preparing the Excel file…');
   Promise.all([loadLibs('xlsx'), api('api_exportData')]).then(function (r) {
-    var X = r[1], wb = new ExcelJS.Workbook(); wb.creator = 'VIBRA Tracker'; wb.created = new Date();
+    var X = r[1], wb = new ExcelJS.Workbook(); wb.creator = 'VIBRA Workspace'; wb.created = new Date();
     var logo = wb.addImage({ base64: LOGO_FULL, extension: 'jpeg' }), wm = wb.addImage({ base64: watermark(900, 520, 0.07), extension: 'png' });
     var navy = 'FF17407F';
     function sheet(name, title, cols, rows) {
       var ws = wb.addWorksheet(name, { views: [{ state: 'frozen', ySplit: 6 }], properties: { tabColor: { argb: navy } } });
       ws.addImage(logo, { tl: { col: 0, row: 0 }, ext: { width: 92, height: 80 } });
       ws.getRow(1).height = 22; ws.getRow(2).height = 22; ws.getRow(3).height = 22; ws.getRow(4).height = 10;
-      ws.getCell('C1').value = 'VIBRA Tracker'; ws.getCell('C1').font = { bold: true, size: 16, color: { argb: navy } };
+      ws.getCell('C1').value = 'VIBRA Workspace'; ws.getCell('C1').font = { bold: true, size: 16, color: { argb: navy } };
       ws.getCell('C2').value = title; ws.getCell('C2').font = { size: 12, bold: true };
       ws.getCell('C3').value = stamp(); ws.getCell('C3').font = { size: 9, color: { argb: 'FF626B7A' } };
       ws.getRow(6).values = cols.map(function (c) { return c[1]; });
@@ -7116,7 +7689,7 @@ function exportXlsx() {
       cols.forEach(function (c, i) { ws.getColumn(i + 1).width = c[2]; });
       ws.autoFilter = { from: { row: 6, column: 1 }, to: { row: 6, column: cols.length } };
       ws.addBackgroundImage(wm);
-      ws.headerFooter.oddFooter = '&LVIBRA Tracker&C' + title.replace(/&/g, '&&') + '&RPage &P of &N';
+      ws.headerFooter.oddFooter = '&LVIBRA Workspace&C' + title.replace(/&/g, '&&') + '&RPage &P of &N';
       ws.pageSetup = { orientation: 'landscape', fitToPage: true, fitToWidth: 1, fitToHeight: 0, paperSize: 9, printTitlesRow: '6:6' };
       return ws;
     }
@@ -7129,7 +7702,7 @@ function exportXlsx() {
       X.history.filter(function (h) { return ids[h.id]; }));
     return wb.xlsx.writeBuffer();
   }).then(function (buf) {
-    saveBlob('VIBRA_Tracker_' + S.boot.today + '.xlsx', new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
+    saveBlob('VIBRA_Workspace_' + S.boot.today + '.xlsx', new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
     toast('Excel file downloaded, with the VIBRA logo and watermark.');
   }).catch(function (e) { toast(msg(e), true); });
 }
@@ -7142,7 +7715,7 @@ function exportAuthors(id) {
   if (dirty()) { toast('Save your changes first: the author sheet uses the saved author list.', true); return; }
   toast('Preparing the author sheet…');
   Promise.all([loadLibs('xlsx'), api('api_authorSheet', id)]).then(function (r) {
-    var A = r[1], wb = new ExcelJS.Workbook(); wb.creator = 'VIBRA Tracker'; wb.created = new Date();
+    var A = r[1], wb = new ExcelJS.Workbook(); wb.creator = 'VIBRA Workspace'; wb.created = new Date();
     var logo = wb.addImage({ base64: LOGO_FULL, extension: 'jpeg' }), wm = wb.addImage({ base64: watermark(900, 520, 0.07), extension: 'png' });
     var navy = 'FF17407F', grey = 'FF626B7A', amber = 'FFFFF4D6';
     var affs = [], idx = {};
@@ -7152,16 +7725,16 @@ function exportAuthors(id) {
     });
     var corr = A.authors.filter(function (a) { return a.corr; }), anyEq = A.authors.some(function (a) { return a.equal; });
     var todo = []; A.authors.forEach(function (a) { a.check.forEach(function (c) { todo.push(a.order + '. ' + a.name + ': ' + c); }); });
-    if (!corr.length) todo.unshift('No corresponding author is marked in the tracker: click an author tag and tick Corresponding.');
+    if (!corr.length) todo.unshift('No corresponding author is marked: click an author tag and tick Corresponding.');
     var title = '#' + A.id + ' ' + A.title;
     function top(ws, sub, c) {
       ws.addImage(logo, { tl: { col: 0, row: 0 }, ext: { width: 92, height: 80 } });
       [1, 2, 3].forEach(function (n) { ws.getRow(n).height = 22; }); ws.getRow(4).height = 10;
-      ws.getCell(c + '1').value = 'VIBRA Tracker · Author sheet for submission'; ws.getCell(c + '1').font = { bold: true, size: 15, color: { argb: navy } };
+      ws.getCell(c + '1').value = 'VIBRA Workspace · Author sheet for submission'; ws.getCell(c + '1').font = { bold: true, size: 15, color: { argb: navy } };
       ws.getCell(c + '2').value = sub; ws.getCell(c + '2').font = { size: 12, bold: true };
       ws.getCell(c + '3').value = stamp() + ' · Personal details: share only for this submission'; ws.getCell(c + '3').font = { size: 9, color: { argb: grey } };
       ws.addBackgroundImage(wm);
-      ws.headerFooter.oddFooter = '&LVIBRA Tracker&C' + ('Authors of #' + A.id).replace(/&/g, '&&') + '&RPage &P of &N';
+      ws.headerFooter.oddFooter = '&LVIBRA Workspace&C' + ('Authors of #' + A.id).replace(/&/g, '&&') + '&RPage &P of &N';
     }
     /* sheet 1: title page */
     var tp = wb.addWorksheet('Title page', { properties: { tabColor: { argb: navy } }, views: [{ showGridLines: false }] });
@@ -7207,22 +7780,22 @@ function exportAuthors(id) {
     });
     rn++;
     line('To check before submitting', todo.length ? todo.join('\n') : 'Nothing missing: every author has an affiliation, an e-mail and an ORCID on file.', todo.length ? { fill: amber, h: Math.min(400, todo.length * 16 + 4) } : {});
-    line('Source', 'Author order, roles and notes: VIBRA Tracker #' + A.id + '. Names, affiliations, e-mails and ORCID: the Authors tab of the VIBRA Tracker Sheet (members list when an author is missing there).', { font: { size: 9, color: { argb: grey } }, h: 28 });
+    line('Source', 'Author order, roles and notes: VIBRA Workspace #' + A.id + '. Names, affiliations, e-mails and ORCID: the Authors tab of the group\'s Sheet (members list when an author is missing there).', { font: { size: 9, color: { argb: grey } }, h: 28 });
     tp.pageSetup = { orientation: 'portrait', fitToPage: true, fitToWidth: 1, fitToHeight: 0, paperSize: 9 };
     /* sheet 2: one row per author */
     var ws = wb.addWorksheet('Authors', { views: [{ state: 'frozen', ySplit: 6 }], properties: { tabColor: { argb: navy } } });
     top(ws, short(title, 110), 'C');
     var cols = [['order', '#', 5], ['name', 'Full name', 28], ['given', 'Given name(s)', 20], ['family', 'Family name', 18], ['role', 'Role', 22], ['nums', 'Affiliation no.', 11],
-      ['affs', 'Affiliations', 60], ['email', 'E-mail', 30], ['other', 'Other e-mails', 30], ['orcid', 'ORCID', 21], ['group', 'Group', 13], ['listed', 'Name in the tracker', 24], ['check', 'To check', 46]];
+      ['affs', 'Affiliations', 60], ['email', 'E-mail', 30], ['other', 'Other e-mails', 30], ['orcid', 'ORCID', 21], ['credit', 'Contributions (CRediT)', 34], ['group', 'Group', 13], ['listed', 'Name in the list', 24], ['check', 'To check', 46]]; // 0.3.7: CRediT
     ws.getRow(6).values = cols.map(function (c) { return c[1]; });
     ws.getRow(6).font = { bold: true, color: { argb: 'FFFFFFFF' } }; ws.getRow(6).alignment = { vertical: 'middle', wrapText: true };
     ws.getRow(6).eachCell(function (c) { c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: navy } }; });
     A.authors.forEach(function (a) {
       var row = ws.addRow([a.order, a.name, a.given, a.family, authorRole(a), a.nums.join(', '), a.affiliations.map(function (t, i) { return a.nums[i] + '  ' + t; }).join('\n'),
-        a.emails[0] || '', a.emails.slice(1).join('; '), a.orcid ? { text: a.orcid, hyperlink: 'https://orcid.org/' + a.orcid } : '', a.group, a.listed, a.check.join('\n')]);
+        a.emails[0] || '', a.emails.slice(1).join('; '), a.orcid ? { text: a.orcid, hyperlink: 'https://orcid.org/' + a.orcid } : '', (a.credit || []).join('; '), a.group, a.listed, a.check.join('\n')]);
       row.alignment = { vertical: 'top', wrapText: true };
       if (a.orcid) row.getCell(10).font = { color: { argb: navy }, underline: true };
-      if (a.check.length) row.getCell(13).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: amber } };
+      if (a.check.length) row.getCell(14).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: amber } };
       if (a.corr || a.first) row.getCell(5).font = { bold: true };
     });
     cols.forEach(function (c, i) { ws.getColumn(i + 1).width = c[2]; });
@@ -7262,7 +7835,7 @@ function exportPdf() {
     function decorate(data) {
       mark();
       doc.addImage(LOGO_FULL, 'JPEG', 12, 7, 16, 13.9);
-      doc.setFont('helvetica', 'bold'); doc.setFontSize(14); doc.setTextColor(23, 64, 127); doc.text('VIBRA Tracker', 31, 13);
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(14); doc.setTextColor(23, 64, 127); doc.text('VIBRA Workspace', 31, 13);
       doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(57, 65, 80); doc.text(pdfText(viewName() + ': ' + rows.length + ' manuscripts'), 31, 18.5);
       doc.setFontSize(8); doc.setTextColor(98, 107, 122); doc.text(pdfText(stamp()), W - 12, 13, { align: 'right' });
       doc.text('VIBRA - Visionary International Board for Research and Analgesia', 12, H - 7);
@@ -7278,8 +7851,8 @@ function exportPdf() {
     // the table paints over the mark: repeat it on top of every page, lighter, so it shows through the rows too
     var n = doc.internal.getNumberOfPages();
     for (var i = 1; i <= n; i++) { doc.setPage(i); if (doc.GState) { doc.saveGraphicsState(); doc.setGState(new doc.GState({ opacity: 0.045 })); doc.setFont('helvetica', 'bold'); doc.setFontSize(150); doc.setTextColor(23, 64, 127); doc.text('VIBRA', W / 2, H / 2 + 26, { align: 'center', angle: 22 }); doc.restoreGraphicsState(); } }
-    doc.setProperties({ title: 'VIBRA Tracker - ' + viewName(), author: 'VIBRA', creator: 'VIBRA Tracker ' + S.boot.version });
-    saveBlob('VIBRA_Tracker_' + S.boot.today + '.pdf', doc.output('blob'));
+    doc.setProperties({ title: 'VIBRA Workspace - ' + viewName(), author: 'VIBRA', creator: 'VIBRA Workspace ' + S.boot.version });
+    saveBlob('VIBRA_Workspace_' + S.boot.today + '.pdf', doc.output('blob'));
     toast('PDF downloaded, with the VIBRA logo and watermark.');
   }).catch(function (e) { toast(msg(e), true); });
 }
@@ -7289,7 +7862,7 @@ function csv() {
   var lines = [['ID', 'Title', 'Status', 'Stage', 'Ball is with', 'Corresponding', 'First author', 'Next actions', 'Deadline', 'Journal', 'IF', 'MS ID', 'DOI', 'Preprint', 'Last update'].map(q).join(',')].concat(list.map(function (d) {
     var m = d.m; return [m.id, m.title, m.status, m.stage, peopleText(m.people), corrName(m), firstName(m), fullNames(m.next), m.deadline, m.journal, m.impact_factor, m.ms_id, m.doi, m.preprint || '', m.last_update].map(q).join(',');
   }));
-  var a = document.createElement('a'); a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent('﻿' + lines.join('\r\n')); a.download = 'VIBRA_tracker_' + S.boot.today + '.csv'; a.target = '_blank';
+  var a = document.createElement('a'); a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent('﻿' + lines.join('\r\n')); a.download = 'VIBRA_workspace_' + S.boot.today + '.csv'; a.target = '_blank';
   document.body.appendChild(a); a.click(); a.remove(); S.pop = null; render(); toast('CSV of ' + list.length + ' manuscripts downloaded.');
 }
 function endTour() {
@@ -7468,6 +8041,93 @@ var ACT = {
     var inp = document.getElementById('f-note'), text = inp ? inp.value.trim() : ''; if (!text) { toast('Write the note first.'); return; }
     var id = S.sel; inp.disabled = true;
     api('api_addNote', id, text).then(function (r) { applyRow(r.row); if (S.draft && !dirty()) openDraft(r.row); else if (S.draft) S.draft.base = r.row.version; render(); loadHistory(id); toast('Note added.'); })
+      .catch(function (e) { inp.disabled = false; toast(msg(e), true); });
+  },
+  // 0.3.7 (BACKLOG 75): the steps, the reviewers' points, Before submitting, CRediT, Decisions
+  'stp-open': function () { var m = curM(); if (!m) return; S.stp = S.stp && S.stp.mid === m.id ? null : { mid: m.id, i: null }; render(); },
+  stp: function (v) { var m = curM(); if (!m) return; S.stp = { mid: m.id, i: v === 'rej' ? 'rej' : +v }; render(); },
+  'stp-no': function () { S.stp = null; render(); },
+  'stp-go': function () { stepGo(); },
+  'rv-tick': function (v) {
+    var p = String(v).split(':'), mid = +p[0], pid = p[1], m = mById(mid), x = m && rvPts(m).filter(function (y) { return y.p.id === pid; })[0]; if (!x) return;
+    var on = !x.p.done;
+    partGo(mid, { k: 'pt', id: pid, done: on }, function (mm) { rvPts(mm).forEach(function (y) { if (y.p.id === pid) { if (on) { y.p.done = S.boot.today + ' 00:00'; y.p.by = me().key; } else { delete y.p.done; delete y.p.by; } } }); });
+  },
+  'rv-who': function (v) { S.rvw = S.rvw === v ? null : v; render(); },
+  'rv-set': function (v) {
+    var p = String(v).split('|'), pid = p[0], who = p[1] || '', mid = S.sel; S.rvw = null;
+    partGo(mid, { k: 'who', id: pid, who: who }, function (mm) { rvPts(mm).forEach(function (y) { if (y.p.id === pid) y.p.who = who; }); });
+  },
+  'rv-del': function (v) { var mid = S.sel; S.rvw = null; partGo(mid, { k: 'del', id: v }, function (mm) { (mm.review || []).forEach(function (r) { r.pts = r.pts.filter(function (x) { return x.id !== v; }); }); }); },
+  'rv-add': function () {
+    var inp = document.getElementById('rv-new'), t = inp ? inp.value.trim() : '', mid = S.sel, m = mById(mid); if (!m) return;
+    if (!t) { toast('Write the point first.'); if (inp) inp.focus(); return; }
+    var P = rvParse(t), R = m.review || [], r = R.length ? R[R.length - 1].r : 1;
+    partGo(mid, { k: 'add', r: r, rev: P.rev, t: P.t }, function (mm) { var rr = (mm.review = mm.review || []).filter(function (x) { return x.r === r; })[0]; if (!rr) { rr = { r: r, decision: '', received: '', due: '', pts: [] }; mm.review.push(rr); } rr.pts.push({ id: 'tmp' + Date.now(), rev: P.rev, t: P.t, who: '' }); });
+  },
+  'ck-tick': function (v) {
+    var p = String(v).split(':'), mid = +p[0], k = p[1], m = mById(mid); if (!m) return;
+    var on = !(m.checklist || {})[k];
+    partGo(mid, { k: 'ck', key: k, on: on }, function (mm) { mm.checklist = mm.checklist || {}; if (on) mm.checklist[k] = { at: S.boot.today, by: me().key }; else delete mm.checklist[k]; });
+  },
+  // BACKLOG 80 c: Manuscript & files
+  'docs-reload': function () { var m = curM(); if (m) docsLoad(m.id, true); },
+  'doc-get': function (v) { docGet(v); },
+  'doc-del': function (v) {
+    var m = curM(); if (!m || !window.VIBRA_WEB) return;
+    if (S.docDel !== v) { S.docDel = v; toast('Tap Delete again to delete this file.', false, 4000); setTimeout(function () { if (S.docDel === v) S.docDel = null; }, 4000); return; }
+    S.docDel = null; window.VIBRA_WEB.fdel(v).then(function () { toast('Deleted.'); docsLoad(m.id, true); loadHistory(m.id); }, function (e) { toast(msg(e), true); });
+  },
+  'cm-f': function (v) { S.cmf = v; render(); },
+  'cm-add': function () {
+    var m = curM(), t = document.getElementById('cm-tx'), D = m && S.docs && S.docs[m.id]; if (!m) return;
+    var c = { section: (document.getElementById('cm-sec') || {}).value, type: (document.getElementById('cm-ty') || {}).value, text: t ? t.value.trim() : '', version: D && D.ms[0] ? D.ms[0].version : 0 };
+    if (!c.text) { toast('Write the comment first.'); if (t) t.focus(); return; }
+    t.disabled = true; api('api_addComment', m.id, c).then(function () { S.cmf = 'open'; docsLoad(m.id, true); }, function (e) { t.disabled = false; toast(msg(e), true); });
+  },
+  'cm-res': function (v) { var m = curM(), p = String(v).split(':'); if (m) api('api_resolveComment', p[0], p[1] === '1').then(function () { docsLoad(m.id, true); }, function (e) { toast(msg(e), true); }); },
+  'cm-del': function (v) { var m = curM(); if (m) api('api_resolveComment', v, 'delete').then(function () { docsLoad(m.id, true); }, function (e) { toast(msg(e), true); }); },
+  'rr-open': function () { S.rrq = S.rrq ? null : { keys: [] }; render(); },
+  'rr-tog': function (v) { if (!S.rrq) return; var k = S.rrq.keys, i = k.indexOf(v); if (i >= 0) k.splice(i, 1); else k.push(v); render(); },
+  'rr-send': function () {
+    var m = curM(); if (!m || !S.rrq || !S.rrq.keys.length) return;
+    var due = (document.getElementById('rr-due2') || {}).value || '', note = (document.getElementById('rr-note') || {}).value || '', keys = S.rrq.keys.slice(); S.rrq = null; render();
+    api('api_requestReview', m.id, keys, due, note).then(function (r) { applyRow(r.row); if (S.draft && !dirty()) openDraft(r.row); else if (S.draft) S.draft.base = r.row.version; render(); loadHistory(m.id); toast('Review requested: ' + keys.map(whoShort).join(', ') + '.'); }, function (e) { toast(msg(e), true); });
+  },
+  // BACKLOG 80 a: tasks
+  'tk-tick': function (v) {
+    var p = String(v).split(':'), mid = +p[0], id = p[1], m = mById(mid), x = m && (m.tasks || []).filter(function (y) { return y.id === id; })[0]; if (!x) return;
+    var on = !x.done; partGo(mid, { k: 'task-done', id: id, done: on }, function (mm) { (mm.tasks || []).forEach(function (y) { if (y.id === id) { if (on) { y.done = S.boot.today + ' 00:00'; y.dby = me().key; } else { delete y.done; delete y.dby; } } }); });
+  },
+  'tk-who': function (v) { S.tkw = S.tkw === v ? null : v; render(); },
+  'tk-set': function (v) { var p = String(v).split('|'), id = p[0], who = p[1] || '', mid = S.sel; S.tkw = null; partGo(mid, { k: 'task-edit', id: id, who: who }, function (mm) { (mm.tasks || []).forEach(function (y) { if (y.id === id) y.who = who; }); }); },
+  'tk-del': function (v) { var mid = S.sel; S.tkw = null; partGo(mid, { k: 'task-del', id: v }, function (mm) { mm.tasks = (mm.tasks || []).filter(function (y) { return y.id !== v; }); }); },
+  'tk-add': function () {
+    var t = document.getElementById('tk-new'), w = document.getElementById('tk-who'), d = document.getElementById('tk-dd'), mid = S.sel, x = { t: t ? t.value.trim() : '', who: w ? w.value : '', due: d ? d.value : '' };
+    if (!x.t) { toast('Write the task first.'); if (t) t.focus(); return; }
+    partGo(mid, { k: 'task-add', items: [x] }, function (mm) { (mm.tasks = mm.tasks || []).push({ id: 'tmp' + Date.now(), t: x.t, who: x.who, due: x.due }); });
+  },
+  'tk-next': function () { var m = curM(); if (!m) return; var L = nextAsTasks(m); if (!L.length) return; partGo(m.id, { k: 'task-add', items: L }, function (mm) { L.forEach(function (x, i) { (mm.tasks = mm.tasks || []).push({ id: 'tmp' + i + Date.now(), t: x.t, who: x.who, due: x.due }); }); }); },
+  'ck-na': function (v) { // 0.3.7 (BACKLOG 80 b)
+    var p = String(v).split(':'), mid = +p[0], k = p[1];
+    partGo(mid, { k: 'ck', key: k, na: true }, function (mm) { mm.checklist = mm.checklist || {}; mm.checklist[k] = { at: S.boot.today, by: me().key, na: 1 }; });
+  },
+  'rv-round': function () { // 0.3.7 (BACKLOG 80 b): Add round by hand
+    var mid = S.sel, dec = document.getElementById('rr-dec'), due = document.getElementById('rr-due'); if (!mid) return;
+    var o = { k: 'round', decision: dec ? dec.value : '', due: due ? due.value : '' }; S.rvr = false;
+    partGo(mid, o, function (mm) { var R = mm.review = mm.review || []; R.push({ r: R.length ? R[R.length - 1].r + 1 : 1, decision: o.decision, received: '', due: o.due, pts: [] }); });
+  },
+  'rv-round-open': function () { S.rvr = !S.rvr; render(); },
+  'cr-tog': function (v) {
+    var a = S.ed && S.ed.kind === 'au' ? S.draft.authors[S.ed.i] : null, c = (S.boot.vocab.credit || [])[+v]; if (!a || !c) return;
+    var L = (a.credit || []).slice(), i = L.indexOf(c); if (i >= 0) L.splice(i, 1); else L.push(c);
+    a.credit = (S.boot.vocab.credit || []).filter(function (x) { return L.indexOf(x) >= 0; }); render();
+  },
+  'cr-copy': function (v) { var m = mById(v); if (m) copyText(crText(m), 'Copied the contributions statement.', 'Could not copy. Select the list and copy it by hand.'); },
+  'dec-add': function () {
+    var inp = document.getElementById('dec-new'), text = inp ? inp.value.trim().replace(/^decision:\s*/i, '') : ''; if (!text) { toast('Write the decision first.'); if (inp) inp.focus(); return; }
+    var id = S.sel; inp.disabled = true;
+    api('api_addNote', id, 'Decision: ' + text).then(function (r) { applyRow(r.row); if (S.draft && !dirty()) openDraft(r.row); else if (S.draft) S.draft.base = r.row.version; render(); loadHistory(id); toast('Decision added.'); })
       .catch(function (e) { inp.disabled = false; toast(msg(e), true); });
   },
   undo: function (v) { ACT['undo-g'](String(v)); },
@@ -7774,7 +8434,8 @@ var ACT = {
   'qu-to-fb': function () { var q = S.qu || {}; S.qu = null; S.fb = { kind: 'Bug', text: q.text || '', images: q.images || [], err: '' }; render(); var t = document.getElementById('fb-text'); if (t) t.focus(); },
   'fb-bg': function (v, e) { if (e.target.classList && e.target.classList.contains('overlay')) ACT['fb-close'](); },
   'fb-kind': function (v) { if (S.fb) { S.fb.kind = v; render(); } },
-  'img-del': function (v) { var p = v.split(':'); if (S[p[0]]) { S[p[0]].images.splice(+p[1], 1); render(); } },
+  'img-del': function (v) { var p = v.split(':'), o = S[p[0]]; if (o) { o.images.splice(+p[1], 1); if (o.up) o.up.splice(+p[1], 1); render(); } },
+  'img-retry': function (v) { var p = v.split(':'), o = S[p[0]]; if (o) { preStart(p[0], o, +p[1]); render(); } }, // BACKLOG 81
   'desk-reload': function () { S.desk = null; S.deskReport = null; render(); },
   'desk-apply': function () {
     var txt = String(S.deskBatch || '').trim(), batch;
@@ -7884,6 +8545,11 @@ Object.assign(ACT, {
   'tdb-ask': function (v) { S.tdb = S.tdb && S.tdb.mid === Number(v) ? null : { mid: Number(v), note: '' }; render(); var t = document.getElementById('tdb-note'); if (t) t.focus({ preventScroll: true }); },
   'tdb-cancel': function () { S.tdb = null; render(); },
   // 0.3.5 (BACKLOG 64): the layout, My work and Papers as blocks or a list, To confirm from the bell
+  'tabbar-set': function (v) { // BACKLOG 79
+    var p = S.boot.prefs = S.boot.prefs || {}, on = v === 'on'; if ((p.tabbar !== false) === on) return;
+    p.tabbar = on; keepBoot(); render(); toast(on ? 'Tab bar on: at the bottom of your phone.' : 'Tab bar off: the menu and the floating buttons are back.');
+    api('api_setPrefs', { tabbar: on }).catch(function (e) { toast(msg(e), true); });
+  },
   'layout-set': function (v) {
     var p = S.boot.prefs = S.boot.prefs || {}, nw = v === 'new'; if (UIN() === nw) return;
     p.layout = nw ? 'new' : 'classic'; keepBoot(); render(); toast(nw ? 'New layout: My work, Papers and Group.' : 'Classic layout: Today, Pipeline, All manuscripts and To-do.');
@@ -8068,14 +8734,14 @@ document.addEventListener('submit', function (e) {
   if (e.target.id === 'td-form') { e.preventDefault(); tdSubmit(); }
 });
 document.addEventListener('paste', function (e) {
-  var key = S.qu ? 'qu' : S.fb ? 'fb' : S.ad && S.adtp ? 'adtp' : S.nf && S.nfai && quickMode() === 'instant' ? 'nfai' : null; if (!key || !e.clipboardData) return;
+  var key = S.qu ? 'qu' : S.fb ? 'fb' : S.ad && S.adtp ? 'adtp' : S.nf && S.nfai && quickMode() === 'instant' ? 'nfai' : e.target && e.target.id === 'tt-text' ? 'tt' : null; if (!key || !e.clipboardData) return;
   var files = Array.prototype.slice.call(e.clipboardData.items || []).filter(function (it) { return it.kind === 'file' && /^image\//.test(it.type); }).map(function (it) { return it.getAsFile(); });
-  if (files.length) { e.preventDefault(); addImages(key, files); }
+  if (files.length) { e.preventDefault(); if (key === 'tt') ttToQu(files); else addImages(key, files); }
 });
 document.addEventListener('toggle', function (e) { if (S.nf && e.target.classList && e.target.classList.contains('nf-more')) S.nf.moreOpen = e.target.open; }, true);
 document.addEventListener('dragover', function (e) { var z = e.target.closest && e.target.closest('[data-drop]'); if (z) { e.preventDefault(); z.classList.add('over'); } });
 document.addEventListener('dragleave', function (e) { var z = e.target.closest && e.target.closest('[data-drop]'); if (z) z.classList.remove('over'); });
-document.addEventListener('drop', function (e) { var z = e.target.closest && e.target.closest('[data-drop]'); if (z) { e.preventDefault(); z.classList.remove('over'); addImages(z.getAttribute('data-drop'), e.dataTransfer && e.dataTransfer.files); } });
+document.addEventListener('drop', function (e) { var z = e.target.closest && e.target.closest('[data-drop]'), F = e.dataTransfer && e.dataTransfer.files; if (z) { z.classList.remove('over'); if (!F || !F.length) return; e.preventDefault(); if (z.getAttribute('data-drop') === 'tt') ttToQu(F); else addImages(z.getAttribute('data-drop'), F); } }); // BACKLOG 82: text dropped into a box stays text
 /* chart tooltip: value first, label second; text only (textContent) */
 var vtip = document.createElement('div'); vtip.id = 'vtip'; vtip.setAttribute('role', 'tooltip'); document.body.appendChild(vtip);
 function showTip(el) {
@@ -8133,9 +8799,15 @@ document.addEventListener('change', function (e) {
   if (t.id === 'fs-range') { setFont(t.value); return; } // 0.2.7
   if (i === 'd' && S.draft && t.tagName === 'SELECT') { S.draft[t.getAttribute('data-v')] = t.value; render(); }
   if (i === 'ed-note') render();
+  if (t.getAttribute('data-tkdue')) { var tid = t.getAttribute('data-tkdue'), tm = curM(); if (tm) partGo(tm.id, { k: 'task-edit', id: tid, due: t.value }, function (mm) { (mm.tasks || []).forEach(function (y) { if (y.id === tid) y.due = t.value; }); }); } // BACKLOG 80 a
+  if (t.getAttribute('data-ckv')) { // 0.3.7 (BACKLOG 80 b): a value of Before submitting, saved when the box is left
+    var cp = t.getAttribute('data-ckv').split(':'), cm = mById(cp[0]), cx = cm && (cm.checklist || {})[cp[1]], val = t.value.trim();
+    if (cm && val !== (cx && cx.v || '')) partGo(+cp[0], { k: 'ck', key: cp[1], v: val }, function (mm) { mm.checklist = mm.checklist || {}; if (val) mm.checklist[cp[1]] = { at: S.boot.today, by: me().key, v: val }; else delete mm.checklist[cp[1]]; });
+  }
   if (i === 'remchk' && S.rem) { S.rem[t.getAttribute('data-v')] = t.checked; if (t.getAttribute('data-v') === 'allDay' && !t.checked && !S.rem.time) S.rem.time = '09:00'; render(); }
   if (i === 'pref') { var o = {}; o[t.getAttribute('data-v')] = t.checked; S.boot.prefs = S.boot.prefs || {}; S.boot.prefs[t.getAttribute('data-v')] = t.checked; if (t.getAttribute('data-v') === 'sbCollapsed') render(); api('api_setPrefs', o).then(function () { toast('Saved.'); }).catch(function (e2) { toast(msg(e2), true); }); }
-  if (t.getAttribute('data-file')) { addImages(t.getAttribute('data-file'), t.files); t.value = ''; }
+  if (t.getAttribute('data-file')) { if (t.getAttribute('data-file') === 'tt') ttToQu(t.files); else addImages(t.getAttribute('data-file'), t.files); t.value = ''; }
+  if (t.getAttribute('data-doc')) { docUpload(t.getAttribute('data-doc'), t.files); t.value = ''; } // BACKLOG 80 c
   if (i === 'notif') { var o = {}; o[t.getAttribute('data-v')] = t.checked; api('api_setNotifPrefs', o).then(function (n) { var p = person(me().key); if (p) p.notif = n; toast('Saved.'); }).catch(function (e2) { t.checked = !t.checked; toast(msg(e2), true); }); }
   if (i === 'dash-blk' || i === 'dash-sec') {
     var dp = dashPref(), v = t.getAttribute('data-v');
@@ -8206,6 +8878,7 @@ document.addEventListener('keydown', function (e) {
   if (t.classList && t.classList.contains('cbo') && (e.key === 'ArrowDown' || e.key === 'ArrowUp')) { e.preventDefault(); var sib = e.key === 'ArrowDown' ? t.nextElementSibling : t.previousElementSibling; if (sib) sib.focus(); return; }
   if (e.key === 'Escape') closeTop(); // 0.2.8: the same order as Back
   if (e.key === 'Enter' && t.id === 'f-note') { e.preventDefault(); ACT.note(); }
+  if (e.key === 'Enter' && (t.id === 'rv-new' || t.id === 'dec-new' || t.id === 'tk-new')) { e.preventDefault(); ACT[t.id === 'rv-new' ? 'rv-add' : t.id === 'tk-new' ? 'tk-add' : 'dec-add'](); } // 0.3.7
   if (e.key === 'Enter' && t.id === 'ng-note') { e.preventDefault(); ACT['ng-send'](); }
   if (e.key === 'Enter' && t.id === 'tdx-note') { e.preventDefault(); ACT['tdx-save'](); }
   if (e.key === 'Enter' && t.id === 'tde-note') { e.preventDefault(); ACT['tde-save'](); }
@@ -8479,8 +9152,8 @@ function updCheck(force) {
 document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') updCheck(false); });
 if (EMBED) { var baseEl = document.querySelector('base'); if (baseEl) baseEl.setAttribute('target', '_blank'); } // links leave the app window, never replace it
 if (window.__VIBRA_BLOCKED) {
-  app.innerHTML = '<div class="blocked"><img src="' + LOGO_MARK + '" alt="" width="48" height="48"><h1 class="h1" style="margin-top:14px">Open VIBRA Tracker directly</h1>' +
-    '<p class="sub">For your safety the tracker does not run inside other websites. Open it from its own address or from the installed VIBRA app.</p></div>';
+  app.innerHTML = '<div class="blocked"><img src="' + LOGO_MARK + '" alt="" width="48" height="48"><h1 class="h1" style="margin-top:14px">Open VIBRA Workspace directly</h1>' +
+    '<p class="sub">For your safety the app does not run inside other websites. Open it from its own address or from the installed VIBRA app.</p></div>';
 } else {
   var kept = keptBoot();
   if (kept) { S.boot = kept; S.boot.locks = {}; S.stale = true; started(kept); S.booting = Date.now(); }

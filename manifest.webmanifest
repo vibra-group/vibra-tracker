@@ -1,14 +1,14 @@
 {
-  "name": "VIBRA Tracker",
+  "name": "VIBRA Workspace",
   "short_name": "VIBRA",
-  "description": "The VIBRA research group's manuscript tracker: its own window, notifications for what concerns you, your last data readable offline.",
+  "description": "The VIBRA research group's workspace for its manuscripts: its own window, notifications for what concerns you, your last data readable offline.",
   "id": "./",
   "start_url": "./app/?source=app",
   "scope": "./",
   "display": "standalone",
   "orientation": "any",
-  "background_color": "#F8F6F1",
-  "theme_color": "#F1EEE6",
+  "background_color": "#FCFBF9",
+  "theme_color": "#F5F4F0",
   "lang": "en",
   "categories": ["productivity", "education", "medical"],
   "icons": [
