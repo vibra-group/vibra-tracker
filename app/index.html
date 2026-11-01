@@ -5,12 +5,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <script>
-/* VIBRA Tracker 0.3.7 on the group's own address (vibra-group.github.io), built by tools/build_web.py from app/Index.html.
+/* VIBRA Tracker 0.3.8 on the group's own address (vibra-group.github.io), built by tools/build_web.py from app/Index.html.
    This page is the VIBRA app: installable, with notifications and the last data readable offline.
    Google confirms who the member is ("Sign in with Google"), or a one-time code made on a signed-in device does; the
    admin's helper checks that once and gives a session; every server call then goes to the helper with that session
    and runs the tracker's own code as the member. */
-window.VIBRA_WEB = { helper: "https://script.google.com/macros/s/AKfycbzNE__5onOmvia3VaFHjybAJ5G35cnDJCN1ysuiNAYlgOC5xsbCi0xyDnmoJP7lEaFR3w/exec", clientId: "619243121375-pi18v7vjgvcue7qo6455uids4v28megi.apps.googleusercontent.com", classic: "https://script.google.com/macros/s/AKfycbzkG5eCrxQvQtJgfksL92G9vtl2I4LLEew-Az4qYlDxX6V1QfgtIrwGjYOGq9CQ0r3aWA/exec", built: "0.3.7" };
+window.VIBRA_WEB = { helper: "https://script.google.com/macros/s/AKfycbzNE__5onOmvia3VaFHjybAJ5G35cnDJCN1ysuiNAYlgOC5xsbCi0xyDnmoJP7lEaFR3w/exec", clientId: "619243121375-pi18v7vjgvcue7qo6455uids4v28megi.apps.googleusercontent.com", classic: "https://script.google.com/macros/s/AKfycbzkG5eCrxQvQtJgfksL92G9vtl2I4LLEew-Az4qYlDxX6V1QfgtIrwGjYOGq9CQ0r3aWA/exec", built: "0.3.8" };
 (function () {
   var W = window.VIBRA_WEB, KEY = 'vibra-web-session', S = null, queue = [], gisInit = false, tries = 0, gateOn = false;
   var ua = navigator.userAgent || '', IOS = /iPad|iPhone|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
@@ -217,7 +217,7 @@ window.VIBRA_WEB = { helper: "https://script.google.com/macros/s/AKfycbzNE__5onO
   W.qsave = function (d) { return ask({ api: 'qsave', mid: d.mid || '', text: d.text || '', images: d.images || [], files: d.files || [], reply_to: d.reply_to || '', cid: d.cid || '', note: d.note || '', pre: d.pre || [] }); }; // 0.3.6 (BACKLOG 72): the screenshots in the same call; 0.3.7 (BACKLOG 81): pre = those sent when picked
   W.ping = function () { return ask({ api: 'ping' }); }; // 0.3.6 (BACKLOG 72): wakes the helper before a Save
   /* 0.3.7 (BACKLOG 80 c): the manuscript's versions and the files, kept in the helper's Drive (sent whole, base64) */
-  W.fput = function (d) { return ask({ api: 'fput', mid: d.mid, kind: d.kind, name: d.name, mime: d.mime, data: d.data }).then(function (x) { return x.r; }); };
+  W.fput = function (d) { return ask({ api: 'fput', mid: d.mid, kind: d.kind, name: d.name, mime: d.mime, data: d.data, cat: d.cat || '', replace: d.replace || '' }).then(function (x) { return x.r; }); }; // 0.3.8: category, replace
   W.fget = function (id) { return ask({ api: 'fget', doc: id }).then(function (x) { return x.r; }); };
   W.fdel = function (id) { return ask({ api: 'fdel', doc: id }).then(function (x) { return x.r; }); };
   W.qpart = function (d) { return ask({ api: 'qpart', id: d.id, k: d.k, p: d.p, data: d.data }); };
@@ -385,7 +385,7 @@ if(top==="https://script.google.com")return;if(top==="https://vibra-group.github
 <script>window.__VIBRA_U=window.__VIBRA_U||"";window.__VIBRA_V=window.__VIBRA_V||"";window.__T0=Math.round(performance.now());</script>
 <script>/* Ask the server for the data at once, before the rest of the page is read (saves a few hundred ms). */
 try{if(!window.__VIBRA_BLOCKED&&window.google&&google.script&&google.script.run){window.__bootP=new Promise(function(res,rej){google.script.run.withSuccessHandler(res).withFailureHandler(rej).api_bootstrap();});}}catch(e){}</script>
-<script>try{var t=localStorage.getItem("vibra-theme");if(t){document.documentElement.setAttribute("data-theme",t==="system"?(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"):t);}var z=localStorage.getItem("vibra-fs");z={s:"2",m:"3",l:"5"}[z]||z;if(/^[124-6]$/.test(z||""))document.documentElement.setAttribute("data-fs",z);var c=localStorage.getItem("vibra-pal");if(/^(navy|sage|sky|teal|vibra)$/.test(c||""))document.documentElement.setAttribute("data-pal",c);else if(c!=="paper")document.documentElement.setAttribute("data-pal","vibra");}catch(e){}</script>
+<script>try{var t=localStorage.getItem("vibra-theme");if(t){document.documentElement.setAttribute("data-theme",t==="system"?(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"):t);}var z=localStorage.getItem("vibra-fs");z={s:"2",m:"3",l:"5"}[z]||z;if(/^[124-6]$/.test(z||""))document.documentElement.setAttribute("data-fs",z);var c=localStorage.getItem("vibra-pal");if(/^(navy|sage|sky|teal|vibra)$/.test(c||""))document.documentElement.setAttribute("data-pal",c);else if(c!=="paper")document.documentElement.setAttribute("data-pal","vibra");var f=localStorage.getItem("vibra-face");if(f==="system"||f==="literata"){document.documentElement.setAttribute("data-face",f);if(f==="literata"){var l=document.createElement("link");l.rel="stylesheet";l.id="face-lit";l.href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,400..700&display=swap";document.head.appendChild(l);}}}catch(e){}</script>
 <script>/* BACKLOG 45 (for 0.3.3, admin: "Ấn ấn vào các ô nhập, tự nhiên pop up zoom lên 1 tí rồi không tự thu lại"): iPhone and iPad
    Safari zoom in on a box whose text is under 16 px when it is tapped, and stay zoomed; maximum-scale=1 stops that zoom
    only (iOS still lets a person pinch to zoom). Not on Android, where it would stop pinching. */
@@ -419,7 +419,7 @@ try{if(!window.__VIBRA_BLOCKED&&window.google&&google.script&&google.script.run)
   --sc-drafting:#1AA0B0;
   --warn-bg:#F8EBD3;--warn-fg:#8A4B0F;--unsure:#B26A00;--badge-bg:#B3261E;--on-solid:#FFFFFF;
   --inverse-bg:#1A1D24;--inverse-fg:#F2F2EE;--inverse-muted:#C9CCD2;--toast-err-bg:#7A1E12;
-  --sev-crit:#d03b3b;--sev-warn:#fab219;--sev-serious:#ec835a;--pg-prep:#D69E1C;--pg-jour:#2F6FD0;--pg-done:#2E8B57;
+  --sev-crit:#d03b3b;--sev-warn:#fab219;--sev-serious:#ec835a;--pg-prep:#A97A0A; /* 0.3.8 (BACKLOG 98, admin: "ok"): was #D69E1C, 2.0:1 on the bar's track; now 3.5:1 */--pg-jour:#2F6FD0;--pg-done:#2E8B57;
   --del-fg:#B42318;--del-bg:#FEF0EE;--del-bg-hover:#FDE2DE;--del-line:rgba(180,35,24,.22);--del-note-fg:#7A271A;
   --danger-solid:#C8321F;--danger-solid-hover:#B02A19;--hover-strong:var(--surface-2);--brand-ink:#14396E;
   --brand-2:#7C6CF0;--brand-3:#1BAF7A;--brand-grad:linear-gradient(120deg,var(--accent),var(--brand-2) 55%,var(--brand-3));
@@ -429,6 +429,7 @@ try{if(!window.__VIBRA_BLOCKED&&window.google&&google.script&&google.script.run)
   --fs-2xs:calc(11px*var(--fz,1));--fs-xs:calc(12px*var(--fz,1));--fs-sm:calc(13px*var(--fz,1));--fs-md:calc(14px*var(--fz,1));--fs-lg:calc(15px*var(--fz,1));--fs-xl:calc(16px*var(--fz,1));--fs-2xl:calc(19px*var(--fz,1));--fs-3xl:calc(21px*var(--fz,1));--fs-4xl:calc(24px*var(--fz,1));--fs-5xl:calc(28px*var(--fz,1));--fs-6xl:calc(34px*var(--fz,1));
 }
 :root[data-theme="dark"]{
+  --pg-prep:#D69E1C;
   /* 0.3.4 (BACKLOG 61-2): the one set of colour tokens, dark (0.2.3 admin: a darker page, the sidebar darker still) */
   --bg:#131312;--surface:#242422;--surface-2:#2E2E2B;--line:rgba(255,255,255,.10);--line-2:rgba(255,255,255,.20);
   --ink:#F8F6F0;--ink-2:#E2DFD6;--muted:#B3B0A6;--accent:#3B70D4;--accent-fg:#FFFFFF;--accent-text:#BCD2F8;
@@ -1354,6 +1355,9 @@ html.dragging,html.dragging *{cursor:grabbing!important;-webkit-user-select:none
 @keyframes fsIn{from{opacity:0;transform:translateY(-6px)}}
 @media (min-width:1024px){.shell.pshown .fstat{left:calc(var(--sbw) + (100vw - var(--sbw) - var(--pw) - 28px) / 2);max-width:calc(100vw - var(--sbw) - var(--pw) - 60px)}}
 @media (max-width:899px){.fstat{left:50%;top:calc(64px + env(safe-area-inset-top));max-width:calc(100vw - 24px)}}
+/* 0.3.8 (BACKLOG 86, admin: "Popup nổi lên saving dưới nền popup nên không thấy gì cả"; "chỉ cần trạng thái không nằm chìm
+   dưới popup là đc"): below 1024 px the card covers the page (z-index 60), so Saving…, Saved and The AI is reading… go above it */
+@media (max-width:1023px){.fstat{z-index:61}}
 @media (prefers-reduced-motion:reduce){.fstat .stale-pill,.stale-pill.busy,.calm .fstat .stale-pill.busy{animation:none;background-image:none}}
 /* 0.2.5: the sidebar's middle scrolls on a short screen (a phone on its side); the top and the bottom stay */
 .sb-mid{display:flex;flex-direction:column;flex:1 1 auto;min-height:0;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;margin:0 -4px;padding:0 4px}
@@ -2142,12 +2146,10 @@ tr.pp-h td{color:var(--ink)}tr.pp-h.win td{color:var(--ok-fg)}tr.pp-h.rej td{col
    the text still opens the edit line. Only that line moves. */
 .sw-l{display:none}
 @media (hover:none){
-  .mwt .td-row[data-sw]{position:relative;overflow:hidden}
-  .mwt .td-row[data-sw] > :not(.td-acts){transform:translateX(var(--sx,0px));transition:transform .28s cubic-bezier(.2,.8,.2,1)}
-  .mwt .td-row[data-sw].sw-open{--sx:calc(-1 * var(--sw-w,192px))}
+  .mwt .td-row[data-sw]{--sw-w:192px;padding:0}
   .mwt .td-row[data-sw]:has(.td-acts[style*="--sw-n:2"]){--sw-w:128px}
-  .mwt .td-row[data-sw].sw-drag > *{transition:none}
-  .mwt .td-row[data-sw] .td-acts{display:flex;opacity:1;gap:0;position:absolute;top:0;bottom:0;right:0;transform:translateX(calc(100% + var(--sx,0px)));transition:transform .28s cubic-bezier(.2,.8,.2,1)}
+  .mwt .td-row[data-sw] > .sw-front{align-items:center;gap:10px;padding:9px 2px}
+  .mwt .td-row[data-sw] .td-acts{display:flex;gap:0}
   .mwt .td-row[data-sw] .td-acts .btn{min-height:0;min-width:0;height:100%;width:64px;flex:0 0 64px;margin:0;padding:0;border:0;border-radius:0;box-shadow:none;flex-direction:column;justify-content:center;gap:3px;font-size:var(--fs-2xs);font-weight:600;color:var(--on-solid) !important;opacity:1}
   .mwt .td-row[data-sw] .td-acts .ic{width:18px;height:18px}
   .mwt .td-row[data-sw] .sw-l{display:block}
@@ -2321,6 +2323,228 @@ tr.pp-h td{color:var(--ink)}tr.pp-h.win td{color:var(--ok-fg)}tr.pp-h.rej td{col
 .ritem-go{cursor:pointer;border-radius:8px}
 @media (hover:hover){.ritem-go:hover{background:var(--hover)}}
 .ritem-go:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+/* ---------- 0.3.8 (BACKLOG 88, 89, 91 to 93): the paper's page, as blocks (the admin chose C; refined with
+   better-typography, better-ui and make-interfaces-feel-better: one surface for every block, quiet tools, no rules
+   between rows, tabular numbers, 44 px targets on touch, press 0.96, hover only where a pointer hovers) */
+.shell.ppg{--pgx:16px}
+@media (min-width:600px){.shell.ppg{--pgx:clamp(20px,3.2vw,44px)}}
+.shell.ppg .panel{position:fixed!important;top:0!important;bottom:0!important;right:0!important;left:var(--ppl,0px)!important;width:auto!important;max-width:none!important;max-height:none!important;
+  margin:0!important;border:0!important;border-radius:0!important;box-shadow:none!important;z-index:60!important;flex:none!important;padding:0 var(--pgx) 0!important;background:var(--bg)!important;overflow-y:auto;overscroll-behavior:contain}
+@media (min-width:900px){.shell.ppg .panel{padding-right:max(var(--pgx),84px)!important}} /* clear of the two floating buttons */
+.shell.ppg .pscrim{display:none!important}
+.shell.ppg .fstat{z-index:61}
+.shell.ppg ~ .fabs{right:max(16px,env(safe-area-inset-right))!important} /* where they are without a paper open */
+.shell.ppg .panel .p-top{margin:0 calc(-1 * var(--pgx));padding:max(10px,env(safe-area-inset-top)) var(--pgx) 10px;background:color-mix(in srgb,var(--bg) 92%,transparent);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+@media (min-width:900px){.shell.ppg .panel .p-top{margin-right:-84px;padding-right:84px}}
+.shell.ppg .p-top .back{display:inline-flex}.shell.ppg .p-top .close{display:none}
+.shell.ppg .dbar-x::before{left:calc(6px - var(--pgx))}
+.pg-nav{display:inline-flex;align-items:center;gap:2px}.pg-nav .ibtn{width:34px;height:34px}.pg-nav .ibtn:disabled{opacity:.35}
+.pg-n{font-size:var(--fs-xs);color:var(--muted);padding:0 4px;font-variant-numeric:tabular-nums;white-space:nowrap}
+@media (max-width:599px){.pg-n{display:none}.p-top .bk-l{max-width:96px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}
+.pg-num{font-variant-numeric:tabular-nums}
+.pg-in{container-type:inline-size;max-width:1180px;margin:0 auto;padding-bottom:40px}
+.pg-head{margin:18px 0 0}
+.pg .p-title{margin:0;font-size:var(--fs-5xl);line-height:1.2;letter-spacing:-.01em}.pg .p-title > span{text-wrap:balance;max-width:46ch}
+@container (max-width:599px){.pg .p-title{font-size:var(--fs-3xl);line-height:1.25}}
+.pg-meta{margin:8px 0 0;font-size:var(--fs-sm);line-height:1.5;color:var(--ink-2);text-wrap:pretty}
+.pg-meta i{font-style:normal;font-size:var(--fs-xs);font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--accent-text)}
+.pg-f{white-space:nowrap}
+@container (max-width:599px){.pg-meta .pg-f{display:block;white-space:normal}.pg-meta .pg-dot{display:none}}
+.pg-tpen{display:inline-grid;vertical-align:middle;margin:0 0 0 6px!important;width:30px!important;height:30px!important}
+.pg-grid{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(0,1fr);grid-template-areas:"s r" "l r";grid-template-rows:auto 1fr;gap:16px 24px;margin-top:20px;align-items:start}
+.pg-s{grid-area:s}.pg-l{grid-area:l}.pg-r{grid-area:r}
+.pg-in.g3{max-width:1680px}.pg-grid.g3{grid-template-columns:minmax(0,1fr) minmax(0,1.1fr) minmax(0,.95fr);grid-template-areas:"s l r";grid-template-rows:auto}
+.pg-c-h{margin:0 2px -4px;font:600 var(--fs-xs)/1.2 var(--sans);letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.pg-col{display:grid;gap:16px;align-content:start;min-width:0}
+@container (max-width:899px){
+  .pg-grid{display:flex;flex-direction:column;align-items:stretch;gap:12px;margin-top:16px}.pg-col{display:contents}
+  .pg-sum{order:1}.pg-grid .p-reg{order:2}#pg-tell{order:3}#pb-nx{order:4}#pb-rv{order:5}#pb-ck{order:6}#pb-doc{order:7}#pb-notes{order:8}#pb-dec{order:9}#pb-au{order:10}#pb-lk{order:11}#pb-hist{order:12}
+}
+/* the summary: label, value, a quiet pencil; a line opens in place to be changed */
+.pg-sum{margin:0;padding:4px 16px;border-radius:16px;background:var(--surface-2)}
+.pg-sr{display:grid;grid-template-columns:96px minmax(0,1fr) 32px;align-items:start;column-gap:12px;padding:10px 0;border-top:1px solid var(--line)}.pg-sr:first-child{border-top:0}
+.pg-sr dt{margin:0;padding-top:1px;font-size:var(--fs-sm);color:var(--muted)}
+.pg-sr dd{margin:0;min-width:0;font-size:var(--fs-md);line-height:1.5;text-wrap:pretty;overflow-wrap:break-word}
+.pg-sr dd .pw-line{display:block}.pg-sr dd .pw-bar{margin-top:8px}
+@container (max-width:599px){.pg-sr{grid-template-columns:76px minmax(0,1fr) 32px;column-gap:10px}.pg-sum{padding:2px 12px 2px 14px}}
+.pg-late{color:var(--danger);font-weight:500}
+.pg-pen{position:relative;width:32px;height:32px;margin:-6px 0;display:grid;place-items:center;border:0;border-radius:10px;background:none;color:var(--muted);opacity:.75;cursor:pointer;
+  transition-property:opacity,color,background-color,scale;transition-duration:.15s;transition-timing-function:ease-out}
+.pg-pen .ic{width:16px;height:16px}.pg-pen::after{content:"";position:absolute;inset:-6px}
+.pg-pen[aria-expanded="true"]{opacity:1;color:var(--accent-text);background:var(--accent-soft)}
+@media (hover:hover){.pg-pen:hover{opacity:1;color:var(--accent-text);background:var(--accent-soft)}}
+.pg-ed{margin:10px 0 2px;padding:12px;border-radius:12px;background:var(--surface);box-shadow:0 0 0 1px var(--accent-line);display:grid;gap:10px}
+.pg-ed .p-grid,.pg-ed .p-sec{margin:0}.pg-ed .pw-pick,.pg-ed .stp-ask{margin:0}
+.pg-ed-x{display:flex;justify-content:flex-end}.pg-ed-x .btn{min-height:32px}
+.pg-ids{margin-top:14px}
+.pg .p-tell{margin:0;border-radius:16px;padding:14px 16px}
+@keyframes pgFlash{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--accent) 45%,transparent)}100%{box-shadow:0 0 0 10px transparent}}
+@media (prefers-reduced-motion:no-preference){.pg .p-tell.pg-flash{animation:pgFlash .7s ease-out 1}}
+.pg .p-reg{margin:0;border-radius:16px}
+/* blocks: one surface, a hairline ring and a soft lift */
+.pbox{background:var(--surface);border:1px solid transparent;border-radius:16px;box-shadow:0 0 0 1px var(--line),0 1px 2px rgba(16,24,40,.04);padding:10px 16px 12px;min-width:0}
+:root[data-theme="dark"] .pbox{box-shadow:0 0 0 1px var(--line)}
+.pb-h{display:flex;align-items:center;gap:8px;min-height:36px}
+.pbox h3{margin:0;font-size:var(--fs-lg);font-weight:600;line-height:1.3;white-space:nowrap}
+.pb-sub{font-size:var(--fs-sm);color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.pb-more{border:0;background:none;padding:6px 4px;font:500 var(--fs-sm) var(--sans);color:var(--accent-text);cursor:pointer;white-space:nowrap;display:inline-flex;align-items:center;gap:6px}
+.pb-more .ic{width:15px;height:15px}
+.pb-h .pb-more{margin-left:auto}
+@media (hover:hover){.pb-more:hover{text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:from-font}}
+.pg-add{position:relative;margin-left:auto;flex:none;width:32px;height:32px;display:grid;place-items:center;border:0;border-radius:10px;background:none;color:var(--muted);cursor:pointer;
+  transition-property:color,background-color,scale,rotate;transition-duration:.15s;transition-timing-function:ease-out}
+.pg-add .ic{width:18px;height:18px}.pg-add::after{content:"";position:absolute;inset:-6px}
+.pb-more + .pg-add{margin-left:2px}
+.pg-add[aria-expanded="true"]{color:var(--accent-text);background:var(--accent-soft);rotate:45deg}
+@media (hover:hover){.pg-add:hover{color:var(--accent-text);background:var(--accent-soft)}}
+.pg-pen:active,.pg-add:active,.pg-i:active{scale:.96}
+.pb-b{margin-top:4px;display:grid;gap:8px;min-width:0}
+.pb-b > .p-sec{margin:0}
+/* + opens a block's add row; until then the block shows only what it holds */
+.pbox:not(.adding) .pb-b > .rv-add,.pbox:not(.adding) .pb-b > .rv-rnd,.pbox:not(.adding) .pb-b > .rv-rbtn{display:none}
+.pbox.adding .pb-b > .rv-add{margin-top:2px}
+/* an empty block is one quiet line */
+.pbox.pe{background:transparent;box-shadow:0 0 0 1px var(--line);padding:6px 8px 6px 16px}
+.pbox.pe h3{font-size:var(--fs-md)}
+.pbox.pf{padding:0}
+.pb-fold{width:100%;border:0;background:none;padding:6px 8px 6px 16px;color:inherit;font:inherit;text-align:left;cursor:pointer;border-radius:16px}
+.pb-chev{margin-left:auto;width:32px;height:32px;display:grid;place-items:center;color:var(--muted);transition:rotate .2s cubic-bezier(.2,0,0,1)}.pb-chev .ic{width:16px;height:16px}
+.pbox.pf.open .pb-chev{rotate:180deg}
+.pbox.pf .pb-b{padding:0 16px 12px}
+.pbox.pf:not(.open){background:transparent;box-shadow:0 0 0 1px var(--line)}
+/* rows: no rules between them, space and a hover tint instead */
+.pr{display:flex;align-items:flex-start;gap:10px;margin:0 -8px;padding:8px;border-radius:10px;transition:background-color .15s ease-out}
+@media (hover:hover){.pr:hover{background:var(--surface-2)}}
+.pr-d{flex:none;width:44px;margin-top:2px;font-size:var(--fs-xs);color:var(--muted)}
+.pr-c{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.pr-t{font-size:var(--fs-md);line-height:1.45;text-wrap:pretty;overflow-wrap:break-word}
+.pr-clamp{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden;cursor:pointer}
+.pg .p-title{display:flex;align-items:flex-start;gap:6px}.pg .p-title > span{min-width:0}
+.pr-m{font-size:var(--fs-xs);line-height:1.45;color:var(--muted)}
+.pg-tag{display:inline-block;padding:0 6px;border-radius:5px;font-size:var(--fs-xs);font-weight:500;line-height:1.5;color:var(--ink-2);background:var(--surface-2);white-space:nowrap}
+.pg-sub{display:flex;align-items:center;gap:10px;margin-top:4px;font-size:var(--fs-xs);font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.pg-sub .seg{margin-left:auto;text-transform:none;letter-spacing:0}
+.pg-ver{flex:none;min-width:30px;text-align:center;margin-top:1px;padding:1px 6px;border-radius:6px;font-size:var(--fs-xs);font-weight:600;color:var(--muted);box-shadow:inset 0 0 0 1px var(--line-2)}
+.pg-ver.cur{color:var(--accent-text);background:var(--accent-soft);box-shadow:none}
+.pg-fic{flex:none;width:30px;display:grid;place-items:center;color:var(--muted);margin-top:1px}.pg-fic .ic{width:16px;height:16px}
+.pg-older{justify-self:start;font-size:var(--fs-xs);padding:0 0 2px}
+.dk-add{display:flex;flex-wrap:wrap;align-items:center;gap:8px}.dk-add select{width:auto;min-width:0;flex:0 1 220px}.dk-or{font-size:var(--fs-xs);color:var(--muted)}
+.dk-rr{margin-top:-4px}
+.dec-add2{display:grid;grid-template-columns:140px minmax(0,1fr) minmax(0,1fr) auto;gap:8px}
+@container (max-width:599px){.dec-add2{grid-template-columns:1fr auto}.dec-add2 #dec-new,.dec-add2 #dec-why{grid-column:1/-1}}
+/* the tools of a line: quiet until pointed at; Delete turns red only then */
+.pg-acts{flex:none;display:inline-flex;align-items:center;margin:-4px -4px -4px 0}
+.pg-i{position:relative;width:32px;height:32px;display:grid;place-items:center;border:0;border-radius:9px;background:none;color:var(--muted);opacity:.65;cursor:pointer;
+  transition-property:opacity,color,background-color,scale;transition-duration:.15s;transition-timing-function:ease-out}
+.pg-i .ic{width:16px;height:16px}
+.pg-del{min-height:30px;padding:0 10px}
+@media (hover:hover){.pr:hover .pg-i,.pg-i:focus-visible{opacity:1}.pg-i:hover{color:var(--accent-text);background:var(--accent-soft)}.pg-i.del:hover{color:var(--danger);background:var(--t-due-bg)}}
+/* on a touch screen: a swipe to the left on the line shows its tools (as the own to-do's) */
+@media (hover:none){
+  .pg .sw-row{--sw-w:144px;padding:0}
+  .pg .sw-row > .sw-front{align-items:flex-start;gap:10px;padding:8px;border-radius:inherit}
+  .pg .sw-row .pg-acts{margin:0;background:var(--surface-2)}
+  .pg .sw-row .pg-i{opacity:1;width:48px;height:100%;border-radius:0}
+  .pg .sw-row .pg-i.del{color:#fff;background:var(--danger)}
+}
+.pg .savebar{margin:16px calc(-1 * var(--pgx)) 0;padding:12px var(--pgx) max(12px,env(safe-area-inset-bottom));bottom:0}
+@media (min-width:900px){.pg .savebar{margin-right:-84px;padding-right:84px}}
+.pg .del-zone,.pg .delz{margin-top:24px}
+@media (prefers-reduced-motion:reduce){.pg-add,.pb-chev,.pg-pen,.pg-i{transition:none}}
+.keys-d{max-width:560px}.keys-g h3{margin:14px 0 6px;font-size:var(--fs-sm);font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.keys-g dl{margin:0;display:grid;gap:2px}.keys-g dl > div{display:grid;grid-template-columns:150px 1fr;gap:12px;align-items:center;padding:5px 0;border-top:1px solid var(--line)}
+.keys-g dt{margin:0;white-space:nowrap}.keys-g dd{margin:0;font-size:var(--fs-md)}
+/* 0.3.8 (BACKLOG 98): Papers: the order above its filters; blocks with less to read; checked with better-colors, -typography, -ui */
+.pp-mode{display:flex;align-items:center;gap:8px;margin:18px 0 0}
+.pp-seg{display:inline-flex;flex:none;padding:3px;border-radius:999px;border:1px solid transparent;background:var(--surface-2);box-shadow:inset 0 0 0 1px var(--line)}
+.pp-seg button{position:relative;appearance:none;border:0;margin:0;height:30px;padding:0 14px;border-radius:999px;background:transparent;font:500 var(--fs-sm)/1 var(--sans);color:var(--ink-2);white-space:nowrap;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background-color .15s,color .15s,box-shadow .15s,scale .15s ease-out}
+.pp-seg button::after{content:"";position:absolute;inset:-5px 0}
+.pp-seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(16,24,40,.08),0 0 0 1px var(--line)}
+.pp-who{position:relative;display:inline-flex;align-items:center;gap:4px;height:36px;padding:0 10px 0 14px;border-radius:999px;border:1px solid transparent;box-shadow:inset 0 0 0 1px var(--line);background:var(--surface);font:500 var(--fs-sm)/1 var(--sans);color:var(--ink-2);white-space:nowrap;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background-color .15s,scale .15s ease-out}
+.pp-who .ic{width:16px;height:16px;color:var(--muted)}.pp-who::after{content:"";position:absolute;inset:-2px 0}
+.pp-fil{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 26px}
+.pp-f{position:relative;display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border-radius:999px;border:1px solid transparent;box-shadow:inset 0 0 0 1px var(--line);background:var(--surface);font:500 var(--fs-sm)/1 var(--sans);color:var(--ink-2);white-space:nowrap;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background-color .15s,color .15s,scale .15s ease-out}
+.pp-f::after{content:"";position:absolute;inset:-4px 0}
+.pp-f b{font-weight:500;color:var(--muted);font-variant-numeric:tabular-nums}
+.pp-f[aria-pressed="true"]{background:var(--ink);color:var(--bg);box-shadow:none}.pp-f[aria-pressed="true"] b{color:color-mix(in srgb,var(--bg) 72%,var(--ink))}
+.pp-dot{width:7px;height:7px;border-radius:50%;background:var(--t-due-fg)}
+.pp-f:active,.pp-seg button:active,.pp-who:active{scale:.96}
+.pp-f:focus-visible,.pp-seg button:focus-visible,.pp-who:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (hover:hover){.pp-f:not([aria-pressed="true"]):hover,.pp-who:hover{background:var(--surface-2)}.pp-seg button:not([aria-pressed="true"]):hover{color:var(--ink)}}
+@media (max-width:599px){
+  .pp-mode{margin-top:14px}.pp-seg button{height:34px;padding:0 16px}.pp-who{height:40px;margin-left:auto}
+  .pp-fil{flex-wrap:nowrap;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none;margin:10px -16px 18px;padding:2px 16px;-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 28px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 28px),transparent)}
+  .pp-fil::-webkit-scrollbar{display:none}.pp-f{flex:none;height:36px}
+}
+.pop.menu.whose{width:240px}.whose .mi{flex-direction:row;align-items:center;gap:10px}.whose .mi>span{flex:1}
+.whose .mi .n{font-weight:500;color:var(--muted);font-variant-numeric:tabular-nums}.whose .mi .ic{width:16px;height:16px;flex:none;margin:0;color:var(--accent-text)}.whose .ck0{width:16px;flex:none}
+.block.bk{position:relative;overflow:hidden;gap:6px;padding:15px 16px 0}
+.block.bk .bl-t{font-size:var(--fs-lg);line-height:1.35;color:var(--ink);text-wrap:pretty}
+.block.bk .bl-n{line-height:1.45}
+.bk-f{display:flex;align-items:center;gap:8px;min-height:24px;margin-top:auto;padding:8px 0 14px}
+.bk-f .bl-avs{margin-left:auto;padding-left:4px}.bk-f .trk-chip{margin-left:0}.bk-f .cel-tick{flex:none}
+.bk-dl{display:inline-flex;align-items:center;height:22px;padding:0 8px;border-radius:6px;font:500 var(--fs-xs)/1 var(--sans);font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--ink-2);background:var(--surface-2)}
+.bk-dl.due{color:var(--t-due-fg);background:var(--t-due-bg)}.bk-dl.won{color:var(--ok-fg);background:var(--ok-bg)}
+.bk-up{font:400 var(--fs-xs)/1 var(--sans);color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.bk-edge{position:absolute;left:0;right:0;bottom:0;height:3px;background:var(--surface-2)}
+.bk-edge i{display:block;height:100%;background:var(--accent)}.bk-edge i.pg-prep{background:var(--pg-prep)}.bk-edge i.pg-jour{background:var(--pg-jour)}.bk-edge i.pg-done{background:var(--pg-done)}.bk-edge i.pg-off{background:var(--muted)}
+@media (max-width:599px){.block.bk{padding:13px 13px 0}.block.bk .bl-t{font-size:var(--fs-md);line-height:1.4;-webkit-line-clamp:3}.block.bk .bl-p{display:flex}.block.bk .bl-n{display:-webkit-box}.bk-f{padding:6px 0 12px}}
+/* 0.3.8 (BACKLOG 97): the next actions with their tags, the merged To do, the @ picker */
+.nx-r{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-top:1px solid var(--line)}
+.nx-list .nx-r:first-child{border-top:0}
+.nx-r .td-chk{margin-top:1px}
+.nx-wait{flex:none;display:grid;place-items:center;width:22px;height:22px;color:var(--muted)}.nx-wait .ic{width:16px;height:16px}
+.nx-t{flex:1;min-width:0;font-size:var(--fs-md);line-height:1.5;overflow-wrap:break-word;text-wrap:pretty}
+.nx-m{display:block;margin-top:2px;font-size:var(--fs-xs);line-height:1.4;color:var(--muted);font-variant-numeric:tabular-nums}
+.nx-hint{margin:10px 0 0;font-size:var(--fs-xs);line-height:1.45}
+.nx-add{margin-top:10px}
+.tg{display:inline-flex;align-items:center;gap:5px;max-width:100%;padding:1px 8px 1px 2px;margin:0 1px;border-radius:999px;background:var(--accent-soft);color:var(--accent-text);font-weight:500;line-height:1.35;white-space:nowrap;vertical-align:baseline}
+.tg .bav{width:18px;height:18px;margin:0;box-shadow:none;flex:none}
+.mw-shared .nx-r{padding:10px 12px}.mw-shared .td-row{padding-left:12px;padding-right:12px}
+.mw-own{margin-top:18px}
+.mw-own-h{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 2px 8px}
+.mw-own-h .lbl{display:inline-flex;align-items:center;gap:6px;margin:0}.mw-own-h .lbl .ic{width:14px;height:14px}
+.pg-from{font-size:var(--fs-xs);white-space:nowrap}
+.tagpick{position:fixed;z-index:200;min-width:220px;max-width:min(320px,calc(100vw - 16px));padding:6px;border-radius:14px;background:var(--surface);box-shadow:0 0 0 1px var(--line),0 12px 32px -8px rgba(15,20,32,.28);overscroll-behavior:contain}
+.tp-i{display:flex;align-items:center;gap:10px;min-height:40px;padding:6px 10px;border-radius:8px;cursor:pointer;font-size:var(--fs-md);-webkit-tap-highlight-color:transparent}
+.tp-i[aria-selected="true"]{background:var(--accent-soft)}
+@media (hover:hover){.tp-i:not([aria-selected="true"]):hover{background:var(--surface-2)}}
+.tp-i .bav{width:24px;height:24px;margin:0;box-shadow:none;flex:none}
+.tp-i span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tp-i small{color:var(--muted);font-size:var(--fs-xs)}
+@media (max-width:599px){.tp-i{min-height:44px}}
+/* 0.3.8 (BACKLOG 100): the typeface chosen in Settings; the logo keeps Geist */
+:root[data-face="system"]{--sans:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',sans-serif;--serif:var(--sans)}
+:root[data-face="system"] .h1,:root[data-face="system"] .p-title,:root[data-face="system"] .dsec h2,:root[data-face="system"] .dialog h2,:root[data-face="system"] .wel h2,:root[data-face="system"] .td-cal .frow h2{font-weight:650;letter-spacing:-.015em}
+:root[data-face="literata"]{--sans:'Literata',Georgia,'Times New Roman',serif;--serif:var(--sans)}
+:root[data-face="literata"] body{font-optical-sizing:auto}
+:root[data-face="literata"] .h1,:root[data-face="literata"] .p-title,:root[data-face="literata"] .dsec h2,:root[data-face="literata"] .dialog h2,:root[data-face="literata"] .wel h2,:root[data-face="literata"] .td-cal .frow h2{font-weight:600;letter-spacing:-.01em}
+:root[data-face] .sb-brand b,:root[data-face] .sb-brand span,:root[data-face] .topbar .tb-brand b,:root[data-face] .brand b{font-family:'Geist',ui-sans-serif,system-ui,sans-serif}
+.face-row{display:grid;gap:8px;margin-top:4px}
+.face-opts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.face-o{display:grid;gap:2px;align-content:start;text-align:left;min-height:64px;padding:10px 12px;border-radius:12px;border:1px solid transparent;box-shadow:inset 0 0 0 1px var(--line-2);background:var(--surface);color:var(--ink);cursor:pointer;-webkit-tap-highlight-color:transparent;transition:box-shadow .15s,background-color .15s,scale .15s ease-out}
+.face-o b{font-size:var(--fs-xl);font-weight:600;line-height:1.2}.face-o span{font-size:var(--fs-xs);line-height:1.35;color:var(--muted);font-family:var(--sans)}
+.face-o.fo-geist b{font-family:'Geist',ui-sans-serif,system-ui,sans-serif}.face-o.fo-system b{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}.face-o.fo-literata b{font-family:'Literata',Georgia,serif}
+.face-o[aria-pressed="true"]{box-shadow:inset 0 0 0 2px var(--accent);background:var(--accent-soft)}
+.face-o:active{scale:.96}.face-o:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (hover:hover){.face-o:not([aria-pressed="true"]):hover{background:var(--surface-2)}}
+@media (max-width:420px){.face-opts{grid-template-columns:minmax(0,1fr)}.face-o{min-height:52px}}
+/* 0.3.8 (BACKLOG 101; admin: "tôi muốn kiểu mấy icon ở dưới, vuốt là hiện á, kiểu hiện tại cà giựt quá"; "Đúng vậy"): a line that
+   swipes is two layers: its tools wait still underneath at the right, and the line itself (.sw-front, opaque) slides away to
+   show them, following the finger frame by frame (a transform on that one layer); the page holds still while the swipe is
+   sideways; a flick opens or closes; the tools fade in as they are uncovered. On a computer the front is not a box at all. */
+.sw-front{display:contents}
+@media (hover:none){
+  .mwt .td-row[data-sw],.pg .sw-row{position:relative;overflow:hidden;touch-action:pan-y}
+  .mwt .td-row[data-sw] > .sw-front,.pg .sw-row > .sw-front{position:relative;z-index:1;display:flex;flex:1;min-width:0;background:var(--surface);
+    transform:translate3d(0,0,0);transition:transform .34s cubic-bezier(.2,.9,.25,1)}
+  .mwt .td-row[data-sw].sw-open > .sw-front,.pg .sw-row.sw-open > .sw-front{transform:translate3d(calc(-1 * var(--sw-w)),0,0)}
+  .mwt .td-row[data-sw] > .td-acts,.pg .sw-row > .pg-acts{position:absolute;top:0;bottom:0;right:0;z-index:0;opacity:0;visibility:hidden;transition:opacity .2s ease-out,visibility 0s linear .2s}
+  .mwt .td-row[data-sw].sw-open > .td-acts,.pg .sw-row.sw-open > .pg-acts,.mwt .td-row[data-sw].sw-drag > .td-acts,.pg .sw-row.sw-drag > .pg-acts{opacity:1;visibility:visible;transition:opacity .2s ease-out,visibility 0s}
+  .sw-drag > .sw-front,.sw-drag > .td-acts,.sw-drag > .pg-acts{transition:none!important}
+}
+@media (hover:none) and (prefers-reduced-motion:reduce){.mwt .td-row[data-sw] > .sw-front,.pg .sw-row > .sw-front{transition-duration:.01s}}
+@media (hover:hover){.mwt-row > .td-acts{order:1}.mwt-row .mwt-d{order:2}}
 </style>
 </head>
 <body>
@@ -2412,8 +2636,19 @@ var TIPS = {
 /* 0.3.4 (admin: "không cần what's new vì chỉ là chỉnh giao diện nhỏ, sửa lại các what's new, cái nào nhỏ quá hoặc sửa
    bug nhỏ nhỏ thì ghi chung chung ngắn gọn thôi"): a release gets a card only when members will notice something new;
    small changes and fixes are one short line. The page's own version is PAGE_VERSION, not the latest card. */
-var PAGE_VERSION = '0.3.7'; // = APP_VERSION in Code.gs (test/server_test.js checks)
+var PAGE_VERSION = '0.3.8'; // = APP_VERSION in Code.gs (test/server_test.js checks)
 var RELEASES = [
+  { v: '0.3.8', date: '2026-10-31', title: 'Each paper on its own page', items: [ // 0.3.8 (BACKLOG 86 to 93)
+    ['book', 'A paper opens as a page: everything at a glance in blocks, two columns on a computer. Back returns to your list; the arrows go to the next paper.', 'new'],
+    ['pencil', 'Change where it is, the deadline, the ball or the next step with the pencil on its line. Each thing is said once.', 'new'],
+    ['file', 'Files: Download, Replace and Delete beside each version (swipe on a phone); other files by kind, such as Figures or Supplementary material.', 'new'],
+    ['ball', 'Next actions: write @ and a name on a line that is someone\'s job. They hold the ball, the line is in their To do, and a tick marks it done.', 'new'],
+    ['check', 'My work: your move, your tasks and your own to-do are one To do.', 'new'],
+    ['sliders', 'Papers: choose Priority or Recent; each block shows less, with the deadline at the bottom when there is one. Three columns on a wide screen.', 'new'],
+    ['pencil', 'Choose the typeface in Settings, Appearance: today\'s, your device\'s own, or Literata, a serif made for reading on screens.', 'new'],
+    ['chat', 'Notes apart from History; a note becomes your to-do or a next action. Decisions say what was chosen, why and of what kind.'],
+    ['desktop', 'Keyboard shortcuts: press ? to see them (for example U for Quick update, J and K for the next and previous paper).', 'new'],
+    ['check', 'Small fixes and improvements.']] }, // admin, 31 Oct 2026: "Thay đổi lớn mới cần ghi what's new, thay đổi nhỏ hoặc sửa bug thì ghi chung chung"
   { v: '0.3.7', date: '2026-10-31', title: 'VIBRA Workspace: everything a paper needs', items: [ // 0.3.7 (BACKLOG 75, 77 to 85)
     ['book', 'A new name, VIBRA Workspace, and the logo\'s colours. Each card shows where the paper is in eight steps; Change moves it.', 'new'],
     ['check', 'Reviewers\' points from the decision letter (the AI lists them), who answers each, ticked when addressed; tasks per paper with who and by when. Yours are in My work.', 'new'],
@@ -2615,7 +2850,7 @@ var COACH = [
 /* 0.3.5 (BACKLOG 64): the same tour for the New layout: My work, the card led by its summary, Papers */
 var COACH_NEW = [
   { p: 0, key: true, sel: ['.sb nav [data-v="mine"]', '.tabbar [data-v="mine"]', '.topbar [data-a="drawer-open"]'], t: 'Start with My work', k: 'Everything that is yours, in one place.', b: 'What the AI asks you to confirm, your move, your own to-do, and the manuscripts you are on. Papers and Group sit beside it; on a phone they are behind this menu button.' },
-  { p: 0, key: true, sel: ['#mw-move .sec-h', '#mw-move'], t: 'Your move', k: 'Where you have the ball, the most urgent first.', b: 'Each block says your step. Done: the step is done and the AI moves the manuscript on. Update: tell the tracker what happened.' },
+  { p: 0, key: true, sel: ['#mw-do .sec-h', '#mw-do'], t: 'To do', k: 'Your lines on the group\'s papers, then your own.', b: 'A line of a paper\'s next actions with your name (@) is yours: tick it when it is done. Your own lines below are seen only by you.' },
   { p: 0, sel: ['.main [data-a="open"][data-v]'], t: 'One block, one manuscript', k: 'How urgent, the title, your step.', b: 'Click a block to open its card. The tour opens this one for you.' },
   { p: 1, key: true, sel: ['.panel .p-sum'], open: true, t: 'The summary', k: 'Where it is, who has the ball, the next step, the latest news.', b: 'Read this first: it answers most questions without opening anything.' },
   { p: 1, key: true, sel: ['.panel .p-tell'], open: true, when: function () { return canEdit(); }, t: 'What happened?', k: 'Say what happened; the AI updates the record.', b: 'Step done when your step is finished. You can undo what the AI changed.' },
@@ -2638,6 +2873,7 @@ function CO() {
    the first versions (256 grid) were drawn again in it. */
 
 var ICON2 = {
+  fwd: '<path d="M9.5 5.5L16 12l-6.5 6.5"/>', // 0.3.8: Next paper
   file: '<path d="M14 3.5H7.5a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2V8z"/><path d="M14 3.5V8h4.5M9 12.5h6M9 16h6"/>', // 0.3.7 (BACKLOG 80 c)
   upload: '<path d="M12 15V4.5M7.5 9 12 4.5 16.5 9"/><path d="M4.5 14.5v3a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-3"/>',
   send: '<path d="M20.5 3.5 10 14"/><path d="m20.5 3.5-6.5 17-4-6.5-6.5-4z"/>',
@@ -2841,7 +3077,7 @@ function peopleText(ps) { return ps && ps.length ? ps.map(function (p) { return 
 
 /* Stages where the next move is the group's, even at a journal. "Returned to authors": the journal asked us for
    something (a checklist, forms, files, "resume the submission") and is waiting: it goes to the top as Due. */
-var OUR_STAGES = ['Returned to authors', 'Authors confirming', 'Reviews back R1', 'Minor rev R1', 'Major rev R1', 'Reviews back R2', 'Minor rev R2', 'Major rev R2', 'Revising'];
+var OUR_STAGES = ['Returned to authors', 'Authors confirming', 'Reviews back R1', 'Minor rev R1', 'Major rev R1', 'Reviews back R2', 'Minor rev R2', 'Major rev R2', 'Reviews back R3', 'Minor rev R3', 'Major rev R3', 'Revising'];
 /* 0.2.0: the next actions say whose move it is. At a journal, a manuscript whose first next action is still a task for
    the group (the ball is with a member) is our move, whatever the stage says: one step done (the response posted) is
    not the revision done. Waiting is written as "Await ..." (or Chase, Query); "X sent ...; await ..." also waits. */
@@ -2926,10 +3162,11 @@ function render() {
   var sbs = document.querySelector('.sb-scroll'), sbScroll = sbs ? sbs.scrollTop : 0, sbm = document.querySelector('.sb-mid'), sbMid = sbm ? sbm.scrollTop : 0;
   var shell0 = app.querySelector('.shell'), drWas = !!(shell0 && shell0.classList.contains('drawer')); // 0.2.9
   var sbOver = sbCollapsed() && N3() && (S.sbPeek || S.sbSlide); // the full sidebar over (peek) or under (slide) the rail
-  var appHtml = '<div class="shell' + (sbCollapsed() && !sbOver ? ' sbc' : '') + (sbOver ? (S.sbSlide ? ' sbslide' : ' sbpeek') : '') + (S.sbShow ? ' sbshow' : '') + (S.drawer ? ' drawer' : '') + (panelShown() ? ' pshown' : '') + (blkView() ? ' tvb blkA' : '') + '">' + sidebar() + '<div class="scrim" data-a="drawer-close"></div><div class="drshade" aria-hidden="true"></div>' + (panelShown() ? '<div class="pscrim" aria-hidden="true"></div>' : '') +
+  var appHtml = '<div class="shell' + (sbCollapsed() && !sbOver ? ' sbc' : '') + (sbOver ? (S.sbSlide ? ' sbslide' : ' sbpeek') : '') + (S.sbShow ? ' sbshow' : '') + (S.drawer ? ' drawer' : '') + (panelShown() ? ' pshown ppg' : '') + (blkView() && !panelShown() ? ' tvb blkA' : '') + '">' + sidebar() + '<div class="scrim" data-a="drawer-close"></div><div class="drshade" aria-hidden="true"></div>' + (panelShown() ? '<div class="pscrim" aria-hidden="true"></div>' : '') +
     '<div class="mainwrap">' + topbar() + '<div class="wrap"><div class="cols"><div class="main">' + pageTools() + draftBar() + main + '</div></div></div></div>' + (panelShown() ? panel() : '') + // 0.2.9: the card is its own layer
     '<div class="fstat' + fsNew() + '" aria-live="polite">' + statusChip() + '</div></div>' + (tabOn() ? tabbar() : fab());
   morph(app, appHtml); // 0.2.8: only what changed is touched
+  ppSync(); // 0.3.8 (BACKLOG 89)
   document.documentElement.style.setProperty('--sbw', sbCollapsed() ? '60px' : '264px');
   var sbs2 = document.querySelector('.sb-scroll'); if (sbs2) sbs2.scrollTop = sbScroll;
   var sbm2 = document.querySelector('.sb-mid'); if (sbm2) sbm2.scrollTop = sbMid;
@@ -3010,13 +3247,15 @@ function placePop() {
   var pop = layer.querySelector('.pop:not(.sbpop)'); if (!pop || window.innerWidth <= 600) return;
   var b = document.querySelector('.main [data-a="pop"][data-v="' + S.pop + '"]'); if (!b) return;
   var r = b.getBoundingClientRect();
-  pop.style.top = Math.round(r.bottom + 8) + 'px'; pop.style.right = Math.max(12, Math.round(window.innerWidth - r.right)) + 'px';
+  pop.style.top = Math.round(r.bottom + 8) + 'px';
+  if (pop.classList.contains('pop-l')) { pop.style.left = Math.round(r.left) + 'px'; pop.style.right = 'auto'; return; } // 0.3.8: a menu under a button on the left
+  pop.style.right = Math.max(12, Math.round(window.innerWidth - r.right)) + 'px';
 }
 /* 0.2.8: the floating buttons stay in the bottom right corner (the card stops short of them from 840 px wide) */
 function placeFab() { var f = document.querySelector('.fabs'); if (f) f.style.right = ''; }
 var layWas = '';
 window.addEventListener('resize', function () {
-  var lay = S.boot ? [phoneW(), cardSide(), fcolOn(), railForced(), shortH()].join() : '';
+  var lay = S.boot ? [phoneW(), cardSide(), fcolOn(), railForced(), shortH(), pg3On()].join() : '';
   if (S.drawer && !phoneW()) S.drawer = false;
   if (lay !== layWas && S.boot) render(); // 0.2.9: a new size class: the layout follows (nothing else changes)
   else if (S.boot) chipsFit();
@@ -3085,9 +3324,11 @@ function sidebar() {
   if (isSup()) nav.push(['review', 'Changes to review', 'undo']); // 0.2.3: Supervisor and Admin
   if (me().role === 'Admin') nav.push(['desk', 'AI desk', 'desk']);
   var openN = allDerived().filter(function (d) { return d.tier !== 'closed'; }).length, moveN = nw ? myWork().length + toConfirm().length : 0;
+  var kn = 0; // 0.3.8 (BACKLOG 90): the views are 1, 2, 3 ... on the keyboard
   var navHtml = nav.map(function (n) {
     if (n[0] === 'grp') return '<div class="sb-grp" role="presentation">' + n[1] + '</div>';
-    return '<button class="sb-item" data-a="view" data-v="' + n[0] + '"' + (S.view === n[0] ? ' aria-current="page"' : '') + (sbCollapsed() ? tt(n[1]) : '') + '>' + ic(n[2]) + '<span class="lab">' + n[1] + '</span>' +
+    kn++;
+    return '<button class="sb-item" data-a="view" data-v="' + n[0] + '" data-key="' + kn + '"' + (S.view === n[0] ? ' aria-current="page"' : '') + tt(n[1], kn < 10 ? String(kn) : '') + '>' + ic(n[2]) + '<span class="lab">' + n[1] + '</span>' +
       (n[0] === 'today' || n[0] === 'papers' ? '<span class="cnt">' + openN + '</span>' : n[0] === 'mine' && moveN ? '<span class="cnt">' + moveN + '</span>' : n[0] === 'todo' && tdDueN() ? '<span class="cnt cnt-due">' + tdDueN() + '</span>' : n[0] === 'review' && S.rev && S.rev.total ? '<span class="cnt">' + S.rev.total + '</span>' : '') + '</button>';
   }).join('');
   var byId = {}; allDerived().forEach(function (d) { byId[d.m.id] = d; });
@@ -3106,7 +3347,7 @@ function sidebar() {
   return '<aside class="sb" aria-label="Sidebar">' +
     '<div class="sb-top"><button class="sb-brand" data-a="view" data-v="today" aria-label="VIBRA Workspace, go to ' + (nw ? 'My work' : 'Today') + '" title="VIBRA Workspace ' + esc(S.boot.version) + '"><b>VIBRA</b><span>Workspace</span></button>' +
     '<button class="sb-ib sb-hide" data-a="sb-toggle" aria-label="' + (S.drawer ? 'Close the sidebar' : sbCollapsed() ? 'Show the sidebar' : 'Hide the sidebar') + '"' + tt(sbCollapsed() ? 'Show the sidebar' : 'Hide the sidebar', 'Ctrl .') + '>' + ic('sidebar') + '</button></div>' +
-    (canEdit() ? '<button class="sb-item sb-new" data-a="nf-open"' + (sbCollapsed() ? tt('New manuscript') : '') + '><span class="plus">' + ic('plus') + '</span><span class="lab">New manuscript</span></button>' : '') +
+    (canEdit() ? '<button class="sb-item sb-new" data-a="nf-open"' + tt('New manuscript', 'N') + '><span class="plus">' + ic('plus') + '</span><span class="lab">New manuscript</span></button>' : '') +
     '<div class="sb-mid"><nav aria-label="Views">' + navHtml + '</nav>' +
     '<div class="sb-scroll">' +
     (pinned.length ? sec('pin', 'Pinned', pinned.map(function (d) { return sbM(d, dlText(d)); }), '') : '') +
@@ -3128,7 +3369,9 @@ function sidebar() {
    More (the sidebar: Group, Settings ...); the floating buttons go (Search moves to the top bar); laptops keep the sidebar.
    BACKLOG 79 (admin: "bật thanh tab trên điện thoại, có nút bật tắt cho tôi nhé"): on for everyone, a switch in Settings,
    Appearance (preference tabbar = false turns it off). */
-function tabOn() { return !!(S.boot && UIN() && phoneW() && prefs().tabbar !== false); }
+/* 0.3.8 (BACKLOG 87, admin: "Tôi thấy nó rối, bật lại chế độ 2 icon như ban đầu nhé"): the tab bar is off unless a member turns it
+   on in Settings; phones are back to the menu and the two floating buttons, Search and Quick update, by the thumb */
+function tabOn() { return !!(S.boot && UIN() && phoneW() && prefs().tabbar === true); }
 function tabbar() {
   var u = unreadCount(), v = S.view, nf = S.pop === 'notif';
   var t = function (a, val, icon, lab, on, extra) {
@@ -3399,6 +3642,8 @@ function viewSettings() {
       PALS.map(function (o) { var c = o[curTheme() === 'dark' ? 3 : 2]; return '<button class="cs-o" data-a="cs-set" data-v="' + o[0] + '" aria-pressed="' + (palPref() === o[0]) + '"><span class="cs-sw" aria-hidden="true"><i style="background:' + c[0] + '"></i><i style="background:' + c[1] + '"></i><b style="background:' + c[2] + '"></b></span>' + o[1] + '</button>'; }).join('') +
       '</div></div>' + (window.VIBRA_WEB ? '<div class="fs-row"><label class="lbl" for="fs-range" id="fs-l">Text size</label><div class="fs-sl"><span class="fs-a" style="font-size:var(--fs-xs)" aria-hidden="true">A</span>' +
         '<input type="range" class="fs-rng" id="fs-range" min="1" max="6" step="1" value="' + fontPref() + '" aria-valuetext="' + fsPct(fontPref()) + '"><span class="fs-a" style="font-size:var(--fs-3xl)" aria-hidden="true">A</span><span class="fs-v mono" id="fs-v">' + fsPct(fontPref()) + '</span></div></div>' : '') +
+      '<div class="face-row"><span class="lbl" id="face-l">Typeface</span><div class="face-opts" role="group" aria-labelledby="face-l">' + FACES.map(function (o) {
+        return '<button type="button" class="face-o fo-' + o[0] + '" data-a="face-set" data-v="' + o[0] + '" aria-pressed="' + (facePref() === o[0]) + '"><b>' + o[1] + '</b><span>' + o[2] + '</span></button>'; }).join('') + '</div></div>' +
       layoutRow() + tabbarRow() +
       '<div class="setrow"><div style="flex:1;min-width:0"><label for="p-sb" style="font-weight:500">Keep the sidebar hidden</label><div class="muted" style="font-size:var(--fs-xs)">Only the icons stay on the left (Ctrl + .).</div></div>' +
       '<input id="p-sb" class="switch" type="checkbox" data-i="pref" data-v="sbCollapsed"' + (prefs().sbCollapsed ? ' checked' : '') + '></div>' +
@@ -3617,9 +3862,9 @@ function fabRound() { return fabFolded || panelShown() || fcolOn() || !!(S.drawe
 function fabFold() { if (fabFolded) return; fabFolded = true; var f = document.querySelector('.fabs .fab'); if (f) f.classList.add('round'); }
 function fab() {
   if (!fabFolded && S.boot && !fab.t) fab.t = setTimeout(fabFold, FAB_FULL_MS);
-  return '<div class="fabs"><button type="button" class="fab-s" data-a="pal-open" aria-label="Search manuscripts, people and commands (Ctrl+K)"' + tt('Search manuscripts, people, journals and commands', 'Ctrl K') + '>' + ic('find') + '</button>' +
+  return '<div class="fabs"><button type="button" class="fab-s" data-a="pal-open" aria-label="Search manuscripts, people and commands (Ctrl+K)"' + tt('Search manuscripts, people, journals and commands', KEYMOD + ' K') + '>' + ic('find') + '</button>' +
     '<button type="button" class="fab' + (fabRound() ? ' round' : '') + (S.fabPeek ? ' peek' : '') + '" data-a="qu-open" aria-label="Quick update: say what happened"' +
-    tt('Say what happened, in any language: the AI updates the fields') + '>' + ic('spark') + '<span>Quick update</span></button></div>';
+    tt('Say what happened, in any language: the AI updates the fields', 'U') + '>' + ic('spark') + '<span>Quick update</span></button></div>';
 }
 
 function tip(key, right) {
@@ -3636,7 +3881,20 @@ function involves(d, k, withAuthors) {
    the tags, History, notifications, exports; fullNames() does the same inside a text (next actions, notes, sources). */
 function chipName(k) { var p = person(k); return p && /^[A-Z]{2,3}$/.test(k) && p.full_name ? p.full_name : k; }
 function dispName(p) { return !p ? '' : /^[A-Z]{2,3}$/.test(p.key) && p.full_name ? p.full_name : p.display || p.key; } // "Name (GV)" without the initials
-function fullNames(t) {
+/* 0.3.8 (BACKLOG 97): a line of the next actions that is a member's job tags them, @Key; shown as a chip with the name (Prof.
+   Varrassi's in full), and as the plain name wherever the text is plain (the block's next step, exports, e-mails) */
+var TAG_RX = /(^|[\s(\[,;:])@([^\s@,;:!?()\[\]{}"'.]+(?:\.[^\s@,;:!?()\[\]{}"'.]+)*)/g;
+function tagKey(tok) { var t = String(tok || '').toLowerCase(), P = (S.boot && S.boot.people) || []; for (var i = 0; i < P.length; i++) if (String(P[i].key).toLowerCase() === t) return P[i].key; return ''; }
+function tagsOf(t) { var o = [], x; TAG_RX.lastIndex = 0; while ((x = TAG_RX.exec(String(t || '')))) { var k = tagKey(x[2]); if (k && o.indexOf(k) < 0) o.push(k); } return o; }
+function untag(t) { return String(t == null ? '' : t).replace(TAG_RX, function (all, pre, tok) { var k = tagKey(tok); return k ? pre + chipName(k) : all; }); }
+function tagChip(k) { var n = chipName(k); return '<span class="tg" title="' + esc(n) + '"><i class="bav" style="--h:' + avHue(k) + ';" aria-hidden="true">' + esc(initials(n)) + avImg(photoOf(k)) + '</i>' + esc(n) + '</span>'; }
+function tagged(t) {
+  t = String(t == null ? '' : t); var out = '', last = 0, x; TAG_RX.lastIndex = 0;
+  while ((x = TAG_RX.exec(t))) { var k = tagKey(x[2]); if (!k) continue; var at = x.index + x[1].length; out += esc(fullNames0(t.slice(last, at))) + tagChip(k); last = at + 1 + x[2].length; }
+  return out + esc(fullNames0(t.slice(last)));
+}
+function fullNames(t) { return fullNames0(untag(t)); }
+function fullNames0(t) {
   t = String(t == null ? '' : t);
   (S.boot && S.boot.people || []).forEach(function (p) { if (/^[A-Z]{2,3}$/.test(p.key) && p.full_name && t.indexOf(p.key) >= 0) t = t.replace(new RegExp('\\b' + p.key + '\\b', 'g'), p.full_name); });
   return t;
@@ -3682,7 +3940,8 @@ function rowHtml(d, i) {
    manuscript has come: preparing (amber), at the journal (blue, rounds of review move it on), accepted (green). */
 var PROG_STAGE = { 'Returned to authors': 0.44, 'Awaiting editor': 0.46, 'Authors confirming': 0.47, 'With editor': 0.5, 'No response': 0.52, 'Review R1': 0.56,
   'Reviews back R1': 0.6, 'Major rev R1': 0.62, 'Minor rev R1': 0.63, 'Revising': 0.65, 'Resubmitted R1': 0.67, 'Review R2': 0.72, 'Reviews back R2': 0.75,
-  'Major rev R2': 0.76, 'Minor rev R2': 0.77, 'Resubmitted R2': 0.8, 'Review R3': 0.83 };
+  'Major rev R2': 0.76, 'Minor rev R2': 0.77, 'Resubmitted R2': 0.8, 'Review R3': 0.83,
+  'Reviews back R3': 0.85, 'Major rev R3': 0.86, 'Minor rev R3': 0.87, 'Resubmitted R3': 0.89, 'Review R4': 0.91 }; // 0.3.8 (BACKLOG 86): round 3
 function progress(m) {
   var st = m.status;
   if (st === 'Drafting') return [0.12, 'prep', 'Drafting'];
@@ -3717,7 +3976,45 @@ function auAvatars(m) {
     shown.map(function (a, i) { return av(a).replace('<i class="bav"', '<i class="bav a' + (i + 1) + '"'); }).join('') +
     caps.map(function (c) { return A.length > c ? '<i class="bav more c' + c + '">+' + (A.length - c) + '</i>' : ''; }).join('') + '</span>';
 }
+/* 0.3.8 (BACKLOG 98; admin, 31 Oct 2026: "những block trong paper quá tham chi tiết ... thanh bar mỏng ở dưới cũng đã nói nó
+   trong tình trạng gì ... cái nào có deadline thì hiện ra còn cái nào ko có thì khỏi hiện"; "cái tag our move hay gì cũng thấy
+   ko cần thiết show ra"; "vậy có nên đưa cái due xuống dưới để đỡ thấy lộn xộn không"; the names in words kept: "vẫn để chữ
+   đi"): the title, who has the ball, the next step; at the bottom the deadline (or Accepted, Published) and the avatars of
+   who holds the ball (BACKLOG 97); the bar is the block's bottom edge, every bar the same length. The journal, the urgency
+   tag, the days idle and the status in words stay in the data and on the paper's page (the words also in the tooltip and
+   for screen readers). */
+function bkWhen(d) { var m = d.m; return String(m.last_update || '').slice(0, 10); }
+function bkDl(d, rec) {
+  var m = d.m, nb = function (t) { return esc(t).replace(/ /g, '&nbsp;'); };
+  if (isWin(m)) return '<span class="bk-dl won">' + esc(m.status) + '</span>';
+  if (m.status === 'Rejected') return '<span class="bk-dl">Rejected</span>';
+  if (m.deadline && d.dl !== null) {
+    if (d.dl < 0) return '<span class="bk-dl due">Overdue · ' + nb(niceShort(m.deadline)) + '</span>';
+    if (d.dl <= 7) return '<span class="bk-dl due">' + (d.dl === 0 ? 'Due today' : d.dl === 1 ? 'Due tomorrow' : 'Due in ' + d.dl + '&nbsp;days') + '</span>';
+    return '<span class="bk-dl">Due ' + nb(niceShort(m.deadline)) + '</span>';
+  }
+  if (d.tier === 'due') return '<span class="bk-dl due">Journal waiting</span>';
+  return rec && bkWhen(d) ? '<span class="bk-up">Updated ' + nb(niceShort(bkWhen(d))) + '</span>' : '';
+}
+function ballAvatars(m) { // BACKLOG 97: who holds the ball, not every author
+  var P = (m.people || []).filter(function (p) { return p && p.name; }); if (!P.length) return '';
+  var av = function (p, i) { var k = person(p.name) ? p.name : '', ph = k ? photoOf(k) : '', n = chipName(p.name); return '<i class="bav a' + (i + 1) + '" style="--h:' + avHue(k || n) + ';" title="' + esc(n) + '">' + esc(initials(n)) + avImg(ph) + '</i>'; };
+  return '<span class="bl-avs" aria-hidden="true">' + P.slice(0, 3).map(av).join('') + (P.length > 3 ? '<i class="bav more c3" style="display:grid">+' + (P.length - 3) + '</i>' : '') + '</span>';
+}
+function bkHtml(d, i) {
+  var m = d.m, p = progress(m), anim = S.fx.list ? ' fx-in" style="--i:' + Math.min(i, 14) : S.fx.items ? ' fx-new' : '';
+  var rec = S.view === 'papers' && ppOrder() === 'rec', step = firstStep(m.next), w = bkWhen(d);
+  var tip = m.title + ' · ' + p[2] + (w ? ' · updated ' + niceShort(w) : '');
+  return '<button class="block bk' + anim + '" data-a="open" data-v="' + m.id + '"' + (S.sel === m.id ? ' aria-current="true"' : '') + ' title="' + esc(tip) + '">' +
+    '<span class="bl-t">' + esc(m.title) + '</span>' + lockChip(m.id) +
+    (m.people && m.people.length ? '<span class="bl-p">' + ic('ball') + '<span>' + esc(peopleText(m.people)) + '</span></span>' : '') +
+    (step ? '<span class="bl-n">' + esc(fullNames(step)) + '</span>' : '') +
+    '<span class="bk-f">' + celTick(m) + bkDl(d, rec) + trackChip(m) + ballAvatars(m) + '</span>' +
+    '<span class="sr">' + esc((p[1] === 'prep' ? 'Being written: ' : p[1] === 'jour' ? 'At the journal: ' : '') + p[2]) + '</span>' +
+    '<span class="bk-edge" aria-hidden="true"><i class="pg-' + p[1] + '" style="width:' + Math.round(p[0] * 100) + '%"></i></span></button>';
+}
 function blockHtml(d, i) {
+  if (UIN()) return bkHtml(d, i);
   var m = d.m, p = progress(m), anim = S.fx.list ? ' fx-in" style="--i:' + Math.min(i, 14) : S.fx.items ? ' fx-new' : '';
   return '<button class="block' + anim + '" data-a="open" data-v="' + m.id + '"' + (S.sel === m.id ? ' aria-current="true"' : '') + '>' +
     '<span class="bl-top">' + tagHtml(d) + celTick(m) + trackChip(m) + '<span class="meta">' + metaHtml(d) + '</span></span>' +
@@ -3800,6 +4097,7 @@ function tblRow(d) {
 /* ---------- dashboard (0.1.1): four questions, in the order the admin chose */
 var FLOW = ['Drafting', 'Internal review', 'Ready to Submit', 'Submitted', 'Under Review', 'Accepted', 'Published'];
 var WK = [['dl', 'Deadline'], ['action', 'Our move'], ['drafting', 'Drafting'], ['chase', 'Chase journal'], ['waiting', 'Waiting']];
+var KEYMOD = /Mac|iPhone|iPad|iPod/.test(navigator.platform || navigator.userAgent || '') ? '⌘' : 'Ctrl'; // 0.3.8 (BACKLOG 90)
 function tt(v, l) { return ' data-tt="' + esc(v + (l ? '||' + l : '')) + '"'; }
 function holder(m) { return m.people.filter(function (x) { return x.primary; })[0] || m.people[0] || null; }
 function median(a) { if (!a.length) return null; var s = a.slice().sort(function (x, y) { return x - y; }), k = s.length >> 1; return s.length % 2 ? s[k] : Math.round((s[k - 1] + s[k]) / 2); }
@@ -4881,7 +5179,7 @@ function papersView() { return prefs().papersView === 'list' ? 'list' : 'blocks'
 function blkView() { return S.view === 'today' ? todayView() === 'blocks' : S.view === 'mine' ? mineView() === 'blocks' : S.view === 'papers' ? papersView() === 'blocks' : false; }
 function tabbarRow() { // BACKLOG 79
   if (!UIN()) return '';
-  var on = prefs().tabbar !== false;
+  var on = prefs().tabbar === true; // 0.3.8: off unless chosen
   return '<div class="setrow tb-row"><div style="flex:1;min-width:0"><span style="font-weight:500" id="tbs-l">Tab bar on phones</span><div class="muted" style="font-size:var(--fs-xs)">My work, Papers, Update, the bell and More at the bottom of a phone. Computers keep the sidebar.</div></div>' +
     '<div class="seg seg-s" role="group" aria-labelledby="tbs-l">' + [['on', 'On'], ['off', 'Off']].map(function (o) {
       return '<button data-a="tabbar-set" data-v="' + o[0] + '" aria-pressed="' + (on === (o[0] === 'on')) + '">' + o[1] + '</button>';
@@ -4953,15 +5251,17 @@ function mwtWhen(d) {
 function mwtRow(r) {
   if (S.tde && S.tde.id === r.id) return tdEditRow(true);
   var m = mById(r.mid), T0 = S.boot.today, late = !r.done && r.date && r.date < T0;
-  return '<div class="td-row mwt-row' + (r.done ? ' done' : '') + (S.sw === r.id ? ' sw-open' : '') + '" data-sw="' + esc(r.id) + '"><button class="td-chk round" data-a="td-done" data-v="' + esc(r.id) + '" role="checkbox" aria-checked="' + !!r.done + '" aria-label="' + (r.done ? 'Mark as not done' : 'Mark as done') + ': ' + esc(short(tdText(r), 60)) + '">' + ic('check') + '</button>' +
+  return '<div class="td-row mwt-row' + (r.done ? ' done' : '') + (S.sw === r.id ? ' sw-open' : '') + '" data-sw="' + esc(r.id) + '"><span class="sw-front"><button class="td-chk round" data-a="td-done" data-v="' + esc(r.id) + '" role="checkbox" aria-checked="' + !!r.done + '" aria-label="' + (r.done ? 'Mark as not done' : 'Mark as done') + ': ' + esc(short(tdText(r), 60)) + '">' + ic('check') + '</button>' +
     '<span class="mwt-t"><button class="td-t mwt-e" data-a="td-edit" data-v="' + esc(r.id) + '" aria-label="Edit: ' + esc(short(tdText(r), 60)) + '">' + esc(tdText(r)) + '</button>' + (m ? '<button class="td-m" data-a="open" data-v="' + m.id + '" title="' + esc(m.title) + '">#' + m.id + '</button>' : '') +
-    (r.k !== 't' ? '<span class="td-tag">Reminder</span>' : '') + (r.cal ? '<span class="td-tag">' + ic('cal') + '</span>' : '') + '</span>' +
+    (r.k !== 't' ? '<span class="td-tag">Reminder</span>' : '') + (r.cal ? '<span class="td-tag">' + ic('cal') + '</span>' : '') + '</span>' + mwtDate(r, late, T0) + '</span>' + // 0.3.8 (BACKLOG 101): the line's front, sliding over its tools
     // 0.3.6 (BACKLOG 70): on a phone these are the tray a swipe to the left shows (Edit, Calendar, Delete), each with its word
     '<span class="td-acts" style="--sw-n:' + (r.date && !r.done ? 3 : 2) + '">' + '<button class="btn btn-q sw-ed" data-a="td-edit" data-v="' + esc(r.id) + '" aria-label="Edit"' + tt('Edit') + '>' + ic('pencil') + '<span class="sw-l">Edit</span></button>' +
     (r.date && !r.done ? '<a class="btn btn-q sw-cal" data-a="td-gcal" data-v="' + esc(r.id) + '" target="_blank" rel="noopener" href="' + esc(tdGcal(r)) + '" aria-label="Add to Google Calendar"' + tt('Add to Google Calendar') + '>' + ic('cal') + '<span class="sw-l">Calendar</span></a>' : '') +
     '<button class="btn btn-q ic-del sw-del" data-a="td-del" data-v="' + esc(r.id) + '" aria-label="Delete"' + tt('Delete') + '>' + ic('trash') + '<span class="sw-l">Delete</span></button></span>' +
-    '<span class="mwt-d' + (late ? ' late' : r.date === T0 ? ' now' : '') + '">' + (r.done && r.dd ? 'Done ' + esc(niceShort(r.dd)) : r.date ? esc(late ? niceShort(r.date) + ', late' : mwtWhen(r.date)) + (r.time ? ' ' + esc(r.time) : '') : '') + '</span></div>';
+    '</div>';
+
 }
+function mwtDate(r, late, T0) { return '<span class="mwt-d' + (late ? ' late' : r.date === T0 ? ' now' : '') + '">' + (r.done && r.dd ? 'Done ' + esc(niceShort(r.dd)) : r.date ? esc(late ? niceShort(r.date) + ', late' : mwtWhen(r.date)) + (r.time ? ' ' + esc(r.time) : '') : '') + '</span>'; }
 function mwTodo() {
   var a = S.td || (S.td = { note: '', date: '', mid: '' }), items = remList();
   var openMs = S.boot.manuscripts.filter(function (m) { return ['Published', 'Rejected'].indexOf(m.status) < 0; }).slice().sort(function (x, y) { return x.id - y.id; });
@@ -4981,21 +5281,26 @@ function mwSec(id, title, hint, n, body, extra) {
 function viewMine() {
   var k = me().key, all = allDerived(), open = all.filter(function (d) { return d.tier !== 'closed'; });
   var move = open.filter(ballMine), other = open.filter(function (d) { return !ballMine(d) && involves(d, k, true); }), tc = toConfirm(), blocks = mineView() === 'blocks';
-  var pts = myPoints(), regs = myRegs(), tks = myTasks(), wait = move.length + pts.length + regs.length + tks.length + tc.length; // BACKLOG 77: protocols to register; 80 a: tasks // 0.3.7 (BACKLOG 75): a greeting that says how much waits
+  // 0.3.8 (BACKLOG 97; admin: "gộp đi"): Your move, the tasks and the own to-do in one To do: the lines tagged with me on the
+  // group's papers, the papers where I hold the ball with no line tagged with me, the tasks of 0.3.7 still open, then my own lines
+  var lines = myLines(), lineIds = lines.map(function (y) { return y.d.m.id; }), move2 = move.filter(function (d) { return lineIds.indexOf(d.m.id) < 0; });
+  var pts = myPoints(), regs = myRegs(), tks = myTasks(), wait = lines.length + move2.length + pts.length + regs.length + tks.length + tc.length; // BACKLOG 77: protocols to register; 80 a: tasks // 0.3.7 (BACKLOG 75): a greeting that says how much waits
   var out = '<h1 class="h1 mw-hi">' + esc(hello()) + '</h1><p class="sub"><b class="mw-wait">' + (wait ? wait + (wait === 1 ? ' thing waits' : ' things wait') + ' on you.' : 'Nothing waits on you.') + '</b> <span class="mono">' + esc(longDay(S.boot.today)) + '</span>. ' + sinceLine(mineAll()) + '</p>';
   if (tc.length) out += mwSec('mw-tc', 'To confirm', 'the AI asks you', tc.length, '<div class="box tc-box">' + tc.map(tcRow).join('') + '</div>');
-  out += mwSec('mw-move', 'Your move', 'where you have the ball, the most urgent first', move.length,
-    !move.length ? '<div class="list"><div class="empty">Nothing waits on you.' + (canEdit() ? ' Starting a paper? <button class="linkbtn" data-a="nf-open">New manuscript</button>' : '') + '</div></div>' :
-      blocks ? '<div class="blocks">' + move.map(mwBlock).join('') + '</div>' :
-      '<div class="box td-list mw-list">' + move.map(function (d) { return tdBallRow({ ball: true, id: 'b' + d.m.id, mid: d.m.id, d: d, note: firstStep(d.m.next) || 'Decide the next step', date: d.m.deadline || '' }, true); }).join('') + '</div>');
-  if (tks.length) out += mwSec('mw-tk', 'Tasks', 'yours on the group\'s papers, the soonest first', tks.length, '<div class="box rv-mine">' + tks.map(function (y) { return tkRow(y.m, y.x, canEdit(), true); }).join('') + '</div>');
-  if (regs.length) out += mwSec('mw-reg', 'Register the protocol', 'before screening starts; tick when registered', regs.length, '<div class="box rv-mine">' + regs.map(regRow).join('') + '</div>');
-  if (pts.length) out += mwSec('mw-pts', 'Reviewers\' points', 'yours to answer, tick when done', pts.length, '<div class="box rv-mine">' + pts.map(function (x) { return rvPoint(x.m, x, canEdit(), true); }).join('') + '</div>');
+  var shared = lines.map(function (y) { return nxRow(y.d.m, y.x, false, true); }).join('') +
+    move2.map(function (d) { return tdBallRow({ ball: true, id: 'b' + d.m.id, mid: d.m.id, d: d, note: firstStep(d.m.next) || 'Decide the next step', date: d.m.deadline || '' }, false); }).join('') +
+    tks.map(function (y) { return tkRow(y.m, y.x, canEdit(), true); }).join('');
+  var own = '';
   if (todoOn()) {
     var mode = S.tdMode === 'cal' ? 'cal' : 'list', openTd = remList().filter(function (r) { return !r.done; }).length;
-    out += mwSec('mw-todo', 'Your own to-do', 'only you see these', openTd, '<div class="td-grid m-' + mode + ' mw-td">' + (mode === 'cal' ? tdCalCard() : S.tdWide ? tdListCard(true) : mwTodo()) + '</div>',
-      '<div class="seg seg-s mw-seg" role="group" aria-label="To-do layout">' + [['list', 'List', 'list'], ['cal', 'Calendar', 'cal2']].map(function (o) { return '<button data-a="td-mode" data-v="' + o[0] + '" aria-pressed="' + (mode === o[0]) + '">' + ic(o[2]) + '<span class="lab">' + o[1] + '</span></button>'; }).join('') + '</div>');
+    own = '<div class="mw-own" id="mw-todo"><div class="mw-own-h"><span class="lbl">' + ic('lock') + 'Your own · only you see these' + (openTd ? ' · ' + openTd : '') + '</span>' +
+      '<div class="seg seg-s mw-seg" role="group" aria-label="To-do layout">' + [['list', 'List', 'list'], ['cal', 'Calendar', 'cal2']].map(function (o) { return '<button data-a="td-mode" data-v="' + o[0] + '" aria-pressed="' + (mode === o[0]) + '">' + ic(o[2]) + '<span class="lab">' + o[1] + '</span></button>'; }).join('') + '</div></div>' +
+      '<div class="td-grid m-' + mode + ' mw-td">' + (mode === 'cal' ? tdCalCard() : S.tdWide ? tdListCard(true) : mwTodo()) + '</div></div>';
   }
+  out += mwSec('mw-do', 'To do', 'your lines on the group\'s papers, then your own', lines.length + move2.length + tks.length,
+    (shared ? '<div class="box td-list mw-list mw-shared">' + shared + '</div>' : '<div class="list"><div class="empty">Nothing on the group\'s papers waits on you.' + (canEdit() ? ' Starting a paper? <button class="linkbtn" data-a="nf-open">New manuscript</button>' : '') + '</div></div>') + own);
+  if (regs.length) out += mwSec('mw-reg', 'Register the protocol', 'before screening starts; tick when registered', regs.length, '<div class="box rv-mine">' + regs.map(regRow).join('') + '</div>');
+  if (pts.length) out += mwSec('mw-pts', 'Reviewers\' points', 'yours to answer, tick when done', pts.length, '<div class="box rv-mine">' + pts.map(function (x) { return rvPoint(x.m, x, canEdit(), true); }).join('') + '</div>');
   if (other.length) out += '<details class="sec mw-else" id="mw-else" data-keep="mwelse"' + (S.keep.mwelse ? ' open' : '') + '><summary class="sec-h"><h2>' + ic('chev') + 'On your manuscripts, the ball is elsewhere</h2><span class="mono">' + other.length + ' · to keep an eye on</span></summary>' +
     (blocks ? '<div class="blocks">' + other.map(blockHtml).join('') + '</div>' : '<div class="list">' + other.map(rowHtml).join('') + '</div>') + '</details>';
   return out;
@@ -5026,7 +5331,62 @@ function ppMarks(T, open0, pt, nAll) {
   // under it with the page (dimmed like the blocks, still pressable)
   return '<nav class="pp-tabs ' + (side ? 'side' : 'strip' + (S.ppTuck ? ' tuck' : '')) + '" aria-label="Urgency">' + marks + '</nav>';
 }
+/* 0.3.8 (BACKLOG 98; admin, 31 Oct 2026: "có cách nào để chọn chế độ coi theo urgency hoặc mới update không"; "sao h thấy cái tag
+   bên hông không đẹp"; "ủa chế độ coi phải trên của phân loại trong chế độ chứ"; "hãy nghĩ chữ cho phù hợp ... nhất là phải
+   xuống dòng"): one row to choose the order, Priority (the most urgent first, in the four groups by where the papers are) or
+   Recent (the latest update first, in This week, This month, Earlier), kept per person, with Whose as a menu beside it; under
+   it the filters of that order. The notebook's side tabs and the Whose chips are gone from Papers. */
+function ppOrder() { return prefs().ppOrder === 'rec' ? 'rec' : 'pri'; }
+var PP_REC = [['week', 'This week', 0, 7], ['month', 'This month', 7, 31], ['earlier', 'Earlier', 31, 1e9]];
+function ppRec(d) { var n = d.idle === null ? 1e9 : d.idle; for (var i = 0; i < PP_REC.length; i++) if (n >= PP_REC[i][2] && n < PP_REC[i][3]) return PP_REC[i][0]; return 'earlier'; }
+function ppHead(list0, open0, pt, ord) {
+  var cur = ord === 'rec' ? (PP_REC.some(function (g) { return g[0] === S.prec; }) ? S.prec : '') : pt;
+  var f = [['', 'All', ord === 'rec' ? list0.length : list0.length]].concat(ord === 'rec' ?
+    PP_REC.map(function (g) { return [g[0], g[1], list0.filter(function (d) { return ppRec(d) === g[0]; }).length]; }) :
+    ['due', 'deadline', 'action', 'chase', 'waiting', 'drafting'].map(function (t) { return [t, t === 'chase' ? 'Chase' : TIER_LABEL[t], open0.filter(function (d) { return d.tier === t; }).length]; }));
+  var who = S.who === 'all' ? 'Everyone' : S.who === me().key ? 'Me' : chipName(S.who);
+  return '<div class="pp-mode"><span class="pp-seg" role="group" aria-label="Order of the papers">' +
+    [['pri', 'Priority', 'The most urgent first'], ['rec', 'Recent', 'The latest update first']].map(function (o) { return '<button type="button" data-a="pp-ord" data-v="' + o[0] + '" aria-pressed="' + (ord === o[0]) + '" title="' + o[2] + '">' + o[1] + '</button>'; }).join('') + '</span>' +
+    '<button type="button" class="pp-who" data-a="pop" data-v="whose" aria-haspopup="menu" aria-expanded="' + (S.pop === 'whose') + '" aria-label="Whose manuscripts: ' + esc(who) + '">' + esc(who) + ic('chev') + '</button></div>' +
+    '<div class="pp-fil" role="group" aria-label="Show">' + f.filter(function (x) { return !x[0] || x[2] || x[0] === cur; }).map(function (x) {
+      return '<button type="button" class="pp-f" data-a="' + (ord === 'rec' ? 'prec' : 'ptier') + '" data-v="' + (x[0] || cur) + '" aria-pressed="' + (x[0] === cur) + '">' +
+        (x[0] === 'due' ? '<span class="pp-dot" aria-hidden="true"></span>' : '') + esc(x[1]) + ' <b>' + x[2] + '</b></button>';
+    }).join('') + '</div>';
+}
+function whosePop() {
+  var all = allDerived(), keys = ['all', me().key].concat(S.boot.people.map(function (p) { return p.key; }).filter(function (k) { return k !== me().key; }));
+  return '<div class="pop menu whose pop-l" role="menu" aria-label="Whose manuscripts" data-pop>' + keys.map(function (k) {
+    var n = k === 'all' ? all.length : all.filter(function (d) { return involves(d, k, true); }).length, on = S.who === k;
+    return '<button class="mi" role="menuitemradio" aria-checked="' + on + '" data-a="who" data-v="' + esc(k) + '"><span>' + esc(k === 'all' ? 'Everyone' : k === me().key ? 'Me' : chipName(k)) + '</span><b class="n">' + n + '</b>' + (on ? ic('check') : '<i class="ck0"></i>') + '</button>';
+  }).join('') + '</div>';
+}
 function viewPapers(list0) {
+  if (!UIN()) return viewPapers0(list0);
+  var T = ['due', 'deadline', 'action', 'chase', 'waiting', 'drafting'], pt = T.indexOf(S.ptier) >= 0 ? S.ptier : '', blocks = papersView() === 'blocks', ord = ppOrder();
+  var open0 = list0.filter(function (d) { return d.tier !== 'closed'; }), nAll = S.boot.manuscripts.length, nOpen = allDerived().filter(function (d) { return d.tier !== 'closed'; }).length, rows = '';
+  var rc = ord === 'rec' && PP_REC.some(function (g) { return g[0] === S.prec; }) ? S.prec : '';
+  var list = ord === 'rec' ? (rc ? list0.filter(function (d) { return ppRec(d) === rc; }) : list0) : (pt ? list0.filter(function (d) { return d.tier === pt; }) : list0), all = !!((ord === 'rec' ? rc : pt) || S.q);
+  var sec = function (key, title, hint, items, cls) {
+    if (!items.length) return !all && (key === 'write' || key === 'jour') ? '<section class="sec" id="pp-' + key + '"><div class="sec-h"><h2>' + title + '</h2><span class="mono">0</span></div><div class="list"><div class="empty">Nothing here' + (S.who !== 'all' ? ' for ' + esc(S.who === me().key ? 'you' : chipName(S.who)) : '') + '.</div></div></section>' : '';
+    if (!blocks) { rows += '<tr class="ghead pp-h' + (cls || '') + '"><td colspan="7">' + (key === 'win' ? ic('check') : '') + title + ' · ' + items.length + '</td></tr>' + items.map(tblRow).join(''); return ''; }
+    var more = all || (S.ppAll || {})[key] ? 0 : Math.max(0, items.length - PP_SHOW);
+    return '<section class="sec pp-' + key + '" id="pp-' + key + '"><div class="sec-h"><h2>' + (key === 'win' ? ic('check') : '') + title + '</h2><span class="mono">' + items.length + (hint ? ' · ' + hint : '') + '</span></div>' +
+      '<div class="blocks">' + items.slice(0, more ? PP_SHOW : items.length).map(ppBlock).join('') + '</div>' +
+      (more ? '<button class="pp-more" data-a="pp-more" data-v="' + key + '">+ ' + more + ' more</button>' : '') + '</section>';
+  };
+  var secs;
+  if (ord === 'rec') {
+    var byUp = list.slice().sort(function (a, b) { var x = bkWhen(a), y = bkWhen(b); return x === y ? b.m.id - a.m.id : x < y ? 1 : -1; });
+    secs = PP_REC.map(function (g) { return sec(g[0], g[1], '', byUp.filter(function (d) { return ppRec(d) === g[0]; })); }).join('');
+  } else secs = PP_GROUPS.map(function (g) {
+    var items = list.filter(function (d) { return ppGroup(d) === g[0]; });
+    if (g[0] === 'win' || g[0] === 'rej') items.sort(closedSort);
+    return sec(g[0], g[1], g[2], items, g[0] === 'rej' ? ' rej' : g[0] === 'win' ? ' win' : '');
+  }).join('');
+  return '<h1 class="h1">Papers</h1><p class="sub">' + nAll + ' manuscripts, ' + nOpen + ' in progress.</p>' + ppHead(list0, open0, pt, ord) +
+    (blocks ? secs || '<div class="list"><div class="empty">Nothing here.</div></div>' : tblHtml(rows));
+}
+function viewPapers0(list0) { // the Classic layout's Papers (unchanged)
   var T = ['due', 'deadline', 'action', 'chase', 'waiting', 'drafting'], pt = T.indexOf(S.ptier) >= 0 ? S.ptier : '', blocks = papersView() === 'blocks';
   var list = pt ? list0.filter(function (d) { return d.tier === pt; }) : list0, open0 = list0.filter(function (d) { return d.tier !== 'closed'; });
   var nAll = S.boot.manuscripts.length, nOpen = allDerived().filter(function (d) { return d.tier !== 'closed'; }).length, all = !!(pt || S.q), rows = '';
@@ -5305,27 +5665,36 @@ function panel() {
   var histHtml = !hist ? '<div class="skel" style="width:70%"></div><div class="skel" style="width:50%;margin-top:8px"></div>' :
     !hist.length ? '<p class="muted" style="margin:0">No history yet.</p>' : histGroups(hist);
   var stageOk = d.status === 'Submitted' || d.status === 'Under Review';
-  var P = {
-    top: '<div class="p-top"><button class="btn btn-q back" data-a="close">' + ic('back') + 'Back</button>' + tagHtml(dd) + '<span class="mono muted" style="font-size:var(--fs-xs)">#' + m.id + '</span>' + cardSaving(m.id) +
-    '<span style="margin-left:auto"></span>' + trackBtn(m) + '<button class="ibtn" data-a="pin" data-v="' + m.id + '" aria-pressed="' + (pins().indexOf(m.id) >= 0) + '" aria-label="' + (pins().indexOf(m.id) >= 0 ? 'Unpin from the sidebar' : 'Pin to the sidebar') + '"' + tt(pins().indexOf(m.id) >= 0 ? 'Unpin from the sidebar' : 'Pin to the sidebar') + '>' + ic('pin') + '</button><button class="ibtn close" data-a="close" aria-label="Close details">' + ic('x') + '</button></div>',
-    head: (S.confirmClose ? '<div class="warn" style="margin-top:12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center">' + (S.offline ? 'You are offline. Keep your changes on this device and save them later?' : 'You have unsaved changes.') + '<span style="margin-left:auto"></span>' +
-      (S.offline ? '<button class="btn btn-p" data-a="close-keep">Keep for later</button><button class="btn btn-s" data-a="discard">Discard</button>' : '<button class="btn btn-s" data-a="discard">Discard</button><button class="btn btn-p" data-a="save">Save</button>') + '</div>' : '') +
-    lockBanner(m) + delNote(m) + '<h2 class="p-title">' + esc(m.title) + (ce ? '<button type="button" class="p-tedit" data-a="title-edit" aria-label="Edit the title, journal, IF and IDs"' + tt('Edit the title, journal, IF and IDs') + '>' + ic('pencil') + '</button>' : '') + '</h2><div class="muted" style="font-size:var(--fs-sm)">' + esc([m.type, m.journal || 'Journal not chosen', m.ms_id].filter(Boolean).join(' · ')) + '</div>' +
-    '<div class="p-roles">' + (corrName(m) ? '<span><i>Corresponding</i>' + esc(corrName(m)) + '</span>' : '<span class="none"><i>Corresponding</i>not marked yet</span>') + (firstName(m) ? '<span><i>First author</i>' + esc(firstName(m)) + '</span>' : '') + tip('aroles', true) + '</div>',
-    grid: '<div class="p-grid">' +
-    field('Status', 'status', '<select id="f-status" class="in" data-i="d" data-v="status"' + ro + '>' + st.statuses.map(function (s) { return '<option' + (d.status === s ? ' selected' : '') + '>' + s + '</option>'; }).join('') + '</select>') +
-    field('Stage', 'stage', '<select id="f-stage" class="in" data-i="d" data-v="stage"' + (stageOk ? ro : ' disabled') + '><option value="">' + (stageOk ? 'Choose a stage' : 'Only when at a journal') + '</option>' + st.stages.map(function (s) { return '<option' + (d.stage === s ? ' selected' : '') + '>' + s + '</option>'; }).join('') + '</select>', true) +
-    field('Deadline', 'deadline', '<input id="f-dl" class="in" type="date" data-i="d" data-v="deadline" value="' + esc(d.deadline) + '"' + ro + '>') +
-    (function () { // 0.2.3: the admin also nudges in the app (bell, phone, a card when VIBRA is open)
+  // 0.3.8 (BACKLOG 88): the fields in pieces, so the paper's page edits each from its own line of the summary
+  var fStatus = field('Status', 'status', '<select id="f-status" class="in" data-i="d" data-v="status"' + ro + '>' + st.statuses.map(function (s) { return '<option' + (d.status === s ? ' selected' : '') + '>' + s + '</option>'; }).join('') + '</select>'),
+    fStage = field('Stage', 'stage', '<select id="f-stage" class="in" data-i="d" data-v="stage"' + (stageOk ? ro : ' disabled') + '><option value="">' + (stageOk ? 'Choose a stage' : 'Only when at a journal') + '</option>' + st.stages.map(function (s) { return '<option' + (d.stage === s ? ' selected' : '') + '>' + s + '</option>'; }).join('') + '</select>', true),
+    fDl = field('Deadline', 'deadline', '<input id="f-dl" class="in" type="date" data-i="d" data-v="deadline" value="' + esc(d.deadline) + '"' + ro + '>'),
+    ngCell = (function () { // 0.2.3: the admin also nudges in the app (bell, phone, a card when VIBRA is open)
       var any = m.people.some(function (p) { return p.member && person(p.name) && p.name !== me().key; }), off = any ? '' : ' disabled';
       if (me().role !== 'Admin') return '<div class="ng-cell" style="display:flex;align-items:flex-end"><button class="btn btn-s" style="width:100%" data-a="nudge" title="Opens one draft e-mail to every member who has the ball, in your own mail program"' + off + '>' + ic('mail') + 'Nudge by e-mail</button></div>';
       return '<div class="ng-cell" style="display:flex;align-items:flex-end;gap:8px"><button class="btn btn-s" style="flex:1" data-a="ng-open" aria-expanded="' + !!(S.ng && S.ng.mid === m.id) + '" title="Sends a notification to every member who has the ball: their bell, their phone if notifications are on, a card if VIBRA is open"' + off + '>' + ic('bell') + 'Nudge</button>' +
         '<button class="btn btn-s" style="flex:1" data-a="nudge" title="Opens one draft e-mail to every member who has the ball, in your own mail program"' + off + '>' + ic('mail') + 'E-mail</button></div>';
-    })() + '</div>' + ngEditor(m) +
-    (back ? '<div class="warn" style="margin-top:10px">This moves the manuscript back from ' + esc(m.status) + ' to ' + esc(d.status) + '. Save only if it really went back.</div>' : '') +
-    '<div class="pact"><button class="btn btn-s" data-a="rem-open" aria-expanded="' + !!(S.rem && S.rem.mid === m.id) + '">' + ic('cal') + 'Remind me</button>' +
+    })(),
+    backWarn = (back ? '<div class="warn" style="margin-top:10px">This moves the manuscript back from ' + esc(m.status) + ' to ' + esc(d.status) + '. Save only if it really went back.</div>' : ''),
+    pact = '<div class="pact"><button class="btn btn-s" data-a="rem-open" aria-expanded="' + !!(S.rem && S.rem.mid === m.id) + '">' + ic('cal') + 'Remind me</button>' +
     (m.deadline ? '<button class="btn btn-s" data-a="rem-dl">' + ic('cal') + 'Deadline to my calendar</button>' : '') +
-    tip('remind', true) + '</div>' + remEditor(m),
+    tip('remind', true) + '</div>' + remEditor(m);
+  var idsBody = '<div class="p-grid">' +
+    '<div style="grid-column:1/-1;display:flex;flex-direction:column;gap:4px"><label class="lbl" for="f-title">Title</label><textarea id="f-title" class="in" rows="2" data-i="d" data-v="title"' + ro + '>' + esc(d.title) + '</textarea></div>' +
+    simple('Type', 'type', d.type, ro) + simple('Target journal', 'journal', d.journal, ro) + simple('Journal impact factor', 'impact_factor', d.impact_factor, ro) + simple('First author', 'first_author', d.first_author, ro) +
+    simple('MS ID', 'ms_id', d.ms_id, ro) + simple('DOI', 'doi', d.doi, ro) +
+    '<div style="display:flex;flex-direction:column;gap:4px"><div class="frow"><label class="lbl" for="f-preprint">Preprint</label>' + tip('preprint', true) + (preprintUrl(d.preprint) ? '<a class="pp-open" href="' + esc(preprintUrl(d.preprint)) + '" target="_blank" rel="noopener">Open</a>' : '') + '</div>' +
+    '<input id="f-preprint" class="in" data-i="d" data-v="preprint" value="' + esc(d.preprint) + '" placeholder="ID or DOI"' + ro + '></div>' +
+    '<div style="display:flex;flex-direction:column;gap:4px"><label class="lbl" for="f-sub">Submission date</label><input id="f-sub" class="in" type="date" data-i="d" data-v="submission_date" value="' + esc(d.submission_date) + '"' + ro + '></div>' +
+    (ce ? '<div style="grid-column:1/-1;display:flex;align-items:center;gap:8px"><button type="button" class="btn btn-s" data-a="lk-open">' + ic('link') + 'Add a link</button>' + tip('links', true) + '</div>' : '') + '</div>';
+  var P = {
+    top: '<div class="p-top"><button class="btn btn-q back" data-a="close" aria-label="Back to ' + esc(backLabel()) + '"' + tt('Back to ' + backLabel(), 'Esc') + '>' + ic('back') + '<span class="bk-l">' + esc(backLabel()) + '</span></button>' + tagHtml(dd) + '<span class="mono muted" style="font-size:var(--fs-xs)">#' + m.id + '</span>' + cardSaving(m.id) +
+    '<span style="margin-left:auto"></span>' + pgNav(m) + trackBtn(m) + '<button class="ibtn" data-a="pin" data-v="' + m.id + '" aria-pressed="' + (pins().indexOf(m.id) >= 0) + '" aria-label="' + (pins().indexOf(m.id) >= 0 ? 'Unpin from the sidebar' : 'Pin to the sidebar') + '"' + tt(pins().indexOf(m.id) >= 0 ? 'Unpin from the sidebar' : 'Pin to the sidebar') + '>' + ic('pin') + '</button><button class="ibtn close" data-a="close" aria-label="Close details">' + ic('x') + '</button></div>',
+    head: (S.confirmClose ? '<div class="warn" style="margin-top:12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center">' + (S.offline ? 'You are offline. Keep your changes on this device and save them later?' : 'You have unsaved changes.') + '<span style="margin-left:auto"></span>' +
+      (S.offline ? '<button class="btn btn-p" data-a="close-keep">Keep for later</button><button class="btn btn-s" data-a="discard">Discard</button>' : '<button class="btn btn-s" data-a="discard">Discard</button><button class="btn btn-p" data-a="save">Save</button>') + '</div>' : '') +
+    lockBanner(m) + delNote(m) + '<h2 class="p-title">' + esc(m.title) + (ce ? '<button type="button" class="p-tedit" data-a="title-edit" aria-label="Edit the title, journal, IF and IDs"' + tt('Edit the title, journal, IF and IDs') + '>' + ic('pencil') + '</button>' : '') + '</h2><div class="muted" style="font-size:var(--fs-sm)">' + esc([m.type, m.journal || 'Journal not chosen', m.ms_id].filter(Boolean).join(' · ')) + '</div>' +
+    '<div class="p-roles">' + (corrName(m) ? '<span><i>Corresponding</i>' + esc(corrName(m)) + '</span>' : '<span class="none"><i>Corresponding</i>not marked yet</span>') + (firstName(m) ? '<span><i>First author</i>' + esc(firstName(m)) + '</span>' : '') + tip('aroles', true) + '</div>',
+    grid: '<div class="p-grid">' + fStatus + fStage + fDl + ngCell + '</div>' + ngEditor(m) + backWarn + pact,
     ball: '<div class="p-sec"><div class="frow"><span class="lbl" id="ball-l">Ball is with</span>' + tip('ball') + '</div>' + tagsHtml('ball', d.people) + (ce ? editorHtml('ball') + cbHtml('ball') : '') + '</div>',
     au: '<div class="p-sec"><div class="frow"><span class="lbl" id="au-l">Authors, in order</span>' + tip('authors') + '<span class="mono muted" style="margin-left:auto;font-size:var(--fs-2xs)">' + (d.authors.length ? d.authors.length + ' authors' : '') + '</span></div>' +
     (d.authors.length ? tagsHtml('au', d.authors) + (ce ? editorHtml('au') + cbHtml('au') : '') +
@@ -5333,22 +5702,22 @@ function panel() {
         '<button class="btn btn-s" data-a="au-export" data-v="' + m.id + '" title="Author sheet for submission (Excel)">' + ic('down') + 'Author sheet</button>' + tip('audet', true) +
         (m.au && m.au[0] ? '<span class="aum' + (m.au[1] < m.au[0] ? ' warn' : '') + '">' + (m.au[1] === m.au[0] ? 'Complete for all ' + m.au[0] + ' authors' : (m.au[0] - m.au[1]) + ' of ' + m.au[0] + ' authors still miss an affiliation, e-mail or ORCID') + '</span>' : '') + '</div>' : '') :
       (ce ? '<label for="f-paste" class="muted" style="font-size:var(--fs-sm)">No author list yet. Paste it once, separated by commas or semicolons, and it becomes tags.</label><textarea id="f-paste" class="in" rows="3" placeholder="Y Van Tran, Phong Van Pham, Giustino Varrassi"></textarea><button class="btn btn-s" style="align-self:flex-start" data-a="paste">Make tags</button>' : '<p class="muted" style="margin:0">No author list yet.</p>')) + '</div>',
-    ids: '<details class="p-sec" data-keep="ids"' + (S.keep.ids ? ' open' : '') + '><summary style="cursor:pointer;font-weight:500;color:var(--accent-text)">Title, journal, IF and IDs</summary><div class="p-grid" style="margin-top:8px">' +
-    '<div style="grid-column:1/-1;display:flex;flex-direction:column;gap:4px"><label class="lbl" for="f-title">Title</label><textarea id="f-title" class="in" rows="2" data-i="d" data-v="title"' + ro + '>' + esc(d.title) + '</textarea></div>' +
-    simple('Type', 'type', d.type, ro) + simple('Target journal', 'journal', d.journal, ro) + simple('Journal impact factor', 'impact_factor', d.impact_factor, ro) + simple('First author', 'first_author', d.first_author, ro) +
-    simple('MS ID', 'ms_id', d.ms_id, ro) + simple('DOI', 'doi', d.doi, ro) +
-    '<div style="display:flex;flex-direction:column;gap:4px"><div class="frow"><label class="lbl" for="f-preprint">Preprint</label>' + tip('preprint', true) + (preprintUrl(d.preprint) ? '<a class="pp-open" href="' + esc(preprintUrl(d.preprint)) + '" target="_blank" rel="noopener">Open</a>' : '') + '</div>' +
-    '<input id="f-preprint" class="in" data-i="d" data-v="preprint" value="' + esc(d.preprint) + '" placeholder="ID or DOI"' + ro + '></div>' +
-    '<div style="display:flex;flex-direction:column;gap:4px"><label class="lbl" for="f-sub">Submission date</label><input id="f-sub" class="in" type="date" data-i="d" data-v="submission_date" value="' + esc(d.submission_date) + '"' + ro + '></div>' +
-    (ce ? '<div style="grid-column:1/-1;display:flex;align-items:center;gap:8px"><button type="button" class="btn btn-s" data-a="lk-open">' + ic('link') + 'Add a link</button>' + tip('links', true) + '</div>' : '') + '</div></details>',
+    ids: '<details class="p-sec" data-keep="ids"' + (S.keep.ids ? ' open' : '') + '><summary style="cursor:pointer;font-weight:500;color:var(--accent-text)">Title, journal, IF and IDs</summary>' + idsBody.replace('<div class="p-grid">', '<div class="p-grid" style="margin-top:8px">') + '</details>',
     hist: '<div class="p-sec"><div class="frow"><span class="lbl">History</span>' + tip('note', true) + '</div>' +
     (canEdit() ? '<div style="display:flex;gap:8px"><label class="sr" for="f-note">Add a note</label><input id="f-note" class="in" placeholder="Add a dated note, e.g. Reviewer comments received"><button class="btn btn-s" data-a="note">Add</button></div>' : '') +
     '<div class="hist">' + histHtml + '</div></div>',
     save: (canEdit() ? '<div class="savebar"><span class="state" id="savestate">' + saveStateText() + '</span>' +
       '<button class="btn btn-s" data-a="discard"' + (dirty() ? '' : ' disabled') + ' id="b-discard">Discard</button><button class="btn btn-p" data-a="save" id="b-save"' + (dirty() && !S.saving && !lk ? '' : ' disabled') + '>' + (S.saving ? 'Saving…' : 'Save') + '</button></div>' : '')
   };
-  if (UIN()) return '<aside class="panel' + (S.fx.panel ? ' fx-panel' : '') + ' pnew' + (dirty() ? ' pdirty' : '') + '" aria-label="Manuscript details"><i class="dbar-x" aria-hidden="true"></i>' + P.top + P.head + panelNew(m, d, dd, ce, P, '<div class="p-sec"><div class="frow"><label class="lbl" for="f-next">Next actions</label>' + tip('next') + (todoOn() ? '<button class="btn btn-q" style="margin-left:auto;min-height:28px;padding:2px 8px;font-size:var(--fs-sm)" data-a="tdx-open" aria-expanded="' + !!(S.tdx && S.tdx.mid === m.id) + '">' + ic('plus') + 'To-do</button>' : '') + '</div>' +
-    '<textarea id="f-next" class="in" rows="3" data-i="d" data-v="next" data-k="num" placeholder="Type an action and press Enter: the list numbers itself"' + ro + '>' + esc(d.next) + '</textarea>' + stepChips(d) + tdxEditor(m) + '</div>') + delZone(m) + P.save + '</aside>'; // 0.3.5 (BACKLOG 64)
+  if (UIN()) { // 0.3.8 (BACKLOG 88, 89, 91 to 93): the paper's page
+    var nextEd = '<div class="p-sec"><div class="frow"><label class="lbl" for="f-next">Next actions</label>' + tip('next') + (todoOn() ? '<button class="btn btn-q" style="margin-left:auto;min-height:28px;padding:2px 8px;font-size:var(--fs-sm)" data-a="tdx-open" aria-expanded="' + !!(S.tdx && S.tdx.mid === m.id && S.tdx.src !== 'note') + '">' + ic('plus') + 'To-do</button>' : '') + '</div>' +
+      '<textarea id="f-next" class="in" rows="3" data-i="d" data-v="next" data-k="num" data-tag="1" placeholder="Type an action and press Enter: the list numbers itself; @ tags who does it"' + ro + '>' + esc(d.next) + '</textarea>' + stepChips(d) + (S.tdx && S.tdx.src === 'note' ? '' : tdxEditor(m)) + '</div>';
+    var X = { ss: '<div class="p-grid">' + fStatus + fStage + '</div>' + backWarn, dl: '<div class="p-grid">' + fDl + ngCell + '</div>' + ngEditor(m) + pact, next: nextEd, ids: idsBody + xlBox(m),
+      hist: !hist ? '<div class="skel" style="width:70%"></div>' : histGroups(hist.filter(function (h) { return h.field !== 'note'; })) || '<p class="muted" style="margin:0">No changes yet.</p>' };
+    pgX = X;
+    return '<aside class="panel pg' + (S.fx.panel ? ' fx-panel' : '') + ' pnew' + (dirty() ? ' pdirty' : '') + '" aria-label="' + esc(m.title) + '"><i class="dbar-x" aria-hidden="true"></i>' + P.top +
+      '<div class="pg-in' + (pg3On() ? ' g3' : '') + '">' + pgHead(m, ce, P) + pageHtml(m, d, dd, ce, P, X) + delZone(m) + '</div>' + P.save + '</aside>';
+  }
   return '<aside class="panel' + (S.fx.panel ? ' fx-panel' : '') + '" aria-label="Manuscript details"><i class="dbar-x" aria-hidden="true"></i>' + // 0.3.1: the bar of a layer that leaves sideways
     P.top + P.head + P.grid + P.ball + '<div class="p-sec"><div class="frow"><label class="lbl" for="f-next">Next actions</label>' + tip('next') + (todoOn() ? '<button class="btn btn-q" style="margin-left:auto;min-height:28px;padding:2px 8px;font-size:var(--fs-sm)" data-a="tdx-open" aria-expanded="' + !!(S.tdx && S.tdx.mid === m.id) + '">' + ic('plus') + 'To-do</button>' : '') + '</div>' +
     '<textarea id="f-next" class="in" rows="3" data-i="d" data-v="next" data-k="num" placeholder="Type an action and press Enter: the list numbers itself"' + ro + '>' + esc(d.next) + '</textarea>' + stepChips(d) + tdxEditor(m) + linksHtml(m, d, ce) + '</div>' + P.au + P.ids + xlBox(m) + P.hist + delZone(m) + P.save + '</aside>';
@@ -5383,28 +5752,158 @@ function pfold(k, title, sub, body, open) {
   var on = open || !!S.keep['pf' + k] || S.tour >= 0;
   return '<details class="p-fold" data-keep="pf' + k + '"' + (on ? ' open' : '') + '><summary><span class="pf-t"><b>' + title + '</b><span class="muted">' + esc(sub) + '</span></span>' + ic('chev') + '</summary><div class="pf-b">' + body + '</div></details>';
 }
-function panelNew(m, d, dd, ce, P, nextHtml) {
-  var step = firstStep(m.next), h = S.hist[m.id], L = liveLinks(m.links || []), tx = S.tt && S.tt.mid === m.id ? S.tt.text : '';
-  var sum = '<dl class="p-sum"><dt>Where</dt><dd class="p-where">' + whereHtml(m, ce, dd) + '</dd>' + // 0.3.7: one line, a thin bar under it
-    '<dt>Ball</dt><dd>' + esc(peopleText(m.people) || 'Nobody yet') + '</dd>' +
-    '<dt>Next step</dt><dd>' + (step ? esc(fullNames(step)) : '<span class="muted">Not set yet</span>') + '</dd>' +
-    '<dt>Latest news</dt><dd>' + newsHtml(m) + '</dd></dl>';
-  var tell = !canEdit() ? '' : '<div class="p-tell"><div class="frow"><b>' + ic('bolt') + 'What happened?</b></div>' + // BACKLOG 82: the picture button in the box
+/* 0.3.8 (BACKLOG 88, 89, 91 to 93; admin: "Chọn C ... nhớ tính toán lại cách để hiện thị tốt nhất mà không bị trông rối"):
+   the paper's page. Each thing is said once: the head (title, type, journal, MS ID, first and corresponding author), the
+   summary (where it is, the deadline, the ball, the next step, the latest news), each line edited in place from its pencil;
+   What happened?; then blocks that show what they hold (an empty one is one quiet line; + adds): Reviewers' points, Tasks,
+   Before submitting, Manuscript & files, Notes, Decisions, Authors & roles, Links; History folded. Two columns on a wide
+   page, one on a narrow one. */
+function pgHead(m, ce, P) {
+  var warn = P.head.split('<h2 class="p-title">')[0], ed = S.sumEd && S.sumEd.mid === m.id ? S.sumEd.k : '';
+  var facts = [esc([m.type, m.journal || 'Journal not chosen', m.ms_id].filter(Boolean).join(' · ')),
+    firstName(m) ? '<i>First author</i> ' + esc(firstName(m)) : '',
+    (corrName(m) ? '<i>Corresponding</i> ' + esc(corrName(m)) : '<i>Corresponding</i> <span class="muted">not marked yet</span>') + tip('aroles', true)].filter(Boolean);
+  return warn + '<header class="pg-head"><h2 class="p-title"><span>' + esc(m.title) + '</span>' + (ce ? '<button type="button" class="pg-pen pg-tpen" data-a="title-edit" aria-expanded="' + (ed === 'ids') + '" aria-label="Edit the title, journal, IF and IDs"' + tt('Edit the title, journal, IF and IDs') + '>' + ic('pencil') + '</button>' : '') + '</h2>' +
+    '<p class="pg-meta">' + facts.map(function (f) { return '<span class="pg-f">' + f + '</span>'; }).join('<span class="pg-dot" aria-hidden="true"> · </span>') + '</p>' +
+    (ed === 'ids' || (S.tour >= 0) ? '<div class="pg-ed pg-ids">' + pgX.ids + (S.tour >= 0 ? '' : '<div class="pg-ed-x"><button type="button" class="btn btn-q" data-a="title-edit">Done</button></div>') + '</div>' : '') + '</header>';
+}
+var pgX = {}; // what panel() built for the page (the editors), for pgHead
+function dlRel(m) {
+  if (!m.deadline || !S.boot.today) return '';
+  var n = Math.round((new Date(m.deadline + 'T00:00:00') - new Date(S.boot.today + 'T00:00:00')) / 86400000);
+  if (['Accepted', 'Published', 'Rejected'].indexOf(m.status) >= 0) return '';
+  return n < 0 ? ' · <span class="pg-late">' + (-n) + (n === -1 ? ' day ago' : ' days ago') + '</span>' : n === 0 ? ' · <b class="pg-late">today</b>' : ' · <span class="muted">in ' + n + (n === 1 ? ' day' : ' days') + '</span>';
+}
+function pbox(k, title, sub, body, o) {
+  o = o || {};
+  var adding = !!S.keep['pfadd' + k], fold = !!o.fold, open = fold ? !!S.keep['pf' + k] || S.tour >= 0 : true, empty = !!o.empty && !adding && S.tour < 0;
+  var add = o.ce && o.add ? '<button type="button" class="pg-add" data-a="' + (o.act || 'box-add') + '" data-v="' + k + '" aria-label="' + esc(o.add) + '" aria-expanded="' + adding + '"' + tt(o.add, o.key) + '>' + ic('plus') + '</button>' : '';
+  var head = '<h3>' + title + '</h3><span class="pb-sub">' + esc(sub || '') + '</span>';
+  if (fold) return '<section class="pbox pf' + (open ? ' open' : '') + '" id="pb-' + k + '" data-keep="pf' + k + '"><button type="button" class="pb-h pb-fold" data-a="box-fold" data-v="' + k + '" aria-expanded="' + open + '">' + head + '<span class="pb-chev">' + ic('chev') + '</span></button>' + (open ? '<div class="pb-b">' + body + '</div>' : '') + '</section>';
+  if (empty) return '<section class="pbox pe" id="pb-' + k + '" data-keep="pf' + k + '"><div class="pb-h">' + head + add + '</div></section>';
+  return '<section class="pbox' + (adding ? ' adding' : '') + '" id="pb-' + k + '" data-keep="pf' + k + '"><div class="pb-h">' + head + (o.more || '') + add + '</div><div class="pb-b">' + body + '</div></section>';
+}
+function pageHtml(m, d, dd, ce, P, X) {
+  pgX = X;
+  var step = firstStep(m.next), tour = S.tour >= 0, ed = S.sumEd && S.sumEd.mid === m.id ? S.sumEd.k : '';
+  if (!ed && S.tdx && S.tdx.mid === m.id && S.tdx.src !== 'note') ed = 'next';
+  if (!ed && ((S.ng && S.ng.mid === m.id) || (S.rem && S.rem.mid === m.id))) ed = 'dl';
+  if (!ed && S.stp && S.stp.mid === m.id) ed = 'where';
+  var on = function (k) { return tour || ed === k; };
+  var pen = function (k, lab, key) { return ce ? '<button type="button" class="pg-pen" data-a="sum-ed" data-v="' + k + '" aria-expanded="' + on(k) + '" aria-label="' + esc(lab) + '"' + tt(lab, key) + '>' + ic('pencil') + '</button>' : '<span></span>'; };
+  var edBox = function (k, html) { return on(k) && ce ? '<div class="pg-ed" data-ed="' + k + '">' + html + (tour ? '' : '<div class="pg-ed-x"><button type="button" class="btn btn-q" data-a="sum-ed" data-v="' + k + '">Done</button></div>') + '</div>' : ''; };
+  var row = function (k, label, val, lab, html, key) { return '<div class="pg-sr' + (on(k) && ce ? ' on' : '') + '"><dt>' + label + '</dt><dd>' + val + (html ? edBox(k, html) : '') + '</dd>' + (lab ? pen(k, lab, key) : '<span></span>') + '</div>'; };
+  var dlv = m.deadline ? '<span class="pg-num">' + esc(nice(m.deadline)) + '</span>' + dlRel(m) : '<span class="muted">No deadline</span>';
+  var sum = '<dl class="pg-sum">' +
+    row('where', 'Where', whereHtml(m, ce, dd, true), 'Change where it is', X.ss, 'E') +
+    row('dl', 'Deadline', dlv, 'Change the deadline', X.dl) +
+    row('ball', 'Ball', esc(m.people && m.people.length ? peopleText(m.people) : 'Nobody yet') + (tagsOf(m.next).length ? ' <span class="muted pg-from">from the next actions</span>' : ''), 'Change who has the ball', P.ball) +
+    row('next', 'Next step', step ? tagged(step) : '<span class="muted">Not set yet</span>', 'Change the next steps', X.next) +
+    '<div class="pg-sr"><dt>Latest news</dt><dd>' + newsHtml(m) + '</dd><span></span></div></dl>';
+  var tx = S.tt && S.tt.mid === m.id ? S.tt.text : '';
+  var tell = !canEdit() ? '' : '<div class="p-tell" id="pg-tell"><div class="frow"><b>' + ic('bolt') + 'What happened?</b></div>' +
     '<div class="ta-wrap tt-wrap" data-drop="tt"><textarea id="tt-text" class="in" rows="2" data-i="tt" data-v="text" placeholder="Type, dictate or paste; a screenshot too. The AI updates the record.">' + esc(tx) + '</textarea>' +
     '<span class="ta-tools"><label class="img-btn" aria-label="Add a screenshot or a photo"' + tt('Add a screenshot or a photo') + '>' + ic('img') + '<input type="file" accept="image/*" multiple class="sr" data-file="tt"></label></span></div>' +
-    '<div class="btns">' + (step ? '<button class="btn btn-s" data-a="tt-done" title="' + esc('Done: ' + short(fullNames(step), 80)) + '">' + ic('check') + 'Step done</button>' : '') + '<button class="btn btn-p" data-a="tt-save">Save</button></div></div>';
-  var au = (m.authors || []), auSub = [firstName(m) ? 'first ' + short(firstName(m), 28) : '', corrName(m) ? 'corr. ' + short(corrName(m), 28) : ''].filter(Boolean).join(', ') || (au.length ? au.length + ' authors' : 'none yet');
-  var nOpen = rvPts(m).filter(function (x) { return !x.p.done; }).length, reg = regLine(m, ce), kv = function (k, def) { return S.keep['pf' + k] === undefined ? def : S.keep['pf' + k]; }; // 0.3.7: open by itself while points wait
-  return sum + reg + tell +
-    pfold('det', 'Details', 'status, stage, deadline, ball, next actions', P.grid + P.ball + nextHtml + P.ids + xlBox(m), dirty()) +
-    (rvShow(m) ? pfold('rv', 'Reviewers\' points', rvSub(m), rvBody(m, ce), kv('rv', nOpen > 0)) : '') + // 0.3.7 (BACKLOG 75)
-    pfold('tk', 'Tasks', tkSub(m), tkBody(m, ce)) + // BACKLOG 80 a
-    pfold('doc', 'Manuscript & files', docsSub(m), docsBody(m, ce)) + // BACKLOG 80 c
-    (ckShow(m) ? pfold('ck', 'Before submitting', ckSub(m), ckBody(m, ce)) : '') +
-    pfold('au', 'Authors & roles', auSub + (crSub(m) ? ' · ' + crSub(m) : ''), P.au + crList(m)) +
-    pfold('dec', 'Decisions', decSub(m), decBody(m, ce)) +
-    pfold('lk', 'Links', L.length ? L.map(function (l) { return l.kind === 'track' ? 'Track' : l.label; }).join(' · ') : 'none yet', linksHtml(m, d, ce) + (ce ? '<div class="btns"><button type="button" class="btn btn-s" data-a="lk-open">' + ic('link') + 'Add a link</button>' + tip('links', true) + '</div>' : '')) +
-    pfold('hist', 'History', h ? h.length + ' change' + (h.length === 1 ? '' : 's') : '', P.hist);
+    '<div class="btns">' + (step ? '<button class="btn btn-s" data-a="tt-done" title="' + esc('Done: ' + short(fullNames(step), 80)) + '">' + ic('check') + 'Step done</button>' : '') + '<button class="btn btn-p" data-a="tt-save"' + tt('Save', KEYMOD + ' Enter') + '>Save</button></div></div>';
+  var h = S.hist[m.id], notes = h ? notesList(m) : [], decs = h ? decList(m) : [], L = liveLinks(m.links || []), D = S.docs && S.docs[m.id];
+  var nOpen = rvPts(m).filter(function (x) { return !x.p.done; }).length, nPts = rvPts(m).length;
+  var au = m.authors || [];
+  var bRv = rvShow(m) ? pbox('rv', 'Reviewers\' points', nPts ? nOpen + ' open of ' + nPts : 'none yet', rvBody(m, ce), { ce: ce, add: 'Add a point', empty: !nPts, key: 'R' }) : '';
+  var bTk = pbox('nx', 'Next actions', nxSub(m), nxBody(m, ce), { ce: ce, add: 'Add a next action', empty: !nxLines(m).length && !tkOpen(m).length, key: 'T' }); // 0.3.8 (BACKLOG 97): was Tasks
+  var bCk = ckShow(m) ? pbox('ck', 'Before submitting', ckSub(m), ckBody(m, ce)) : '';
+  var docsEmpty = !!(D && !D.err && !D.ms.length && !D.files.length && !(D.comments || []).length && !(S.docUp || []).some(function (x) { return x.mid === m.id; }));
+  var bDoc = pbox('doc', 'Manuscript & files', docsSub(m), docsPage(m, ce), { ce: ce && docsWeb(), add: 'Upload a version or add files', empty: docsEmpty, key: 'F' });
+  var bNo = pbox('notes', 'Notes', h ? (notes.length ? String(notes.length) : 'none yet') : '', notesBody(m, notes), { ce: canEdit(), add: 'Add a note', empty: !!h && !notes.length && !(S.tdx && S.tdx.src === 'note' && S.tdx.mid === m.id), key: 'O',
+    more: notes.length > 3 ? '<button type="button" class="pb-more" data-a="pn-all">' + (S.keep.pnall ? 'Show fewer' : 'Show all ' + notes.length) + '</button>' : '' });
+  var bDec = pbox('dec', 'Decisions', h ? (decs.length ? String(decs.length) : 'none yet') : '', decPage(m, decs, ce), { ce: ce, add: 'Log a decision', empty: !!h && !decs.length });
+  var bAu = pbox('au', 'Authors &amp; roles', (au.length ? au.length + ' authors' : 'none yet') + (crSub(m) ? ' · ' + crSub(m) : ''), P.au + crList(m), { key: 'A' });
+  var bLk = pbox('lk', 'Links', L.length ? L.map(function (l) { return l.kind === 'track' ? 'Track' : l.label; }).join(' · ') : 'none yet', linksHtml(m, d, ce), { ce: ce, add: 'Add a link', act: 'lk-open', empty: !L.length && !S.lnk });
+  var bHi = pbox('hist', 'History', h ? h.filter(function (x) { return x.field !== 'note'; }).length + ' changes' : '', X.hist, { fold: true, key: 'H' });
+  // 0.3.8 (BACKLOG 99; admin: "với màn hình rộng thì trang bài có thể chia thành 3 phần được không"; of the pictures, B: "ok"):
+  // on a page 1320px wide or more, three columns: where it stands | the work and the notes | the record; below that the two
+  // columns (where it stands above the work on the left) and on a phone one column, as before
+  var g3 = pg3On(), hd = function (t) { return g3 ? '<h2 class="pg-c-h">' + t + '</h2>' : ''; };
+  return '<div class="pg-grid' + (g3 ? ' g3' : '') + '"><div class="pg-col pg-s">' + hd('Where it stands') + sum + regLine(m, ce) + tell + bTk + '</div>' +
+    '<div class="pg-col pg-l">' + hd('The work and notes') + bRv + bCk + bDec + (g3 ? bNo : '') + '</div>' +
+    '<div class="pg-col pg-r">' + hd('The record') + bDoc + (g3 ? '' : bNo) + bAu + bLk + bHi + '</div></div>';
+}
+/* (92) Notes: written by members, the AI and the import; History only lists what changed. A note can become my to-do or a task. */
+function notesList(m) { return (S.hist[m.id] || []).filter(function (h) { return h.field === 'note' && !DEC_RX.test(h.new) && !/deleted by its author/.test(h.new); }); }
+function cap1(t) { t = String(t || ''); return t.charAt(0).toUpperCase() + t.slice(1); }
+function noteText(h) { return String(h.new).replace(/^\d{1,2} [A-Z][a-z]{2} \d{4}(\s*\([^)]*\))?:\s*/, ''); }
+function notesBody(m, notes) {
+  if (!S.hist[m.id]) return '<div class="skel" style="width:70%"></div>';
+  var shown = S.keep.pnall ? notes : notes.slice(0, 3), ce = canEdit();
+  var rows = shown.map(function (h) {
+    var own = ce && h.mine, edit = own && S.ned && S.ned.row === h.row, who = h.actor === 'AI routine' ? 'AI' : !h.actor || h.actor === 'Imported' ? 'Imported' : isMe(h.actor) ? 'You' : whoLabel(h.actor);
+    var acts = (todoOn() ? '<button type="button" class="pg-i" data-a="pn-todo" data-v="' + h.row + '" aria-label="To my to-do"' + tt('To my to-do') + '>' + ic('check') + '</button>' : '') +
+      (ce ? '<button type="button" class="pg-i" data-a="pn-task" data-v="' + h.row + '" aria-label="Make it a next action"' + tt('Make it a next action') + '>' + ic('people') + '</button>' : '') +
+      (own && !edit ? '<button type="button" class="pg-i" data-a="note-edit" data-v="' + h.row + '" aria-label="Edit my note"' + tt('Edit my note') + '>' + ic('pencil') + '</button>' +
+        (S.ndel === h.row ? '<button type="button" class="btn btn-red pg-del" data-a="note-del" data-v="' + h.row + '">Delete?</button>' : '<button type="button" class="pg-i del" data-a="note-ask" data-v="' + h.row + '" aria-label="Delete my note"' + tt('Delete my note') + '>' + ic('trash') + '</button>') : '');
+    var body = edit ? '<span class="nedit"><label class="sr" for="ned-text">Edit the note</label><input id="ned-text" class="in" data-i="ned" value="' + esc(S.ned.text) + '"><button class="btn btn-p" data-a="note-save">Save</button><button class="btn btn-q" data-a="note-cancel">Cancel</button></span>' :
+      '<span class="pr-t' + (S.keep['pnx' + h.row] ? '' : ' pr-clamp') + '" data-a="pn-x" data-v="' + h.row + '">' + esc(cap1(fullNames(noteText(h)))) + '</span><span class="pr-m">' + esc(who) + '</span>';
+    return '<div class="pr' + (acts ? ' sw-row' : '') + '"><span class="sw-front"><span class="pr-d pg-num">' + esc(niceShort(h.ts)) + '</span><span class="pr-c">' + body + '</span></span><span class="pg-acts">' + acts + '</span></div>';
+  }).join('');
+  var tdx = S.tdx && S.tdx.src === 'note' && S.tdx.mid === m.id ? tdxEditor(m) : '';
+  return (rows || '<p class="muted rv-none">No notes yet.</p>') + tdx +
+    (ce ? '<div class="rv-add pn-add"><label class="sr" for="f-note">Add a note</label><input id="f-note" class="in" maxlength="1000" placeholder="Add a dated note, e.g. Reviewer comments received"><button class="btn btn-s" data-a="note">Add</button></div>' : '');
+}
+/* (93) Decisions as a log: what was decided, why, its kind, who and when ("Decision: [Journal] ... Why: ...") */
+var DEC_KINDS = ['Journal', 'Methods', 'Outcome', 'Authorship', 'Analysis', 'Other'];
+function decParse(t) {
+  t = String(t || '').replace(DEC_RX, ''); var k = /^\[([A-Za-z]+)\]\s*/.exec(t), kind = k && DEC_KINDS.indexOf(k[1]) >= 0 ? k[1] : '';
+  if (kind) t = t.slice(k[0].length);
+  var w = /\s+Why:\s+/i.exec(t), why = w ? t.slice(w.index + w[0].length) : '';
+  return { kind: kind, what: w ? t.slice(0, w.index).replace(/[.\s]+$/, '') : t, why: why };
+}
+function decPage(m, L, ce) {
+  if (!S.hist[m.id]) return '<div class="skel" style="width:60%"></div>';
+  var rows = L.map(function (x) {
+    var q = /quick update from ([^)]+)\)/.exec(x.new), who = x.actor === 'AI routine' ? 'AI' + (q ? ', from ' + (isMe(q[1]) ? 'your' : whoShort(q[1]) + '\'s') + ' quick update' : '') : isMe(x.actor) ? 'You' : whoLabel(x.actor), P = decParse(x.new);
+    return '<div class="pr"><span class="pr-d pg-num">' + esc(niceShort(x.ts)) + '</span><span class="pr-c"><span class="pr-t">' + esc(fullNames(P.what)) + '</span><span class="pr-m">' + (P.kind ? '<span class="pg-tag">' + esc(P.kind) + '</span> ' : '') + (P.why ? 'Why: ' + esc(fullNames(P.why)) + ' · ' : '') + esc(who) + '</span></span></div>';
+  }).join('');
+  return (rows || '<p class="muted rv-none">Choices the group made and why: a journal, a method, an outcome, the author order. The AI adds them from quick updates too.</p>') +
+    (ce ? '<div class="rv-add dec-add2"><label class="sr" for="dec-kind">Kind</label><select id="dec-kind" class="in"><option value="">Kind (optional)</option>' + DEC_KINDS.map(function (k) { return '<option>' + k + '</option>'; }).join('') + '</select>' +
+      '<label class="sr" for="dec-new">What was decided</label><input id="dec-new" class="in" maxlength="300" placeholder="What was decided, e.g. Target Pain and Therapy first">' +
+      '<label class="sr" for="dec-why">Why</label><input id="dec-why" class="in" maxlength="200" placeholder="Why (optional)"><button type="button" class="btn btn-s" data-a="dec-add">Add</button></div>' : '');
+}
+/* (91) Manuscript & files: every version on one line with Download, Replace and Delete (beside it on a wide screen, behind a
+   swipe on a phone), who and when; the other files with their category, chosen when they are added */
+function docsPage(m, ce) {
+  if (!docsWeb()) return '<p class="muted rv-none">The manuscript and its files open in the VIBRA app (they are kept in the group\'s Drive through it).</p>';
+  var D = S.docs && S.docs[m.id]; if (!D) { docsLoad(m.id); return '<div class="skel" style="width:70%"></div>'; }
+  if (D.err) return '<p class="err">' + esc(D.err) + ' <button class="linkbtn" data-a="docs-reload">Try again</button></p>';
+  var up = (S.docUp || []).filter(function (x) { return x.mid === m.id; }), mine = function (d) { return ce && (d.by === me().key || me().role === 'Admin' || me().role === 'Supervisor'); };
+  var tools = function (d) {
+    return '<span class="pg-acts dk-acts"><button type="button" class="pg-i" data-a="doc-get" data-v="' + d.id + '" aria-label="Download ' + esc(d.name) + '"' + tt('Download') + '>' + ic('down') + '</button>' +
+      (mine(d) ? '<label class="pg-i" aria-label="Replace ' + esc(d.name) + '"' + tt('Replace (sent the wrong file)') + '>' + ic('refresh') + '<input type="file" class="sr" data-doc="rep:' + d.id + '"' + (d.kind === 'ms' ? ' accept=".doc,.docx,.odt,.rtf,.pdf"' : '') + '></label>' +
+        (S.docDel === d.id ? '<button type="button" class="btn btn-red pg-del" data-a="doc-del" data-v="' + d.id + '">Delete?</button>' : '<button type="button" class="pg-i del" data-a="doc-del" data-v="' + d.id + '" aria-label="Delete ' + esc(d.name) + '"' + tt('Delete (sent by mistake)') + '>' + ic('trash') + '</button>') : '') + '</span>';
+  };
+  var line = function (d) { return esc(whoShort(d.by)) + ' · ' + esc(niceShort(d.ts)) + ' ' + esc(String(d.ts).slice(11, 16)) + ' · ' + fsize(d.size); };
+  var upRows = up.map(function (x) { return '<div class="pr dk"><i class="th-ring dk" aria-hidden="true"></i><span class="pr-c"><span class="pr-t">' + esc(x.name) + '</span><span class="pr-m">' + (x.err ? '<span class="err">' + esc(x.err) + '</span>' : 'Sending · ' + fsize(x.size)) + '</span></span></div>'; }).join('');
+  var vers = D.ms.length > 2 && !S.keep.dochist ? D.ms.slice(0, 2) : D.ms;
+  var ms = D.ms.length ? '<div class="pg-sub">Manuscript</div>' + vers.map(function (d, i) {
+    return '<div class="pr dk sw-row"><span class="sw-front"><span class="pg-ver' + (i ? '' : ' cur') + ' pg-num">v' + d.version + '</span><span class="pr-c"><span class="pr-t">' + esc(d.name) + '</span><span class="pr-m pg-num">' + line(d) + '</span></span></span>' + tools(d) + '</div>';
+  }).join('') + (D.ms.length > 2 ? '<button type="button" class="pb-more pg-older" data-a="doc-older">' + (S.keep.dochist ? 'Show fewer' : 'v' + D.ms[D.ms.length - 1].version + (D.ms.length > 3 ? '–v' + D.ms[2].version : '') + ' · ' + (D.ms.length - 2) + ' earlier') + '</button>' : '') : '';
+  var files = D.files.length ? '<div class="pg-sub">Other files</div>' + D.files.slice().sort(function (a, b) { return a.group < b.group ? -1 : a.group > b.group ? 1 : a.ts < b.ts ? 1 : -1; }).map(function (d) {
+    return '<div class="pr dk sw-row"><span class="sw-front"><span class="pg-fic">' + ic('file') + '</span><span class="pr-c"><span class="pr-t">' + esc(d.name) + '</span><span class="pr-m"><span class="pg-tag">' + esc(d.group) + '</span> <span class="pg-num">' + line(d) + '</span></span></span></span>' + tools(d) + '</div>';
+  }).join('') : '';
+  var cur = D.ms[0], cats = D.cats || ['Figures', 'Tables', 'Supplementary material', 'Data', 'References / PDFs', 'Submission', 'Other'];
+  var addRow = ce ? '<div class="rv-add dk-add"><label class="btn btn-s">' + ic('upload') + (cur ? 'Upload v' + (cur.version + 1) : 'Upload the manuscript') + '<input type="file" class="sr" data-doc="ms" accept=".doc,.docx,.odt,.rtf,.pdf"></label>' +
+    '<span class="dk-or">or</span><label class="sr" for="doc-cat">Category</label><select id="doc-cat" class="in"><option value="">Category: by file type</option>' + cats.map(function (c) { return '<option' + (S.docCat === c ? ' selected' : '') + '>' + esc(c) + '</option>'; }).join('') + '</select>' +
+    '<label class="btn btn-s">' + ic('plus') + 'Add files<input type="file" class="sr" data-doc="file" multiple></label><span class="muted doc-max">Up to ' + (D.max_mb || 15) + ' MB each</span></div>' : '';
+  var rr = cur && ce ? '<div class="dk-rr"><button type="button" class="pb-more" data-a="rr-open" aria-expanded="' + !!S.rrq + '">' + ic('send') + 'Request review of v' + cur.version + '</button></div>' + (S.rrq ? rrForm(m) : '') : '';
+  var f = S.cmf || 'open', C = (D.comments || []).filter(function (c) { return f === 'all' || c.status === f; });
+  var com = (D.comments || []).length || cur ? '<div class="pg-sub dk-cm">Comments<span class="seg seg-s cm-seg" role="group" aria-label="Which comments">' + [['open', 'Open'], ['resolved', 'Resolved'], ['all', 'All']].map(function (o) { return '<button data-a="cm-f" data-v="' + o[0] + '" aria-pressed="' + (f === o[0]) + '">' + o[1] + '</button>'; }).join('') + '</span></div>' +
+    C.map(function (c) {
+      return '<div class="cm-r' + (c.status === 'resolved' ? ' done' : '') + '"><span class="cm-tags"><i>' + esc(c.section) + '</i><i class="ty">' + esc(c.type) + '</i>' + (c.version ? '<i class="vv">v' + c.version + '</i>' : '') + '</span><span class="cm-t">' + esc(c.text) + '</span>' +
+        '<span class="rv-meta">' + esc(whoShort(c.by)) + ' · ' + esc(niceShort(c.ts)) + (c.status === 'resolved' ? ' · resolved by ' + esc(whoShort(c.resolved_by)) : '') + '</span>' +
+        (ce ? '<span class="cm-acts"><button type="button" class="linkbtn" data-a="cm-res" data-v="' + c.id + ':' + (c.status === 'resolved' ? '0' : '1') + '">' + (c.status === 'resolved' ? 'Open again' : 'Resolve') + '</button>' + (c.by === me().key ? '<button type="button" class="linkbtn cm-del" data-a="cm-del" data-v="' + c.id + '">Delete</button>' : '') + '</span>' : '') + '</div>';
+    }).join('') + (C.length ? '' : '<p class="muted rv-none">' + (f === 'open' ? 'No open comments.' : 'None.') + '</p>') +
+    (ce ? '<div class="cm-add"><label class="sr" for="cm-sec">Section</label><select id="cm-sec" class="in">' + (D.sections || []).map(function (x) { return '<option>' + esc(x) + '</option>'; }).join('') + '</select>' +
+      '<label class="sr" for="cm-ty">Type</label><select id="cm-ty" class="in">' + (D.types || []).map(function (x) { return '<option>' + esc(x) + '</option>'; }).join('') + '</select>' +
+      '<label class="sr" for="cm-tx">Comment</label><input id="cm-tx" class="in" maxlength="2000" placeholder="Add a comment on ' + (cur ? 'v' + cur.version : 'the manuscript') + '"><button type="button" class="btn btn-s" data-a="cm-add">Add</button></div>' : '') : '';
+  return upRows + ms + rr + files + (!D.ms.length && !D.files.length && !upRows ? '<p class="muted rv-none">No manuscript or files yet. Upload the Word file; each new upload becomes the next version.</p>' : '') + addRow + com;
 }
 function ttGo(done) {
   var m = curM(); if (!m || !canEdit()) return;
@@ -5438,18 +5937,18 @@ function stepAt(m) {
 function stepPatch(m, i) {
   var st = m.stage || '', n = /R(\d)$/.exec(st);
   if (i === 'rej') return { status: 'Rejected', stage: '' };
-  if (i === 5) return { status: 'Under Review', stage: REV_RX.test(st) ? st : n && +n[1] < 3 ? 'Reviews back R' + n[1] : 'Revising' };
-  if (i === 4) return { status: 'Under Review', stage: REV_RX.test(st) ? (n && +n[1] < 3 ? 'Resubmitted R' + n[1] : 'Resubmitted R1') : m.status === 'Under Review' && st ? st : 'Review R1' };
+  if (i === 5) return { status: 'Under Review', stage: REV_RX.test(st) ? st : n && +n[1] < 4 ? 'Reviews back R' + n[1] : 'Revising' };
+  if (i === 4) return { status: 'Under Review', stage: REV_RX.test(st) ? (n && +n[1] < 4 ? 'Resubmitted R' + n[1] : 'Resubmitted R1') : m.status === 'Under Review' && st ? st : 'Review R1' };
   if (i === 3) return { status: 'Submitted', stage: m.status === 'Submitted' && st ? st : 'Awaiting editor' };
   return { status: STEPS[i][0], stage: '' };
 }
 /* admin, on the pictures: "Không ổn, có 2 phần chỉ vị trí luôn, quá thừa thải, bỏ mấy cái block"; then "Một dòng và vạch
    mảnh ngay dưới dòng đó": the summary's first line says where it is, a thin bar of eight parts right under it; Change
    (editors) lists the steps, a step asks, Move saves. */
-function whereHtml(m, ce, dd) {
+function whereHtml(m, ce, dd, pg) {
   var at = stepAt(m), rej = at < 0, st = S.stp && S.stp.mid === m.id ? S.stp : null;
   var shown = m.status === 'Submitted' || m.status === 'Under Review' ? m.stage : '';
-  var line = (rej ? '<b class="pw-rej">Rejected</b>' : '<b>' + (at + 1) + '. ' + esc(STEPS[at][1]) + '</b>') + (shown ? ' · ' + esc(shown) : '') + ' ' + tagHtml(dd);
+  var line = (rej ? '<b class="pw-rej">Rejected</b>' : '<b>' + (at + 1) + '. ' + esc(STEPS[at][1]) + '</b>') + (shown ? ' · ' + esc(shown) : '') + (pg ? '' : ' ' + tagHtml(dd)); // 0.3.8: on the page the deadline has its own line
   var bar = '<span class="pw-bar' + (rej ? ' rej' : '') + '" role="img" aria-label="' + esc(rej ? 'Rejected' : 'Step ' + (at + 1) + ' of 8') + '">' + STEPS.map(function (s, i) {
     return '<i class="' + (rej ? '' : i < at ? 'done' : i === at ? 'now' : '') + '" title="' + esc((i + 1) + '. ' + s[1]) + '"></i>';
   }).join('') + '</span>';
@@ -5464,7 +5963,7 @@ function whereHtml(m, ce, dd) {
         '<span class="btns"><button type="button" class="btn ' + (st.i === 'rej' ? 'btn-red' : 'btn-p') + '" data-a="stp-go">Move</button><button type="button" class="btn btn-q" data-a="stp-no">Cancel</button></span></div>';
     }
   }
-  return '<span class="pw-line"><span class="pw-t">' + line + '</span>' + (ce ? '<button type="button" class="linkbtn pw-chg" data-a="stp-open" aria-expanded="' + !!st + '">' + (st ? 'Cancel' : 'Change') + '</button>' : '') + '</span>' + bar + pick;
+  return '<span class="pw-line"><span class="pw-t">' + line + '</span>' + (ce && !pg ? '<button type="button" class="linkbtn pw-chg" data-a="stp-open" aria-expanded="' + !!st + '">' + (st ? 'Cancel' : 'Change') + '</button>' : '') + '</span>' + bar + pick;
 }
 function stepGo() {
   var m = curM(); if (!m || !S.stp || S.stp.mid !== m.id || !S.draft) return;
@@ -5593,6 +6092,30 @@ function regRow(d) {
   return '<div class="rv-p"><button type="button" class="td-chk round" data-a="ck-tick" data-v="' + d.m.id + ':reg" role="checkbox" aria-checked="false" aria-label="' + esc('Registered: ' + short(d.m.title, 60)) + '"' + (canEdit() ? '' : ' disabled') + '>' + ic('check') + '</button>' +
     '<div class="rv-main"><button class="rv-t rv-open" data-a="open" data-v="' + d.m.id + '">' + esc(short(d.m.title, 110)) + '</button><span class="rv-meta">' + esc(d.m.type + ' · ' + regWhere(d.m).split(' (')[0]) + '</span></div></div>';
 }
+/* 0.3.8 (BACKLOG 97): the next actions as a block: each line, a tick on the lines that are someone's job (tagged), a line
+   added at the end (@ picks a member). The tasks of 0.3.7 still open show here as lines too (with their tick); the Tasks
+   block is gone. */
+function nxLines(m) {
+  var o = []; String(m.next || '').split('\n').forEach(function (raw, i) { var t = raw.replace(/^\s*\d+[.)]\s*/, '').trim(); if (t) o.push({ i: i, raw: raw, t: t, tags: tagsOf(t) }); });
+  return o;
+}
+function nxSub(m) { var L = nxLines(m), n = L.filter(function (x) { return x.tags.length; }).length; return L.length ? L.length + (n ? ' · ' + n + ' tagged' : '') : 'none yet'; }
+function nxRow(m, x, ce, mine) {
+  var can = ce || (canEdit() && x.tags.indexOf(me().key) >= 0);
+  return '<div class="nx-r' + (x.tags.length ? ' job' : '') + '">' + (x.tags.length ? '<button type="button" class="td-chk round" data-a="nx-done" data-v="' + m.id + '|' + x.i + '" role="checkbox" aria-checked="false" aria-label="' + esc('Done: ' + short(untag(x.t), 80)) + '"' + (can ? '' : ' disabled') + '>' + ic('check') + '</button>' : '<span class="nx-wait" title="No one\'s job: waiting">' + ic('clock') + '</span>') +
+    '<span class="nx-t">' + tagged(x.t) + (mine ? '<span class="nx-m"><button class="td-m" data-a="open" data-v="' + m.id + '" title="' + esc(m.title) + '">#' + m.id + ' ' + esc(short(m.title, 46)) + '</button>' + (m.deadline ? ' · <span class="' + (m.deadline < S.boot.today ? 'tk-late' : '') + '">' + (m.deadline < S.boot.today ? 'overdue ' : 'due ') + esc(niceShort(m.deadline)) + '</span>' : '') + '</span>' : '') + '</span></div>';
+}
+function nxBody(m, ce) {
+  var L = nxLines(m), T = tkOpen(m);
+  return (L.length || T.length ? '<div class="nx-list">' + L.map(function (x) { return nxRow(m, x, ce); }).join('') + T.map(function (x) { return tkRow(m, x, ce); }).join('') + '</div>' : '<p class="muted rv-none">No next actions yet.</p>') +
+    (ce ? '<div class="rv-add nx-add"><label class="sr" for="nx-new">Add a next action</label><input id="nx-new" class="in" maxlength="300" data-tag="1" autocomplete="off" placeholder="Type the next action; @ tags who does it" enterkeyhint="done"><button type="button" class="btn btn-s" data-a="nx-add" data-v="' + m.id + '">Add</button></div>' : '') +
+    '<p class="muted nx-hint">A line with @name is that person\'s job: they hold the ball and it goes into their To do. A line without a name (waiting for the journal) is no one\'s job.</p>';
+}
+function myLines() { // the lines tagged with me on the group's papers still in progress
+  var k = me().key, o = [];
+  allDerived().forEach(function (d) { if (d.tier === 'closed') return; nxLines(d.m).forEach(function (x) { if (x.tags.indexOf(k) >= 0) o.push({ d: d, x: x }); }); });
+  return o;
+}
 /* BACKLOG 80 a (admin chose "Tasks theo bài"): a paper's tasks (what, who, by when, done); mine in My work; the next
    actions can be turned into tasks in one go (who from the line's start, the date from "by 22 Oct"). */
 function tkOpen(m) { return (m.tasks || []).filter(function (x) { return !x.done; }); }
@@ -5686,20 +6209,23 @@ function rrForm(m) {
   return '<div class="rr-form" role="group" aria-label="Request review"><span class="lbl">Who reviews it</span><div class="rv-pick" style="padding:0">' + S.boot.people.filter(function (q) { return q.key !== me().key; }).map(function (q) {
     return '<button type="button" class="chip-t" data-a="rr-tog" data-v="' + esc(q.key) + '" aria-pressed="' + (on.indexOf(q.key) >= 0) + '">' + esc(whoShort(q.key)) + '</button>';
   }).join('') + '</div><div class="rv-add"><label class="sr" for="rr-due2">By</label><input id="rr-due2" class="in" type="date" style="flex:0 0 170px"><label class="sr" for="rr-note">What to look at</label><input id="rr-note" class="in" maxlength="200" placeholder="What to look at (optional)"></div>' +
-    '<div class="btns"><button type="button" class="btn btn-p" data-a="rr-send"' + (on.length ? '' : ' disabled') + '>Send the request</button><button type="button" class="btn btn-q" data-a="rr-open">Cancel</button></div><p class="muted" style="margin:0;font-size:var(--fs-xs)">Each one gets a task "Review the manuscript" with the date, in their My work and under their bell.</p></div>';
+    '<div class="btns"><button type="button" class="btn btn-p" data-a="rr-send"' + (on.length ? '' : ' disabled') + '>Send the request</button><button type="button" class="btn btn-q" data-a="rr-open">Cancel</button></div><p class="muted" style="margin:0;font-size:var(--fs-xs)">Each one gets a line in the next actions with their name (@ tag) and the date: it is in their To do, gives them the ball and comes under their bell.</p></div>';
 }
 function docUpload(kind, files) {
   var m = curM(), W = window.VIBRA_WEB; if (!m || !W || !W.fput) return;
   var max = ((S.docs && S.docs[m.id] && S.docs[m.id].max_mb) || 15) * 1048576;
   S.docUp = S.docUp || [];
-  Array.prototype.slice.call(files || []).slice(0, kind === 'ms' ? 1 : 10).forEach(function (f) {
+  var rep = /^rep:/.test(kind) ? kind.slice(4) : '', old = rep && S.docs[m.id] ? S.docs[m.id].ms.concat(S.docs[m.id].files).filter(function (d) { return d.id === rep; })[0] : null; // 0.3.8 (BACKLOG 91)
+  if (rep) kind = old && old.kind === 'ms' ? 'ms' : 'file';
+  var ce = document.getElementById('doc-cat'), cat = kind === 'file' && !rep && ce ? ce.value : ''; S.docCat = cat; // none chosen: sorted by the file's type
+  Array.prototype.slice.call(files || []).slice(0, kind === 'ms' || rep ? 1 : 10).forEach(function (f) {
     if (f.size > max) { toast(f.name + ' is larger than ' + (max / 1048576) + ' MB.', true); return; }
     var job = { mid: m.id, name: f.name, size: f.size }; S.docUp.push(job); render();
     var rd = new FileReader();
     rd.onload = function () {
       var data = String(rd.result).replace(/^data:[^,]*,/, '');
-      W.fput({ mid: m.id, kind: kind, name: f.name, mime: f.type || 'application/octet-stream', data: data }).then(function (r) {
-        S.docUp = S.docUp.filter(function (x) { return x !== job; }); toast(kind === 'ms' ? 'Uploaded: v' + r.version + ' is now the current version.' : 'Added: ' + r.name + '.'); docsLoad(m.id, true); loadHistory(m.id);
+      W.fput({ mid: m.id, kind: kind, name: f.name, mime: f.type || 'application/octet-stream', data: data, cat: cat, replace: rep }).then(function (r) {
+        S.docUp = S.docUp.filter(function (x) { return x !== job; }); toast(rep ? (kind === 'ms' ? 'Replaced: v' + r.version + ' is now ' + r.name + '.' : 'Replaced with ' + r.name + '.') : kind === 'ms' ? 'Uploaded: v' + r.version + ' is now the current version.' : 'Added: ' + r.name + '.'); docsLoad(m.id, true); loadHistory(m.id);
       }, function (e) { job.err = msg(e); render(); setTimeout(function () { S.docUp = S.docUp.filter(function (x) { return x !== job; }); render(); }, 8000); });
     };
     rd.onerror = function () { job.err = 'This file could not be read.'; render(); };
@@ -5784,7 +6310,7 @@ function tagsHtml(kind, arr) {
   return '<div class="tags" role="group" aria-labelledby="' + kind + '-l">' + arr.map(function (p, i) {
     var member = isAu ? isMemberKey(authorKey(p)) : p.member;
     var notes = [];
-    if (isAu) { if (i === 0 && !/equal/i.test(p.note)) notes.push('first'); if (p.corr) notes.push('corr.'); if (p.note) notes.push(p.note); } else if (p.note) notes.push(p.note);
+    if (isAu) { if (i === 0 && !/equal/i.test(p.note) && !UIN()) notes.push('first'); /* 0.3.8 (BACKLOG 88): the page names the first author once, under the title */ if (p.corr) notes.push('corr.'); if (p.note) notes.push(p.note); } else if (p.note) notes.push(p.note);
     var lab = (!isAu && p.primary && arr.length > 1 ? '★ ' : '') + (isAu ? p.name : chipName(p.name));
     var on = S.ed && S.ed.kind === kind && S.ed.i === i;
     var unsure = isAu && (p.check === 'several' || p.check === 'near');
@@ -5982,7 +6508,7 @@ function delDialog() {
 var darkMQ = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
 function themePref() { return (S.boot && S.boot.prefs && S.boot.prefs.theme) || 'light'; }
 function curTheme() { var p = themePref(); return p === 'system' ? (darkMQ && darkMQ.matches ? 'dark' : 'light') : p; }
-function applyTheme() { applyFont(); applyPal(); var de = document.documentElement, was = de.getAttribute('data-theme'); if (was && was !== curTheme()) { de.classList.add('notr'); de.setAttribute('data-theme', curTheme()); void getComputedStyle(document.body).color; requestAnimationFrame(function () { requestAnimationFrame(function () { de.classList.remove('notr'); }); }); } else de.setAttribute('data-theme', curTheme()); try { localStorage.setItem('vibra-theme', themePref()); } catch (e) { } toApp({ type: 'vibra-theme', dark: curTheme() === 'dark' }); }
+function applyTheme() { applyFont(); applyFace(); applyPal(); var de = document.documentElement, was = de.getAttribute('data-theme'); if (was && was !== curTheme()) { de.classList.add('notr'); de.setAttribute('data-theme', curTheme()); void getComputedStyle(document.body).color; requestAnimationFrame(function () { requestAnimationFrame(function () { de.classList.remove('notr'); }); }); } else de.setAttribute('data-theme', curTheme()); try { localStorage.setItem('vibra-theme', themePref()); } catch (e) { } toApp({ type: 'vibra-theme', dark: curTheme() === 'dark' }); }
 /* 0.2.6 (admin: "chọn cỡ chữ to trung bình nhỏ", for members who read better with larger text): kept with the account,
    on every device; the admin can make Large the default for some members (Meta large_text_users). */
 /* 0.2.7: six steps (1 to 6, 3 is the usual size); s, m and l of 0.2.6 read as 2, 3 and 5 */
@@ -5992,6 +6518,23 @@ function fsPct(f) { return FS_PCT[Number(f)] + '%'; }
 function applyFont() {
   var f = fontPref(); if (f === '3') document.documentElement.removeAttribute('data-fs'); else document.documentElement.setAttribute('data-fs', f);
   try { localStorage.setItem('vibra-fs', f); } catch (e) { }
+}
+/* 0.3.8 (BACKLOG 100; admin: "cho 3 lựa chọn ở settings, 1 hiện tại, 1 A, 1 literata"): the typeface, per person: Geist with
+   serif titles (as before), the device's own (SF Pro on Apple, Segoe UI on Windows, Roboto on Android: the most familiar
+   letters, nothing to download) or Literata (a serif made for reading on screens, loaded only when chosen). The sizes stay
+   with the text size; the logo keeps its letters. */
+var FACES = [['geist', 'Geist', 'Today\'s: Geist, with serif titles'], ['system', 'Device', 'Your device\'s own font (SF Pro on Apple)'], ['literata', 'Literata', 'A serif made for reading on screens']];
+function facePref() { var f = S.boot && S.boot.prefs && S.boot.prefs.face; return f === 'system' || f === 'literata' ? f : 'geist'; }
+function applyFace() {
+  var f = facePref(), de = document.documentElement;
+  if (f === 'geist') de.removeAttribute('data-face'); else de.setAttribute('data-face', f);
+  if (f === 'literata' && !document.getElementById('face-lit')) { var l = document.createElement('link'); l.rel = 'stylesheet'; l.id = 'face-lit'; l.href = 'https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,400..700&display=swap'; document.head.appendChild(l); }
+  try { localStorage.setItem('vibra-face', f); } catch (e) { }
+}
+function setFace(f) {
+  f = f === 'system' || f === 'literata' ? f : 'geist';
+  S.boot.prefs = S.boot.prefs || {}; S.boot.prefs.face = f; applyFace(); render();
+  api('api_setPrefs', { face: f }).catch(function () { });
 }
 function setFont(f) {
   S.boot.prefs = S.boot.prefs || {}; S.boot.prefs.fontSize = f; applyFont(); render();
@@ -6138,33 +6681,45 @@ function refreshNow() {
 }
 var TSW = null;
 function tswClose(except) {
-  document.querySelectorAll('.td-row.sw-open').forEach(function (r) { if (r !== except) r.classList.remove('sw-open'); });
+  document.querySelectorAll('.td-row.sw-open, .pg .sw-row.sw-open').forEach(function (r) { if (r !== except) r.classList.remove('sw-open'); });
   if (!except) S.sw = null;
 }
-document.addEventListener('touchstart', function (e) { // 0.3.6 (BACKLOG 70): a swipe on a line of the own to-do
+document.addEventListener('touchstart', function (e) { // 0.3.6 (BACKLOG 70): a swipe on a line of the own to-do; 0.3.8 (BACKLOG 101): the front slides over the tools
   TSW = null;
-  var row = e.touches.length === 1 && e.target.closest ? e.target.closest('.mwt .td-row[data-sw]') : null;
-  if (S.sw && !(row && row.classList.contains('sw-open')) && !(e.target.closest && e.target.closest('.td-row.sw-open .td-acts'))) tswClose(null); // a tap elsewhere hides the tools
+  var row = e.touches.length === 1 && e.target.closest ? e.target.closest('.mwt .td-row[data-sw], .pg .sw-row') : null; // 0.3.8 (BACKLOG 91): the page's files and notes too
+  var inTray = !!(e.target.closest && e.target.closest('.sw-open .td-acts, .sw-open .pg-acts'));
+  if (S.sw && !(row && row.classList.contains('sw-open')) && !inTray) tswClose(null); // a tap elsewhere hides the tools
   if (!row || (window.matchMedia && window.matchMedia('(hover:hover)').matches)) return;
-  var acts = row.querySelector('.td-acts'), w = acts ? acts.scrollWidth || 192 : 192;
-  TSW = { row: row, x: e.touches[0].clientX, y: e.touches[0].clientY, lock: 0, open: row.classList.contains('sw-open'), w: w, sx: 0 };
+  var front = row.querySelector('.sw-front'), tray = row.querySelector('.td-acts, .pg-acts'); if (!front || !tray) return;
+  var w = tray.scrollWidth || 192, t = e.timeStamp || Date.now();
+  TSW = { row: row, front: front, tray: tray, x: e.touches[0].clientX, y: e.touches[0].clientY, lock: 0, open: row.classList.contains('sw-open'), w: w, sx: 0, inTray: inTray, pts: [[t, e.touches[0].clientX]], raf: 0 };
+  TSW.sx = TSW.open ? -w : 0;
+  row.addEventListener('touchmove', tswMove, { passive: false }); // only on this line: the rest of the page keeps its fast scrolling
 }, { passive: true });
-document.addEventListener('touchmove', function (e) {
-  var g = TSW; if (!g || e.touches.length !== 1) return;
-  var dx = e.touches[0].clientX - g.x, dy = e.touches[0].clientY - g.y;
+function tswMove(e) {
+  var g = TSW; if (!g || e.touches.length !== 1 || e.currentTarget !== g.row) return;
+  var x = e.touches[0].clientX, dx = x - g.x, dy = e.touches[0].clientY - g.y;
   if (!g.lock) {
-    if (Math.abs(dx) < 10 && Math.abs(dy) < 10) return;
-    if (Math.abs(dx) > 1.5 * Math.abs(dy) && (dx < 0 || g.open)) { g.lock = 1; tswClose(g.row); g.row.style.setProperty('--sw-w', g.w + 'px'); g.row.classList.add('sw-drag'); }
-    else { TSW = null; return; }
+    if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
+    if (Math.abs(dx) > 1.2 * Math.abs(dy) && (dx < 0 || g.open)) { g.lock = 1; tswClose(g.row); g.row.classList.add('sw-drag'); }
+    else { g.row.removeEventListener('touchmove', tswMove); TSW = null; return; } // an up or down move: the page scrolls
   }
-  g.sx = Math.max(-g.w - 24, Math.min(0, (g.open ? -g.w : 0) + dx));
-  g.row.style.setProperty('--sx', g.sx + 'px');
-}, { passive: true });
+  if (e.cancelable) e.preventDefault(); // sideways: the page holds still
+  var sx = (g.open ? -g.w : 0) + dx;
+  if (sx < -g.w) sx = -g.w + (sx + g.w) * 0.25; // past the tools: it resists
+  if (sx > 0) sx = sx * 0.25;
+  g.sx = sx; g.pts.push([e.timeStamp || Date.now(), x]); if (g.pts.length > 6) g.pts.shift();
+  if (!g.raf) g.raf = requestAnimationFrame(function () { g.raf = 0; if (TSW !== g) return; g.front.style.transform = 'translate3d(' + g.sx.toFixed(1) + 'px,0,0)'; g.tray.style.opacity = Math.max(0, Math.min(1, -g.sx / g.w * 1.25)).toFixed(3); });
+}
 function tswEnd() {
-  var g = TSW; TSW = null; if (!g || !g.lock) return;
-  var open = g.sx < -g.w / 2;
-  g.row.classList.remove('sw-drag'); g.row.style.removeProperty('--sx'); g.row.classList.toggle('sw-open', open);
-  S.sw = open ? g.row.getAttribute('data-sw') : null;
+  var g = TSW; TSW = null; if (!g) return;
+  g.row.removeEventListener('touchmove', tswMove);
+  if (!g.lock) { if (g.open && !g.inTray) tswClose(null); return; } // a tap on an open line closes it
+  if (g.raf) cancelAnimationFrame(g.raf);
+  var P = g.pts, a = P[0], b = P[P.length - 1], v = b[0] > a[0] ? (b[1] - a[1]) / (b[0] - a[0]) : 0; // px per ms over the last moves
+  var open = v < -0.35 ? true : v > 0.35 ? false : g.sx < -g.w / 2;
+  g.row.classList.remove('sw-drag'); g.front.style.transform = ''; g.tray.style.opacity = ''; g.row.classList.toggle('sw-open', open); // the transition carries it from the finger's place
+  S.sw = open ? g.row.getAttribute('data-sw') || 'pg' : null;
 }
 document.addEventListener('touchend', tswEnd); document.addEventListener('touchcancel', tswEnd);
 var PTR = { on: false, y0: 0, x0: 0, d: 0, el: null };
@@ -6177,7 +6732,7 @@ function ptrDone() { if (!PTR.el) return; PTR.el.classList.remove('spin', 'ready
 function ptrOk(e) {
   var t = e.target;
   return !!S.boot && !S.refreshing && window.scrollY <= 0 && !layerN() && !(S.tour >= 0) && !(DRAG && DRAG.on) &&
-    !(t && t.closest && t.closest('.overlay,.pop,.panel,.sheet,.sb,input,textarea,select,[contenteditable],#scrub,.fabs,.td-row'));
+    !(t && t.closest && t.closest('.overlay,.pop,.panel,.sheet,.sb,input,textarea,select,[contenteditable],#scrub,.fabs,.sw-open,.sw-drag')); // 0.3.8: a pull may start on a To do line (a sideways move is the line's swipe; a row swiped open keeps its own)
 }
 document.addEventListener('touchstart', function (e) {
   PTR.on = e.touches.length === 1 && ptrOk(e); PTR.d = 0;
@@ -6318,6 +6873,7 @@ function popover() {
   if (S.pop === 'acct') return acctPop(); // 0.3.0
   if (S.pop === 'dash') return dashPop();
   if (S.pop === 'since') return sincePop();
+  if (S.pop === 'whose') return whosePop(); // 0.3.8 (BACKLOG 98)
   if (S.pop === 'export') {
     return '<div class="pop menu" role="menu" data-pop>' +
       '<button class="mi" role="menuitem" data-a="xlsx">' + ic('sheet') + '<span>Excel (.xlsx)</span></button>' +
@@ -6327,6 +6883,7 @@ function popover() {
   return '';
 }
 function dialog() {
+  if (S.keys) return keysDialog(); // 0.3.8 (BACKLOG 90)
   if (S.cel) return celDialog(); // 0.3.6 (BACKLOG 73)
   if (S.wn) return wnDialog();
   if (S.ga) return gaDialog();
@@ -6649,8 +7206,9 @@ function updateSaveState() {
 }
 
 /* ---------- actions */
-function openManuscript(id) {
+function openManuscript(id, keepList) {
   var m = S.boot.manuscripts.filter(function (x) { return x.id === id; })[0]; if (!m) return;
+  if (!keepList && !panelShown()) S.pgL = pgList(); // 0.3.8 (BACKLOG 89): ‹ › go through this list
   if (S.closing && S.closeNow) S.closeNow(); // 0.2.8: a card still leaving finishes at once
   if (S.sel && S.sel !== id && dirty()) { S.confirmClose = true; render(); toast('Save or discard your changes first.'); return; }
   var was = S.sel;
@@ -6666,6 +7224,103 @@ function openManuscript(id) {
     // 0.2.3: the blocks moved to make room for the card; keep the chosen one in sight
     if (row && row.classList.contains('block') && row.scrollIntoView) { var rr = row.getBoundingClientRect(); if (rr.top < 70 || rr.bottom > innerHeight - 20) row.scrollIntoView({ block: 'center' }); }
   }
+}
+/* 0.3.8 (BACKLOG 89): the paper's page. Back says where it goes; ‹ › go through the list the paper was opened from, in the
+   order it showed (its filter included), "3 of 12"; the page starts right of the sidebar (--ppl). */
+var VIEW_NAMES = { mine: 'My work', papers: 'Papers', today: 'Today', board: 'Pipeline', list: 'All manuscripts', dash: 'Dashboard', todo: 'To-do', review: 'Changes to review', notif: 'Notifications' };
+function backLabel() { return VIEW_NAMES[S.view] || 'Back'; }
+function pgList() { // the papers of the list underneath, as it shows them
+  var seen = {}, out = [];
+  Array.prototype.forEach.call(document.querySelectorAll('.mainwrap .main [data-a="open"][data-v]'), function (el) { var v = Number(el.getAttribute('data-v')); if (v && !seen[v]) { seen[v] = 1; out.push(v); } });
+  return out;
+}
+function pgNav(m) {
+  var L = S.pgL && S.pgL.indexOf(m.id) >= 0 ? S.pgL : null; if (!L || L.length < 2) return '';
+  var i = L.indexOf(m.id);
+  return '<span class="pg-nav"><button type="button" class="ibtn" data-a="pg-go" data-v="-1" aria-label="Previous paper"' + (i > 0 ? '' : ' disabled') + tt('Previous paper', 'K') + '>' + ic('back') + '</button>' +
+    '<span class="pg-n">' + (i + 1) + ' of ' + L.length + '</span><button type="button" class="ibtn" data-a="pg-go" data-v="1" aria-label="Next paper"' + (i < L.length - 1 ? '' : ' disabled') + tt('Next paper', 'J') + '>' + ic('fwd') + '</button></span>';
+}
+function pgGo(dir) {
+  var m = curM(), L = S.pgL; if (!m || !L) return; var j = L.indexOf(m.id) + dir; if (j < 0 || j >= L.length) return;
+  if (dirty()) { S.confirmClose = true; render(); toast('Save or discard your changes first.'); return; }
+  var pn = document.querySelector('.shell.ppg .panel'); openManuscript(L[j], true); if (pn) { var p2 = document.querySelector('.shell.ppg .panel'); if (p2) p2.scrollTop = 0; }
+}
+function pg3On() { return !phoneW() && window.innerWidth - (S.ppl || 0) >= 1448; } // BACKLOG 99: the page's inner width 1320px or more (padding 44 + 84)
+/* 0.3.8 (BACKLOG 97): "@" in a box that takes tags (data-tag) shows the members; arrows and Enter or a click put "@Key " */
+var TP = null;
+function tpOpen() { return !!(TP && TP.box && TP.box.parentNode); }
+function tpHide() { if (TP && TP.box && TP.box.parentNode) TP.box.parentNode.removeChild(TP.box); TP = null; }
+function tpFind(el) { var c = el.selectionStart, x = /(^|[\s(\[,;:])@([^\s@]*)$/.exec(String(el.value).slice(0, c)); return x ? { start: c - x[2].length - 1, end: c, q: x[2].toLowerCase() } : null; }
+function tpShow(el) {
+  var f = tpFind(el); if (!f || !S.boot) { tpHide(); return; }
+  var L = S.boot.people.filter(function (p) { var n = String(p.full_name || p.display || p.key).toLowerCase(); return !f.q || String(p.key).toLowerCase().indexOf(f.q) === 0 || n.split(/\s+/).some(function (w) { return w.indexOf(f.q) === 0; }); }).slice(0, 6);
+  if (!L.length) { tpHide(); return; }
+  var i = TP && TP.el === el ? Math.min(TP.i, L.length - 1) : 0, box = TP && TP.box && TP.box.parentNode ? TP.box : document.createElement('div');
+  box.className = 'tagpick'; box.setAttribute('role', 'listbox'); box.setAttribute('aria-label', 'Members');
+  box.innerHTML = L.map(function (p, j) { var n = chipName(p.key); return '<div class="tp-i" role="option" aria-selected="' + (j === i) + '" data-k="' + esc(p.key) + '"><i class="bav" style="--h:' + avHue(p.key) + ';">' + esc(initials(n)) + avImg(photoOf(p.key)) + '</i><span>' + esc(n) + '</span>' + (n !== p.key ? '<small>@' + esc(p.key) + '</small>' : '') + '</div>'; }).join('');
+  if (!box.parentNode) document.body.appendChild(box);
+  var r = el.getBoundingClientRect(), h = box.offsetHeight, below = r.bottom + 6 + h < window.innerHeight;
+  box.style.left = Math.max(8, Math.min(window.innerWidth - box.offsetWidth - 8, r.left)) + 'px'; box.style.top = (below ? r.bottom + 6 : Math.max(8, r.top - h - 6)) + 'px';
+  TP = { el: el, box: box, L: L, i: i, f: f };
+}
+function tpPick(k) {
+  if (!TP) return; var el = TP.el, f = tpFind(el) || TP.f, v = String(el.value), ins = '@' + k + ' ';
+  el.value = v.slice(0, f.start) + ins + v.slice(f.end).replace(/^ /, ''); var c = f.start + ins.length;
+  tpHide(); el.focus(); try { el.setSelectionRange(c, c); } catch (x) { }
+  el.dispatchEvent(new Event('input', { bubbles: true }));
+}
+document.addEventListener('input', function (e) { var t = e.target; if (t && t.getAttribute && t.getAttribute('data-tag')) tpShow(t); else if (TP) tpHide(); }, true);
+document.addEventListener('keydown', function (e) {
+  if (!tpOpen() || e.target !== TP.el) return;
+  if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); e.stopPropagation(); TP.i = (TP.i + (e.key === 'ArrowDown' ? 1 : TP.L.length - 1)) % TP.L.length; tpShow(TP.el); }
+  else if (e.key === 'Enter' || e.key === 'Tab') { e.preventDefault(); e.stopPropagation(); tpPick(TP.L[TP.i].key); }
+  else if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); tpHide(); }
+}, true);
+document.addEventListener('mousedown', function (e) { var it = e.target.closest && e.target.closest('.tagpick .tp-i'); if (it) { e.preventDefault(); tpPick(it.getAttribute('data-k')); } else if (TP && !(e.target.closest && e.target.closest('.tagpick'))) tpHide(); }, true);
+document.addEventListener('focusout', function (e) { if (TP && e.target === TP.el) setTimeout(function () { if (TP && document.activeElement !== TP.el) tpHide(); }, 120); }, true);
+window.addEventListener('scroll', function () { if (tpOpen()) tpShow(TP.el); }, true);
+function ppSync() {
+  var sb = document.querySelector('.shell > .sb'), l = 0;
+  if (sb && !phoneW()) { var cs = getComputedStyle(sb); if (cs.display !== 'none' && cs.position !== 'fixed') l = Math.max(0, Math.round(sb.getBoundingClientRect().right)); }
+  if (S.ppl !== l) { S.ppl = l; document.documentElement.style.setProperty('--ppl', l + 'px'); }
+}
+function quOpenBox(v) { var pre = v ? Number(v) : (panelShown() ? S.sel : ''), kq = keptReq('qu'), on = S.qprog && S.qprog.phase === 'save' && kq && kq.cid === S.qprog.cid; // 0.3.3 (BACKLOG 47): the update being sent stays out of the box
+    if (on) kq = null;
+    S.qu = kq ? { mid: kq.mid || pre, pre: pre, text: kq.text, images: kq.images || [], cid: kq.cid || '', err: 'Not sent yet: kept on this device since ' + keptWhen(kq.at) + (kq.noImg ? ' (without its screenshots: too big to keep)' : '') + '. Press Send, or clear the text to drop it.' } : { mid: pre, pre: pre, text: '', images: [], err: '', sending: !!on }; S.pop = null; S.tip = null; render(); warmSoon(); var t = document.getElementById('qu-text'); if (t) t.focus(); }
+/* 0.3.8 (BACKLOG 90, admin: "cho phím tắt với từng mục nha, giống như ctrl K với tìm kiếm á, khi hover over thì cũng hiện ra
+   phím tắt"; "tuân thủ cả windows và macos"): single keys that work when no text box has the cursor (the same on Windows
+   and a Mac, as in Gmail and GitHub), Ctrl or ⌘ only where the browser leaves it free (K, Enter). ? lists them. A keyboard
+   on an iPad or a phone works the same. */
+var KEYS = [['Anywhere', [[KEYMOD + ' K', 'Search'], ['/', 'Search'], ['U', 'Quick update'], ['N', 'New manuscript'], ['1 – 9', 'The views in the sidebar, in order'], ['?', 'This list'], ['Esc', 'Close, or back to the list']]],
+  ['On a paper', [['J  or  →', 'Next paper'], ['K  or  ←', 'Previous paper'], ['W', 'What happened?'], ['E', 'Change where it is'], ['R', 'Reviewers\' points'], ['T', 'Next actions'], ['F', 'Manuscript & files'], ['O', 'Notes'], ['A', 'Authors & roles'], ['H', 'History']]],
+  ['In a text box', [[KEYMOD + ' Enter', 'Save (What happened?, Quick update, a note)'], ['Esc', 'Leave the box']]]];
+function keysDialog() {
+  return '<div class="overlay" data-a="keys-x"><div class="dialog keys-d" role="dialog" aria-modal="true" aria-labelledby="keys-h"><div style="display:flex;justify-content:space-between;align-items:center"><h2 id="keys-h">Keyboard shortcuts</h2><button type="button" class="ibtn" data-a="keys-x" aria-label="Close">' + ic('x') + '</button></div>' +
+    KEYS.map(function (g) { return '<section class="keys-g"><h3>' + esc(g[0]) + '</h3><dl>' + g[1].map(function (k) { return '<div><dt>' + k[0].split('  or  ').map(function (x) { return x.split(' ').map(function (y) { return '<kbd class="k">' + esc(y) + '</kbd>'; }).join(' '); }).join(' <span class="muted">or</span> ') + '</dt><dd>' + esc(k[1]) + '</dd></div>'; }).join('') + '</dl></section>'; }).join('') + '</div></div>';
+}
+function keyFree(t) { return !/INPUT|TEXTAREA|SELECT/.test(t.tagName || '') && !t.isContentEditable; }
+function keyGo(k) {
+  var pg = panelShown(), box = function (id, add) { // ‹ › in both layouts; the blocks' keys on the New page
+    var b = document.getElementById(id); if (!b) return;
+    if (add && b.classList.contains('pe')) { var a = b.querySelector('[data-a="box-add"]'); if (a) { ACT['box-add'](a.getAttribute('data-v')); return; } }
+    if (b.classList.contains('pf') && !b.classList.contains('open')) { ACT['box-fold'](id.slice(3)); b = document.getElementById(id); }
+    if (b && b.scrollIntoView) b.scrollIntoView({ block: 'start', behavior: reduceMotion() ? 'auto' : 'smooth' });
+    var f = b && b.querySelector('button, [href], input, select, textarea'); if (f) f.focus({ preventScroll: true });
+  };
+  if (k === '?') { S.keys = true; render(); return true; }
+  if (k === 'u' || k === 'U') { ACT['qu-open'](); return true; }
+  if ((k === 'n' || k === 'N') && canEdit()) { ACT['nf-open'](); return true; }
+  if (/^[1-9]$/.test(k)) { var v = document.querySelector('.sb [data-a="view"][data-key="' + k + '"]'); if (v) { v.click(); return true; } return false; }
+  if (!pg) return false;
+  var low = k.length === 1 ? k.toLowerCase() : k;
+  if (low === 'j' || k === 'ArrowRight') { pgGo(1); return true; }
+  if (low === 'k' || k === 'ArrowLeft') { pgGo(-1); return true; }
+  if (!UIN()) return false;
+  if (low === 'w') { var t = document.getElementById('tt-text'); if (t) { t.focus(); var bx = document.getElementById('pg-tell'); if (bx && bx.scrollIntoView) bx.scrollIntoView({ block: 'center' }); } return true; }
+  if (low === 'e') { if (editable()) ACT['sum-ed']('where'); return true; }
+  var ids = { r: 'pb-rv', t: 'pb-nx', f: 'pb-doc', o: 'pb-notes', a: 'pb-au', h: 'pb-hist' };
+  if (ids[low]) { box(ids[low], low !== 'h' && low !== 'a'); return true; }
+  return false;
 }
 /* Recently opened manuscripts, per person and on every device (saved a few seconds after the last opening). */
 function noteRecent(id) {
@@ -6878,6 +7533,9 @@ function cardIn(pn) {
   // 0.3.0 (admin, 24 Oct 2026: "pop up bài là lớp 3, thì nó cứ trượt vô thôi, khi nào tắt thì trượt ra ... mở ra thì thu phóng
   // mà back là trượt thì rất khó chịu"): the card always slides in from the right edge and leaves the same way, on phones
   // and computers alike; the layer underneath dims as it comes (0.3.2: and stays where it is)
+  // 0.3.8 (BACKLOG 89, admin chose a: a short plain slide): on a computer the page comes in with a short slide and a fade, no
+  // long run across the screen; on a phone it slides in as a page does on iOS
+  if (!phoneW()) { pn.animate([{ opacity: 0, transform: 'translateX(24px)' }, { opacity: 1, transform: 'none' }], { duration: 200, easing: 'cubic-bezier(0.2, 0, 0, 1)' }); return; }
   var s = spring(SPR.nav), off = full ? r.width : window.innerWidth - r.left + 24;
   pn.animate([{ transform: 'translateX(' + off.toFixed(1) + 'px)' }, { transform: 'translateX(0px)' }], { duration: s.d, easing: s.e });
   moGo(underParts(), 1, 0, SPR.nav);
@@ -6887,6 +7545,7 @@ function cardOut(pn, how, done) {
   if (reduceMotion()) { pn.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 160, fill: 'forwards' }).onfinish = end; moSet(underParts(), 1); setTimeout(end, 560); return; }
   // it slides away to the right (0.3.0: always; before, it shrank back into its row), at the finger's speed when swiped
   var p0 = how ? how.p || 0 : 0, v = how ? how.v || 0 : 0;
+  if (!phoneW() && !p0 && !v) { var a = pn.animate([{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'translateX(16px)' }], { duration: 150, easing: 'ease-out', fill: 'forwards' }); a.onfinish = end; setTimeout(end, 400); return; } // 0.3.8: shorter than it came
   var sp = moGo(cardParts(), p0, 1, SPR.exit, v / Math.max(0.05, 1 - p0), end);
   // 0.3.3 (BACKLOG 47, admin: "khi AI chưa hoạt động xong thì tôi không thoát popup được"): a redraw in the middle (the AI's
   // answer arriving) could cancel this movement; its end never came, the card stayed "closing" and every later close was
@@ -7368,7 +8027,7 @@ document.addEventListener('touchmove', function (e) {
 function swEnd() {
   if (!SW) return; var g = SW; SW = null; if (!g.lock) return;
   var a = g.pts[0], b = g.pts[g.pts.length - 1], v = b[1] > a[1] && Date.now() - b[1] < 80 ? (b[0] - a[0]) / (b[1] - a[1]) * 1000 / g.w : 0, p = MO.p || 0; // speed: widths per second (none after a pause)
-  if ((p > 0.45 && v > -0.3) || v > 1.1) closePanel(false, { p: p, v: v }); else cardBack(v);
+  if ((p > farP(0.45, g.w) && v > -0.3) || v > 1.1) closePanel(false, { p: p, v: v }); else cardBack(v);
 }
 document.addEventListener('touchend', swEnd); document.addEventListener('touchcancel', swEnd);
 /* computer: a two-finger swipe to the right on the card (trackpad) does the same; the browser's own back swipe is off */
@@ -7390,8 +8049,8 @@ document.addEventListener('wheel', function (e) {
   var p = WH.d / WH.w; moSet(WH.parts, p);
   clearTimeout(WH.end);
   var g = WH, rel = function () { var a = g.pts[0], b = g.pts[g.pts.length - 1], v = b[1] > a[1] ? (b[0] - a[0]) / (b[1] - a[1]) * 1000 / g.w : 0; g.over = true;
-    if ((p > 0.4 && v > -0.3) || v > 1.4) closePanel(false, { p: MO.p || p, v: Math.max(0, v) }); else cardBack(v); };
-  if (p > 0.55) rel(); else WH.end = setTimeout(rel, 120);
+    if ((p > farP(0.4, g.w) && v > -0.3) || v > 1.4) closePanel(false, { p: MO.p || p, v: Math.max(0, v) }); else cardBack(v); };
+  if (p > farP(0.55, WH.w)) rel(); else WH.end = setTimeout(rel, 120);
 }, { passive: false });
 /* 0.3.1 (BACKLOG 30, admin: "nếu pop up (lớp 3) hiện lên thì kéo ngang là trượt lớp 3 khỏi lớp 2, tương tự, khi đang hide sidebar,
    thì kéo là trượt 2 lớp"; "cuộn chuột thì không như vuốt được, chỉ scroll thôi"): on a computer a two-finger swipe moves the
@@ -7498,12 +8157,15 @@ document.addEventListener('pointermove', function (e) {
   if (g.k === 'v') vMove(g.L, g.d); else if (g.k === 'card') { g.w = g.w || g.L.el.getBoundingClientRect().width + (cardSide() ? 40 : 0); moSet(g.parts, g.d / g.w); } else psSet(g.ps, g.d);
   g.pts.push([g.d, e.timeStamp]); if (g.pts.length > 6) g.pts.shift();
 }, true);
+/* 0.3.8 (BACKLOG 89): a paper's page is wide on a computer; a swipe or drag of about 240 px is enough to go back, as it was
+   on the card (a share of its width, at most 240 px) */
+function farP(f, w) { return w ? Math.min(f, 240 / w) : f; }
 function mdEnd(e) {
   var g = MD; MD = null; if (!g || !g.lock) return;
   document.documentElement.classList.remove('ldrag'); DR.eat = Date.now() + 300; // the release is not a click on what is under it
   var a = g.pts[0] || [0, 0], b = g.pts[g.pts.length - 1] || [0, 0], v = b[1] > a[1] && e.timeStamp - b[1] < 80 ? (b[0] - a[0]) / (b[1] - a[1]) : 0; // px per ms
   if (g.k === 'v') { if ((vFar(g.L, g.d) || (v > 0.6 && g.d > 30)) && g.L.close(g.d)) return; vBack(g.L, g.d); }
-  else if (g.k === 'card') { var p = MO.p || 0, vw = v * 1000 / g.w; if ((p > 0.4 && vw > -0.3) || vw > 1.4) closePanel(false, { p: p, v: Math.max(0, vw) }); else cardBack(vw); }
+  else if (g.k === 'card') { var p = MO.p || 0, vw = v * 1000 / g.w; if ((p > farP(0.4, g.w) && vw > -0.3) || vw > 1.4) closePanel(false, { p: p, v: Math.max(0, vw) }); else cardBack(vw); }
   else psEnd(g.ps, v);
 }
 document.addEventListener('pointerup', mdEnd, true); document.addEventListener('pointercancel', mdEnd, true);
@@ -7951,8 +8613,13 @@ var ACT = {
   'drawer-close': function () { drawerGo(false); },
   // 0.3.2 (BACKLOG 44): the pencil after the title opens "Title, journal, IF and IDs" and puts the cursor in the title
   'title-edit': function () {
+    var m = curM(); if (!m) return;
+    if (UIN()) { // 0.3.8: the title, journal, IF and IDs open under the head
+      S.sumEd = S.sumEd && S.sumEd.mid === m.id && S.sumEd.k === 'ids' ? null : { mid: m.id, k: 'ids' }; render();
+      var t0 = S.sumEd && document.getElementById('f-title'); if (t0) { t0.focus({ preventScroll: true }); try { t0.setSelectionRange(t0.value.length, t0.value.length); } catch (x) { } }
+      return;
+    }
     S.keep.ids = true; S.keep.pfdet = true; var dt = document.querySelector('.panel details[data-keep="ids"]'), t = document.getElementById('f-title'); if (dt) dt.open = true;
-    var dp = document.querySelector('.panel details[data-keep="pfdet"]'); if (dp) dp.open = true; // 0.3.5: in the New card the fields are folded under Details
     if (!t) return;
     t.scrollIntoView({ block: 'center', behavior: reduceMotion() ? 'auto' : 'smooth' });
     setTimeout(function () { t.focus({ preventScroll: true }); try { t.setSelectionRange(t.value.length, t.value.length); } catch (x) { } }, reduceMotion() ? 0 : 380);
@@ -7978,7 +8645,7 @@ var ACT = {
   },
   'dev-test': function () { S.devBusy = true; render(); toApp({ type: 'vibra-push-test' }); setTimeout(function () { if (S.devBusy) { S.devBusy = false; render(); } }, 20000); },
   'dev-off': function () { S.devBusy = true; render(); toApp({ type: 'vibra-push-off' }); setTimeout(function () { if (S.devBusy) { S.devBusy = false; render(); } }, 20000); },
-  who: function (v) { S.who = v; S.fx.items = true; render(); }, // 0.2.8: only the manuscripts that come in move
+  who: function (v) { S.who = v; S.pop = null; S.fx.items = true; render(); }, // 0.2.8: only the manuscripts that come in move
   jump: function (v) {
     var sec = document.getElementById('sec-' + v); if (!sec) return;
     var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -7988,6 +8655,34 @@ var ACT = {
   },
   // 0.2.3 (admin): clicking the manuscript that is open closes it (asks first if there are unsaved changes)
   open: function (v) { var id = Number(v); if (S.sel === id && panelShown() && cardSide()) closePanel(false); else openManuscript(id); },
+  'pg-go': function (v) { pgGo(Number(v)); }, // 0.3.8 (BACKLOG 89)
+  'keys-x': function () { S.keys = false; render(); },
+  // 0.3.8 (BACKLOG 88): each line of the summary edited in place; a block's + opens its add row; History folds
+  'sum-ed': function (v) {
+    var m = curM(); if (!m) return; var cur = S.sumEd && S.sumEd.mid === m.id ? S.sumEd.k : (S.stp && S.stp.mid === m.id ? 'where' : S.tdx && S.tdx.mid === m.id && S.tdx.src !== 'note' ? 'next' : (S.ng && S.ng.mid === m.id) || (S.rem && S.rem.mid === m.id) ? 'dl' : '');
+    var k = cur === v ? '' : v; S.sumEd = k ? { mid: m.id, k: k } : null;
+    S.stp = k === 'where' ? { mid: m.id, i: null } : null; if (k !== 'next' && S.tdx && S.tdx.src !== 'note') S.tdx = null; if (k !== 'dl') { S.ng = null; S.rem = null; }
+    render();
+    var f = k && document.querySelector('.pg-ed[data-ed="' + k + '"] input:not([type="hidden"]), .pg-ed[data-ed="' + k + '"] textarea, .pg-ed[data-ed="' + k + '"] select'); if (f && (k === 'dl' || k === 'next')) f.focus({ preventScroll: true }); // the Ball's picker opens its list only when tapped
+  },
+  'box-add': function (v) {
+    var on = !S.keep['pfadd' + v]; S.keep['pfadd' + v] = on; render();
+    var b = document.getElementById('pb-' + v), f = on && b && b.querySelector('.rv-add input:not([type="file"]), .rv-add select'); if (f) { f.focus({ preventScroll: true }); if (b.scrollIntoView) b.scrollIntoView({ block: 'nearest' }); }
+  },
+  'box-fold': function (v) { S.keep['pf' + v] = !S.keep['pf' + v]; render(); },
+  'pn-all': function () { S.keep.pnall = !S.keep.pnall; render(); },
+  'pn-x': function (v) { S.keep['pnx' + v] = !S.keep['pnx' + v]; render(); },
+  'doc-older': function () { S.keep.dochist = !S.keep.dochist; render(); },
+  'pn-todo': function (v) { // 0.3.8 (BACKLOG 92): a note to my own to-do
+    var m = curM(), h = m && (S.hist[m.id] || []).filter(function (x) { return x.row === Number(v); })[0]; if (!h) return;
+    S.tdx = { mid: m.id, note: short(fullNames(noteText(h)), 300), date: '', src: 'note' }; render();
+    var t = document.getElementById('tdx-note'); if (t) { t.focus(); t.select(); }
+  },
+  'pn-task': function (v) { // 0.3.8 (BACKLOG 92): a note made into a task for someone
+    var m = curM(), h = m && (S.hist[m.id] || []).filter(function (x) { return x.row === Number(v); })[0]; if (!h) return;
+    S.keep.pfaddnx = true; render(); // 0.3.8 (BACKLOG 97): a next action (tag who does it with @)
+    var t = document.getElementById('nx-new'); if (t) { t.value = short(untag(noteText(h)), 300) + ' @'; t.focus(); try { t.setSelectionRange(t.value.length, t.value.length); } catch (x) { } tpShow(t); var b = document.getElementById('pb-nx'); if (b && b.scrollIntoView) b.scrollIntoView({ block: 'nearest', behavior: reduceMotion() ? 'auto' : 'smooth' }); }
+  },
   close: function () { closePanel(false); },
   discard: function () { var m = curM(); if (m) openDraft(m); S.confirmClose = false; render(); },
   save: save,
@@ -8075,7 +8770,7 @@ var ACT = {
   'doc-get': function (v) { docGet(v); },
   'doc-del': function (v) {
     var m = curM(); if (!m || !window.VIBRA_WEB) return;
-    if (S.docDel !== v) { S.docDel = v; toast('Tap Delete again to delete this file.', false, 4000); setTimeout(function () { if (S.docDel === v) S.docDel = null; }, 4000); return; }
+    if (S.docDel !== v) { S.docDel = v; render(); toast('Tap Delete again to delete this file.', false, 4000); setTimeout(function () { if (S.docDel === v) { S.docDel = null; render(); } }, 4000); return; }
     S.docDel = null; window.VIBRA_WEB.fdel(v).then(function () { toast('Deleted.'); docsLoad(m.id, true); loadHistory(m.id); }, function (e) { toast(msg(e), true); });
   },
   'cm-f': function (v) { S.cmf = v; render(); },
@@ -8095,6 +8790,29 @@ var ACT = {
     api('api_requestReview', m.id, keys, due, note).then(function (r) { applyRow(r.row); if (S.draft && !dirty()) openDraft(r.row); else if (S.draft) S.draft.base = r.row.version; render(); loadHistory(m.id); toast('Review requested: ' + keys.map(whoShort).join(', ') + '.'); }, function (e) { toast(msg(e), true); });
   },
   // BACKLOG 80 a: tasks
+  // 0.3.8 (BACKLOG 97): a tagged line ticked (done for everyone tagged on it), a line added at the end
+  'nx-done': function (v) {
+    var p = String(v).split('|'), mid = Number(p[0]), i = Number(p[1]), m = mById(mid); if (!m || !canEdit()) return;
+    var L = String(m.next || '').split('\n'), raw = L[i]; if (raw === undefined) return;
+    var keep = { next: m.next, people: m.people }, mine = tagsOf(raw);
+    m.next = L.filter(function (x, j) { return j !== i; }).join('\n');
+    if (mine.length && !tagsOf(m.next).length && (m.people || []).every(function (q) { return mine.indexOf(q.name) >= 0 || tagsOf(keep.next).indexOf(q.name) >= 0; })) m.people = [];
+    render(); toast('Done: ' + short(untag(raw.replace(/^\s*\d+[.)]\s*/, '')), 60));
+    api('api_part', mid, { k: 'next-done', line: i, t: raw }).then(function (r) {
+      applyRow(r.row); if (S.draft && S.draft.id === mid) { if (!dirty()) openDraft(r.row); else S.draft.base = r.row.version; }
+      render(); if (S.sel === mid) loadHistory(mid);
+    }).catch(function (e) { m.next = keep.next; m.people = keep.people; render(); toast(msg(e), true); });
+  },
+  'nx-add': function (v) {
+    var t = document.getElementById('nx-new'), mid = Number(v) || S.sel, m = mById(mid), x = t ? t.value.replace(/\s+/g, ' ').trim() : '';
+    if (!m) return; if (!x) { toast('Write the next action first.'); if (t) t.focus(); return; }
+    var keep = { next: m.next, people: m.people }; t.value = '';
+    m.next = (m.next ? m.next + '\n' : '') + x; render();
+    api('api_part', mid, { k: 'next-add', t: x }).then(function (r) {
+      applyRow(r.row); if (S.draft && S.draft.id === mid) { if (!dirty()) openDraft(r.row); else S.draft.base = r.row.version; }
+      render(); if (S.sel === mid) loadHistory(mid); var n = document.getElementById('nx-new'); if (n) n.focus();
+    }).catch(function (e) { m.next = keep.next; m.people = keep.people; render(); toast(msg(e), true); var n = document.getElementById('nx-new'); if (n) { n.value = x; n.focus(); } });
+  },
   'tk-tick': function (v) {
     var p = String(v).split(':'), mid = +p[0], id = p[1], m = mById(mid), x = m && (m.tasks || []).filter(function (y) { return y.id === id; })[0]; if (!x) return;
     var on = !x.done; partGo(mid, { k: 'task-done', id: id, done: on }, function (mm) { (mm.tasks || []).forEach(function (y) { if (y.id === id) { if (on) { y.done = S.boot.today + ' 00:00'; y.dby = me().key; } else { delete y.done; delete y.dby; } } }); });
@@ -8127,6 +8845,8 @@ var ACT = {
   'dec-add': function () {
     var inp = document.getElementById('dec-new'), text = inp ? inp.value.trim().replace(/^decision:\s*/i, '') : ''; if (!text) { toast('Write the decision first.'); if (inp) inp.focus(); return; }
     var id = S.sel; inp.disabled = true;
+    var kd = document.getElementById('dec-kind'), wy = document.getElementById('dec-why'), kind = kd ? kd.value : '', why = wy ? wy.value.trim() : ''; // 0.3.8 (BACKLOG 93)
+    text = (kind && kind !== 'Other' ? '[' + kind + '] ' : '') + text.replace(/[.\s]+$/, '') + (why ? '. Why: ' + why : '');
     api('api_addNote', id, 'Decision: ' + text).then(function (r) { applyRow(r.row); if (S.draft && !dirty()) openDraft(r.row); else if (S.draft) S.draft.base = r.row.version; render(); loadHistory(id); toast('Decision added.'); })
       .catch(function (e) { inp.disabled = false; toast(msg(e), true); });
   },
@@ -8325,9 +9045,13 @@ var ACT = {
     var t = document.getElementById('qu-text'); if (t) t.focus();
   },
   'qu-ai-copy': function () { copyText(AI_PROMPT); },
-  'qu-open': function (v) { var pre = v ? Number(v) : (panelShown() ? S.sel : ''), kq = keptReq('qu'), on = S.qprog && S.qprog.phase === 'save' && kq && kq.cid === S.qprog.cid; // 0.3.3 (BACKLOG 47): the update being sent stays out of the box
-    if (on) kq = null;
-    S.qu = kq ? { mid: kq.mid || pre, pre: pre, text: kq.text, images: kq.images || [], cid: kq.cid || '', err: 'Not sent yet: kept on this device since ' + keptWhen(kq.at) + (kq.noImg ? ' (without its screenshots: too big to keep)' : '') + '. Press Send, or clear the text to drop it.' } : { mid: pre, pre: pre, text: '', images: [], err: '', sending: !!on }; S.pop = null; S.tip = null; render(); warmSoon(); var t = document.getElementById('qu-text'); if (t) t.focus(); },
+  'qu-open': function (v) {
+    // 0.3.8 (BACKLOG 89, admin: "vậy là tạo hiệu ứng mất quickupdate hả?"): on a paper's page the button stays and takes the
+    // cursor to that page's What happened? box (the paper already chosen) instead of opening a second box for the same thing
+    var tb = !v && panelShown() && UIN() && document.getElementById('tt-text');
+    if (tb) { var bx = document.getElementById('pg-tell'); if (bx && bx.scrollIntoView) bx.scrollIntoView({ block: 'center', behavior: reduceMotion() ? 'auto' : 'smooth' }); tb.focus({ preventScroll: true }); if (bx) { bx.classList.remove('pg-flash'); void bx.offsetWidth; bx.classList.add('pg-flash'); } return; }
+    quOpenBox(v);
+  },
   'au-export': function (v) { exportAuthors(Number(v)); },
   'ad-open': function (v) { adOpen(Number(v)); },
   'ad-sheet': function () { var A = S.ad; if (!A || A.loading) return; if (adChanged().length) { A.err = 'Save first: the author sheet is made from the saved details.'; render(); return; } exportAuthors(A.id); },
@@ -8546,7 +9270,7 @@ Object.assign(ACT, {
   'tdb-cancel': function () { S.tdb = null; render(); },
   // 0.3.5 (BACKLOG 64): the layout, My work and Papers as blocks or a list, To confirm from the bell
   'tabbar-set': function (v) { // BACKLOG 79
-    var p = S.boot.prefs = S.boot.prefs || {}, on = v === 'on'; if ((p.tabbar !== false) === on) return;
+    var p = S.boot.prefs = S.boot.prefs || {}, on = v === 'on'; if ((p.tabbar === true) === on) return;
     p.tabbar = on; keepBoot(); render(); toast(on ? 'Tab bar on: at the bottom of your phone.' : 'Tab bar off: the menu and the floating buttons are back.');
     api('api_setPrefs', { tabbar: on }).catch(function (e) { toast(msg(e), true); });
   },
@@ -8557,6 +9281,9 @@ Object.assign(ACT, {
   },
   mview: function (v) { var p = S.boot.prefs = S.boot.prefs || {}; if (mineView() === v) return; p.mineView = v; var b = shapeRects(); keepBoot(); render(); shapeShift(b); api('api_setPrefs', { mineView: v }).catch(function () { }); },
   pview: function (v) { var p = S.boot.prefs = S.boot.prefs || {}; if (papersView() === v) return; p.papersView = v; var b = shapeRects(); keepBoot(); render(); shapeShift(b); api('api_setPrefs', { papersView: v }).catch(function () { }); },
+  'face-set': function (v) { setFace(v); }, // 0.3.8 (BACKLOG 100)
+  'pp-ord': function (v) { var p = S.boot.prefs = S.boot.prefs || {}; v = v === 'rec' ? 'rec' : 'pri'; if (ppOrder() === v) return; p.ppOrder = v; S.fx.list = true; keepBoot(); render(); api('api_setPrefs', { ppOrder: v }).catch(function () { }); },
+  prec: function (v) { S.prec = S.prec === v ? '' : v; S.fx.list = true; render(); },
   ptier: function (v) { S.ptier = S.ptier === v ? '' : v; S.fx.list = true; render(); var t = document.querySelector('.main .sec, .main .tbox'); if (t && t.getBoundingClientRect().top < 60) window.scrollTo({ top: t.getBoundingClientRect().top + window.scrollY - (phoneW() ? 120 : 24), behavior: 'instant' }); },
   'pp-more': function (v) { S.ppAll = S.ppAll || {}; S.ppAll[v] = true; S.fx.items = true; render(); },
   'tt-save': function () { ttGo(false); },
@@ -8865,9 +9592,17 @@ document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') { e.preventDefault(); S.pal = null; render(); return; }
     return;
   }
+  if ((e.metaKey || e.ctrlKey) && e.key === 'Enter' && S.boot) { // 0.3.8 (BACKLOG 90)
+    if (t.id === 'tt-text') { e.preventDefault(); ACT['tt-save'](); return; }
+    if (t.id === 'f-note') { e.preventDefault(); ACT.note(); return; }
+    var fm = t.closest && t.closest('#qu-form, #fb-form, #nf-form'); if (fm) { e.preventDefault(); if (fm.requestSubmit) fm.requestSubmit(); else fm.dispatchEvent(new Event('submit', { cancelable: true })); return; }
+    if (t.closest && t.closest('.panel') && dirty()) { e.preventDefault(); ACT.save(); return; }
+  }
+  if (S.keys && (e.key === 'Escape' || e.key === '?')) { e.preventDefault(); S.keys = false; render(); return; }
+  if (S.boot && !e.metaKey && !e.ctrlKey && !e.altKey && keyFree(t) && !S.pal && !S.nf && !S.qu && !S.fb && !S.del && !S.rp && !S.ad && !S.wn && !S.cel && !S.keys && !S.drawer && S.tour < 0 && e.key !== '/' && keyGo(e.key)) { e.preventDefault(); return; }
   if (e.key === '/' && S.boot && !S.pal && !/INPUT|TEXTAREA|SELECT/.test(t.tagName || '') && !t.isContentEditable && !S.nf && !S.qu && !S.fb && !S.del && S.tour < 0) { e.preventDefault(); palOpen(); return; }
   if (e.key === 'Escape' && S.drawer) { drawerGo(false); return; }
-  if (k === 'num') { if (numEnter(e)) { if (S.nf && t.id === 'nf-next') S.nf.next = t.value; else if (S.draft) { S.draft.next = t.value; updateSaveState(); } } return; }
+  if (k === 'num' && e.key !== 'Escape') { /* 0.3.8: Esc in a numbered list reaches the rules below (leave the box, then Back) */ if (numEnter(e)) { if (S.nf && t.id === 'nf-next') S.nf.next = t.value; else if (S.draft) { S.draft.next = t.value; updateSaveState(); } } return; }
   if (k === 'cb') {
     var key = t.getAttribute('data-cb');
     if (e.key === 'Enter') { e.preventDefault(); if (cbOptions(key).length) cbPick(key, 0); }
@@ -8876,8 +9611,10 @@ document.addEventListener('keydown', function (e) {
     return;
   }
   if (t.classList && t.classList.contains('cbo') && (e.key === 'ArrowDown' || e.key === 'ArrowUp')) { e.preventDefault(); var sib = e.key === 'ArrowDown' ? t.nextElementSibling : t.previousElementSibling; if (sib) sib.focus(); return; }
+  if (e.key === 'Escape' && !keyFree(t) && t.closest && t.closest('.panel.pg') && !S.ed && !S.cb) { t.blur(); return; } // 0.3.8 (BACKLOG 90): Esc leaves a text box first; the next Esc goes back to the list
   if (e.key === 'Escape') closeTop(); // 0.2.8: the same order as Back
   if (e.key === 'Enter' && t.id === 'f-note') { e.preventDefault(); ACT.note(); }
+  if (e.key === 'Enter' && t.id === 'nx-new' && !tpOpen()) { e.preventDefault(); ACT['nx-add'](t.closest('.nx-add') && t.closest('.nx-add').querySelector('[data-a="nx-add"]').getAttribute('data-v')); return; } // 0.3.8 (BACKLOG 97)
   if (e.key === 'Enter' && (t.id === 'rv-new' || t.id === 'dec-new' || t.id === 'tk-new')) { e.preventDefault(); ACT[t.id === 'rv-new' ? 'rv-add' : t.id === 'tk-new' ? 'tk-add' : 'dec-add'](); } // 0.3.7
   if (e.key === 'Enter' && t.id === 'ng-note') { e.preventDefault(); ACT['ng-send'](); }
   if (e.key === 'Enter' && t.id === 'tdx-note') { e.preventDefault(); ACT['tdx-save'](); }
@@ -9073,7 +9810,9 @@ if (window.visualViewport) { window.visualViewport.addEventListener('resize', vv
 function N3() { return !!(S.boot && S.boot.nav3); }
 function shortH() { return window.innerHeight < 480; }
 function phoneW() { return N3() ? (window.innerWidth < 600 || shortH()) : window.innerWidth < 900; } // stacked: top bar and menu
-function cardSide() { return N3() ? window.innerWidth >= 840 && !shortH() : window.innerWidth >= 1024; } // the card floats beside the list
+/* 0.3.8 (BACKLOG 89, admin: "chuyển cái popup thành 1 trang luôn ... đỡ phải làm hiệu ứng chạy chạy mà nội dung lại nhiều hơn để nhìn"):
+   a paper opens as a page of its own at every width (beside the sidebar on a computer), never as a card beside the list */
+function cardSide() { return false; }
 function fcolOn() { return N3() ? window.innerWidth >= 1200 : window.innerWidth >= 840; } // a free column for the floating buttons
 function railForced() { return N3() && !phoneW() && window.innerWidth < 840; } // medium widths: the icon rail
 function layName() { return !N3() ? '' : phoneW() ? (shortH() ? 'short' : 'stack') : railForced() ? 'rail' : 'side'; }

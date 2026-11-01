@@ -21,9 +21,11 @@
    3.0.7: page 0.3.7, VIBRA Workspace (where a paper is in eight steps, reviewers' points, tasks, Before submitting, CRediT,
    decisions, the manuscript's files, the tab bar on phones, the logo's colours); notifications titled VIBRA Workspace,
    and the kinds Register the protocol and Task.
+   3.0.8: page 0.3.8 (a paper as its own page in blocks; files with Replace and categories; Notes and Decisions; keys;
+   tagged next actions and one To do; Papers by Priority or Recent; three columns on a wide page; three typefaces; a line's tools wait underneath and the line slides away to show them).
    A push carries no content: on each push the worker asks the admin's helper for the text, with this device's
    own secret, and shows it. Nothing else leaves the device. */
-var CACHE = 'vibra-app-3.0.7';
+var CACHE = 'vibra-app-3.0.8';
 var SHELL = ['./', './app/', './manifest.webmanifest', './icons/app-192.png', './icons/app-512.png', './icons/app-maskable-512.png',
   './icons/app-apple-180.png', './icons/app-badge-96.png', './icons/app-favicon-32.png', './icons/vibra-logo-full.jpg',
   './icons/vibra-logo-light.webp', './icons/vibra-logo-dark.webp']; // 3.0.0: the sign-in logo without its white box, one for each theme
