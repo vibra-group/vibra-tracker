@@ -5,12 +5,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <script>
-/* VIBRA Tracker 0.3.9 on the group's own address (vibra-group.github.io), built by tools/build_web.py from app/Index.html.
+/* VIBRA Tracker 0.3.10 on the group's own address (vibra-group.github.io), built by tools/build_web.py from app/Index.html.
    This page is the VIBRA app: installable, with notifications and the last data readable offline.
    Google confirms who the member is ("Sign in with Google"), or a one-time code made on a signed-in device does; the
    admin's helper checks that once and gives a session; every server call then goes to the helper with that session
    and runs the tracker's own code as the member. */
-window.VIBRA_WEB = { helper: "https://script.google.com/macros/s/AKfycbzNE__5onOmvia3VaFHjybAJ5G35cnDJCN1ysuiNAYlgOC5xsbCi0xyDnmoJP7lEaFR3w/exec", clientId: "619243121375-pi18v7vjgvcue7qo6455uids4v28megi.apps.googleusercontent.com", classic: "https://script.google.com/macros/s/AKfycbzkG5eCrxQvQtJgfksL92G9vtl2I4LLEew-Az4qYlDxX6V1QfgtIrwGjYOGq9CQ0r3aWA/exec", built: "0.3.9" };
+window.VIBRA_WEB = { helper: "https://script.google.com/macros/s/AKfycbzNE__5onOmvia3VaFHjybAJ5G35cnDJCN1ysuiNAYlgOC5xsbCi0xyDnmoJP7lEaFR3w/exec", clientId: "619243121375-pi18v7vjgvcue7qo6455uids4v28megi.apps.googleusercontent.com", classic: "https://script.google.com/macros/s/AKfycbzkG5eCrxQvQtJgfksL92G9vtl2I4LLEew-Az4qYlDxX6V1QfgtIrwGjYOGq9CQ0r3aWA/exec", built: "0.3.10" };
 (function () {
   var W = window.VIBRA_WEB, KEY = 'vibra-web-session', S = null, queue = [], gisInit = false, tries = 0, gateOn = false;
   var ua = navigator.userAgent || '', IOS = /iPad|iPhone|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
@@ -2613,7 +2613,7 @@ details.mw-regf>summary .mono{font-variant-numeric:tabular-nums}details.mw-regf[
 </style>
 </head>
 <body>
-<div id="app" aria-live="polite">
+<div id="app">
   <div class="wrap" style="max-width:960px;padding-top:40px">
     <!-- 0.2.2: something to read while the first data of a new device loads (later visits open at once) -->
     <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:22px">
@@ -2701,7 +2701,7 @@ var TIPS = {
 /* 0.3.4 (admin: "không cần what's new vì chỉ là chỉnh giao diện nhỏ, sửa lại các what's new, cái nào nhỏ quá hoặc sửa
    bug nhỏ nhỏ thì ghi chung chung ngắn gọn thôi"): a release gets a card only when members will notice something new;
    small changes and fixes are one short line. The page's own version is PAGE_VERSION, not the latest card. */
-var PAGE_VERSION = '0.3.9'; // = APP_VERSION in Code.gs (test/server_test.js checks)
+var PAGE_VERSION = '0.3.10'; // = APP_VERSION in Code.gs (test/server_test.js and test/build_check.js check)
 var RELEASES = [
   { v: '0.3.9', date: '2026-11-06', title: 'More on one screen, and Save you can see', items: [ // 0.3.9 (BACKLOG 102 to 111; 112, admin: "what,s new là đưa những tĩnh năng lớn mà")
     ['user', 'My work shows more: one row per line on a computer, Register the protocol folded to one line, two columns on a wide screen.', 'new'],
@@ -3012,11 +3012,24 @@ function ic(n) { return '<svg class="ic ic2" viewBox="0 0 24 24" aria-hidden="tr
 
 /* ---------- server */
 function api(fn) {
-  var args = Array.prototype.slice.call(arguments, 1);
+  var args = Array.prototype.slice.call(arguments, 1), ok = onceKey(fn, args);
   return new Promise(function (res, rej) {
-    var r = google.script.run.withSuccessHandler(function (x) { res(x); if (NUDGE_FN[fn]) nudge(); }).withFailureHandler(function (e) { rej(e); });
+    var r = google.script.run.withSuccessHandler(function (x) { if (ok) delete S.once[ok]; res(x); if (NUDGE_FN[fn]) nudge(); }).withFailureHandler(function (e) { rej(e); });
     r[fn].apply(r, args);
   });
+}
+/* 0.3.10 (REVIEW P6): a write the member may send twice (the answer lost after 20 s, then pressed again) carries a write
+   id made here for that action and that text; the server keeps its answer 15 minutes and gives it again instead of a second
+   paper, note, comment, step or feedback. The id lives until the answer comes; a different text is a different id. */
+var ONCE_KEY = { api_create: function (a) { return 'nf:' + String((a[0] || {}).title || '').slice(0, 80); }, api_addNote: function (a) { return 'note:' + a[0] + ':' + String(a[1] || '').slice(0, 80); },
+  api_addComment: function (a) { return 'cm:' + a[0] + ':' + String((a[1] || {}).text || '').slice(0, 80); }, api_part: function (a) { var o = a[1] || {}; return 'part:' + a[0] + ':' + o.k + ':' + (o.line === undefined ? '' : o.line) + ':' + String(o.t || o.id || '').slice(0, 40); },
+  api_feedback: function (a) { return 'fb:' + String((a[0] || {}).text || '').slice(0, 80); } };
+function newWid() { var a = new Uint8Array(5); try { crypto.getRandomValues(a); } catch (e) { for (var i = 0; i < 5; i++) a[i] = Math.floor(Math.random() * 256); } return 'w' + Array.prototype.map.call(a, function (b) { return ('0' + b.toString(16)).slice(-2); }).join(''); }
+function onceKey(fn, args) {
+  if (!ONCE_KEY[fn]) return '';
+  var k = ONCE_KEY[fn](args); S.once = S.once || {}; var wid = S.once[k] || (S.once[k] = newWid());
+  if (fn === 'api_addNote') args[2] = wid; else if (fn === 'api_create' || fn === 'api_feedback') { args[0] = args[0] || {}; args[0].wid = wid; } else { args[1] = args[1] || {}; args[1].wid = wid; }
+  return k;
 }
 /* After a change, ask the admin's helper to send phone notifications now rather than at its next one-minute run. */
 var NUDGE_FN = { api_save: 1, api_create: 1, api_addNote: 1, api_undo: 1, api_editNote: 1, api_deleteNote: 1, api_deleteManuscript: 1, api_decideDeletion: 1, api_restoreManuscript: 1, api_nudge: 1, api_aiApply: 1 };
@@ -3231,7 +3244,7 @@ function render() {
   app.classList.toggle('calm', !S.fx.list && !!S.painted);
   var pk = S.pop || '', dk = S.cel ? 'cel' : S.wn ? 'wn' : S.ga ? 'ga' : S.ad ? 'ad' : S.del ? 'del' : S.rp ? 'rp' : S.qu ? 'qu' : S.fb ? 'fb' : S.nf ? 'nf' : '', tk = S.tour >= 0 ? 'tour' + S.tour : '', sk = S.pal ? 'pal' : '';
   layer.className = (pk && pk === S.lk[0] ? 'calm-pop ' : '') + (dk && dk === S.lk[1] ? 'calm-dlg ' : '') + (tk && tk === S.lk[2] ? 'calm-tour ' : '') + (sk && sk === S.lk[3] ? 'calm-pal' : '');
-  var prevDk = S.lk[1], prevPk = S.lk[0], prevSk = S.lk[3]; S.lk = [pk, dk, tk, sk]; S.painted = true;
+  var prevDk = S.lk[1], prevPk = S.lk[0], prevSk = S.lk[3], prevTour = S.lk[4]; S.lk = [pk, dk, tk, sk, S.tour]; S.painted = true;
   var segK = S.view, segB = segK === S.segK ? segRects() : {}; S.segK = segK; // 0.2.8; 0.3.3 (BACKLOG 40): another view has other switches: nothing to slide, so nothing measured (it forced a layout of the old page)
   var sbs = document.querySelector('.sb-scroll'), sbScroll = sbs ? sbs.scrollTop : 0, sbm = document.querySelector('.sb-mid'), sbMid = sbm ? sbm.scrollTop : 0;
   var shell0 = app.querySelector('.shell'), drWas = !!(shell0 && shell0.classList.contains('drawer')); // 0.2.9
@@ -3250,7 +3263,14 @@ function render() {
   // 0.3.2 (BACKLOG 32, admin: "tìm kiếm kéo xuống mất luôn 2 icon"): a closing layer gives up the focus first; Safari sends no
   // focusout for a focused box that is removed, so the floating buttons stayed hidden as if a box were still typed in
   var fa = document.activeElement; if (lmGo.length && fa && fa !== document.body && layer.contains(fa)) try { fa.blur(); } catch (x) { }
-  layer.innerHTML = popover() + dialog() + palHtml() + tourHtml() + ngCardHtml();
+  /* 0.3.10 (REVIEW P1): while the same dialog, menu and palette stay open (a poll, a notification, a tick elsewhere), the
+     overlays are reconciled in place like the page, so a text box being typed in (Telex on an iPhone) is not destroyed and
+     made again; they are rebuilt only when a layer opens or closes, or the tour moves. */
+  var lh = popover() + dialog() + palHtml() + tourHtml() + ngCardHtml(), same = S.painted && dk === prevDk && pk === prevPk && sk === prevSk && S.tour === prevTour && !S.ngCard;
+  if (same && lh === LAYER_HTML) { /* nothing changed up there */ }
+  else if (same && layer.firstChild) morph(layer, lh);
+  else layer.innerHTML = lh;
+  LAYER_HTML = lh;
   if (lmGo.length) lmOut(lmGo);
   if (dk !== prevDk) LM.fab.dlg = dk ? lmFabNew() : null; if (sk !== prevSk) LM.fab.pal = sk ? lmFabNew() : null; // 0.3.2 (BACKLOG 37): which floating button opened it
   if (npTop) { var nps2 = layer.querySelector('.np-scroll'); if (nps2) nps2.scrollTop = npTop; }
@@ -3547,7 +3567,7 @@ function keptReq(key) { return ((drafts().r || {})[key]) || null; }
 function keepReq(key, o) {
   var all = drafts(); all.r = all.r || {};
   if (o) all.r[key] = { mid: o.mid || '', kind: o.kind || '', text: o.text || '', images: o.images || [], cid: o.cid || '', at: Date.now() }; else delete all.r[key];
-  if (!setDrafts(all) && o) { all.r[key].images = []; all.r[key].noImg = true; setDrafts(all); } // too big for this device's storage: keep the text
+  if (!setDrafts(all) && o) { all.r[key].images = []; all.r[key].noImg = true; setDrafts(all); if (o.images && o.images.length) toast('The screenshots were too big to keep on this device: add them again before sending.', true, 9000); } // too big for this device's storage: keep the text; 0.3.10 (REVIEW P8): said
 }
 function isNetErr(e) { return S.offline || /No connection|fetch|network|load failed/i.test(msg(e)); }
 function draftBar() {
@@ -4624,11 +4644,23 @@ function imgZone(o, key) {
 /* 0.3.9 (BACKLOG 102): a thumbnail fades in once, when its picture is new; the page is drawn again when the ring turns into
    the tick (and at other times), and each time the fade started again from nothing, so the picture blinked. */
 var TH_SEEN = {};
+/* 0.3.10 (REVIEW P5): a screenshot is kept as its data URL (that is what is sent), but the page shows it through a short
+   object URL, so the dialog's HTML no longer carries 600 KB of text per picture on every drawing. */
+var IMG_URLS = {};
+function imgSrc(u) {
+  u = String(u || ''); if (u.slice(0, 5) !== 'data:' || !window.URL || !URL.createObjectURL || !window.Blob) return u;
+  var k = u.length + ':' + u.slice(-64); if (IMG_URLS[k]) return IMG_URLS[k];
+  try {
+    var c = u.indexOf(','), mime = u.slice(5, u.indexOf(';')), bin = atob(u.slice(c + 1)), a = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) a[i] = bin.charCodeAt(i);
+    return IMG_URLS[k] = URL.createObjectURL(new Blob([a], { type: mime }));
+  } catch (e) { return u; }
+}
 function thumbsHtml(o, key) {
   return o.images.map(function (u, i) {
     var x = (o.up || [])[i], st = x ? x.st : ''; // 0.3.7 (BACKLOG 81): going up, sent, or failed
     var k = u.length + ':' + u.slice(-48), nw = !TH_SEEN[k]; TH_SEEN[k] = 1;
-    return '<div class="thumb' + (st ? ' th-' + st : '') + (nw ? ' th-new' : '') + '"><img alt="Screenshot ' + (i + 1) + '" src="' + esc(u) + '">' +
+    return '<div class="thumb' + (st ? ' th-' + st : '') + (nw ? ' th-new' : '') + '"><img alt="Screenshot ' + (i + 1) + '" src="' + esc(imgSrc(u)) + '">' +
       (st === 'up' ? '<i class="th-ring" role="status" aria-label="Sending screenshot ' + (i + 1) + '"></i>' : st === 'ok' ? '<i class="th-tick" aria-label="Screenshot ' + (i + 1) + ' sent">' + ic('check') + '</i>' : st === 'err' ? '<button type="button" class="th-retry" data-a="img-retry" data-v="' + key + ':' + i + '">Retry</button>' : '') +
       '<button type="button" data-a="img-del" data-v="' + key + ':' + i + '" aria-label="Remove screenshot ' + (i + 1) + '">' + ic('x') + '</button></div>';
   }).join('');
@@ -5351,10 +5383,17 @@ function layoutRow() {
       return '<button data-a="layout-set" data-v="' + o[0] + '" aria-pressed="' + (UIN() === (o[0] === 'new')) + '">' + o[1] + '</button>';
     }).join('') + '</div></div>';
 }
+/* 0.3.10 (BACKLOG 113, admin: "List block đi theo nội dung chứ, tự nhiên chỉnh cái này mà list and block ở tít đầu trang"):
+   on My work the List / Blocks control changes only "On your manuscripts, the ball is elsewhere", so it sits in that
+   section's heading (viewMine), not at the top of the page; Papers keeps its own at the top. */
+function viewSeg(act, cur, what) {
+  return '<span class="seg seg-s mw-seg" role="group" aria-label="' + esc(what) + ': list or blocks">' +
+    [['list', 'List', 'list'], ['blocks', 'Blocks', 'apps']].map(function (o) { return '<button type="button" data-a="' + act + '" data-v="' + o[0] + '" aria-pressed="' + (cur === o[0]) + '" aria-label="Show as ' + o[1].toLowerCase() + '" title="Show as ' + o[1].toLowerCase() + '">' + ic(o[2]) + '<span class="lab">' + o[1] + '</span></button>'; }).join('') + '</span>';
+}
 function pageToolsNew() {
   var mine = S.view === 'mine', cur = mine ? mineView() : papersView();
-  return '<div class="ptools"><div class="seg seg-s" role="group" aria-label="Layout of ' + (mine ? 'My work' : 'Papers') + '">' +
-    [['list', 'List', 'list'], ['blocks', 'Blocks', 'apps']].map(function (o) { return '<button data-a="' + (mine ? 'mview' : 'pview') + '" data-v="' + o[0] + '" aria-pressed="' + (cur === o[0]) + '" title="Show as ' + o[1].toLowerCase() + '">' + ic(o[2]) + '<span class="lab">' + o[1] + '</span></button>'; }).join('') + '</div>' +
+  if (mine) return ''; // 0.3.10 (BACKLOG 113): its List / Blocks sits in the heading of the section it changes
+  return '<div class="ptools">' + viewSeg('pview', cur, 'Papers') +
     (!mine && S.q ? '<button class="fchip" data-a="q-clear" aria-label="Remove the filter ' + esc(S.q) + '">Filter: ' + esc(short(S.q, 24)) + ic('x') + '</button>' : '') +
     (!mine ? '<button class="btn btn-s" data-a="pop" data-v="export" aria-expanded="' + (S.pop === 'export') + '">' + ic('down') + 'Export</button>' : '') + '</div>';
 }
@@ -5471,7 +5510,7 @@ function viewMine() {
       '<details class="sec mw-else mw-regf" id="mw-reg" data-keep="mwreg"' + (S.keep.mwreg ? ' open' : '') + '><summary class="sec-h"><h2>' + ic('chev') + 'Register the protocol</h2><span class="mono">' + regs.length + ' · ' + esc(regSum) + '</span></summary>' + regBody + '</details>';
   }
   var elseSec = '';
-  if (other.length) elseSec = '<details class="sec mw-else" id="mw-else" data-keep="mwelse"' + (S.keep.mwelse ? ' open' : '') + '><summary class="sec-h"><h2>' + ic('chev') + 'On your manuscripts, the ball is elsewhere</h2><span class="mono">' + other.length + ' · to keep an eye on</span></summary>' +
+  if (other.length) elseSec = '<details class="sec mw-else" id="mw-else" data-keep="mwelse"' + (S.keep.mwelse ? ' open' : '') + '><summary class="sec-h"><h2>' + ic('chev') + 'On your manuscripts, the ball is elsewhere</h2><span class="mono">' + other.length + ' · to keep an eye on</span>' + viewSeg('mview', blocks ? 'blocks' : 'list', 'The ball is elsewhere') + '</summary>' + // 0.3.10 (BACKLOG 113)
     (blocks ? '<div class="blocks">' + other.map(blockHtml).join('') + '</div>' : '<div class="list">' + other.map(rowHtml).join('') + '</div>') + '</details>';
   return out + (cols ? '<div class="mw-cols"><div class="mw-col">' + left + elseSec + '</div><div class="mw-col mw-side">' + reg + '</div></div>' : left + reg + elseSec);
 }
@@ -7668,6 +7707,7 @@ function mKey(n) {
 function mCls(n) { return String(n.getAttribute('class') || '').split(' ')[0]; } // an element's first class is what it is
 function mSame(a, b) { return a.nodeType === b.nodeType && a.nodeName === b.nodeName && (a.nodeType !== 1 || (a.getAttribute('type') === b.getAttribute('type') && mCls(a) === mCls(b))); }
 function morph(root, html) { var t = document.createElement('template'); t.innerHTML = html; mKids(root, t.content); }
+var LAYER_HTML = ''; // 0.3.10 (REVIEW P1): the overlays as last drawn
 function mKids(a, b) {
   var keyed = {}, kids = [], c, cur;
   for (c = a.firstChild; c; c = c.nextSibling) { var k = mKey(c); if (k) keyed[k] = c; }
@@ -9537,7 +9577,7 @@ Object.assign(ACT, {
     p.layout = nw ? 'new' : 'classic'; keepBoot(); render(); toast(nw ? 'New layout: My work, Papers and Group.' : 'Classic layout: Today, Pipeline, All manuscripts and To-do.');
     api('api_setPrefs', { layout: p.layout }).catch(function (e) { toast(msg(e), true); });
   },
-  mview: function (v) { var p = S.boot.prefs = S.boot.prefs || {}; if (mineView() === v) return; p.mineView = v; var b = shapeRects(); keepBoot(); render(); shapeShift(b); api('api_setPrefs', { mineView: v }).catch(function () { }); },
+  mview: function (v) { var p = S.boot.prefs = S.boot.prefs || {}; if (mineView() === v) return; p.mineView = v; S.keep.mwelse = true; var b = shapeRects(); keepBoot(); render(); shapeShift(b); api('api_setPrefs', { mineView: v }).catch(function () { }); }, // 0.3.10 (BACKLOG 113): the section opens to show the change
   pview: function (v) { var p = S.boot.prefs = S.boot.prefs || {}; if (papersView() === v) return; p.papersView = v; var b = shapeRects(); keepBoot(); render(); shapeShift(b); api('api_setPrefs', { papersView: v }).catch(function () { }); },
   'face-set': function (v) { setFace(v); }, // 0.3.8 (BACKLOG 100)
   'pp-ord': function (v) { var p = S.boot.prefs = S.boot.prefs || {}; v = v === 'rec' ? 'rec' : 'pri'; if (ppOrder() === v) return; p.ppOrder = v; S.fx.list = true; keepBoot(); render(); api('api_setPrefs', { ppOrder: v }).catch(function () { }); },
@@ -9669,6 +9709,7 @@ document.addEventListener('click', function (e) {
   if (S.dragClick && Date.now() - S.dragClick < 400) { S.dragClick = 0; e.preventDefault(); e.stopPropagation(); return; }
   var el = e.target.closest('[data-a]');
   var a = el ? el.getAttribute('data-a') : null, v = el ? el.getAttribute('data-v') : null;
+  if (el && el.tagName === 'BUTTON' && el.closest('summary')) e.preventDefault(); // 0.3.10 (BACKLOG 113): a button in a heading does its own thing, the section stays as it is
   var closedPop = false, hadTip = !!S.tip, hadCb = !!S.cb;
   // click outside closes popovers, tooltips and the people list
   if (S.pop && !e.target.closest('[data-pop]') && a !== 'pop') { S.pop = null; closedPop = true; }
@@ -10031,7 +10072,7 @@ function sincePop() {
     }).join('') : '<p class="empty" style="margin:0">Nothing new.</p>') + '</div>';
 }
 function freshBoot(b) {
-  if (b && b.version && vcmp(b.version, PAGE_VERSION) > 0) updCheck(false); // 0.2.8: the server is newer than this page
+  if (b && b.version && vcmp(b.version, PAGE_VERSION) > 0) updCheck(true); // 0.2.8: the server is newer than this page; 0.3.10 (REVIEW P7): looked at once, not throttled
   if (!S.boot) { S.boot = b; S.stale = false; started(b); keepBoot(); afterFresh(); return; }
   var keepDraft = dirty() ? S.draft : null, keepDesk = S.desk;
   if (S.stale) { S.freshAt = Date.now(); setTimeout(function () { if (S.freshAt && Date.now() - S.freshAt >= 1800) { S.freshAt = 0; render(); } }, 1900); }
