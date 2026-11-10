@@ -5,12 +5,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <script>
-/* VIBRA Tracker 0.3.10 on the group's own address (vibra-group.github.io), built by tools/build_web.py from app/Index.html.
+/* VIBRA Tracker 0.3.12 on the group's own address (vibra-group.github.io), built by tools/build_web.py from app/Index.html.
    This page is the VIBRA app: installable, with notifications and the last data readable offline.
    Google confirms who the member is ("Sign in with Google"), or a one-time code made on a signed-in device does; the
    admin's helper checks that once and gives a session; every server call then goes to the helper with that session
    and runs the tracker's own code as the member. */
-window.VIBRA_WEB = { helper: "https://script.google.com/macros/s/AKfycbzNE__5onOmvia3VaFHjybAJ5G35cnDJCN1ysuiNAYlgOC5xsbCi0xyDnmoJP7lEaFR3w/exec", clientId: "619243121375-pi18v7vjgvcue7qo6455uids4v28megi.apps.googleusercontent.com", classic: "https://script.google.com/macros/s/AKfycbzkG5eCrxQvQtJgfksL92G9vtl2I4LLEew-Az4qYlDxX6V1QfgtIrwGjYOGq9CQ0r3aWA/exec", built: "0.3.10" };
+window.VIBRA_WEB = { helper: "https://script.google.com/macros/s/AKfycbzNE__5onOmvia3VaFHjybAJ5G35cnDJCN1ysuiNAYlgOC5xsbCi0xyDnmoJP7lEaFR3w/exec", clientId: "619243121375-pi18v7vjgvcue7qo6455uids4v28megi.apps.googleusercontent.com", classic: "https://script.google.com/macros/s/AKfycbzkG5eCrxQvQtJgfksL92G9vtl2I4LLEew-Az4qYlDxX6V1QfgtIrwGjYOGq9CQ0r3aWA/exec", built: "0.3.12" };
 (function () {
   var W = window.VIBRA_WEB, KEY = 'vibra-web-session', S = null, queue = [], gisInit = false, tries = 0, gateOn = false;
   var ua = navigator.userAgent || '', IOS = /iPad|iPhone|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
@@ -485,7 +485,7 @@ svg.ic{width:18px;height:18px;flex:none;stroke:currentColor;fill:none;stroke-wid
 
 /* header */
 .hdr{position:sticky;top:0;z-index:40;background:var(--surface);background:color-mix(in srgb,var(--surface) 86%,transparent);backdrop-filter:saturate(160%) blur(12px);-webkit-backdrop-filter:saturate(160%) blur(12px);border-bottom:1px solid var(--line)}
-.hdr-in{max-width:1400px;margin:0 auto;padding:10px max(16px,env(safe-area-inset-right)) 10px max(16px,env(safe-area-inset-left));display:grid;grid-template-columns:auto auto 1fr auto;grid-template-areas:"brand tabs tools icons";align-items:center;gap:10px 20px}
+.hdr-in{max-width:1400px;margin:0 auto;padding:10px max(16px,env(safe-area-inset-right)) 10px max(16px,env(safe-area-inset-left));display:grid;grid-template-columns:auto auto minmax(0,1fr) auto;grid-template-areas:"brand tabs tools icons";align-items:center;gap:10px 20px}
 .brand{grid-area:brand;display:flex;align-items:baseline;gap:10px;white-space:nowrap}
 .brand b{font:700 var(--fs-3xl)/1 var(--sans);letter-spacing:.04em;color:var(--accent-text)}
 .brand span{font:500 var(--fs-xs) var(--sans);color:var(--muted)}
@@ -508,7 +508,7 @@ svg.ic{width:18px;height:18px;flex:none;stroke:currentColor;fill:none;stroke-wid
 .avp{position:absolute;left:0;top:0;width:100%;height:100%;object-fit:cover;border-radius:inherit;display:block;background:var(--surface-2)}
 /* Export is icon-only (tooltip) so the four tabs always fit beside the tools */
 .exp-label{display:none}.tabs{min-width:max-content}.search{min-width:120px}
-@media (max-width:1420px){.hdr-in{grid-template-columns:1fr auto;grid-template-areas:"brand icons" "tabs tabs" "tools tools"}.tools{justify-content:flex-start}.search{max-width:none}}
+@media (max-width:1420px){.hdr-in{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"brand icons" "tabs tabs" "tools tools"}.tools{justify-content:flex-start}.search{max-width:none}}
 @media (max-width:560px){.brand span{display:none}.tools .btn-label{display:none}}
 
 /* layout */
@@ -558,7 +558,7 @@ svg.ic{width:18px;height:18px;flex:none;stroke:currentColor;fill:none;stroke-wid
 .row .nx{font-size:var(--fs-sm);color:var(--ink-2);white-space:pre-line;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .row .meta{font:400 var(--fs-xs) var(--mono);color:var(--muted);text-align:right}
 .empty{padding:16px;color:var(--muted)}
-@media (max-width:880px){.row{grid-template-columns:1fr;gap:6px}.row .meta{text-align:left}}
+@media (max-width:880px){.row{grid-template-columns:minmax(0,1fr);gap:6px}.row .meta{text-align:left}}
 .fx-in{animation:fxIn .45s var(--ease) both;animation-delay:calc(var(--i,0) * 24ms)}
 
 /* pipeline */
@@ -779,7 +779,7 @@ textarea.in{resize:vertical;line-height:1.5}
   .stg:nth-child(n+5){border-top:1px solid var(--line)}
   .stg:nth-child(5)::before{display:none}
   .stg:first-child,.stg:last-child{border-radius:0}
-  .out{grid-template-columns:1fr}
+  .out{grid-template-columns:minmax(0,1fr)}
   .arow-main{grid-template-columns:minmax(0,1fr);gap:4px}
   .arow .am{text-align:left}
   .sp-row{grid-template-columns:104px minmax(0,1fr) 40px;gap:8px}
@@ -965,7 +965,7 @@ html{transition:background-color .3s var(--ease)}
 .dhead{display:flex;align-items:flex-end;justify-content:space-between;gap:12px 20px;flex-wrap:wrap}
 .dtools{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-bottom:4px}
 .dcount{font-size:var(--fs-sm)}
-.ogrid.one{grid-template-columns:1fr}
+.ogrid.one{grid-template-columns:minmax(0,1fr)}
 .dempty{margin-top:28px;padding:34px 24px;display:flex;flex-direction:column;align-items:flex-start;gap:8px}
 .dempty p{margin:0}
 .dpop{width:380px}
@@ -1058,10 +1058,10 @@ tr.ghead svg.ic{width:13px;height:13px;vertical-align:-2px;margin-right:4px}
 .xl-t svg.ic{width:16px;height:16px}
 .p-sec:has(> .xl-t){flex-direction:row;flex-wrap:wrap;align-items:center;gap:6px 10px}
 .p-sec:has(> .xl-t) > :not(.xl-t):not(.tip){flex-basis:100%}
-.xl{display:grid;grid-template-columns:minmax(120px,34%) 1fr;gap:6px 12px;margin:10px 0 0;font-size:var(--fs-sm)}
+.xl{display:grid;grid-template-columns:minmax(120px,34%) minmax(0,1fr);gap:6px 12px;margin:10px 0 0;font-size:var(--fs-sm)}
 .xl dt{color:var(--muted)}
 .xl dd{margin:0;white-space:pre-line;overflow-wrap:anywhere}
-@media (max-width:600px){.xl{grid-template-columns:1fr}.xl dt{margin-top:6px}}
+@media (max-width:600px){.xl{grid-template-columns:minmax(0,1fr)}.xl dt{margin-top:6px}}
 
 /* 0.1.3 VIBRA logo */
 .brand{align-items:center}
@@ -1267,7 +1267,7 @@ svg.ic2{fill:none!important;stroke:currentColor;stroke-width:1.6;stroke-linecap:
 .ad-miss{font-size:var(--fs-xs);padding:2px 8px;border-radius:999px;background:var(--warn-bg);color:var(--warn-fg)}
 .ad-ok{font-size:var(--fs-xs);padding:2px 8px;border-radius:999px;background:var(--ok-bg);color:var(--ok-fg)}
 .ad-upd{margin-left:auto;font-size:var(--fs-xs);color:var(--muted)}
-.ad-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px}
+.ad-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px 12px}
 .ad-grid .full{grid-column:1/-1}
 .ad-f{display:flex;flex-direction:column;gap:4px;min-width:0}
 .ad-orc{display:flex;gap:6px}
@@ -1294,7 +1294,7 @@ svg.ic2{fill:none!important;stroke:currentColor;stroke-width:1.6;stroke-linecap:
 .prog i{display:block;height:100%;border-radius:999px;background:var(--accent)}
 .prog i.pg-prep{background:var(--pg-prep)}.prog i.pg-jour{background:var(--pg-jour)}.prog i.pg-done{background:var(--pg-done)}.prog i.pg-off{background:var(--muted)}
 .bl-st{font-size:var(--fs-xs);color:var(--muted)}
-@media (max-width:599px){.blocks{grid-template-columns:1fr 1fr;gap:8px}.block{padding:10px 11px 9px}.bl-t{font-size:var(--fs-md);-webkit-line-clamp:3}.bl-n,.bl-p{display:none}.seg-s .lab{display:none}}
+@media (max-width:599px){.blocks{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}.block{padding:10px 11px 9px}.bl-t{font-size:var(--fs-md);-webkit-line-clamp:3}.bl-n,.bl-p{display:none}.seg-s .lab{display:none}}
 /* 0.2.2 (admin): on a computer the details open as a card floating on the right; the list keeps its full width under a
    light dim, so the titles stay readable and another manuscript is one click away (the dim does not catch clicks) */
 .pscrim{display:none}
@@ -1336,7 +1336,7 @@ svg.ic2{fill:none!important;stroke:currentColor;stroke-width:1.6;stroke-linecap:
 .lk-row .lk-add{min-height:28px;width:28px;padding:0;justify-content:center}
 .lk-form{display:flex;flex-direction:column;gap:8px;margin-top:8px;padding:10px;border-radius:var(--r-sm);background:var(--surface-2);box-shadow:inset 0 0 0 1px var(--line)}
 .lk-in{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:8px}
-@media (max-width:600px){.lk-in{grid-template-columns:1fr}}
+@media (max-width:600px){.lk-in{grid-template-columns:minmax(0,1fr)}}
 .pp-open{margin-left:auto;font-size:var(--fs-sm);font-weight:550}
 /* 0.2.5: on a narrow phone the Nudge and E-mail buttons go under the deadline instead of running off the screen */
 @media (max-width:520px){.p-grid .ng-cell{grid-column:1/-1}}
@@ -1349,7 +1349,7 @@ svg.ic2{fill:none!important;stroke:currentColor;stroke-width:1.6;stroke-linecap:
 html.dragging,html.dragging *{cursor:grabbing!important;-webkit-user-select:none;user-select:none}
 /* 0.2.5: History by save, one Undo; undone in review and the bell */
 .hgrp{border-left:2px solid var(--line-2);padding-left:10px;margin:6px 0}
-.hgrp-h{display:flex;align-items:center;gap:8px;padding-top:6px;font-size:var(--fs-sm)}
+.hgrp-h{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;padding-top:6px;font-size:var(--fs-sm);min-width:0}
 .hgrp-h .hgrp-u{margin-left:auto;min-height:28px;padding:0 10px}
 .hgrp .hitem{grid-template-columns:minmax(0,1fr) auto}.hgrp .hitem>.mono{display:none}.hgrp .hitem .hby{display:none}
 .rev-l li.undone>span:first-child,.revitem.undone .rev-l li>span{text-decoration:line-through;text-decoration-color:var(--muted);color:var(--muted)}
@@ -1389,8 +1389,29 @@ html.dragging,html.dragging *{cursor:grabbing!important;-webkit-user-select:none
 /* 0.2.5: the phone's top bar: the word VIBRA only, larger (admin) */
 .topbar .tb-brand b{font:800 var(--fs-4xl)/1 var(--sans);letter-spacing:.08em}
 /* 0.2.3: Changes to review */
-.revlist{display:grid;gap:10px}
-.revitem{background:var(--surface);border-radius:var(--r-sm);box-shadow:var(--bezel);padding:12px 14px;display:grid;gap:6px}
+/* 0.3.11 (BACKLOG 117, admin, 7 Nov 2026, an iPhone picture: "Lại lỗi"): one column that never grows wider than the page.
+   With an automatic column a paper's long name on one line (.rev-t) set the width of every item, so on a phone the items ran
+   off the right edge (the lines cut, Undo all and Reviewed out of sight); the same cause as BACKLOG 103 */
+.revlist{display:grid;grid-template-columns:minmax(0,1fr);gap:10px}
+.revitem{background:var(--surface);border-radius:var(--r-sm);box-shadow:var(--bezel);padding:12px 14px;display:grid;grid-template-columns:minmax(0,1fr);gap:6px;min-width:0}
+.revitem>.muted{overflow-wrap:anywhere}
+/* 0.3.12 (BACKLOG 127, idea 6): the publications list */
+.pub-d{max-width:760px;display:grid;grid-template-columns:minmax(0,1fr);gap:12px}.pub-l{max-height:min(60vh,560px);overflow:auto;font-size:var(--fs-sm);line-height:1.5}
+.pub-l h3{margin:10px 0 4px;font:600 var(--fs-md) var(--sans)}.pub-l ol{margin:0;padding-left:22px;display:grid;grid-template-columns:minmax(0,1fr);gap:6px}.pub-l li{overflow-wrap:anywhere}
+/* 0.3.12 (BACKLOG 127, idea 7): the admin's housekeeping list */
+.hk{margin-top:12px}.hk-r{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;padding:7px 0;border-top:1px solid var(--line);min-width:0}.hk-r:first-of-type{border-top:0}
+.hk-m{flex:1 1 200px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:var(--fs-sm)}.hk-w{font-size:var(--fs-xs)}
+.hk-g{border-top:1px solid var(--line)}.hk-g>summary{display:flex;align-items:center;gap:10px;padding:9px 0;cursor:pointer;font-size:var(--fs-sm);font-weight:500}.hk-g>summary .tag{min-width:30px;justify-content:center;font-variant-numeric:tabular-nums}.hk-g .hk-r{padding-left:40px}
+.hk-corr,.hk-ball{background:var(--t-due-bg);color:var(--t-due-fg)}.hk-dl,.hk-old{background:var(--t-dl-bg);color:var(--t-dl-fg)}.hk-trk,.hk-au{background:var(--t-wait-bg);color:var(--t-wait-fg)}
+/* 0.3.12 (BACKLOG 127, idea 4): one card per paper, its saves inside; Undo and Reviewed at the foot of each save, within the
+   thumb's reach on a phone; a long value folded to two lines, a tap opens it; All, AI, Members */
+.rev-p{display:flex;align-items:baseline;gap:8px;min-width:0}.rev-n{font-size:var(--fs-xs);flex:none}
+.rev-s{display:grid;grid-template-columns:minmax(0,1fr);gap:6px;padding-top:10px;border-top:1px solid var(--line)}.rev-p + .rev-s{border-top:0;padding-top:2px}
+.rev-s.undone{opacity:.75}.rev-s.undone .rev-l li>span{text-decoration:line-through;text-decoration-color:var(--muted);color:var(--muted)}
+.rev-src{font-size:var(--fs-xs);overflow-wrap:anywhere}
+.rev-foot{display:flex;justify-content:flex-end;flex-wrap:wrap;gap:8px}
+.rev-v{cursor:pointer}.rev-f{margin:0 0 12px}
+@media (max-width:599px){.rev-v:not(.open){display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.rev-foot .btn{min-height:42px}}.rev-l li>span{overflow-wrap:anywhere}
 .rev-h{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;font-size:var(--fs-md)}
 .rev-h .mono{font-size:var(--fs-xs)}
 .rev-t{all:unset;cursor:pointer;color:var(--accent-text);font-weight:500;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:min(520px,100%)}
@@ -1517,7 +1538,7 @@ canvas.confetti{position:fixed;inset:0;width:100vw;height:100vh;pointer-events:n
 .wn-list li{display:flex;gap:10px;align-items:flex-start;font-size:var(--fs-md);line-height:1.55;color:var(--ink-2)}
 .wn-list li .ic{flex:none;width:18px;height:18px;margin-top:2px;color:var(--accent-text)}
 #whatsnew .wn-rel + .wn-rel{border-top:1px solid var(--line);padding-top:14px}
-@media (max-width:640px){.ad-grid{grid-template-columns:1fr}}
+@media (max-width:640px){.ad-grid{grid-template-columns:minmax(0,1fr)}}
 
 .sb-merow .sb-me{flex:1;min-width:0}
 /* 0.3.6 (BACKLOG 72): Saving… and Saved beside the manuscript's number in its card */
@@ -1709,9 +1730,16 @@ canvas.confetti{position:fixed;inset:0;width:100vw;height:100vh;pointer-events:n
 
 /* settings */
 .set-grid{display:grid;grid-template-columns:216px minmax(0,1fr);gap:32px;margin-top:22px;align-items:start}
+/* 0.3.11 (BACKLOG 121, 122): Settings in two columns only when its content has room: from 1100 px (with the new navigation the
+   size classes move, and between 600 and 1100 px the sidebar or the rail leaves the content 450 to 750 px, where the list of
+   sections took 216 px). A width the size classes do not move (not 899/900/1023/1024/839/840), and not a container query:
+   that made the first opening of Settings 40 % slower (test/ui_test_033.py, 40). The one column cannot grow past the page
+   (a long button set the page's width on a phone below 440 px); buttons may wrap */
+.set-body{min-width:0}.set-body .btn{white-space:normal;max-width:100%;text-align:left;line-height:1.3;padding-top:6px;padding-bottom:6px}
+@media (max-width:1099px){.set-cq .set-grid{grid-template-columns:minmax(0,1fr);gap:14px}.set-cq .set-nav{position:static;flex-direction:row;overflow-x:auto;gap:4px;padding-bottom:4px}.set-cq .set-nav .sb-item{flex:none;width:auto}}
 .set-nav{position:sticky;top:20px;display:flex;flex-direction:column;gap:2px}
 .set-body{display:flex;flex-direction:column;gap:18px;max-width:760px}
-@media (max-width:899px){.set-grid{grid-template-columns:1fr;gap:14px}.set-nav{position:static;flex-direction:row;overflow-x:auto;gap:4px;padding-bottom:4px}.set-nav .sb-item{flex:none;width:auto}}
+
 .devstate{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:12px;background:var(--surface-2);font-size:var(--fs-md)}
 .lockbar{display:flex;gap:10px;align-items:flex-start;margin-top:12px;padding:10px 12px;border-radius:12px;background:var(--accent-soft);color:var(--ink);font-size:var(--fs-sm);line-height:1.45;box-shadow:inset 0 0 0 1px var(--accent-line)}
 .lockbar .ic{flex:none;width:16px;height:16px;margin-top:2px;color:var(--accent-text)}
@@ -2202,7 +2230,7 @@ tr.pp-h td{color:var(--ink)}tr.pp-h.win td{color:var(--ok-fg)}tr.pp-h.rej td{col
 .pp-tabs.strip .ptab{flex:none;padding:12px 11px 8px;border-radius:0 0 12px 12px;background:var(--surface);border:1px solid var(--line);border-top:0;box-shadow:inset 0 4px 0 var(--pc),var(--shadow-1)}
 .pp-tabs.strip .ptab[aria-pressed="true"]{padding-top:18px;background:color-mix(in srgb,var(--pc) 16%,var(--surface));border-color:color-mix(in srgb,var(--pc) 55%,var(--line))}
 /* 0.3.5: the New card, led by its summary */
-.p-sum{display:grid;grid-template-columns:auto 1fr;gap:0;margin:14px 0 0;padding:4px 14px;border-radius:12px;background:var(--surface-2);font-size:var(--fs-md)}
+.p-sum{display:grid;grid-template-columns:auto minmax(0,1fr);gap:0;margin:14px 0 0;padding:4px 14px;border-radius:12px;background:var(--surface-2);font-size:var(--fs-md)}
 .p-sum dt,.p-sum dd{margin:0;padding:9px 0;border-top:1px solid var(--line)}
 .p-sum dt:first-of-type,.p-sum dt:first-of-type+dd{border-top:0}
 .p-sum dt{padding-right:16px;font-size:var(--fs-sm);color:var(--muted);white-space:nowrap}
@@ -2233,7 +2261,7 @@ tr.pp-h td{color:var(--ink)}tr.pp-h.win td{color:var(--ok-fg)}tr.pp-h.rej td{col
 .p-where{display:flex;flex-direction:column;gap:7px}
 .pw-line{display:flex;align-items:baseline;gap:10px}.pw-t{flex:1;min-width:0}.pw-t b{font-weight:600}.pw-rej{color:var(--danger)}
 .pw-chg{flex:none;font-size:var(--fs-sm)}
-.pw-bar{display:grid;grid-template-columns:repeat(8,1fr);gap:3px;max-width:420px}.pw-bar i{height:3px;border-radius:2px;background:var(--line-2)}
+.pw-bar{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:3px;max-width:420px}.pw-bar i{height:3px;border-radius:2px;background:var(--line-2)}
 .pw-bar i.done{background:var(--accent);opacity:.45}.pw-bar i.now{background:var(--accent)}.pw-bar.rej i{background:var(--danger);opacity:.35}
 .pw-pick{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}.pw-pick .chip-t:disabled{cursor:default}.pw-pick .pw-x{color:var(--danger);border-color:var(--danger)}
 .stp-ask{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin-top:2px;padding:10px 12px;border-radius:10px;background:var(--surface-2);font-size:var(--fs-sm)}.stp-ask .btns{display:flex;gap:8px;margin-left:auto}
@@ -2279,7 +2307,7 @@ tr.pp-h td{color:var(--ink)}tr.pp-h.win td{color:var(--ok-fg)}tr.pp-h.rej td{col
 .rv-rbtn{display:inline-flex;align-items:center;gap:4px;margin-top:10px;font-size:var(--fs-sm)}.rv-rbtn .ic{width:14px;height:14px}.rv-rnd{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}.rv-rnd select,.rv-rnd input{flex:1;min-width:130px}.ck-t small{display:block;font-size:var(--fs-xs);color:var(--muted)}.ck-r.done .ck-t{color:var(--muted)}
 .cr-list{margin-top:12px}.cr-list ol{margin:6px 0 10px;padding-left:20px;display:grid;gap:6px}.cr-list li span{display:block;font-size:var(--fs-sm);color:var(--muted)}
 .cr-pick{flex-basis:100%;margin-top:6px}.cr-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
-.dec-list{list-style:none;margin:0 0 6px;padding:0}.dec-list li{display:grid;grid-template-columns:auto 1fr;gap:2px 12px;padding:8px 0;border-top:1px solid var(--line)}.dec-list li:first-child{border-top:0}
+.dec-list{list-style:none;margin:0 0 6px;padding:0}.dec-list li{display:grid;grid-template-columns:auto minmax(0,1fr);gap:2px 12px;padding:8px 0;border-top:1px solid var(--line)}.dec-list li:first-child{border-top:0}
 .dec-list .mono{font-size:var(--fs-xs);color:var(--muted);padding-top:2px}.dec-list .muted{grid-column:2;font-size:var(--fs-xs)}.dec-t{line-height:1.45}
 .p-reg{display:flex;align-items:center;gap:10px 12px;flex-wrap:wrap;margin:10px 0 0;padding:10px 12px;border-radius:12px;background:var(--warn-bg);color:var(--warn-fg);font-size:var(--fs-sm);line-height:1.45}
 .p-reg>span{flex:1;min-width:200px;display:flex;gap:8px;align-items:flex-start}.p-reg .ic{flex:none;width:16px;height:16px;margin-top:2px}.p-reg .btn{min-height:32px}
@@ -2300,6 +2328,7 @@ tr.pp-h td{color:var(--ink)}tr.pp-h.win td{color:var(--ok-fg)}tr.pp-h.rej td{col
 @media (pointer:coarse){ /* (1) a 44 px touch area around the small new controls; what is seen stays the same */
   .rv-p .td-chk,.ck-r .td-chk,.img-btn,.doc-b,.chip-t,.rv-who,.ck-na,.pw-chg,.rv-rbtn{position:relative}
   .rv-p .td-chk::before,.ck-r .td-chk::before{content:'';position:absolute;left:50%;top:50%;width:44px;height:44px;transform:translate(-50%,-50%)}
+  .td-chk{position:relative}.td-chk::before{content:'';position:absolute;left:50%;top:50%;width:44px;height:44px;transform:translate(-50%,-50%)} /* 0.3.11 (BACKLOG 125): every tick */
   .img-btn::before,.doc-b::before,.chip-t::before,.rv-who::before,.ck-na::before,.pw-chg::before,.rv-rbtn::before{content:'';position:absolute;left:50%;top:50%;width:max(100%,44px);height:max(100%,44px);transform:translate(-50%,-50%)}
 }
 .tbb,.img-btn,.chip-t,.rv-who,.rv-av,.bav{-webkit-tap-highlight-color:transparent}
@@ -2310,7 +2339,7 @@ tr.pp-h td{color:var(--ink)}tr.pp-h.win td{color:var(--ok-fg)}tr.pp-h.rej td{col
 :root[data-theme="dark"] .thumb{border-color:oklch(1 0 0 / .1)} /* (6) */
 .mw-hi{letter-spacing:-.01em}.mw-wait{font-weight:600;color:var(--ink)}
 /* 0.3.7 (BACKLOG 75, idea 6, a test): the phone's tab bar */
-.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:66;display:grid;grid-template-columns:repeat(5,1fr);align-items:end;padding:6px 6px max(8px,env(safe-area-inset-bottom));background:color-mix(in srgb,var(--surface) 88%,transparent);-webkit-backdrop-filter:saturate(1.6) blur(14px);backdrop-filter:saturate(1.6) blur(14px);border-top:1px solid var(--line)}
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:66;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));align-items:end;padding:6px 6px max(8px,env(safe-area-inset-bottom));background:color-mix(in srgb,var(--surface) 88%,transparent);-webkit-backdrop-filter:saturate(1.6) blur(14px);backdrop-filter:saturate(1.6) blur(14px);border-top:1px solid var(--line)}
 .tbb{display:flex;flex-direction:column;align-items:center;gap:3px;min-height:48px;padding:4px 0 0;border:0;background:none;color:var(--muted);font:inherit;font-size:var(--fs-2xs);font-weight:500;cursor:pointer}
 .tbb .tbi{position:relative;display:grid;place-items:center;width:44px;height:28px;border-radius:999px;transition:background-color .15s var(--ease)}.tbb .tbi .ic{width:22px;height:22px}
 .tbb.on{color:var(--accent-text)}.tbb.on .tbi{background:var(--accent-soft,var(--surface-2))}
@@ -2318,7 +2347,7 @@ tr.pp-h td{color:var(--ink)}tr.pp-h.win td{color:var(--ok-fg)}tr.pp-h.rej td{col
 .tb-q .tbq{display:grid;place-items:center;width:50px;height:50px;margin-top:-22px;border-radius:999px;background:var(--brand-grad);color:#fff;box-shadow:0 8px 20px -8px rgba(23,64,127,.6),0 0 0 4px var(--surface)}.tb-q .tbq .ic{width:22px;height:22px}.tb-q{color:var(--ink)}
 .shell:has(~ .tabbar) .main{padding-bottom:84px}
 .shell.pshown ~ .tabbar{display:none}
-@media (max-width:599px){.p-tell .btns{justify-content:flex-start}.p-sum{grid-template-columns:1fr}.p-sum dt{padding:9px 0 0}.p-sum dd{border-top:0;padding-top:2px}.p-sum dt:not(:first-of-type){border-top:1px solid var(--line)}}
+@media (max-width:599px){.p-tell .btns{justify-content:flex-start}.p-sum{grid-template-columns:minmax(0,1fr)}.p-sum dt{padding:9px 0 0}.p-sum dd{border-top:0;padding-top:2px}.p-sum dt:not(:first-of-type){border-top:1px solid var(--line)}}
 /* 0.3.5: What's new, the new map */
 .wn-map{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 .wn-mp{display:flex;flex-direction:column;gap:3px;padding:10px 12px;border-radius:12px;background:var(--accent-soft);box-shadow:inset 0 0 0 1px var(--accent-line);min-width:0}
@@ -2367,12 +2396,14 @@ tr.pp-h td{color:var(--ink)}tr.pp-h.win td{color:var(--ok-fg)}tr.pp-h.rej td{col
 @media (max-width:599px){.pg-n{display:none}.p-top .bk-l{max-width:96px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}
 .pg-num{font-variant-numeric:tabular-nums}
 .pg-in{container-type:inline-size;max-width:1180px;margin:0 auto;padding-bottom:40px}
+@media (max-width:899px){.pg-in{padding-bottom:120px}} /* 0.3.11 (BACKLOG 125): the last line scrolls clear of Search and Quick update */
+@media (max-width:599px){.box .btns .btn{white-space:normal;max-width:100%;text-align:left;line-height:1.3;padding-top:6px;padding-bottom:6px}}
 .pg-head{margin:18px 0 0}
 .pg .p-title{margin:0;font-size:var(--fs-5xl);line-height:1.2;letter-spacing:-.01em}.pg .p-title > span{text-wrap:balance;max-width:46ch}
 @container (max-width:599px){.pg .p-title{font-size:var(--fs-3xl);line-height:1.25}}
 .pg-meta{margin:8px 0 0;font-size:var(--fs-sm);line-height:1.5;color:var(--ink-2);text-wrap:pretty}
 .pg-meta i{font-style:normal;font-size:var(--fs-xs);font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--accent-text)}
-.pg-f{white-space:nowrap}
+.pg-f{white-space:nowrap}.pg-f{display:inline-block;max-width:100%;vertical-align:top;white-space:normal} /* 0.3.11 (BACKLOG 125): a fact longer than the line wraps inside its box */
 @container (max-width:599px){.pg-meta .pg-f{display:block;white-space:normal}.pg-meta .pg-dot{display:none}}
 .pg-tpen{display:inline-grid;vertical-align:middle;margin:0 0 0 6px!important;width:30px!important;height:30px!important}
 .pg-grid{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(0,1fr);grid-template-areas:"s r" "l r";grid-template-rows:auto 1fr;gap:16px 24px;margin-top:20px;align-items:start}
@@ -2383,6 +2414,10 @@ tr.pp-h td{color:var(--ink)}tr.pp-h.win td{color:var(--ok-fg)}tr.pp-h.rej td{col
 @container (max-width:899px){
   .pg-grid{display:flex;flex-direction:column;align-items:stretch;gap:12px;margin-top:16px}.pg-col{display:contents}
   .pg-sum{order:1}.pg-grid .p-reg{order:2}#pg-tell{order:3}#pb-nx{order:4}#pb-rv{order:5}#pb-ck{order:6}#pb-doc{order:7}#pb-notes{order:8}#pb-dec{order:9}#pb-au{order:10}#pb-lk{order:11}#pb-hist{order:12}
+  .pg-ph-rev #pb-rv{order:5}.pg-ph-rev #pb-doc{order:6}.pg-ph-rev #pb-notes{order:7}.pg-ph-rev #pb-ck{order:8} /* 0.3.12 (BACKLOG 127, idea 3) */
+  .pg-ph-ready #pb-ck{order:5}.pg-ph-ready #pb-au{order:6}.pg-ph-ready #pb-doc{order:7}.pg-ph-ready #pb-rv{order:9}
+  .pg-ph-jour #pb-lk{order:5}.pg-ph-jour #pb-notes{order:6}.pg-ph-jour #pb-rv{order:7}.pg-ph-jour #pb-doc{order:8}.pg-ph-jour #pb-ck{order:9}
+  .pg-ph-acc #pb-doc{order:5}.pg-ph-acc #pb-notes{order:6}.pg-ph-acc #pb-lk{order:7}.pg-ph-acc #pb-ck{order:8}.pg-ph-acc #pb-rv{order:9}
 }
 /* the summary: label, value, a quiet pencil; a line opens in place to be changed */
 .pg-sum{margin:0;padding:4px 16px;border-radius:16px;background:var(--surface-2)}
@@ -2462,7 +2497,7 @@ tr.pp-h td{color:var(--ink)}tr.pp-h.win td{color:var(--ok-fg)}tr.pp-h.rej td{col
 .dk-r2 select{flex:1 1 200px;width:auto;min-width:0}.dk-max{flex-basis:100%}
 .dk-rr{margin-top:-4px}
 .dec-add2{display:grid;grid-template-columns:140px minmax(0,1fr) minmax(0,1fr) auto;gap:8px}
-@container (max-width:599px){.dec-add2{grid-template-columns:1fr auto}.dec-add2 #dec-new,.dec-add2 #dec-why{grid-column:1/-1}}
+@container (max-width:599px){.dec-add2{grid-template-columns:minmax(0,1fr) auto}.dec-add2 #dec-new,.dec-add2 #dec-why{grid-column:1/-1}}
 /* the tools of a line: quiet until pointed at; Delete turns red only then */
 .pg-acts{flex:none;display:inline-flex;align-items:center;margin:-4px -4px -4px 0}
 .pg-i{position:relative;width:32px;height:32px;display:grid;place-items:center;border:0;border-radius:9px;background:none;color:var(--muted);opacity:.65;cursor:pointer;
@@ -2483,7 +2518,7 @@ tr.pp-h td{color:var(--ink)}tr.pp-h.win td{color:var(--ok-fg)}tr.pp-h.rej td{col
 .pg .del-zone,.pg .delz{margin-top:24px}
 @media (prefers-reduced-motion:reduce){.pg-add,.pb-chev,.pg-pen,.pg-i{transition:none}}
 .keys-d{max-width:560px}.keys-g h3{margin:14px 0 6px;font-size:var(--fs-sm);font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
-.keys-g dl{margin:0;display:grid;gap:2px}.keys-g dl > div{display:grid;grid-template-columns:150px 1fr;gap:12px;align-items:center;padding:5px 0;border-top:1px solid var(--line)}
+.keys-g dl{margin:0;display:grid;gap:2px}.keys-g dl > div{display:grid;grid-template-columns:150px minmax(0,1fr);gap:12px;align-items:center;padding:5px 0;border-top:1px solid var(--line)}
 .keys-g dt{margin:0;white-space:nowrap}.keys-g dd{margin:0;font-size:var(--fs-md)}
 /* 0.3.8 (BACKLOG 98): Papers: the order above its filters; blocks with less to read; checked with better-colors, -typography, -ui */
 .pp-mode{display:flex;align-items:center;gap:8px;margin:18px 0 0}
@@ -2566,6 +2601,52 @@ details.mw-regf>summary .mono{font-variant-numeric:tabular-nums}details.mw-regf[
   .mw-regl .rv-meta{display:none}
   .mw-own-tg .lbl{display:none}
 }
+/* 0.3.11 (BACKLOG 119): under a To do line the paper's name is cut, its date stays whole (with the name cut as a whole, the
+   date went first: "#49 Rethinking Fentanyl in Cancer Pain: Patient… · d…"), on a phone and on a computer */
+.mw-shared .nx-r.mwl .nx-m,.mw-shared .tk-r .rv-meta{display:flex;align-items:baseline;gap:4px;min-width:0;white-space:nowrap}
+.mw-shared .nx-r.mwl .nx-m .td-m,.mw-shared .tk-r .rv-meta .td-m{flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mw-shared .nx-r.mwl .nx-m>span,.mw-shared .tk-r .rv-meta>span{flex:none;white-space:nowrap}
+.mw-shared>:first-child{border-top:0}
+@media (min-width:900px){ /* 0.3.11 (BACKLOG 125): a task in To do is one row on a computer, as the lines are (0.3.9, BACKLOG 110) */
+  .mw-shared .tk-r .rv-main{flex-direction:row;align-items:baseline;gap:14px}
+  .mw-shared .tk-r .rv-t{flex:1 1 auto;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .mw-shared .tk-r .rv-meta{flex:0 1 auto;max-width:330px}
+}
+/* 0.3.11 (BACKLOG 118, admin chose A): My work's Calendar holds the whole To do; the chosen day's to-dos under the grid */
+.cal-e.tk{background:var(--t-draft-bg);color:var(--t-draft-fg)}
+.cal-keys .k-tk{background:var(--t-draft-bg);box-shadow:inset 0 0 0 1px var(--line-2)}
+.mw-calbox{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
+.mwc-day{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;padding-top:2px;min-width:0}
+.mwc-dh{display:flex;align-items:center;gap:8px;margin:0 2px;font-size:var(--fs-md)}
+.mwc-dh .muted{font-size:var(--fs-xs)}
+.mwc-x{margin-left:auto;min-height:30px;padding:0 6px}
+.mwc-rows .mw-shared,.mwc-rows .mwt{box-shadow:inset 0 0 0 1px var(--line);background:transparent;padding-left:4px;padding-right:4px}
+.mwc-foot{margin:0 2px}.mwc-nod{font-size:var(--fs-sm)}
+/* 0.3.11 (BACKLOG 120): the paper's top bar fits a phone: the link as one icon, the page never slides sideways */
+.panel{overflow-x:clip}
+.p-top{min-width:0}.p-top>.tag{flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ibtn.tlk{flex:none;color:var(--accent-fg);background:var(--accent)}.ibtn.tlk .ic{width:18px;height:18px}
+@media (hover:hover){.ibtn.tlk:hover{filter:brightness(1.08)}}
+.trk-chip.ico{padding:2px 6px}.trk-chip.ico .ic{width:14px;height:14px}
+.p-top .tg-c .ic{width:12px;height:12px;margin-right:3px;flex:none}.p-top .tg-c{display:none;align-items:center;background:var(--ok-bg);color:var(--ok-fg);font-variant-numeric:tabular-nums;flex:none}.p-top .tg-c.late{background:var(--t-due-bg);color:var(--t-due-fg)}
+@media (max-width:480px){.p-top>.mono{display:none}.p-top .tg-long{display:none}.p-top .tg-c{display:inline-flex}}@media (max-width:420px){.p-top .bk-l{display:none}.p-top{gap:6px}}
+/* 0.3.11 (BACKLOG 123): a note, a decision or a file with a long link or name stays in its box (on a computer the swipe's
+   front is not a box, so nothing held the row) */
+.pr,.pr-c,.pr-t,.pr-m{min-width:0}.pr-t,.pr-m{overflow-wrap:anywhere}
+/* 0.3.12 (BACKLOG 127, idea 8): the week at a glance over To do */
+.wk-strip{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;margin:0 0 10px}
+.wk-d{all:unset;box-sizing:border-box;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;padding:7px 2px 6px;border-radius:12px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--line);min-width:0}
+.wk-d:focus-visible{outline:2px solid var(--accent);outline-offset:2px}@media (hover:hover){.wk-d:hover{box-shadow:inset 0 0 0 1px var(--accent-line)}}
+.wk-d.today{box-shadow:inset 0 0 0 1.5px var(--accent)}.wk-w{font-size:var(--fs-2xs);color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.wk-n{font:600 var(--fs-md) var(--sans);font-variant-numeric:tabular-nums}.wk-d.today .wk-n{color:var(--accent-text)}
+.wk-dots{display:flex;gap:3px;height:6px}.wk-dots i{width:6px;height:6px;border-radius:50%;background:var(--accent)}.wk-dots i.dl{background:var(--t-dl-fg)}.wk-dots i.tk{background:var(--t-draft-fg)}.wk-dots i.late{background:var(--t-due-fg)}
+/* 0.3.12 (BACKLOG 127, idea 2): a web address as a short chip with the site's name */
+.ulk{display:inline-flex;align-items:center;max-width:100%;padding:0 7px;margin:0 1px;border-radius:999px;background:var(--accent-soft);color:var(--accent-text);font-size:.92em;font-weight:500;line-height:1.5;text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;vertical-align:baseline}
+a.ulk:hover{text-decoration:underline}a.ulk:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+/* 0.3.11 (BACKLOG 126): the grids that hold a member's words have one column that cannot grow past their box (a grid's
+   automatic column, or a bare 1fr, grows with the longest word or one-line button inside: 103, 117, 121) */
+.rev-l,.pg-col,.lk-rows,.mw-ask,.ngbox,.td-add,.tdb-ask,.rr-form,.pg-add,.p-tell,.pb-b{grid-template-columns:minmax(0,1fr)}
+.nx-t,.rv-t,.td-t,.bl-n,.bl-t,.nx-hint,.lk-row,.st-tx{overflow-wrap:anywhere}
 .mw-own{margin-top:18px}
 .mw-own-h{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 2px 8px}
 .mw-own-h .lbl{display:inline-flex;align-items:center;gap:6px;margin:0}.mw-own-h .lbl .ic{width:14px;height:14px}
@@ -2651,10 +2732,10 @@ var LABEL = { title: 'Title', type: 'Type', journal: 'Journal', status: 'Status'
   next_actions: 'Next actions', deadline: 'Deadline', submission_date: 'Submission date', ms_id: 'MS ID', doi: 'DOI', authors_json: 'Authors', impact_factor: 'Journal IF', first_author: 'First author', note: 'Note', created: 'Created', deleted: 'Deleted', restored: 'Restored' };
 var EDITABLE = ['title', 'type', 'journal', 'status', 'stage', 'people_json', 'next_actions', 'deadline', 'submission_date', 'ms_id', 'doi', 'authors_json', 'impact_factor', 'first_author', 'preprint', 'links_json'];
 LABEL.preprint = 'Preprint'; LABEL.links_json = 'Links'; // 0.2.5
-LABEL.review_json = 'Reviewers\' points'; LABEL.checklist_json = 'Before submitting'; EDITABLE.push('review_json', 'checklist_json'); // 0.3.7 (BACKLOG 75)
+LABEL.review_json = 'Reviewers\' points'; LABEL.checklist_json = 'Before submitting'; LABEL.tasks_json = 'Tasks'; EDITABLE.push('review_json', 'checklist_json'); // 0.3.7 (BACKLOG 75); 0.3.11 (BACKLOG 124): Tasks
 var TIPS = {
   preprint: 'The preprint\'s ID or DOI, as the preprint server gives it (Preprints.org, medRxiv, Research Square, SSRN…). A DOI or a Preprints.org ID opens with Open. The AI fills it from the server\'s e-mail.',
-  links: 'Tracking: the journal\'s page for the manuscript (one Track button). Steps: a link for one next action; name it in that action and it leaves when the step is done. Only you: a link that acts as you, kept in your settings, never in the shared Sheet. The AI adds links from quick updates.',
+  links: 'Tracking: the journal\'s page for the manuscript (its icon at the top of the paper). Steps: a link for one next action; name it in that action and it leaves when the step is done. Only you: a link that acts as you, kept in your settings, never in the shared Sheet. The AI adds links from quick updates.',
   names: 'Names are matched by fixed rules, never by AI: accents, punctuation and hyphens are ignored, initials stand for given names, and a Vietnamese family name may come first. A name that could be two people, or only looks like someone, waits here until you say who it is. Every change is logged in History and can be undone.',
   whose: 'Shows only the manuscripts where this person has the ball (has to act next). Choose Me for your own list, Everyone for the whole group. All manuscripts also counts the manuscripts a person is an author of.',
   whoseAll: 'Shows the manuscripts where this person has the ball or is one of the authors, however the name is written. Today and Pipeline count only who has the ball.',
@@ -2701,8 +2782,18 @@ var TIPS = {
 /* 0.3.4 (admin: "không cần what's new vì chỉ là chỉnh giao diện nhỏ, sửa lại các what's new, cái nào nhỏ quá hoặc sửa
    bug nhỏ nhỏ thì ghi chung chung ngắn gọn thôi"): a release gets a card only when members will notice something new;
    small changes and fixes are one short line. The page's own version is PAGE_VERSION, not the latest card. */
-var PAGE_VERSION = '0.3.10'; // = APP_VERSION in Code.gs (test/server_test.js and test/build_check.js check)
+var PAGE_VERSION = '0.3.12'; // = APP_VERSION in Code.gs (test/server_test.js and test/build_check.js check)
 var RELEASES = [
+  { v: '0.3.12', date: '2026-11-10', title: 'Your own clock, short links, and a list of publications', items: [ // 0.3.12 (BACKLOG 127, ideas 1 to 4 and 6 to 8)
+    ['clock', 'Today, overdue and the times follow your device\'s clock, wherever you are.', 'new'],
+    ['cal2', 'My work shows the next seven days over To do; tap a day to see it in the calendar.', 'new'],
+    ['link', 'A long web address shows as a short link with the site\'s name.', 'new'],
+    ['book', 'Export, Publications list: the group\'s accepted and published papers as references by year (Vancouver, AMA or APA), to copy or download.', 'new'],
+    ['check', 'A paper\'s page puts first what its step needs; Changes to review groups the changes of a paper and folds long values on a phone; the admin has a Housekeeping list in the AI desk.']] },
+  { v: '0.3.11', date: '2026-11-10', title: 'A calendar for all of To do, and a tidier phone', items: [ // 0.3.11 (BACKLOG 117 to 126)
+    ['cal2', 'In My work, Calendar shows all of To do: your lines, the ball, your tasks and your own to-dos by their dates. Tap a day to see them under the calendar.', 'new'],
+    ['link', 'Each kind of link has its icon. At the top of a paper only the one you need now: the journal\'s page, the link of the next step, or the DOI.', 'new'],
+    ['check', 'On a small screen a paper\'s deadline is a count of days, in red with a minus once it has passed. Nothing is wider than the screen any more.']] },
   { v: '0.3.9', date: '2026-11-06', title: 'More on one screen, and Save you can see', items: [ // 0.3.9 (BACKLOG 102 to 111; 112, admin: "what,s new là đưa những tĩnh năng lớn mà")
     ['user', 'My work shows more: one row per line on a computer, Register the protocol folded to one line, two columns on a wide screen.', 'new'],
     ['book', 'A paper\'s Manuscript & files, Notes and Before submitting show what matters now: the current version, the latest note, the next items. Show all opens the rest and stays open for you.', 'new'],
@@ -2947,6 +3038,11 @@ function CO() {
    the first versions (256 grid) were drawn again in it. */
 
 var ICON2 = {
+  // 0.3.11 (BACKLOG 120, admin: "nghĩ ra biểu tượng cho mỗi loại link"): one icon for each kind of link
+  lktrk: '<path d="M12.5 20.5H7.5a2 2 0 0 1-2-2v-13a2 2 0 0 1 2-2H14l4.5 4.5v3"/><path d="M14 3.5V8h4.5"/><circle cx="17" cy="17" r="3.6"/><path d="M17 15.4V17l1.1.8"/>', // the journal's page: where the manuscript is
+  lkstep: '<path d="M13.5 4.5h4a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2h-4"/><path d="M4.5 12h10M11 8.5l3.5 3.5-3.5 3.5"/>', // a step's portal: go in and do it
+  lkdoi: '<circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.4 2.5 3.5 5.3 3.5 8.5s-1.1 6-3.5 8.5c-2.4-2.5-3.5-5.3-3.5-8.5s1.1-6 3.5-8.5z"/>', // published: the DOI
+  lkfold: '<path d="M3.5 7.5a2 2 0 0 1 2-2h4l2 2.2h7a2 2 0 0 1 2 2v8.3a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z"/>', // any other link: a shared folder, a document
   fwd: '<path d="M9.5 5.5L16 12l-6.5 6.5"/>', // 0.3.8: Next paper
   file: '<path d="M14 3.5H7.5a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2V8z"/><path d="M14 3.5V8h4.5M9 12.5h6M9 16h6"/>', // 0.3.7 (BACKLOG 80 c)
   upload: '<path d="M12 15V4.5M7.5 9 12 4.5 16.5 9"/><path d="M4.5 14.5v3a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-3"/>',
@@ -3042,6 +3138,17 @@ function msg(e) { return (e && (e.message || e)) ? String(e.message || e).replac
 /* ---------- helpers */
 function esc(s) { return String(s === undefined || s === null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
 function dnum(iso) { var p = String(iso).split('-'); return Date.UTC(+p[0], +p[1] - 1, +p[2]) / 86400000; }
+/* 0.3.12 (BACKLOG 127, idea 1; admin: "tuỳ theo đồng hồ trên thiết bị"): times are kept in Vietnam time (the Sheet, the
+   server); the page shows them, counts the days (today, overdue, due today) and greets by the device's own clock. A member
+   in Italy no longer sees a step due today as overdue during the evening. Dates (deadlines) stay dates. */
+var VN_OFF = 420;
+function devToday() { var d = new Date(); return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); }
+function tsLoc(ts) {
+  var t = String(ts || ''); if (!/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}/.test(t) || -new Date().getTimezoneOffset() === VN_OFF) return t;
+  var d = new Date(Date.UTC(+t.slice(0, 4), +t.slice(5, 7) - 1, +t.slice(8, 10), +t.slice(11, 13), +t.slice(14, 16)) - VN_OFF * 60000);
+  return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()) + ' ' + pad2(d.getHours()) + ':' + pad2(d.getMinutes()) + t.slice(16);
+}
+function tsShow(ts) { var l = tsLoc(ts); return niceShort(l) + ' ' + l.slice(11, 16); }
 function days(a, b) { return Math.round(dnum(a) - dnum(b)); }
 var MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 function nice(iso) { if (!iso) return ''; var p = String(iso).slice(0, 10).split('-'); return (+p[2]) + ' ' + MON[+p[1] - 1] + ' ' + p[0]; }
@@ -3055,7 +3162,7 @@ function canEdit() { return me().role !== 'Viewer'; }
 function lockOther(id) { var l = S.boot && S.boot.locks && S.boot.locks[String(id)]; return l && l.key !== me().key ? l : null; }
 function editable() { return canEdit() && !(S.sel && lockOther(S.sel)); }
 function lockWho(l) { var p = person(l.key); return p ? dispName(p) : l.key; }
-function lockSince(l) { var t = String(l.since || ''); return t.slice(0, 10) === S.boot.today ? t.slice(11, 16) : niceShort(t.slice(0, 10)); }
+function lockSince(l) { var t = tsLoc(l.since || ''); return t.slice(0, 10) === S.boot.today ? t.slice(11, 16) : niceShort(t.slice(0, 10)); }
 function lockChip(id) { var l = lockOther(id); return l ? '<span class="lkc" title="' + esc(lockWho(l)) + ' is editing this manuscript">' + ic('pen') + esc(lockWho(l)) + '</span>' : ''; }
 function lockBanner(m) {
   var l = lockOther(m.id); if (!l) return '';
@@ -3214,6 +3321,13 @@ function tagHtml(d) {
   if (d.tier === 'closed') return outcomeTag(d.m.status);
   return '<span class="tag t-' + d.tier + '">' + esc(d.label) + '</span>';
 }
+/* 0.3.11 (BACKLOG 120, admin: "gần đến ngày thì màu xanh đếm ngược ngày, quá ngày thì nhãn đỏ ghi dấu - với màn hình nhỏ"):
+   on a small screen the paper's top bar shows the days left as a short green count, or the days past in red with a minus */
+function tagTop(d) {
+  if (d.tier === 'closed' || d.dl === null || d.dl === undefined) return tagHtml(d).replace('class="tag', 'class="tag tg-full');
+  var late = d.dl < 0, n = Math.abs(d.dl);
+  return tagHtml(d).replace('class="tag', 'class="tag tg-long') + '<span class="tag tg-c' + (late ? ' late' : '') + '" title="' + esc(d.label) + '" aria-label="' + esc(d.label) + '">' + ic('clock') + (late ? '−' : '') + n + ' d</span>'; // admin: "Thêm cái đồng hồ hoặc icon gì ở đó đi"
+}
 /* DOIs are stored as typed (bare or as a doi.org link); show the bare DOI and link it once. */
 function doiBare(v) { return String(v || '').trim().replace(/^https?:\/\/(dx\.)?doi\.org\//i, '').replace(/^doi:\s*/i, ''); }
 function doiLink(v) { var b = doiBare(v); return b ? '<a href="https://doi.org/' + esc(b) + '" target="_blank" rel="noopener">doi:' + esc(b) + '</a>' : ''; }
@@ -3222,6 +3336,7 @@ function metaHtml(d) { return d.idle === null ? 'no update' : d.idle === 0 ? 'up
 /* ---------- render */
 var app = document.getElementById('app'), layer = document.getElementById('layer');
 function render() {
+  if (S.boot && S.boot.today && S.boot.today !== devToday()) S.boot.today = devToday(); // 0.3.12 (BACKLOG 127, idea 1): the device's day
   S.nr = (S.nr || 0) + 1; // 0.3.1: redraws counted (the tests check that a movement's end redraws nothing)
   if (S.draft) keepDraftSoon();
   var ae = document.activeElement, keep = ae && ae.id ? { id: ae.id, s: ae.selectionStart, e: ae.selectionEnd } : null;
@@ -3333,7 +3448,10 @@ function placeTip() {
   ob.style.cssText = 'position:fixed;left:16px;width:' + (W - 32) + 'px;max-width:none;top:' + top + 'px';
   // an animated ancestor can become the containing block: correct by the measured offset
   var r = ob.getBoundingClientRect();
-  if (Math.abs(r.left - 16) > 1 || Math.abs(r.top - top) > 1) { ob.style.left = (16 - (r.left - 16)) + 'px'; ob.style.top = (top - (r.top - top)) + 'px'; }
+  if (Math.abs(r.left - 16) > 1 || Math.abs(r.top - top) > 1) { ob.style.left = (16 - (r.left - 16)) + 'px'; ob.style.top = (top - (r.top - top)) + 'px'; r = ob.getBoundingClientRect(); }
+  // 0.3.11 (BACKLOG 125): a tip low on the screen opens above its "i", clear of Search and Quick update, and over them
+  ob.style.zIndex = '70';
+  if (r.bottom > window.innerHeight - 96 && bt.top - 6 - r.height > 70) ob.style.top = (parseFloat(ob.style.top) - (r.top - (bt.top - 6 - r.height))) + 'px';
 }
 window.addEventListener('scroll', function () { if (S.tip && document.querySelector('.tip.open .tipbox[style]')) ACT.tip(S.tip); }, { passive: true });
 /* Menus open under the button that opened them (Export, Customize); the notifications list opens beside the sidebar. */
@@ -3644,7 +3762,7 @@ function palEntries(q) {
   if (todoOn()) cmds.push(['view', 'todo', 'Open my to-do', 'check']);
   if (isSup()) cmds.push(['view', 'review', 'Changes to review', 'undo']);
   if (canEdit()) cmds.push(['nf-open', '', 'New manuscript', 'plus']);
-  cmds.push(['qu-open', '', 'Quick update: say what happened', 'spark'], ['xlsx', '', 'Export this view to Excel', 'sheet'], ['pdf', '', 'Export this view to PDF', 'down'],
+  cmds.push(['qu-open', '', 'Quick update: say what happened', 'spark'], ['xlsx', '', 'Export this view to Excel', 'sheet'], ['pub-open', '', 'Publications list (references by year)', 'book'], ['pdf', '', 'Export this view to PDF', 'down'],
     ['csv', '', 'Export this view to CSV', 'down'], ['theme-toggle', '', curTheme() === 'dark' ? 'Switch to the light appearance' : 'Switch to the dark appearance', curTheme() === 'dark' ? 'sun' : 'moon'],
     ['sb-toggle', '', sbCollapsed() ? 'Show the sidebar' : 'Hide the sidebar', 'sidebar'], ['tour', '', 'Start the tour', 'help2'], ['fb-open', '', 'Send feedback on the app', 'chat2']);
   cmds.filter(function (c) { return !toks.length || toks.every(function (t) { return fold(c[2]).indexOf(t) >= 0; }); }).slice(0, toks.length ? 6 : 12).forEach(function (c) {
@@ -3792,9 +3910,9 @@ function viewSettings() {
       ' One editor at a time: ' + (S.boot.locksOn === false ? 'not available right now (saves are still checked for clashes)' : 'on') + '.</p></div>';
   }
   return '<h1 class="h1">Settings</h1><p class="sub">Only you see these choices.</p>' +
-    '<div class="set-grid"><nav class="set-nav" aria-label="Settings sections">' + SET_TABS.map(function (t) {
+    '<div class="set-cq"><div class="set-grid"><nav class="set-nav" aria-label="Settings sections">' + SET_TABS.map(function (t) {
       return '<button class="sb-item" data-a="set-tab" data-v="' + t[0] + '"' + (tab === t[0] ? ' aria-current="page"' : '') + '>' + ic(t[2]) + '<span class="lab">' + t[1] + '</span></button>';
-    }).join('') + '</nav><div class="set-body">' + body + '</div></div>';
+    }).join('') + '</nav><div class="set-body">' + body + '</div></div></div>';
 }
 /* This device: inside the installed VIBRA app the tracker talks to the app directly; elsewhere it explains how to install. */
 function devBox() {
@@ -3992,6 +4110,33 @@ function myDetailsBox() {
     (window.VIBRA_WEB && window.VIBRA_WEB.orcid ? '<button class="btn btn-s" data-a="myd-look"' + (M.look ? ' disabled' : '') + '>' + (M.look ? 'Looking up…' : 'Look up') + '</button>' : '') + '</div></div></div>' +
     '<div class="btns"><button class="btn btn-p' + wm.c + '" data-a="myd-save"' + wm.a + '>' + wm.h + '</button>' + (M.updated ? '<span class="muted" style="font-size:var(--fs-xs)">Last changed ' + esc(niceShort(M.updated.slice(0, 16))) + '</span>' : '') + '</div></div>';
 }
+/* 0.3.12 (BACKLOG 127, idea 7): the admin's housekeeping: what is missing across all open papers, in one place, each with
+   its paper one tap away (the fix is there): no corresponding author, a revision with no deadline, the ball with nobody
+   where the group must act, a submitted paper without the journal's page, a deadline passed on a paper waiting for the
+   journal, authors without affiliation, e-mail or ORCID (the list below) */
+function houseList(D) {
+  var T0 = S.boot.today, o = [], add = function (m, k, w) { o.push({ m: m, k: k, w: w }); };
+  S.boot.manuscripts.forEach(function (m) {
+    if (['Published', 'Rejected'].indexOf(m.status) >= 0) return;
+    var ours = OUR_STAGES.indexOf(m.stage) >= 0, atJ = m.status === 'Submitted' || m.status === 'Under Review';
+    if (!corrName(m)) add(m, 'corr', 'No corresponding author');
+    if (ours && m.stage !== 'Authors confirming' && m.stage !== 'Returned to authors' && !m.deadline) add(m, 'dl', 'A revision with no deadline');
+    if (!(m.people || []).length && (!atJ || ours)) add(m, 'ball', 'The ball is with nobody');
+    if (atJ && !liveLinks(m.links || []).some(function (l) { return l.kind === 'track'; })) add(m, 'trk', 'Submitted, no link to the journal\'s page');
+    if (atJ && !ours && m.deadline && m.deadline < T0) add(m, 'old', 'A deadline passed while waiting for the journal (' + nice(m.deadline) + ')');
+  });
+  ((D && D.auMissing) || []).forEach(function (x) { var m = mById(x.id); if (m) add(m, 'au', x.authors.length + ' author' + (x.authors.length === 1 ? '' : 's') + ' without affiliation, e-mail or ORCID'); });
+  return o;
+}
+function deskHouse(D) {
+  var L = houseList(D), K = [['corr', 'No corresponding author'], ['dl', 'A revision with no deadline'], ['ball', 'The ball is with nobody'], ['old', 'A deadline passed while waiting for the journal'],
+    ['trk', 'Submitted, no link to the journal\'s page'], ['au', 'Authors without affiliation, e-mail or ORCID']];
+  var row = function (x) { return '<div class="hk-r"><button class="td-m hk-m" data-a="' + (x.k === 'au' ? 'ad-desk' : 'open') + '" data-v="' + x.m.id + '" title="' + esc(x.m.title) + '">#' + x.m.id + ' ' + esc(short(x.m.title, 80)) + '</button>' + (x.k === 'au' || x.k === 'old' ? '<span class="muted hk-w">' + esc(x.w.replace(/^A deadline passed while waiting for the journal /, '')) + '</span>' : '') + '</div>'; };
+  // one folded line per kind, its count in a coloured tag; opened, the papers (a tap opens the paper, where it is fixed)
+  var groups = K.map(function (k) { var G = L.filter(function (x) { return x.k === k[0]; }); return G.length ? '<details class="hk-g" data-keep="hk' + k[0] + '"' + (S.keep['hk' + k[0]] ? ' open' : '') + '><summary><span class="tag hk-' + k[0] + '">' + G.length + '</span>' + esc(k[1]) + '</summary>' + G.sort(function (a, b) { return a.m.id - b.m.id; }).map(row).join('') + '</details>' : ''; }).join('');
+  return '<div class="box hk" id="desk-house"><div class="frow"><h2>Housekeeping (' + L.length + ')</h2></div>' +
+    (L.length ? '<p class="muted" style="margin:0;font-size:var(--fs-sm)">What is missing on the open papers. Open a line; a tap on a paper opens it, where it is fixed.</p>' + groups : '<p class="muted" style="margin:0">Nothing missing on the open papers.</p>') + '</div>';
+}
 /* AI desk: open manuscripts whose authors still miss details */
 function deskAuthors(D) {
   var L = D.auMissing || [];
@@ -4052,10 +4197,20 @@ function tagKey(tok) { var t = String(tok || '').toLowerCase(), P = (S.boot && S
 function tagsOf(t) { var o = [], x; TAG_RX.lastIndex = 0; while ((x = TAG_RX.exec(String(t || '')))) { var k = tagKey(x[2]); if (k && o.indexOf(k) < 0) o.push(k); } return o; }
 function untag(t) { return String(t == null ? '' : t).replace(TAG_RX, function (all, pre, tok) { var k = tagKey(tok); return k ? pre + chipName(k) : all; }); }
 function tagChip(k) { var n = chipName(k); return '<span class="tg" title="' + esc(n) + '"><i class="bav" style="--h:' + avHue(k) + ';" aria-hidden="true">' + esc(initials(n)) + avImg(photoOf(k)) + '</i>' + esc(n) + '</span>'; }
+/* 0.3.12 (BACKLOG 127, idea 2): a web address in a member's words (a next action, a note, a task, a reviewer's point, a
+   to-do, History) shows as a short chip with the site's name ("editorialmanager.com ↗") that opens it; the full address
+   stays in the text and shows when edited and in the chip's tooltip. Works on text already escaped. Inside a button (rows,
+   blocks) the chip is a plain label, not a second link. */
+function shortLinks(h, plain) {
+  return String(h).replace(/(^|[\s(\[>])(https?:\/\/[^\s<"]+?)(?=[.,;:!?)\]]*(?:\s|$|<))/g, function (all, pre, u) {
+    var host = u.replace(/^https?:\/\/(www\.)?/i, '').split(/[\/?#]/)[0].replace(/&amp;.*$/, '');
+    return pre + (plain ? '<span class="ulk" title="' + u + '">' + host + ' ↗</span>' : '<a class="ulk" data-a="ext" href="' + u + '" target="_blank" rel="noopener" title="' + u + '">' + host + ' ↗</a>');
+  });
+}
 function tagged(t) {
   t = String(t == null ? '' : t); var out = '', last = 0, x; TAG_RX.lastIndex = 0;
   while ((x = TAG_RX.exec(t))) { var k = tagKey(x[2]); if (!k) continue; var at = x.index + x[1].length; out += esc(fullNames0(t.slice(last, at))) + tagChip(k); last = at + 1 + x[2].length; }
-  return out + esc(fullNames0(t.slice(last)));
+  return shortLinks(out + esc(fullNames0(t.slice(last))));
 }
 function fullNames(t) { return fullNames0(untag(t)); }
 function fullNames0(t) {
@@ -4172,7 +4327,7 @@ function bkHtml(d, i) {
   return '<button class="block bk' + anim + '" data-a="open" data-v="' + m.id + '"' + (S.sel === m.id ? ' aria-current="true"' : '') + ' title="' + esc(tip) + '">' +
     '<span class="bl-t">' + esc(m.title) + '</span>' + lockChip(m.id) +
     (m.people && m.people.length ? '<span class="bl-p">' + ic('ball') + '<span>' + esc(peopleText(m.people)) + '</span></span>' : '') +
-    (step ? '<span class="bl-n">' + esc(fullNames(step)) + '</span>' : '') +
+    (step ? '<span class="bl-n">' + shortLinks(esc(fullNames(step)), true) + '</span>' : '') +
     '<span class="bk-f">' + celTick(m) + bkDl(d, rec) + trackChip(m) + ballAvatars(m) + '</span>' +
     '<span class="sr">' + esc((p[1] === 'prep' ? 'Being written: ' : p[1] === 'jour' ? 'At the journal: ' : '') + p[2]) + '</span>' +
     '<span class="bk-edge" aria-hidden="true"><i class="pg-' + p[1] + '" style="width:' + Math.round(p[0] * 100) + '%"></i></span></button>';
@@ -4185,7 +4340,7 @@ function blockHtml(d, i) {
     '<span class="bl-t">' + esc(m.title) + '</span>' + lockChip(m.id) +
     '<span class="bl-j">' + esc(m.journal || 'Journal not chosen') + '</span>' +
     '<span class="bl-p">' + ic('ball') + '<span>' + esc(peopleText(m.people)) + '</span></span>' +
-    (m.next ? '<span class="bl-n">' + esc(fullNames(String(m.next).split('\n')[0])) + '</span>' : '') +
+    (m.next ? '<span class="bl-n">' + shortLinks(esc(fullNames(String(m.next).split('\n')[0])), true) + '</span>' : '') +
     '<span class="bl-prog" aria-label="Progress: ' + esc(p[1] === 'prep' ? 'preparing, ' : p[1] === 'jour' ? 'at the journal, ' : '') + esc(p[2]) + '"><span class="prog"><i class="pg-' + p[1] + '" style="width:' + Math.round(p[0] * 100) + '%"></i></span><span class="bl-foot"><span class="bl-st">' + esc(p[2]) + '</span>' + auAvatars(m) + '</span></span></button>';
 }
 function viewToday(list) {
@@ -5007,11 +5162,13 @@ function viewReview() {
   var R = S.rev;
   if (!R || Date.now() - (S.revAt || 0) > 60000) loadReview();
   if (!R) return h + '<p class="sub">Loading the changes…</p>';
-  var sub = R.total ? R.total + ' change' + (R.total > 1 ? 's' : '') + ' by others since ' + esc(niceShort(R.since)) + ' ' + esc(String(R.since).slice(11, 16)) + '. They already apply: mark them reviewed or undo them.' :
+  var sub = R.total ? R.total + ' change' + (R.total > 1 ? 's' : '') + ' by others since ' + esc(tsShow(R.since)) + '. They already apply: mark them reviewed or undo them.' :
     'Nothing new to review.';
   return h + '<p class="sub">' + sub + '</p>' +
     (R.total ? '<div class="btns" style="margin:0 0 14px;align-items:center"><button class="btn btn-s" data-a="rev-all">' + ic('check') + 'Mark all reviewed</button>' + tip('review', true) + '</div>' : '') +
-    '<div class="revlist">' + R.items.map(revItem).join('') + '</div>' +
+    // 0.3.12 (BACKLOG 127, idea 4): changes by the AI or by members only; one card per paper with its saves in it
+    (R.total ? '<div class="seg seg-s rev-f" role="group" aria-label="Whose changes">' + [['all', 'All'], ['ai', 'AI'], ['mem', 'Members']].map(function (o) { return '<button data-a="rev-f" data-v="' + o[0] + '" aria-pressed="' + ((S.revF || 'all') === o[0]) + '">' + o[1] + '</button>'; }).join('') + '</div>' : '') +
+    '<div class="revlist">' + revCards(R.items.filter(function (g) { var f = S.revF || 'all'; return f === 'all' || (f === 'ai') === (g.who === 'AI routine'); })) + '</div>' +
     (R.total > R.items.length ? '<p class="muted" style="font-size:var(--fs-sm)">' + (R.total - R.items.length) + ' older changes are not shown yet; mark these reviewed to see them.</p>' : '') +
     '<div style="margin-top:22px">' + deskDeletions({ deletions: S.boot.deletions || [], trash: R.trash || [] }) + '</div>';
 }
@@ -5029,19 +5186,29 @@ function revUndo(rows) {
     render();
   }).catch(function (e) { toast(msg(e), true); });
 }
+function revCards(items) { // 0.3.12 (BACKLOG 127, idea 4): the saves of one paper together, in the order of the newest
+  var by = {}, order = [];
+  items.forEach(function (g) { if (!by[g.mid]) { by[g.mid] = []; order.push(g.mid); } by[g.mid].push(g); });
+  return order.map(function (mid) {
+    var L = by[mid], g0 = L[0], m = mById(mid), gone = L.every(function (g) { return g.items.every(function (x) { return x.undone; }); });
+    var title = m ? '<button class="rev-t" data-a="open" data-v="' + m.id + '">#' + m.id + ' ' + esc(short(m.title, 90)) + '</button>' : '<span class="muted">#' + mid + (g0.title ? ' ' + esc(short(g0.title, 80)) : '') + ' (deleted)</span>';
+    return '<div class="revitem' + (gone ? ' undone' : '') + '"><div class="rev-p">' + title + (L.length > 1 ? '<span class="muted rev-n">' + L.length + ' saves</span>' : '') + '</div>' + L.map(revItem).join('') + '</div>';
+  }).join('');
+}
 function revItem(g) {
-  var m = mById(g.mid), who = g.who === 'AI routine' ? 'AI · mail' : chipName(g.who) || 'Someone';
+  var who = g.who === 'AI routine' ? 'AI · mail' : g.who || 'Someone';
   var can = g.items.filter(function (x) { return x.undo; }), gone = g.items.every(function (x) { return x.undone; });
   var lines = g.items.map(function (x) {
-    return '<li' + (x.undone ? ' class="undone"' : '') + '><span>' + histVal({ field: x.field, old: x.old, new: x.new }) + (x.undone ? ' <span class="muted">(undone)</span>' : '') + '</span>' +
+    var open = S.revOpen && S.revOpen[x.row]; // 0.3.12 (BACKLOG 127, idea 4): a long value folded to two lines; a tap opens it
+    return '<li' + (x.undone ? ' class="undone"' : '') + '><span class="rev-v' + (open ? ' open' : '') + '" data-a="rev-more" data-v="' + x.row + '">' + histVal({ field: x.field, old: x.old, new: x.new }) + (x.undone ? ' <span class="muted">(undone)</span>' : '') + '</span>' +
       (x.undo && canEdit() && g.items.length > 1 ? '<button class="btn btn-q" data-a="rev-undo" data-v="' + x.row + '" aria-label="Undo this change"' + tt('Undo only this change') + '>' + ic('undo') + '</button>' : '') + '</li>';
   }).join('');
-  if (gone) return '<div class="revitem undone"><div class="rev-h"><span class="mono muted">' + esc(niceShort(g.ts)) + ' ' + esc(String(g.ts).slice(11, 16)) + '</span><b>' + esc(who) + '</b><span class="muted">#' + g.mid + ' ' + esc(short(g.title, 80)) + '</span><span style="margin-left:auto"></span><span class="tag t-closed">Undone by you</span></div><ul class="rev-l">' + lines + '</ul></div>';
-  return '<div class="revitem"><div class="rev-h"><span class="mono muted">' + esc(niceShort(g.ts)) + ' ' + esc(String(g.ts).slice(11, 16)) + '</span><b>' + esc(who) + '</b>' +
-    (m ? '<button class="rev-t" data-a="open" data-v="' + m.id + '">#' + m.id + ' ' + esc(short(m.title, 90)) + '</button>' : '<span class="muted">#' + g.mid + (g.title ? ' ' + esc(short(g.title, 80)) : '') + ' (deleted)</span>') +
-    '<span style="margin-left:auto"></span>' + (can.length && canEdit() ? '<button class="btn btn-s" data-a="rev-undo-g" data-v="' + esc(g.key) + '">' + ic('undo') + (g.items.length > 1 ? 'Undo all' : 'Undo') + '</button>' : '') +
-    '<button class="btn btn-s" data-a="rev-ok" data-v="' + esc(g.key) + '">' + ic('check') + 'Reviewed</button></div>' +
-    '<ul class="rev-l">' + lines + '</ul>' + (g.source && g.source !== 'Manuscripts_tracker.xlsx' ? '<div class="muted" style="font-size:var(--fs-xs)">' + esc(short(fullNames(g.source), 200)) + '</div>' : '') + '</div>';
+  var head = '<div class="rev-h"><span class="mono muted">' + esc(tsShow(g.ts)) + '</span><b>' + esc(who) + '</b></div>';
+  var src = g.source && g.source !== 'Manuscripts_tracker.xlsx' ? '<div class="muted rev-src">' + esc(short(g.source, 200)) + '</div>' : '';
+  if (gone) return '<div class="rev-s undone">' + head + '<ul class="rev-l">' + lines + '</ul><div class="rev-foot"><span class="tag t-closed">Undone by you</span></div></div>';
+  return '<div class="rev-s">' + head + '<ul class="rev-l">' + lines + '</ul>' + src +
+    '<div class="rev-foot">' + (can.length && canEdit() ? '<button class="btn btn-s" data-a="rev-undo-g" data-v="' + esc(g.key) + '">' + ic('undo') + (g.items.length > 1 ? 'Undo all' : 'Undo') + '</button>' : '') +
+    '<button class="btn btn-s" data-a="rev-ok" data-v="' + esc(g.key) + '">' + ic('check') + 'Reviewed</button></div></div>';
 }
 
 /* ---------- 0.2.3: Nudge (admin). The members who have the ball get it in their bell, on their devices where
@@ -5068,7 +5235,7 @@ function ngCardHtml() {
   var n = S.ngCard; if (!n || !S.boot) return '';
   var m = mById(n.manuscript_id);
   return '<div class="ngcard" role="alertdialog" aria-labelledby="ngc-h" aria-describedby="ngc-b"><span class="ngc-ic">' + ic('bell') + '</span><div style="min-width:0;flex:1">' +
-    '<div id="ngc-h" class="ngc-h">Nudge · ' + esc(niceShort(n.ts)) + ' ' + esc(String(n.ts).slice(11, 16)) + '</div><p id="ngc-b">' + esc(fullNames(n.text)) + '</p>' +
+    '<div id="ngc-h" class="ngc-h">Nudge · ' + esc(tsShow(n.ts)) + '</div><p id="ngc-b">' + esc(fullNames(n.text)) + '</p>' +
     '<div class="btns">' + (m ? '<button class="btn btn-p" data-a="ngc-reply">Reply</button><button class="btn btn-s" data-a="ngc-open">Open the manuscript</button>' : '') + '<button class="btn btn-s" data-a="ngc-later">Later</button></div></div></div>';
 }
 /* after fresh data: the review count, a nudge still waiting, the badge on the app icon */
@@ -5169,31 +5336,82 @@ function tdEditRow(del) {
     '<button class="btn btn-p" data-a="tde-save">Save</button><button class="btn btn-q" data-a="tde-cancel">Cancel</button>' +
     (del ? '<button class="btn btn-red mwt-del" data-a="td-del" data-v="' + esc(e.id) + '">' + ic('trash') + 'Delete</button>' : '') + '</div></div></div>';
 }
-function tdCalCard() {
+function tdCalCard(mw) {
   var T0 = S.boot.today, mk = S.tdMonth || T0.slice(0, 7), y = Number(mk.slice(0, 4)), mo = Number(mk.slice(5, 7)) - 1;
   var first = new Date(y, mo, 1), lead = (first.getDay() + 6) % 7, days = new Date(y, mo + 1, 0).getDate(), weeks = Math.ceil((lead + days) / 7);
-  var byDay = {}, put = function (d, x) { (byDay[d] = byDay[d] || []).push(x); };
+  var byDay = {}, put = function (d, x) { (byDay[d] = byDay[d] || []).push(x); }, dlSeen = {}, k = me().key, open = function (m) { return ['Published', 'Rejected'].indexOf(m.status) < 0; };
+  var putDl = function (m) { var key = m.id + '|' + m.deadline; if (!m.deadline || dlSeen[key]) return; dlSeen[key] = 1; put(m.deadline, { t: 'dl', m: m }); };
   remList().forEach(function (r) { if (r.date && !r.done) put(r.date, { t: 'td', r: r }); });
   S.boot.manuscripts.forEach(function (m) {
-    var k = me().key;
-    if (m.deadline && ['Published', 'Rejected'].indexOf(m.status) < 0 && (m.people.some(function (p) { return p.name === k; }) || m.authors.some(function (a) { return authorKey(a) === k; }))) put(m.deadline, { t: 'dl', m: m });
+    if (open(m) && (m.people.some(function (p) { return p.name === k; }) || m.authors.some(function (a) { return authorKey(a) === k; }))) putDl(m);
   });
-  var cells = '';
+  if (mw) { // 0.3.11 (BACKLOG 118): a line or the ball on a paper is due on the paper's deadline (one bar per paper); a task on its own date
+    mw.lines.forEach(function (x) { putDl(x.d.m); }); mw.move.forEach(function (d) { putDl(d.m); });
+    mw.tks.forEach(function (x) { if (x.x.due) put(x.x.due, { t: 'tk', m: x.m, x: x.x }); });
+  }
+  var rank = { dl: 0, tk: 1, td: 2 }, selDay = mw ? S.mwDay : S.tdDay, cells = '';
   for (var i = 0; i < weeks * 7; i++) {
     var d = new Date(y, mo, 1 - lead + i), ds = tdYmd(d), ev = byDay[ds] || [];
-    ev.sort(function (a, b) { return a.t === b.t ? 0 : a.t === 'dl' ? -1 : 1; });
-    cells += '<div class="cal-c' + (d.getMonth() === mo ? '' : ' out') + (ds === T0 ? ' today' : '') + (S.tdDay === ds ? ' sel' : '') + (ds < T0 ? ' past' : '') + '" data-a="td-day" data-v="' + ds + '" role="gridcell" tabindex="-1" aria-label="' + esc(nice(ds)) + (ev.length ? ', ' + ev.length + ' item' + (ev.length > 1 ? 's' : '') : '') + '">' +
+    ev.sort(function (a, b) { return rank[a.t] - rank[b.t]; });
+    cells += '<div class="cal-c' + (d.getMonth() === mo ? '' : ' out') + (ds === T0 ? ' today' : '') + (selDay === ds ? ' sel' : '') + (ds < T0 ? ' past' : '') + '" data-a="td-day" data-v="' + ds + '" role="gridcell" tabindex="-1" aria-label="' + esc(nice(ds)) + (ev.length ? ', ' + ev.length + ' item' + (ev.length > 1 ? 's' : '') : '') + '"' + (selDay === ds ? ' aria-selected="true"' : '') + '>' +
       '<span class="cal-n">' + d.getDate() + '</span>' +
       ev.slice(0, 3).map(function (x) {
         return x.t === 'dl' ? '<span class="cal-e dl" data-a="open" data-v="' + x.m.id + '" title="Deadline: ' + esc(x.m.title) + '">#' + x.m.id + '</span>' :
+          x.t === 'tk' ? '<span class="cal-e tk" title="' + esc('Task: ' + fullNames(x.x.t)) + '">' + esc(short(fullNames(x.x.t), 26)) + '</span>' :
           '<span class="cal-e' + (x.r.k === 't' ? '' : ' rem') + '" title="' + esc(tdText(x.r)) + '">' + esc(short(tdText(x.r), 26)) + '</span>';
       }).join('') + (ev.length > 3 ? '<span class="cal-more">+' + (ev.length - 3) + ' more</span>' : '') + '</div>';
   }
-  return '<div class="box td-cal"><div class="frow"><h2>' + esc(TD_MONTHS[mo] + ' ' + y) + '</h2><span style="margin-left:auto"></span>' +
-    '<button class="btn btn-q" data-a="td-mon" data-v="-1" aria-label="Previous month">' + ic('back') + '</button><button class="btn btn-s" data-a="td-mon" data-v="0">Today</button>' +
-    '<button class="btn btn-q td-next" data-a="td-mon" data-v="1" aria-label="Next month">' + ic('back') + '</button></div>' +
+  if (mw) return '<div class="box td-cal mw-calbox">' + tdCalHead(y, mo) + '<div class="cal-g" role="grid" aria-label="' + esc(TD_MONTHS[mo] + ' ' + y) + '">' + ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(function (w) { return '<div class="cal-w" role="columnheader">' + w + '</div>'; }).join('') + cells + '</div>' +
+    mwCalDay(mw, byDay) + '<p class="cal-keys"><span><i class="k-td"></i>To-do</span><span><i class="k-rem"></i>Reminder</span><span><i class="k-tk"></i>Task</span><span><i class="k-dl"></i>Deadline</span><span class="muted">Choose a day to see its to-dos.</span></p></div>';
+  return '<div class="box td-cal">' + tdCalHead(y, mo) +
     '<div class="cal-g" role="grid" aria-label="' + esc(TD_MONTHS[mo] + ' ' + y) + '">' + ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(function (w) { return '<div class="cal-w" role="columnheader">' + w + '</div>'; }).join('') + cells + '</div>' +
     '<p class="cal-keys"><span><i class="k-td"></i>To-do</span><span><i class="k-rem"></i>Reminder</span><span><i class="k-dl"></i>Deadline of a manuscript you are on</span><span class="muted">Click a day to see it in the list.</span></p></div>';
+}
+/* 0.3.12 (BACKLOG 127, idea 8): the week at a glance over To do: today and the six days after it, a dot for each thing due
+   (the same as the calendar: the papers' deadlines, tasks, own to-dos; what is overdue on today's pill), a tap opens the
+   calendar on that day */
+function mwDue(mw) {
+  var o = {}, k = me().key, seen = {}, add = function (d, w) { if (d) (o[d] = o[d] || []).push(w); };
+  var dl = function (m) { var key = m.id + '|' + m.deadline; if (m.deadline && !seen[key] && ['Published', 'Rejected'].indexOf(m.status) < 0) { seen[key] = 1; add(m.deadline, 'dl'); } };
+  S.boot.manuscripts.forEach(function (m) { if (m.people.some(function (p) { return p.name === k; }) || m.authors.some(function (a) { return authorKey(a) === k; })) dl(m); });
+  mw.lines.forEach(function (x) { dl(x.d.m); }); mw.move.forEach(function (d) { dl(d.m); });
+  mw.tks.forEach(function (x) { add(x.x.due, 'tk'); });
+  remList().forEach(function (r) { if (!r.done) add(r.date, 'td'); });
+  return o;
+}
+function weekStrip(mw) {
+  var T0 = S.boot.today, o = mwDue(mw), late = Object.keys(o).filter(function (d) { return d < T0; }).reduce(function (n, d) { return n + o[d].length; }, 0), out = '';
+  for (var i = 0; i < 7; i++) {
+    var ds = addDays(T0, i), L = o[ds] || [], wd = new Date(dnum(ds) * 86400000).toLocaleDateString('en-GB', { weekday: 'short', timeZone: 'UTC' });
+    out += '<button class="wk-d' + (i ? '' : ' today') + (L.length ? ' has' : '') + '" data-a="wk-day" data-v="' + ds + '" aria-label="' + esc(longDay(ds) + ': ' + (L.length ? L.length + ' due' : 'nothing due') + (i === 0 && late ? ', ' + late + ' overdue' : '')) + '">' +
+      '<span class="wk-w">' + (i ? esc(wd) : 'Today') + '</span><span class="wk-n">' + (+ds.slice(8)) + '</span><span class="wk-dots" aria-hidden="true">' +
+      L.slice(0, 4).map(function (w) { return '<i class="' + w + '"></i>'; }).join('') + (i === 0 && late ? '<i class="late"></i>' : '') + '</span></button>';
+  }
+  return '<div class="wk-strip" role="group" aria-label="The next seven days">' + out + '</div>';
+}
+function tdCalHead(y, mo) {
+  return '<div class="frow"><h2>' + esc(TD_MONTHS[mo] + ' ' + y) + '</h2><span style="margin-left:auto"></span>' +
+    '<button class="btn btn-q" data-a="td-mon" data-v="-1" aria-label="Previous month">' + ic('back') + '</button><button class="btn btn-s" data-a="td-mon" data-v="0">Today</button>' +
+    '<button class="btn btn-q td-next" data-a="td-mon" data-v="1" aria-label="Next month">' + ic('back') + '</button></div>';
+}
+/* 0.3.11 (BACKLOG 118): under My work's calendar, the chosen day's to-dos as the same lines as in List (the calendar stays);
+   a paper whose deadline falls that day with nothing of mine on it shows as its deadline; what has no date is counted */
+function mwCalDay(mw, byDay) {
+  var ds = S.mwDay, nod = mw.lines.filter(function (x) { return !x.d.m.deadline; }).length + mw.move.filter(function (d) { return !d.m.deadline; }).length +
+    mw.tks.filter(function (x) { return !x.x.due; }).length + remList().filter(function (r) { return !r.done && !r.date; }).length;
+  var nodBtn = nod ? '<button class="linkbtn mwc-nod" data-a="td-mode" data-v="list">No date · ' + nod + '</button>' : '';
+  if (!ds) return nodBtn ? '<div class="mwc-foot">' + nodBtn + '</div>' : '';
+  var ids = {}, rows = mw.lines.filter(function (x) { return x.d.m.deadline === ds; }).map(function (x) { ids[x.d.m.id] = 1; return nxRow(x.d.m, x.x, false, true); }).join('') +
+    mw.move.filter(function (d) { return d.m.deadline === ds; }).map(function (d) { ids[d.m.id] = 1; return tdBallRow({ ball: true, id: 'b' + d.m.id, mid: d.m.id, d: d, note: firstStep(d.m.next) || 'Decide the next step', date: d.m.deadline }, false, true); }).join('') +
+    mw.tks.filter(function (x) { return x.x.due === ds; }).map(function (x) { return tkRow(x.m, x.x, canEdit(), true); }).join('') +
+    (byDay[ds] || []).filter(function (x) { return x.t === 'dl' && !ids[x.m.id]; }).map(function (x) {
+      return '<div class="nx-r mwl mwc-dl"><span class="nx-wait" aria-hidden="true">' + ic('cal') + '</span><span class="nx-t"><span class="nx-tx">Deadline</span><span class="nx-m"><button class="td-m" data-a="open" data-v="' + x.m.id + '" title="' + esc(x.m.title) + '">#' + x.m.id + ' ' + esc(short(x.m.title, 46)) + '</button></span></span></div>'; }).join('');
+  var own = remList().filter(function (r) { return !r.done && r.date === ds; }).sort(tdSort).map(mwtRow).join(''); // as in List: the group's lines, then the own ones in the same card
+  var n = ((rows + own).match(/class="(nx-r|td-row|rv-p)\b/g) || []).length;
+  rows = (rows ? '<div class="box td-list mw-list mw-shared' + (own ? ' joined' : '') + '">' + rows + '</div>' : '') + (own ? '<div class="mw-own' + (rows ? ' joined' : '') + '"><div class="box mwt">' + own + '</div></div>' : '');
+  return '<div class="mwc-day" role="region" aria-label="' + esc(longDay(ds)) + '"><div class="mwc-dh"><b>' + esc(longDay(ds).replace(/ \d{4}$/, '')) + '</b><span class="muted">' + (n ? n + ' to do' : 'nothing') + '</span>' +
+    '<button class="btn btn-q mwc-x" data-a="td-day" data-v="' + ds + '" aria-label="Close this day"' + tt('Close this day') + '>' + ic('x') + '</button></div>' +
+    (rows ? '<div class="mwc-rows">' + rows + '</div>' : '') + (nodBtn ? '<div class="mwc-foot">' + nodBtn + '</div>' : '') + '</div>';
 }
 function tdxEditor(m) {
   var x = S.tdx; if (!x || x.mid !== m.id || !todoOn()) return '';
@@ -5221,7 +5439,7 @@ function rpOpen(n, pre) {
 function rpFrom(r) { return r.from ? pName(r.from) : 'the admin'; }
 function rpDialog() {
   var r = S.rp, d = allDerived().filter(function (x) { return x.m.id === r.mid; })[0], nudge = r.kind === 'nudge', wr = bw('rp', r.busy, false, 'Send reply', 'Sent');
-  var when = niceShort(r.ts) + ' ' + String(r.ts).slice(11, 16);
+  var when = tsShow(r.ts);
   return '<div class="overlay" data-a="rp-bg"><form class="dialog rp" role="dialog" aria-modal="true" aria-labelledby="rp-h" id="rp-form" novalidate>' +
     '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h2 id="rp-h">Reply</h2><button type="button" class="ibtn" data-a="rp-close" aria-label="Close">' + ic('x') + '</button></div>' +
     '<div class="rp-q' + (nudge ? '' : ' dl') + '"><span class="k">' + ic(nudge ? 'bell' : 'cal') + (nudge ? 'Nudge' : 'Deadline alert') + ' <span class="t">· ' + (nudge && r.from ? 'from ' + esc(rpFrom(r)) + ' · ' : '') + esc(when) + '</span></span><blockquote>' + esc(r.ntext) + '</blockquote></div>' +
@@ -5271,9 +5489,15 @@ function trackOf(m) { // after publication the DOI replaces the journal's page
   return liveLinks(m.links).filter(function (l) { return l.kind === 'track'; })[0] || null;
 }
 function plinksOf(mid) { var o = (S.boot && S.boot.plinks) || {}; return o[String(mid)] || []; }
+/* 0.3.11 (BACKLOG 120, admin: "chỉ hiện biểu tượng link cần thiết nhất, không hiện cả loại tên link trên top bar làm gì"):
+   each kind of link has its icon (the journal's page, a step's portal, the DOI, any other link, a personal one); the top
+   bar of a paper shows only the most needed link (as rowLink: the DOI, else the link of the first next action, else the
+   journal's page) as an icon, its name in the tooltip and for screen readers */
+function lkIcon(l) { return l.doi ? 'lkdoi' : l.me ? 'lock' : l.step || l.kind === 'step' ? 'lkstep' : l.kind === 'track' ? 'lktrk' : 'lkfold'; }
+function lkName(t) { return t.doi ? 'Open the DOI ' + t.label.replace(/^DOI /, '') : t.step ? 'Open the link of the next step: ' + t.label : 'Track at the journal: ' + t.label; }
 function trackBtn(m) {
-  var t = trackOf(m); if (!t) return '';
-  return '<a class="trk" href="' + esc(t.url) + '" target="_blank" rel="noopener" title="' + esc(t.label + ' · ' + t.url) + '" aria-label="' + esc((t.doi ? 'Open the DOI' : 'Track at the journal: ' + t.label)) + '">' + (t.doi ? 'DOI' : 'Track') + ic('arrow') + '</a>';
+  var t = rowLink(m); if (!t) return '';
+  return '<a class="ibtn tlk' + (t.doi ? ' doi' : t.step ? ' step' : '') + '" href="' + esc(t.url) + '" target="_blank" rel="noopener"' + tt(lkName(t)) + ' aria-label="' + esc(lkName(t)) + '">' + ic(lkIcon(t)) + '</a>';
 }
 /* 0.3.3 (BACKLOG 49, admin: "tracking là xuyên suốt, ko cấp như những link khác nên khi các link khác như revision ...thì hiện
    ra thay tracking, còn khi đã có DOI thì tracking làm chi nữa, hiện DOI thôi"): one button on a row, a block and a to-do
@@ -5286,7 +5510,7 @@ function rowLink(m) {
   return st ? { url: st.url, label: st.label, step: true } : t;
 }
 function trackChip(m) { // inside a row or block (a button): a span that opens the link, without opening the card
-  var t = rowLink(m); return t ? '<span class="trk-chip' + (t.step ? ' step' : '') + '" data-a="track" data-v="' + m.id + '" title="' + esc(t.step ? t.label + ' · ' + t.url : t.label) + '">' + (t.step ? ic('link') + esc(short(t.label, 22)) : t.doi ? 'DOI' : 'Track') + ic('arrow') + '</span>' : '';
+  var t = rowLink(m); return t ? '<span class="trk-chip ico' + (t.step ? ' step' : t.doi ? ' doi' : '') + '" data-a="track" data-v="' + m.id + '" role="link" aria-label="' + esc(lkName(t)) + '" title="' + esc(lkName(t)) + '">' + ic(lkIcon(t)) + '</span>' : ''; // 0.3.11 (BACKLOG 120): the icon alone
 }
 function stepChips(d) {
   var L = liveLinks(d.links).filter(function (l) { return l.kind !== 'track'; }), lines = fullNames(String(d.next || '')).split('\n'), out = '', n = 0;
@@ -5295,13 +5519,13 @@ function stepChips(d) {
     var t = line.trim(); if (!t) return; n++;
     var mine = L.filter(function (l) { return linkNamed(l.label, t); }); if (!mine.length) return;
     var num = (t.match(/^(\d+)[.)]/) || [])[1] || String(n);
-    out += '<div class="st-row"><span class="st-n">' + esc(num) + '</span>' + mine.map(function (l) { return '<a class="st-chip" href="' + esc(l.url) + '" target="_blank" rel="noopener" title="' + esc(l.url) + '">' + ic('link') + esc(l.label) + '</a>'; }).join('') +
+    out += '<div class="st-row"><span class="st-n">' + esc(num) + '</span>' + mine.map(function (l) { return '<a class="st-chip" href="' + esc(l.url) + '" target="_blank" rel="noopener" title="' + esc(l.url) + '">' + ic('lkstep') + esc(l.label) + '</a>'; }).join('') +
       '<span class="st-tx">' + esc(t.replace(/^\d+[.)]\s*/, '')) + '</span></div>';
   });
   return out ? '<div class="st-rows" aria-label="Links of the next actions">' + out + '</div>' : '';
 }
 function lkChip(l, del, cls) {
-  return '<span class="lk' + (cls ? ' ' + cls : '') + '"><a href="' + esc(l.url) + '" target="_blank" rel="noopener" title="' + esc(l.url) + '">' + ic(cls === 'me' ? 'lock' : l.kind === 'track' ? 'arrow' : 'link') + esc(l.label) + '</a>' + (del || '') + '</span>';
+  return '<span class="lk' + (cls ? ' ' + cls : '') + '"><a href="' + esc(l.url) + '" target="_blank" rel="noopener" title="' + esc(l.url) + '">' + ic(cls === 'me' ? 'lock' : lkIcon(l)) + esc(l.label) + '</a>' + (del || '') + '</span>';
 }
 
 /* ---------- 0.3.0 (BACKLOG 14): the to-do for everyone, with "Ball with me" lines. They come by themselves (one per
@@ -5328,7 +5552,7 @@ function tdSort(a, b) {
 function tdBallRow(r, upd, mw) {
   var T0 = S.boot.today, late = r.date && r.date < T0, d = r.d, ask = S.tdb && S.tdb.mid === r.mid;
   return '<div class="td-row ball' + (ask ? ' asking' : '') + (upd ? ' mw-row' : '') + (mw ? ' mwl' : '') + '">' + (upd ? (canEdit() ? mwDone(r.mid, r.note) : '') : '<button class="td-chk round" data-a="tdb-ask" data-v="' + r.mid + '" role="checkbox" aria-checked="false" aria-label="Mark this step done: ' + esc(short(r.note, 60)) + '">' + ic('check') + '</button>') + // 0.3.6: My work's List as its Blocks
-    '<div class="td-main">' + (upd || mw ? '' : '<span class="td-src">' + ic('ball') + 'Ball with me</span>') + '<span class="td-t">' + esc(fullNames(r.note)) + '</span>' +
+    '<div class="td-main">' + (upd || mw ? '' : '<span class="td-src">' + ic('ball') + 'Ball with me</span>') + '<span class="td-t">' + shortLinks(esc(fullNames(r.note))) + '</span>' +
     '<span class="td-meta">' + (r.date ? '<span class="td-d' + (late ? ' late' : r.date === T0 ? ' now' : '') + '">' + esc(niceShort(r.date)) + '</span>' : '') + tagHtml(d) +
     '<button class="td-m" data-a="open" data-v="' + r.mid + '">#' + r.mid + ' ' + esc(short(d.m.title, 46)) + '</button>' + trackChip(d.m) + '</span></div>' +
     (upd && canEdit() ? mwQu(r.mid) : '') + '</div>' +
@@ -5451,7 +5675,7 @@ function mwtRow(r) {
   if (S.tde && S.tde.id === r.id) return tdEditRow(true);
   var m = mById(r.mid), T0 = S.boot.today, late = !r.done && r.date && r.date < T0;
   return '<div class="td-row mwt-row' + (r.done ? ' done' : '') + (S.sw === r.id ? ' sw-open' : '') + '" data-sw="' + esc(r.id) + '"><span class="sw-front"><button class="td-chk round" data-a="td-done" data-v="' + esc(r.id) + '" role="checkbox" aria-checked="' + !!r.done + '" aria-label="' + (r.done ? 'Mark as not done' : 'Mark as done') + ': ' + esc(short(tdText(r), 60)) + '">' + ic('check') + '</button>' +
-    '<span class="mwt-t"><button class="td-t mwt-e" data-a="td-edit" data-v="' + esc(r.id) + '" aria-label="Edit: ' + esc(short(tdText(r), 60)) + '">' + esc(tdText(r)) + '</button>' + (m ? '<button class="td-m" data-a="open" data-v="' + m.id + '" title="' + esc(m.title) + '">#' + m.id + '</button>' : '') +
+    '<span class="mwt-t"><button class="td-t mwt-e" data-a="td-edit" data-v="' + esc(r.id) + '" aria-label="Edit: ' + esc(short(tdText(r), 60)) + '">' + shortLinks(esc(tdText(r)), true) + '</button>' + (m ? '<button class="td-m" data-a="open" data-v="' + m.id + '" title="' + esc(m.title) + '">#' + m.id + '</button>' : '') +
     (r.k !== 't' ? '<span class="td-tag">Reminder</span>' : '') + (r.cal ? '<span class="td-tag">' + ic('cal') + '</span>' : '') + '</span>' + mwtDate(r, late, T0) + '</span>' + // 0.3.8 (BACKLOG 101): the line's front, sliding over its tools
     // 0.3.6 (BACKLOG 70): on a phone these are the tray a swipe to the left shows (Edit, Calendar, Delete), each with its word
     '<span class="td-acts" style="--sw-n:' + (r.date && !r.done ? 3 : 2) + '">' + '<button class="btn btn-q sw-ed" data-a="td-edit" data-v="' + esc(r.id) + '" aria-label="Edit"' + tt('Edit') + '>' + ic('pencil') + '<span class="sw-l">Edit</span></button>' +
@@ -5489,15 +5713,17 @@ function viewMine() {
   var shared = lines.map(function (y) { return nxRow(y.d.m, y.x, false, true); }).join('') +
     move2.map(function (d) { return tdBallRow({ ball: true, id: 'b' + d.m.id, mid: d.m.id, d: d, note: firstStep(d.m.next) || 'Decide the next step', date: d.m.deadline || '' }, false, true); }).join('') +
     tks.map(function (y) { return tkRow(y.m, y.x, canEdit(), true); }).join('');
-  var own = '', ownTg = '';
+  var own = '', ownTg = '', cal = false;
   if (todoOn()) { // 0.3.9 (BACKLOG 110): the own lines follow in the same card; List or Calendar sits in To do's heading
-    var mode = S.tdMode === 'cal' ? 'cal' : 'list', openTd = remList().filter(function (r) { return !r.done; }).length;
-    ownTg = '<span class="mw-own-tg"><span class="lbl"' + tt('Your own to-do: only you see it') + '>' + ic('lock') + 'Your own' + (openTd ? ' · ' + openTd : '') + '</span>' +
-      '<span class="seg seg-s mw-seg" role="group" aria-label="Your own to-do: list or calendar">' + [['list', 'List', 'list'], ['cal', 'Calendar', 'cal2']].map(function (o) { return '<button data-a="td-mode" data-v="' + o[0] + '" aria-pressed="' + (mode === o[0]) + '">' + ic(o[2]) + '<span class="lab">' + o[1] + '</span></button>'; }).join('') + '</span></span>';
-    own = '<div class="mw-own' + (shared ? ' joined' : '') + '" id="mw-todo"><div class="td-grid m-' + mode + ' mw-td">' + (mode === 'cal' ? tdCalCard() : S.tdWide ? tdListCard(true) : mwTodo()) + '</div></div>';
+    // 0.3.11 (BACKLOG 118, admin: "khi chuyển từ list sang calender noa vẫn hiện list"; chose A): the switch is To do's own,
+    // so Calendar replaces the whole To do: the lines, the ball and the tasks go on the calendar with the own to-do
+    var mode = S.tdMode === 'cal' ? 'cal' : 'list'; cal = mode === 'cal';
+    ownTg = '<span class="mw-own-tg"><span class="seg seg-s mw-seg" role="group" aria-label="To do: list or calendar">' + [['list', 'List', 'list'], ['cal', 'Calendar', 'cal2']].map(function (o) { return '<button data-a="td-mode" data-v="' + o[0] + '" aria-pressed="' + (mode === o[0]) + '">' + ic(o[2]) + '<span class="lab">' + o[1] + '</span></button>'; }).join('') + '</span></span>';
+    own = cal ? '<div class="mw-cal" id="mw-todo">' + tdCalCard({ lines: lines, move: move2, tks: tks }) + '</div>' :
+      '<div class="mw-own' + (shared ? ' joined' : '') + '" id="mw-todo"><div class="td-grid m-list mw-td">' + mwTodo() + '</div></div>';
   }
   var left = mwSec('mw-do', 'To do', 'yours on the group\'s papers, then your own', lines.length + move2.length + tks.length,
-    (shared ? '<div class="box td-list mw-list mw-shared' + (own ? ' joined' : '') + '">' + shared + '</div>' : '<div class="list"><div class="empty">Nothing on the group\'s papers waits on you.' + (canEdit() ? ' Starting a paper? <button class="linkbtn" data-a="nf-open">New manuscript</button>' : '') + '</div></div>') + own, ownTg);
+    (todoOn() && !cal ? weekStrip({ lines: lines, move: move2, tks: tks }) : '') + (cal ? own : (shared ? '<div class="box td-list mw-list mw-shared' + (own ? ' joined' : '') + '">' + shared + '</div>' : '<div class="list"><div class="empty">Nothing on the group\'s papers waits on you.' + (canEdit() ? ' Starting a paper? <button class="linkbtn" data-a="nf-open">New manuscript</button>' : '') + '</div></div>') + own), ownTg);
   if (pts.length) left += mwSec('mw-pts', 'Reviewers\' points', 'yours to answer, tick when done', pts.length, '<div class="box rv-mine">' + pts.map(function (x) { return rvPoint(x.m, x, canEdit(), true); }).join('') + '</div>');
   /* 0.3.9 (BACKLOG 110, admin chose A, and B on a wide screen; on the folded box of the pictures: "biểu diễn ra cấu quá, với
      cái màu nó cũng xấu nữa"): Register the protocol is a plain folded section (as "the ball is elsewhere"), its count and
@@ -5670,7 +5896,7 @@ function viewDesk() {
     '<div class="ogrid"><div class="box"><h2>Quick updates waiting (' + D.inbox.length + ')</h2><p class="muted" style="margin:0;font-size:var(--fs-sm)">' +
     (D.quick && D.quick.mode === 'instant' ? 'Instant AI updates are on: the helper applies new quick updates within about a minute; what it cannot settle waits here.' : 'Instant AI updates are off (no helper in the Meta tab): every quick update waits here for this check.') + '</p>' + (D.inbox.map(function (x) { return item(x, true); }).join('') || '<p class="muted" style="margin:0">None.</p>') + '</div>' +
     '<div class="box"><h2>Feedback waiting (' + D.feedback.length + ')</h2>' + (D.feedback.map(function (x) { return item(x, false); }).join('') || '<p class="muted" style="margin:0">None.</p>') + '</div></div>' +
-    deskAi(D) + deskCel() + deskSaves(D) + deskDeletions(D) + deskNames(D) + deskAuthors(D) +
+    deskHouse(D) + deskAi(D) + deskCel() + deskSaves(D) + deskDeletions(D) + deskNames(D) + deskAuthors(D) +
     '<div class="box" style="margin-top:12px"><h2>Excel workbook import</h2><p class="muted" style="margin:0;font-size:var(--fs-sm)">One-time import of what the first migration left out of Manuscripts_tracker.xlsx: the IF and first-author columns, the full original row of every manuscript (read-only, under each manuscript), and the Authors tab in the Sheet (reference only, never shown in the app). Safe to run again: it never overwrites a value entered in the app.</p>' +
     '<div class="btns"><button class="btn btn-s" data-a="seed-xl"' + (S.seedBusy ? ' disabled' : '') + '>' + ic('sheet') + (S.seedBusy ? 'Importing…' : 'Run the Excel import') + '</button></div>' +
     (S.seedReport ? '<pre class="desk-pre">' + esc(JSON.stringify(S.seedReport, null, 2)) + '</pre>' : '') + '</div>' +
@@ -5900,7 +6126,7 @@ function panel() {
     '<div style="display:flex;flex-direction:column;gap:4px"><label class="lbl" for="f-sub">Submission date</label><input id="f-sub" class="in" type="date" data-i="d" data-v="submission_date" value="' + esc(d.submission_date) + '"' + ro + '></div>' +
     (ce ? '<div style="grid-column:1/-1;display:flex;align-items:center;gap:8px"><button type="button" class="btn btn-s" data-a="lk-open">' + ic('link') + 'Add a link</button>' + tip('links', true) + '</div>' : '') + '</div>';
   var P = {
-    top: '<div class="p-top"><button class="btn btn-q back" data-a="close" aria-label="Back to ' + esc(backLabel()) + '"' + tt('Back to ' + backLabel(), 'Esc') + '>' + ic('back') + '<span class="bk-l">' + esc(backLabel()) + '</span></button>' + tagHtml(dd) + '<span class="mono muted" style="font-size:var(--fs-xs)">#' + m.id + '</span>' + cardSaving(m.id) +
+    top: '<div class="p-top"><button class="btn btn-q back" data-a="close" aria-label="Back to ' + esc(backLabel()) + '"' + tt('Back to ' + backLabel(), 'Esc') + '>' + ic('back') + '<span class="bk-l">' + esc(backLabel()) + '</span></button>' + tagTop(dd) + '<span class="mono muted" style="font-size:var(--fs-xs)">#' + m.id + '</span>' + cardSaving(m.id) +
     '<span style="margin-left:auto"></span>' + pgNav(m) + trackBtn(m) + '<button class="ibtn" data-a="pin" data-v="' + m.id + '" aria-pressed="' + (pins().indexOf(m.id) >= 0) + '" aria-label="' + (pins().indexOf(m.id) >= 0 ? 'Unpin from the sidebar' : 'Pin to the sidebar') + '"' + tt(pins().indexOf(m.id) >= 0 ? 'Unpin from the sidebar' : 'Pin to the sidebar') + '>' + ic('pin') + '</button><button class="ibtn close" data-a="close" aria-label="Close details">' + ic('x') + '</button></div>',
     head: (S.confirmClose ? '<div class="warn" style="margin-top:12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center">' + (S.offline ? 'You are offline. Keep your changes on this device and save them later?' : 'You have unsaved changes.') + '<span style="margin-left:auto"></span>' +
       (S.offline ? '<button class="btn btn-p" data-a="close-keep">Keep for later</button><button class="btn btn-s" data-a="discard">Discard</button>' : '<button class="btn btn-s" data-a="discard">Discard</button><button class="btn btn-p" data-a="save">Save</button>') + '</div>' : '') +
@@ -6036,9 +6262,26 @@ function pageHtml(m, d, dd, ce, P, X) {
   // on a page 1320px wide or more, three columns: where it stands | the work and the notes | the record; below that the two
   // columns (where it stands above the work on the left) and on a phone one column, as before
   var g3 = pg3On(), hd = function (t) { return g3 ? '<h2 class="pg-c-h">' + t + '</h2>' : ''; };
-  return '<div class="pg-grid' + (g3 ? ' g3' : '') + '"><div class="pg-col pg-s">' + hd('Where it stands') + sum + regLine(m, ce) + tell + bTk + '</div>' +
-    '<div class="pg-col pg-l">' + hd('The work and notes') + bRv + bCk + bDec + (g3 ? bNo : '') + '</div>' +
-    '<div class="pg-col pg-r">' + hd('The record') + bDoc + (g3 ? '' : bNo) + bAu + bLk + bHi + '</div></div>';
+  // 0.3.12 (BACKLOG 127, idea 3): what this step needs comes first: a revision puts the reviewers' points and the manuscript
+  // first; a paper being written or ready to submit, Before submitting and the authors; at the journal, the links (the
+  // journal's page) and the notes; once accepted, the files (proofs). On a phone the same order (pg-ph-* in the styles).
+  var ph = pgPhase(m), lc, rc;
+  if (ph === 'rev') { lc = bRv + bCk + bDec + (g3 ? bNo : ''); rc = bDoc + (g3 ? '' : bNo) + bLk + bAu + bHi; }
+  else if (ph === 'ready') { lc = bCk + bRv + bDec + (g3 ? bNo : ''); rc = bAu + bDoc + (g3 ? '' : bNo) + bLk + bHi; }
+  else if (ph === 'jour') { lc = (g3 ? bNo : '') + bRv + bCk + bDec; rc = bLk + (g3 ? '' : bNo) + bDoc + bAu + bHi; }
+  else if (ph === 'acc') { lc = (g3 ? bNo : '') + bCk + bRv + bDec; rc = bDoc + (g3 ? '' : bNo) + bLk + bAu + bHi; }
+  else { lc = bRv + bCk + bDec + (g3 ? bNo : ''); rc = bDoc + (g3 ? '' : bNo) + bAu + bLk + bHi; }
+  return '<div class="pg-grid pg-ph-' + ph + (g3 ? ' g3' : '') + '"><div class="pg-col pg-s">' + hd('Where it stands') + sum + regLine(m, ce) + tell + bTk + '</div>' +
+    '<div class="pg-col pg-l">' + hd('The work and notes') + lc + '</div>' +
+    '<div class="pg-col pg-r">' + hd('The record') + rc + '</div></div>';
+}
+/** 0.3.12 (BACKLOG 127, idea 3): the paper's step, for the order of its page. */
+function pgPhase(m) {
+  if (m.status === 'Accepted') return 'acc';
+  if (m.status === 'Published' || m.status === 'Rejected') return 'closed';
+  if (OUR_STAGES.indexOf(m.stage) >= 0 && m.stage !== 'Authors confirming' && m.stage !== 'Returned to authors') return 'rev';
+  if (m.status === 'Submitted' || m.status === 'Under Review') return 'jour';
+  return 'ready';
 }
 /* (92) Notes: written by members, the AI and the import; History only lists what changed. A note can become my to-do or a task. */
 function notesList(m) { return (S.hist[m.id] || []).filter(function (h) { return h.field === 'note' && !DEC_RX.test(h.new) && !/deleted by its author/.test(h.new); }); }
@@ -6054,8 +6297,8 @@ function notesBody(m, notes) {
       (own && !edit ? '<button type="button" class="pg-i" data-a="note-edit" data-v="' + h.row + '" aria-label="Edit my note"' + tt('Edit my note') + '>' + ic('pencil') + '</button>' +
         (S.ndel === h.row ? '<button type="button" class="btn btn-red pg-del" data-a="note-del" data-v="' + h.row + '">Delete?</button>' : '<button type="button" class="pg-i del" data-a="note-ask" data-v="' + h.row + '" aria-label="Delete my note"' + tt('Delete my note') + '>' + ic('trash') + '</button>') : '');
     var body = edit ? '<span class="nedit"><label class="sr" for="ned-text">Edit the note</label><input id="ned-text" class="in" data-i="ned" value="' + esc(S.ned.text) + '"><button class="btn btn-p" data-a="note-save">Save</button><button class="btn btn-q" data-a="note-cancel">Cancel</button></span>' :
-      '<span class="pr-t' + (S.keep['pnx' + h.row] ? '' : ' pr-clamp') + '" data-a="pn-x" data-v="' + h.row + '">' + esc(cap1(fullNames(noteText(h)))) + '</span><span class="pr-m">' + esc(who) + '</span>';
-    return '<div class="pr' + (acts ? ' sw-row' : '') + '"><span class="sw-front"><span class="pr-d pg-num">' + esc(niceShort(h.ts)) + '</span><span class="pr-c">' + body + '</span></span><span class="pg-acts">' + acts + '</span></div>';
+      '<span class="pr-t' + (S.keep['pnx' + h.row] ? '' : ' pr-clamp') + '" data-a="pn-x" data-v="' + h.row + '">' + shortLinks(esc(cap1(fullNames(noteText(h))))) + '</span><span class="pr-m">' + esc(who) + '</span>';
+    return '<div class="pr' + (acts ? ' sw-row' : '') + '"><span class="sw-front"><span class="pr-d pg-num">' + esc(niceShort(tsLoc(h.ts))) + '</span><span class="pr-c">' + body + '</span></span><span class="pg-acts">' + acts + '</span></div>';
   }).join('');
   var tdx = S.tdx && S.tdx.src === 'note' && S.tdx.mid === m.id ? tdxEditor(m) : '';
   return (rows || '<p class="muted rv-none">No notes yet.</p>') + tdx + (notes.length > 1 ? pgFold('notes', m, (notes.length - 1) + ' earlier note' + (notes.length > 2 ? 's' : ''), 'Show all ' + notes.length) : '') +
@@ -6073,7 +6316,7 @@ function decPage(m, L, ce) {
   if (!S.hist[m.id]) return '<div class="skel" style="width:60%"></div>';
   var rows = L.map(function (x) {
     var q = /quick update from ([^)]+)\)/.exec(x.new), who = x.actor === 'AI routine' ? 'AI' + (q ? ', from ' + (isMe(q[1]) ? 'your' : whoShort(q[1]) + '\'s') + ' quick update' : '') : isMe(x.actor) ? 'You' : whoLabel(x.actor), P = decParse(x.new);
-    return '<div class="pr"><span class="pr-d pg-num">' + esc(niceShort(x.ts)) + '</span><span class="pr-c"><span class="pr-t">' + esc(fullNames(P.what)) + '</span><span class="pr-m">' + (P.kind ? '<span class="pg-tag">' + esc(P.kind) + '</span> ' : '') + (P.why ? 'Why: ' + esc(fullNames(P.why)) + ' · ' : '') + esc(who) + '</span></span></div>';
+    return '<div class="pr"><span class="pr-d pg-num">' + esc(niceShort(tsLoc(x.ts))) + '</span><span class="pr-c"><span class="pr-t">' + esc(fullNames(P.what)) + '</span><span class="pr-m">' + (P.kind ? '<span class="pg-tag">' + esc(P.kind) + '</span> ' : '') + (P.why ? 'Why: ' + esc(fullNames(P.why)) + ' · ' : '') + esc(who) + '</span></span></div>';
   }).join('');
   return (rows || '<p class="muted rv-none">Choices the group made and why: a journal, a method, an outcome, the author order. The AI adds them from quick updates too.</p>') +
     (ce ? '<div class="rv-add dec-add2"><label class="sr" for="dec-kind">Kind</label><select id="dec-kind" class="in"><option value="">Kind (optional)</option>' + DEC_KINDS.map(function (k) { return '<option>' + k + '</option>'; }).join('') + '</select>' +
@@ -6102,7 +6345,7 @@ function docsPage(m, ce) {
       (mine(d) ? '<label class="pg-i" aria-label="Replace ' + esc(d.name) + '"' + tt('Replace (sent the wrong file)') + '>' + ic('refresh') + '<input type="file" class="sr" data-doc="rep:' + d.id + '"' + (d.kind === 'ms' ? ' accept=".doc,.docx,.odt,.rtf,.pdf"' : '') + '></label>' +
         (S.docDel === d.id ? '<button type="button" class="btn btn-red pg-del" data-a="doc-del" data-v="' + d.id + '">Delete?</button>' : '<button type="button" class="pg-i del" data-a="doc-del" data-v="' + d.id + '" aria-label="Delete ' + esc(d.name) + '"' + tt('Delete (sent by mistake)') + '>' + ic('trash') + '</button>') : '') + '</span>';
   };
-  var line = function (d) { return esc(whoShort(d.by)) + ' · ' + esc(niceShort(d.ts)) + ' ' + esc(String(d.ts).slice(11, 16)) + ' · ' + fsize(d.size); };
+  var line = function (d) { return esc(whoShort(d.by)) + ' · ' + esc(tsShow(d.ts)) + ' · ' + fsize(d.size); };
   var upRows = up.map(function (x) { return '<div class="pr dk"><i class="th-ring dk" aria-hidden="true"></i><span class="pr-c"><span class="pr-t">' + esc(x.name) + '</span><span class="pr-m">' + (x.err ? '<span class="err">' + esc(x.err) + '</span>' : 'Sending · ' + fsize(x.size)) + '</span></span></div>'; }).join('');
   var vers = D.ms.length > 2 && !S.keep.dochist ? D.ms.slice(0, 2) : D.ms;
   var verRow = function (d, i) {
@@ -6237,7 +6480,7 @@ function rvPoint(m, x, ce, mine) {
   var p = x.p, pick = S.rvw === p.id;
   var who = p.who ? '<span class="rv-av" style=\"--h:' + avHue(p.who) + ';\">' + esc(initials(p.who)) + avImg(photoOf(p.who)) + '</span>' + '<span class="rv-wn">' + esc(short(whoShort(p.who), 24)) + '</span>' : 'Who answers?';
   return '<div class="rv-p' + (p.done ? ' done' : '') + '"><button type="button" class="td-chk round' + (p.done ? ' on' : '') + '" data-a="rv-tick" data-v="' + m.id + ':' + p.id + '" role="checkbox" aria-checked="' + !!p.done + '" aria-label="' + esc((p.done ? 'Addressed: ' : 'Mark addressed: ') + short(p.t, 80)) + '"' + (ce ? '' : ' disabled') + '>' + ic('check') + '</button>' +
-    '<div class="rv-main"><span class="rv-t">' + esc(p.t) + '</span>' + (mine ? '<span class="rv-meta"><button class="td-m" data-a="open" data-v="' + m.id + '">#' + m.id + ' ' + esc(short(m.title, 46)) + '</button> · ' + esc((p.rev || 'Point') + ', round ' + x.r.r) + '</span>' : '') +
+    '<div class="rv-main"><span class="rv-t">' + shortLinks(esc(p.t)) + '</span>' + (mine ? '<span class="rv-meta"><button class="td-m" data-a="open" data-v="' + m.id + '">#' + m.id + ' ' + esc(short(m.title, 46)) + '</button> · ' + esc((p.rev || 'Point') + ', round ' + x.r.r) + '</span>' : '') +
     (mine ? '' : '<span class="rv-line"><button type="button" class="rv-who' + (p.who ? '' : ' none') + '" data-a="rv-who" data-v="' + p.id + '" aria-expanded="' + pick + '"' + (ce ? '' : ' disabled') + ' aria-label="' + esc(p.who ? 'Answered by ' + whoLabel(p.who) + '. Change' : 'Choose who answers it') + '">' + who + '</button>' +
       (p.done ? '<span class="rv-meta">addressed ' + esc(niceShort(p.done)) + (p.by ? ' by ' + esc(p.by === 'AI routine' ? 'the AI' : whoShort(p.by)) : '') + '</span>' : '') + '</span>') + '</div></div>' +
     (pick && ce && !mine ? '<div class="rv-pick" role="group" aria-label="Who answers this point">' + S.boot.people.map(function (q) {
@@ -6394,7 +6637,7 @@ function nextAsTasks(m) {
 function tkRow(m, x, ce, mine) {
   var pick = S.tkw === x.id, late = x.due && !x.done && x.due < S.boot.today;
   return '<div class="rv-p tk-r' + (x.done ? ' done' : '') + '"><button type="button" class="td-chk round' + (x.done ? ' on' : '') + '" data-a="tk-tick" data-v="' + m.id + ':' + x.id + '" role="checkbox" aria-checked="' + !!x.done + '" aria-label="' + esc((x.done ? 'Done: ' : 'Mark done: ') + short(x.t, 80)) + '"' + (ce ? '' : ' disabled') + '>' + ic('check') + '</button>' +
-    '<div class="rv-main"><span class="rv-t">' + esc(fullNames(x.t)) + '</span>' +
+    '<div class="rv-main"><span class="rv-t">' + shortLinks(esc(fullNames(x.t))) + '</span>' +
     (mine ? '<span class="rv-meta"><button class="td-m" data-a="open" data-v="' + m.id + '">#' + m.id + ' ' + esc(short(m.title, 46)) + '</button>' + (x.due ? ' · <span class="' + (late ? 'tk-late' : '') + '">by ' + esc(niceShort(x.due)) + '</span>' : '') + '</span>' :
       '<span class="rv-line"><button type="button" class="rv-who' + (x.who ? '' : ' none') + '" data-a="tk-who" data-v="' + x.id + '" aria-expanded="' + pick + '"' + (ce ? '' : ' disabled') + '>' + (x.who ? '<span class="rv-av" style=\"--h:' + avHue(x.who) + ';\">' + esc(initials(x.who)) + avImg(photoOf(x.who)) + '</span>' + '<span class="rv-wn">' + esc(short(whoShort(x.who), 24)) + '</span>' : 'Who does it?') + '</button>' +
       (x.due ? '<span class="rv-meta' + (late ? ' tk-late' : '') + '">by ' + esc(niceShort(x.due)) + '</span>' : '') + (x.done ? '<span class="rv-meta">done ' + esc(niceShort(x.done)) + (x.dby ? ' by ' + esc(whoShort(x.dby)) : '') + '</span>' : '') + '</span>') + '</div></div>' +
@@ -6427,7 +6670,7 @@ function docsLoad(mid, force) {
   api('api_docs', mid).then(function (r) { S.docs[mid] = r; S.docsBusy = null; render(); }, function (e) { S.docsBusy = null; S.docs[mid] = { err: msg(e), ms: [], files: [], comments: [] }; render(); });
 }
 function fsize(n) { n = Number(n) || 0; return n >= 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(n / 1024)) + ' KB'; }
-function docLine(d, cur) { return esc(whoShort(d.by)) + ' · ' + esc(niceShort(d.ts)) + ' ' + esc(String(d.ts).slice(11, 16)) + ' · ' + fsize(d.size); }
+function docLine(d, cur) { return esc(whoShort(d.by)) + ' · ' + esc(tsShow(d.ts)) + ' · ' + fsize(d.size); }
 function docsSub(m) {
   var D = S.docs && S.docs[m.id]; if (!docsWeb()) return 'in the VIBRA app';
   if (!D) return ''; var c = (D.comments || []).filter(function (x) { return x.status === 'open'; }).length;
@@ -6509,14 +6752,14 @@ function decBody(m, ce) {
   var rows = !L ? '<div class="skel" style="width:60%"></div>' : !L.length ? '<p class="muted dec-none">None yet. Write what the group decided and why (a journal, an author order, how to answer a reviewer); the AI also adds them from quick updates.</p>' :
     '<ol class="dec-list">' + L.map(function (x) {
       var q = /quick update from ([^)]+)\)/.exec(x.new), who = x.actor === 'AI routine' ? 'AI' + (q ? ', from ' + (isMe(q[1]) ? 'your' : whoShort(q[1]) + '\'s') + ' quick update' : '') : isMe(x.actor) ? 'You' : whoLabel(x.actor);
-      return '<li><span class="mono">' + esc(niceShort(x.ts)) + '</span><span class="dec-t">' + esc(fullNames(x.new.replace(DEC_RX, ''))) + '</span><span class="muted">' + esc(who) + '</span></li>';
+      return '<li><span class="mono">' + esc(niceShort(tsLoc(x.ts))) + '</span><span class="dec-t">' + esc(fullNames(x.new.replace(DEC_RX, ''))) + '</span><span class="muted">' + esc(who) + '</span></li>';
     }).join('') + '</ol>';
   return rows + (ce ? '<div class="rv-add"><label class="sr" for="dec-new">Add a decision</label><input id="dec-new" class="in" maxlength="400" placeholder="Add a decision, e.g. Target Pain and Therapy first"><button type="button" class="btn btn-s" data-a="dec-add">Add</button></div>' : '');
 }
 function decSub(m) { var h = S.hist[m.id]; if (!h) return ''; var n = decList(m).length; return n ? n + ' decision' + (n === 1 ? '' : 's') : 'none yet'; }
 /* (6) the greeting in My work */
 function hello() {
-  var h = +new Date(Date.now() + 7 * 3600000).toISOString().slice(11, 13), x = me();
+  var h = new Date().getHours(), x = me(); // 0.3.12 (BACKLOG 127, idea 1): the device's hour
   var name = whoShort(x.key); // the name the group uses, never initials (BACKLOG 59)
   return (h >= 4 && h < 12 ? 'Good morning' : h >= 12 && h < 18 ? 'Good afternoon' : 'Good evening') + ', ' + name + '.';
 }
@@ -6536,7 +6779,7 @@ function linksHtml(m, d, ce) { // 0.3.0: tracking, steps, only you, earlier link
   var form = !f ? '' : '<div class="lk-form" role="group" aria-label="Add a link"><div class="lk-in"><label class="sr" for="lk-label">Name of the link</label><input id="lk-label" class="in" list="lk-names" placeholder="Name, e.g. Invited submission" value="' + esc(f.label) + '" maxlength="40">' +
     '<datalist id="lk-names">' + LINK_NAMES.map(function (n) { return '<option value="' + esc(n) + '">'; }).join('') + '</datalist>' +
     '<label class="sr" for="lk-url">Web address</label><input id="lk-url" class="in" type="url" inputmode="url" placeholder="https://…" value="' + esc(f.url) + '"></div>' +
-    '<div class="seg seg-s lk-kind" role="group" aria-label="Kind of link">' + kinds.map(function (k) { return '<button type="button" data-a="lk-kind" data-v="' + k[0] + '" aria-pressed="' + (f.kind === k[0]) + '">' + (k[0] === 'me' ? ic('lock') : '') + '<span>' + k[1] + '</span></button>'; }).join('') + '</div>' +
+    '<div class="seg seg-s lk-kind" role="group" aria-label="Kind of link">' + kinds.map(function (k) { return '<button type="button" data-a="lk-kind" data-v="' + k[0] + '" aria-pressed="' + (f.kind === k[0]) + '">' + ic(k[0] === 'me' ? 'lock' : k[0] === 'track' ? 'lktrk' : 'lkstep') + '<span>' + k[1] + '</span></button>'; }).join('') + '</div>' +
     '<p class="lk-hint">' + (f.kind === 'track' ? 'The journal\'s page for this manuscript.' : f.kind === 'me' ? 'Only you see it, the admin included. Not saved in the Sheet.' : 'Name it in a next action; it leaves when that step is done.') + '</p>' +
     (f.err ? '<p class="err" role="alert" style="margin:0">' + esc(f.err) + '</p>' : '') +
     '<div class="btns"><button type="button" class="btn btn-p' + bw('lk', f.busy, false, '').c + '" data-a="lk-add"' + bw('lk', f.busy, false, '').a + '>' + bw('lk', f.busy, false, 'Add').h + '</button><button type="button" class="btn btn-q" data-a="lk-cancel">Cancel</button></div></div>';
@@ -6674,10 +6917,10 @@ function histVal(h) {
   else if (h.field === 'restored') val = '<b>Restored</b> it from the trash.';
   else if (h.field === 'people_json' || h.field === 'authors_json') val = '<b>' + lab + '</b>: ' + esc(short(listNames(h.new), 160));
   else if (h.field === 'links_json') { var ln = function (s) { try { return JSON.parse(s).map(function (x) { return x.label; }).join(', '); } catch (e) { return ''; } }; val = '<b>Links</b>: ' + esc(short(ln(h.new) || 'none', 160)); }
-  else if (h.field === 'review_json' || h.field === 'checklist_json') val = '<b>' + lab + '</b>: ' + esc(/^Quick update from/.test(h.source || '') || !h.source ? partDiff(h) : short(fullNames(h.source), 200)); // 0.3.7
+  else if (h.field === 'review_json' || h.field === 'checklist_json' || h.field === 'tasks_json') val = '<b>' + lab + '</b>: ' + esc(/^Quick update from/.test(h.source || '') || !h.source ? partDiff(h) : short(fullNames(h.source), 200)); // 0.3.7
   else if (/^author:/.test(h.field)) val = '<b>Author details</b>: ' + esc(dirName(h.field.slice(7))) + ' <span class="muted">(' + esc(String(h.new || 'no change').replace(/\borcid\b/g, 'ORCID').replace(/\bemail\b/g, 'e-mail')) + ')</span>';
   else val = '<b>' + esc(lab) + '</b>: ' + (h.old ? '<span class="muted">' + esc(short(fullNames(h.old), 80)) + '</span> → ' : '') + esc(short(fullNames(h.new || '(empty)'), 220));
-  return val;
+  return shortLinks(val); // 0.3.12 (BACKLOG 127, idea 2): a long address as a short chip
 }
 /* 0.2.5 (admin: undo was hard to use): the lines of one save (a quick update, the morning check, a member's Save) are
    shown together with one Undo for all of them. An undone change and its undo leave History (they stay in the Sheet). */
@@ -6692,6 +6935,13 @@ function undoToast(r) {
 }
 function partDiff(h) {
   var J = function (s) { try { return JSON.parse(s || 'null'); } catch (e) { return null; } };
+  if (h.field === 'tasks_json') { // 0.3.11 (BACKLOG 124): "tasks_json: [{...": the tasks added, done, removed, by their words
+    var TA = J(h.old) || [], TB = J(h.new) || [], byId = function (L) { var o = {}; L.forEach(function (x) { o[x.id] = x; }); return o; }, IA = byId(TA), IB = byId(TB), w = [];
+    var nm = function (x) { return '“' + short(fullNames(x.t), 70) + '”'; };
+    TB.forEach(function (x) { var a = IA[x.id]; if (!a) w.push('added ' + nm(x)); else if (x.done && !a.done) w.push('done ' + nm(x)); else if (!x.done && a.done) w.push('open again ' + nm(x)); else if (x.t !== a.t || x.who !== a.who || x.due !== a.due) w.push('changed ' + nm(x)); });
+    TA.forEach(function (x) { if (!IB[x.id]) w.push('removed ' + nm(x)); });
+    return w.join('; ') || TB.length + ' task' + (TB.length === 1 ? '' : 's');
+  }
   if (h.field === 'checklist_json') { var a = Object.keys(J(h.old) || {}).length, b = Object.keys(J(h.new) || {}).length; return b + ' item' + (b === 1 ? '' : 's') + ' ready' + (b !== a ? ' (was ' + a + ')' : ''); }
   var cnt = function (v) { var n = 0, d = 0, r = 0; (v || []).forEach(function (x) { r = Math.max(r, x.r); (x.pts || []).forEach(function (p) { n++; if (p.done) d++; }); }); return { n: n, d: d, r: r }; };
   var A = cnt(J(h.old)), B = cnt(J(h.new)), o = [];
@@ -6712,7 +6962,7 @@ function histGroups(hist) {
     var can = canEdit() ? g.items.filter(function (h) { return h.can; }) : [];
     if (g.items.length < 2) return histItem(g.items[0], true);
     var who = g.items[0].actor === 'AI routine' ? 'AI · mail' : g.items[0].actor || 'Imported';
-    return '<div class="hgrp"><div class="hgrp-h"><span class="mono muted" style="font-size:var(--fs-xs)">' + esc(niceShort(g.items[0].ts)) + '</span><span class="hby">' + esc(who) + '</span>' +
+    return '<div class="hgrp"><div class="hgrp-h"><span class="mono muted" style="font-size:var(--fs-xs)">' + esc(niceShort(tsLoc(g.items[0].ts))) + '</span><span class="hby">' + esc(who) + '</span>' +
       '<span class="muted" style="font-size:var(--fs-xs)">' + g.items.length + ' changes' + (g.items[0].source && g.items[0].source !== 'Manuscripts_tracker.xlsx' ? ' · ' + esc(short(fullNames(g.items[0].source), 90)) : '') + '</span>' +
       (can.length ? '<button class="btn btn-q hgrp-u" data-a="undo-g" data-v="' + can.map(function (h) { return h.row; }).join(',') + '"' + tt(can.length === g.items.length ? 'Undo this whole update' : 'Undo the ' + can.length + ' changes that can be undone') + '>' + ic('undo') + 'Undo</button>' : '') + '</div>' +
       g.items.map(function (h) { return histItem(h, false, true); }).join('') + '</div>';
@@ -6733,7 +6983,7 @@ function histItem(h, own, inGroup) {
   if (noteOk && S.ned && S.ned.row === h.row) {
     val = '<span class="nedit"><label class="sr" for="ned-text">Edit the note</label><input id="ned-text" class="in" data-i="ned" value="' + esc(S.ned.text) + '"><button class="btn btn-p" data-a="note-save">Save</button><button class="btn btn-q" data-a="note-cancel">Cancel</button></span>';
   }
-  return '<div class="hitem"><span class="mono muted" style="font-size:var(--fs-xs)">' + esc(niceShort(h.ts)) + '</span><span class="hnew"><span class="hby">' + esc(h.actor === 'AI routine' ? 'AI · mail' : h.actor || 'Imported') + '</span>' + val +
+  return '<div class="hitem"><span class="mono muted" style="font-size:var(--fs-xs)">' + esc(niceShort(tsLoc(h.ts))) + '</span><span class="hnew"><span class="hby">' + esc(h.actor === 'AI routine' ? 'AI · mail' : h.actor || 'Imported') + '</span>' + val +
     (h.source && h.source !== 'Manuscripts_tracker.xlsx' && !inGroup && !(S.ned && S.ned.row === h.row) ? ' <span class="muted" style="font-size:var(--fs-xs)">(' + esc(fullNames(h.source)) + ')</span>' : '') + '</span><span class="acts">' + acts + '</span></div>';
 }
 function canDelNow(m) { return isSup() || (m.created_by && m.created_by === me().key); }
@@ -7124,7 +7374,7 @@ function popover() {
     return '<div class="np-dim" aria-hidden="true"></div><div class="pop sbpop npop" role="dialog" aria-label="Notifications" data-pop><div class="np-scroll"><div class="pop-h"><b>For you</b><button class="btn btn-q" data-a="read-all"' + (relU || notesUnreadMore() || ns.some(function (n) { return !n.read; }) ? '' : ' disabled') + '>Mark all read</button></div>' + tcBell() + remItems + relItem +
       (ns.length ? ns.map(function (n) {
         return '<button class="nitem' + (n.read ? '' : ' unread') + (n.undone ? ' undone' : '') + '" data-a="notif-open" data-v="' + esc(n.id) + '"' + (n.undone ? ' title="This change was undone"' : '') + '><span class="ndot" aria-hidden="true"></span><span><span class="lbl" style="display:block">' + (isReminder(n) ? '<i class="n-rp">' + (n.ack ? 'Answered' : 'Reply') + '</i>' : '') +
-          esc({ nudge: 'Nudge', ball_to_you: 'Ball to you', changed: 'Changed', ai_update: 'AI update', ai_kept_edit: 'Morning check', celebrate: 'Congratulations', deadline: 'Deadline', register: 'Register the protocol', task: 'Task', reminder: 'Reminder', inbox: 'Quick update', feedback: 'Feedback', inbox_reply: 'Quick update', feedback_reply: 'App feedback', undone: 'Undone', nudge_reply: 'Reply to your nudge', week: 'Your week' }[n.kind] || n.kind) + (n.undone ? ' · undone' : '') + ' · ' + esc(niceShort(n.ts)) + ' ' + esc(String(n.ts).slice(11, 16)) + '</span><span>' + esc(fullNames(n.text)) + '</span></span></button>';
+          esc({ nudge: 'Nudge', ball_to_you: 'Ball to you', changed: 'Changed', ai_update: 'AI update', ai_kept_edit: 'Morning check', celebrate: 'Congratulations', deadline: 'Deadline', register: 'Register the protocol', task: 'Task', reminder: 'Reminder', inbox: 'Quick update', feedback: 'Feedback', inbox_reply: 'Quick update', feedback_reply: 'App feedback', undone: 'Undone', nudge_reply: 'Reply to your nudge', week: 'Your week' }[n.kind] || n.kind) + (n.undone ? ' · undone' : '') + ' · ' + esc(tsShow(n.ts)) + '</span><span>' + esc(fullNames(n.text)) + '</span></span></button>';
       }).join('') : due.length || relItem ? '' : '<p class="empty" style="margin:0">Nothing yet. You will see here when the ball is passed to you or a manuscript you are on changes.</p>') +
       // 0.3.1 (BACKLOG 29, admin: "see earlier noti phải hiện khi vuốt tới noti cuối"): the last row of the list, not a footer always
       // in view; reaching it loads the next page by itself (npEnd), so fewer come with the data (10)
@@ -7139,11 +7389,13 @@ function popover() {
     return '<div class="pop menu" role="menu" data-pop>' +
       '<button class="mi" role="menuitem" data-a="xlsx">' + ic('sheet') + '<span>Excel (.xlsx)</span></button>' +
       '<button class="mi" role="menuitem" data-a="pdf">' + ic('down') + '<span>PDF</span></button>' +
-      '<button class="mi" role="menuitem" data-a="csv">' + ic('down') + '<span>CSV</span></button></div>';
+      '<button class="mi" role="menuitem" data-a="csv">' + ic('down') + '<span>CSV</span></button>' +
+      '<button class="mi" role="menuitem" data-a="pub-open">' + ic('book') + '<span>Publications list</span></button></div>'; // 0.3.12 (BACKLOG 127, idea 6)
   }
   return '';
 }
 function dialog() {
+  if (S.pubs) return pubDialog(); // 0.3.12 (BACKLOG 127, idea 6)
   if (S.keys) return keysDialog(); // 0.3.8 (BACKLOG 90)
   if (S.cel) return celDialog(); // 0.3.6 (BACKLOG 73)
   if (S.wn) return wnDialog();
@@ -7555,6 +7807,46 @@ function quOpenBox(v) { var pre = v ? Number(v) : (panelShown() ? S.sel : ''), k
 var KEYS = [['Anywhere', [[KEYMOD + ' K', 'Search'], ['/', 'Search'], ['U', 'Quick update'], ['N', 'New manuscript'], ['1 – 9', 'The views in the sidebar, in order'], ['?', 'This list'], ['Esc', 'Close, or back to the list']]],
   ['On a paper', [['J  or  →', 'Next paper'], ['K  or  ←', 'Previous paper'], ['W', 'What happened?'], ['E', 'Change where it is'], ['R', 'Reviewers\' points'], ['T', 'Next actions'], ['F', 'Manuscript & files'], ['O', 'Notes'], ['A', 'Authors & roles'], ['H', 'History']]],
   ['In a text box', [[KEYMOD + ' Enter', 'Save (What happened?, Quick update, a note)'], ['Esc', 'Leave the box']]]];
+/* 0.3.12 (BACKLOG 127, idea 6): the group's publications as references, by year (published, or accepted and in press), in
+   Vancouver, AMA or APA, to copy or download for a CV, an annual report or a grant. The authors in their order, the family
+   name taken as the last word of a name (a suffix such as Jr. kept); the year from History (the first day it was Published,
+   else Accepted), else the submission's year. Without volume and pages, which the app does not keep. */
+var PUB_STYLES = [['vancouver', 'Vancouver'], ['ama', 'AMA'], ['apa', 'APA']];
+function pubName(n) {
+  var w = String(n || '').replace(/\s+/g, ' ').trim().split(' '), suf = '';
+  if (w.length > 1 && /^(jr|sr|ii|iii|iv)\.?$/i.test(w[w.length - 1])) suf = w.pop().replace(/\.$/, '');
+  var fam = w.pop() || '', giv = w.map(function (x) { return x.split('-').map(function (y) { return y.charAt(0).toUpperCase(); }).join('-'); });
+  return { fam: fam, ini: giv.join('').replace(/-/g, ''), apa: giv.map(function (i) { return i.split('-').map(function (c) { return c + '.'; }).join('-'); }).join(' '), suf: suf };
+}
+function pubRef(m, st, year, inPress) {
+  var A = (m.authors || []).map(function (a) { return pubName(a.name); }), doi = doiBare(m.doi), t = String(m.title || '').trim(), j = String(m.journal || '').trim();
+  var end = /[.?!]$/.test(t) ? t : t + '.';
+  if (st === 'apa') {
+    var an = A.map(function (a) { return a.fam + ', ' + a.apa + (a.suf ? ', ' + a.suf + '.' : ''); });
+    var who = an.length > 20 ? an.slice(0, 19).join(', ') + ', ... ' + an[an.length - 1] : an.length > 1 ? an.slice(0, -1).join(', ') + ', & ' + an[an.length - 1] : an.join('');
+    return who + ' (' + (inPress ? 'in press' : year) + '). ' + end + ' ' + j + '.' + (doi ? ' https://doi.org/' + doi : '');
+  }
+  var vn = A.map(function (a) { return a.fam + ' ' + a.ini + (a.suf ? ' ' + a.suf : ''); });
+  var list = st === 'ama' ? (vn.length > 6 ? vn.slice(0, 3).join(', ') + ', et al' : vn.join(', ')) : (vn.length > 6 ? vn.slice(0, 6).join(', ') + ', et al' : vn.join(', '));
+  return list + '. ' + end + ' ' + j + '. ' + (inPress ? (st === 'ama' ? 'Published online ' + year + '.' : 'In press ' + year + '.') : year + '.') + (doi ? (st === 'ama' ? ' doi:' + doi : ' doi: ' + doi) : '');
+}
+function pubList() {
+  var D = S.pubDates || {}, st = S.pubStyle || 'vancouver', by = {};
+  S.boot.manuscripts.filter(function (m) { return m.status === 'Published' || m.status === 'Accepted'; }).forEach(function (m) {
+    var d = D[String(m.id)] || {}, pub = m.status === 'Published', y = String((pub ? d.Published || d.Accepted : d.Accepted) || m.submission_date || m.last_update || '').slice(0, 4) || '—';
+    (by[y] = by[y] || []).push({ m: m, ref: pubRef(m, st, y, !pub), press: !pub });
+  });
+  return Object.keys(by).sort().reverse().map(function (y) { return { y: y, L: by[y].sort(function (a, b) { return a.ref < b.ref ? -1 : 1; }) }; });
+}
+function pubText() { return pubList().map(function (g) { return g.y + '\n' + g.L.map(function (x, i) { return (i + 1) + '. ' + x.ref; }).join('\n'); }).join('\n\n'); }
+function pubDialog() {
+  var G = pubList(), n = G.reduce(function (k, g) { return k + g.L.length; }, 0), st = S.pubStyle || 'vancouver';
+  return '<div class="overlay" data-a="pub-x"><div class="dialog pub-d" role="dialog" aria-modal="true" aria-labelledby="pub-h"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h2 id="pub-h">Publications</h2><button type="button" class="ibtn" data-a="pub-x" aria-label="Close">' + ic('x') + '</button></div>' +
+    '<p class="muted" style="margin:0;font-size:var(--fs-sm)">' + n + ' accepted or published, by year. Check volume and pages before you send it.</p>' +
+    '<div class="seg seg-s" role="group" aria-label="Reference style">' + PUB_STYLES.map(function (o) { return '<button data-a="pub-style" data-v="' + o[0] + '" aria-pressed="' + (st === o[0]) + '">' + o[1] + '</button>'; }).join('') + '</div>' +
+    '<div class="pub-l">' + (S.pubDates ? '' : '<p class="muted" style="margin:0">Reading the dates from History…</p>') + G.map(function (g) { return '<h3>' + esc(g.y) + '</h3><ol>' + g.L.map(function (x) { return '<li>' + shortLinks(esc(x.ref)) + (x.press ? ' <span class="tag t-closed">in press</span>' : '') + '</li>'; }).join('') + '</ol>'; }).join('') + '</div>' +
+    '<div class="btns"><button class="btn btn-p" data-a="pub-copy">' + ic('copy') + 'Copy all</button><button class="btn btn-s" data-a="pub-dl">' + ic('down') + 'Download (.txt)</button></div></div></div>';
+}
 function keysDialog() {
   return '<div class="overlay" data-a="keys-x"><div class="dialog keys-d" role="dialog" aria-modal="true" aria-labelledby="keys-h"><div style="display:flex;justify-content:space-between;align-items:center"><h2 id="keys-h">Keyboard shortcuts</h2><button type="button" class="ibtn" data-a="keys-x" aria-label="Close">' + ic('x') + '</button></div>' +
     KEYS.map(function (g) { return '<section class="keys-g"><h3>' + esc(g[0]) + '</h3><dl>' + g[1].map(function (k) { return '<div><dt>' + k[0].split('  or  ').map(function (x) { return x.split(' ').map(function (y) { return '<kbd class="k">' + esc(y) + '</kbd>'; }).join(' '); }).join(' <span class="muted">or</span> ') + '</dt><dd>' + esc(k[1]) + '</dd></div>'; }).join('') + '</dl></section>'; }).join('') + '</div></div>';
@@ -8439,7 +8731,7 @@ var HB = { n: 0, skip: 0, on: (function () { try { return window.top === window 
 // browser's history must not move the page: the browser restored the scroll position it had kept for that step, after the
 // app had kept the chosen block in sight (Esc, Back, and sometimes the close button)
 try { if (HB.on && 'scrollRestoration' in history) history.scrollRestoration = 'manual'; } catch (e) { }
-function layerN() { return (panelShown() && !S.closing ? 1 : 0) + (S.drawer || S.sbPeek ? 1 : 0) + (S.pop ? 1 : 0) + (S.pal ? 1 : 0) + (S.cel || S.wn || S.ga || S.ad || S.del || S.rp || S.qu || S.fb || S.nf ? 1 : 0); }
+function layerN() { return (panelShown() && !S.closing ? 1 : 0) + (S.drawer || S.sbPeek ? 1 : 0) + (S.pop ? 1 : 0) + (S.pal ? 1 : 0) + (S.cel || S.wn || S.ga || S.ad || S.del || S.rp || S.qu || S.fb || S.nf || S.pubs ? 1 : 0); }
 function histSync() {
   if (!HB.on || !S.boot || HB.skip) return; // a step back still on its way: wait for it (the browser does it later)
   var n = layerN();
@@ -8919,6 +9211,11 @@ var ACT = {
   open: function (v) { var id = Number(v); if (S.sel === id && panelShown() && cardSide()) closePanel(false); else openManuscript(id); },
   'pg-go': function (v) { pgGo(Number(v)); }, // 0.3.8 (BACKLOG 89)
   'keys-x': function () { S.keys = false; render(); },
+  'pub-open': function () { S.pop = null; S.pubs = true; render(); if (!S.pubDates) api('api_publications').then(function (r) { S.pubDates = r || {}; if (S.pubs) render(); }).catch(function (e) { S.pubDates = {}; toast(msg(e), true); render(); }); }, // 0.3.12 (BACKLOG 127, idea 6)
+  'pub-x': function (v, e) { if (e && e.target && e.target.closest && e.target.closest('.dialog') && !e.target.closest('[data-a="pub-x"].ibtn')) return; S.pubs = false; render(); },
+  'pub-style': function (v) { S.pubStyle = v; render(); },
+  'pub-copy': function () { var t = pubText(); (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(function () { toast('Copied: ' + pubList().reduce(function (k, g) { return k + g.L.length; }, 0) + ' references.'); }).catch(function () { download('VIBRA publications.txt', 'text/plain', t); }); },
+  'pub-dl': function () { download('VIBRA publications (' + (S.pubStyle || 'vancouver') + ').txt', 'text/plain;charset=utf-8', pubText()); },
   // 0.3.8 (BACKLOG 88): each line of the summary edited in place; a block's + opens its add row; History folds
   'sum-ed': function (v) {
     var m = curM(); if (!m) return; var cur = S.sumEd && S.sumEd.mid === m.id ? S.sumEd.k : (S.stp && S.stp.mid === m.id ? 'where' : S.tdx && S.tdx.mid === m.id && S.tdx.src !== 'note' ? 'next' : (S.ng && S.ng.mid === m.id) || (S.rem && S.rem.mid === m.id) ? 'dl' : '');
@@ -9523,6 +9820,8 @@ Object.assign(ACT, {
     if (S.rev) { S.rev.items = S.rev.items.filter(function (g) { return g.key !== v; }); S.rev.total = Math.max(0, S.rev.total - 1); render(); }
     api('api_reviewed', [v]).then(function (r) { S.rev = r; S.revAt = Date.now(); render(); }).catch(function (e) { toast(msg(e), true); });
   },
+  'rev-f': function (v) { S.revF = v; render(); }, // 0.3.12 (BACKLOG 127, idea 4)
+  'rev-more': function (v) { S.revOpen = S.revOpen || {}; S.revOpen[v] = !S.revOpen[v]; render(); },
   'rev-all': function () { api('api_reviewed', 'all').then(function (r) { S.rev = r; S.revAt = Date.now(); render(); toast('All marked reviewed.'); }).catch(function (e) { toast(msg(e), true); }); },
   'rev-undo': function (v) { revUndo([Number(v)]); },
   'rev-undo-g': function (v) { // 0.2.5: the whole save at once; it stays struck through here until the list is next loaded
@@ -9589,10 +9888,14 @@ Object.assign(ACT, {
   'tc-go': function () { S.pop = null; if (UIN()) { S.mwTo = 'mw-tc'; ACT.view('mine'); } else { S.setTab = 'requests'; ACT.view('settings'); } },
   'tdb-go': function (v) { tdBallGo(v); },
   'td-mode': function (v) { S.tdMode = v === 'cal' ? 'cal' : 'list'; render(); },
-  'td-day': function (v) { S.tdDay = v && S.tdDay !== v ? v : null; S.td = S.td || { note: '', mid: '' }; S.td.date = S.tdDay || ''; S.tdMode = 'list'; render(); },
+  'td-day': function (v) {
+    if (S.view === 'mine') { S.mwDay = v && S.mwDay !== v ? v : null; render(); return; } // 0.3.11 (BACKLOG 118): the calendar stays, the day's to-dos under it
+    S.tdDay = v && S.tdDay !== v ? v : null; S.td = S.td || { note: '', mid: '' }; S.td.date = S.tdDay || ''; S.tdMode = 'list'; render();
+  },
+  'wk-day': function (v) { S.tdMode = 'cal'; S.mwDay = v; S.tdMonth = String(v).slice(0, 7); render(); var d = document.querySelector('.mwc-day'); if (d) d.scrollIntoView({ block: 'nearest', behavior: reduceMotion() ? 'auto' : 'smooth' }); }, // 0.3.12 (BACKLOG 127, idea 8)
   'td-mon': function (v) {
     var T0 = S.boot.today, mk = S.tdMonth || T0.slice(0, 7);
-    if (v === '0') { S.tdMonth = T0.slice(0, 7); S.tdDay = null; }
+    if (v === '0') { S.tdMonth = T0.slice(0, 7); S.tdDay = null; if (S.view === 'mine') S.mwDay = T0; }
     else { var d = new Date(Number(mk.slice(0, 4)), Number(mk.slice(5, 7)) - 1 + Number(v), 1); S.tdMonth = d.getFullYear() + '-' + pad2(d.getMonth() + 1); }
     render();
   },
@@ -9900,6 +10203,7 @@ document.addEventListener('keydown', function (e) {
     if (t.closest && t.closest('.panel') && dirty()) { e.preventDefault(); ACT.save(); return; }
   }
   if (S.keys && (e.key === 'Escape' || e.key === '?')) { e.preventDefault(); S.keys = false; render(); return; }
+  if (S.pubs && e.key === 'Escape') { e.preventDefault(); S.pubs = false; render(); return; } // 0.3.12
   if (S.boot && !e.metaKey && !e.ctrlKey && !e.altKey && keyFree(t) && !S.pal && !S.nf && !S.qu && !S.fb && !S.del && !S.rp && !S.ad && !S.wn && !S.cel && !S.keys && !S.drawer && S.tour < 0 && e.key !== '/' && keyGo(e.key)) { e.preventDefault(); return; }
   if (e.key === '/' && S.boot && !S.pal && !/INPUT|TEXTAREA|SELECT/.test(t.tagName || '') && !t.isContentEditable && !S.nf && !S.qu && !S.fb && !S.del && S.tour < 0) { e.preventDefault(); palOpen(); return; }
   if (e.key === 'Escape' && S.drawer) { drawerGo(false); return; }
@@ -10041,8 +10345,8 @@ function sinceItems(list) {
   });
 }
 function sinceLabel() {
-  var day = String(S.since).slice(0, 10);
-  return day === S.boot.today ? String(S.since).slice(11, 16) : niceShort(day) + ' ' + String(S.since).slice(11, 16);
+  var l = tsLoc(S.since), day = l.slice(0, 10); // 0.3.12: by the device's clock
+  return day === S.boot.today ? l.slice(11, 16) : niceShort(day) + ' ' + l.slice(11, 16);
 }
 function sinceLine(list) {
   if (!S.since) return '';
@@ -10068,7 +10372,7 @@ function sincePop() {
     (items.length ? items.map(function (r) {
       var m = mById(r.mid);
       return '<button class="nitem" ' + (m ? 'data-a="open" data-v="' + m.id + '"' : 'disabled') + '><span class="ndot" aria-hidden="true"' + (r.toMe ? '' : ' style="background:var(--line-2)"') + '></span><span><span class="lbl" style="display:block">' +
-        esc(chipName(r.who)) + ' · ' + esc(niceShort(r.ts.slice(0, 10))) + ' ' + esc(r.ts.slice(11, 16)) + '</span>' + esc(sinceWhat(r, m)) + '</span></button>';
+        esc(chipName(r.who)) + ' · ' + esc(tsShow(r.ts)) + '</span>' + esc(sinceWhat(r, m)) + '</span></button>';
     }).join('') : '<p class="empty" style="margin:0">Nothing new.</p>') + '</div>';
 }
 function freshBoot(b) {
@@ -10215,7 +10519,7 @@ window.__vibra026 = { vvFit: vvFit, keepReq: keepReq, keptReq: keptReq, settle: 
 window.__vibra028 = { setPal: setPal, LM: LM, HB: HB, MO: MO, spring: spring, morph: morph, closeTop: closeTop, render: render }; // test hook (0.2.8)
 window.__vibra030 = { ic: ic, esc: esc, tagHtml: tagHtml, allDerived: allDerived, myWork: myWork, short: short, nice: nice, niceShort: niceShort, render: render }; // test hook (0.3.0)
 window.__vibra031 = { render: render }; // test hook (0.3.1)
-window.__vibra033 = { act: function (a, v) { ACT[a](v); }, nfTick: nfTick, quickReport: quickReport, rowLink: rowLink, askRun: askRun, AI_PROMPT: AI_PROMPT, scPin: scPin, moClear: moClear }; // test hook (0.3.3)
+window.__vibra033 = { tsLoc: tsLoc, tsShow: tsShow, act: function (a, v) { ACT[a](v); }, nfTick: nfTick, quickReport: quickReport, rowLink: rowLink, askRun: askRun, AI_PROMPT: AI_PROMPT, scPin: scPin, moClear: moClear }; // test hook (0.3.3)
 window.__vibraNames = { authorKey: authorKey, isMemberKey: isMemberKey, onMine: onMine, open: function (id) { openManuscript(id); }, close: function () { closePanel(true); }, render: render };
 window.__vibraReboot = function () { api('api_bootstrap').then(function (b) { S.boot = b; applyTheme(); S.sel = null; S.draft = null; S.pop = null; S.feed = null; S.pair = null; S.fx.list = true; render(); }).catch(function (e) { toast(msg(e), true); }); };
 })();
