@@ -28,8 +28,9 @@
    own secret, and shows it. Nothing else leaves the device.
    3.0.10: the page of tracker 0.3.10 (quicker saves).
    3.0.11: the page of tracker 0.3.11 (fixes: nothing wider than the screen, the calendar holds the whole To do).
-   3.0.12: the page of tracker 0.3.12 (the device's clock, short links, the week at a glance, publications, housekeeping). */
-var CACHE = 'vibra-app-3.0.12';
+   3.0.12: the page of tracker 0.3.12 (the device's clock, short links, the week at a glance, publications, housekeeping).
+   3.0.13: the page of tracker 0.3.13 (Quick update saved at once and sent by itself; Papers by time). */
+var CACHE = 'vibra-app-3.0.13';
 var SHELL = ['./', './app/', './manifest.webmanifest', './icons/app-192.png', './icons/app-512.png', './icons/app-maskable-512.png',
   './icons/app-apple-180.png', './icons/app-badge-96.png', './icons/app-favicon-32.png', './icons/vibra-logo-full.jpg',
   './icons/vibra-logo-light.webp', './icons/vibra-logo-dark.webp']; // 3.0.0: the sign-in logo without its white box, one for each theme
