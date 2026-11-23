@@ -29,8 +29,12 @@
    3.0.10: the page of tracker 0.3.10 (quicker saves).
    3.0.11: the page of tracker 0.3.11 (fixes: nothing wider than the screen, the calendar holds the whole To do).
    3.0.12: the page of tracker 0.3.12 (the device's clock, short links, the week at a glance, publications, housekeeping).
-   3.0.13: the page of tracker 0.3.13 (Quick update saved at once and sent by itself; Papers by time). */
-var CACHE = 'vibra-app-3.0.13';
+   3.0.13: the page of tracker 0.3.13 (Quick update saved at once and sent by itself; Papers by time).
+   3.0.14: the page of tracker 0.3.14 (fixes: the week strip, the hidden sidebar, editing a next action, authors folded).
+   3.0.15: the page of tracker 0.3.15 (the title page sets the authors; changes kept for the sender's yes).
+   3.0.16: the page of tracker 0.3.16 (publication details, the Archive, catch-up of older papers).
+   3.0.17: the page of tracker 0.3.17 (names by one rule, titles and degrees). */
+var CACHE = 'vibra-app-3.0.17';
 var SHELL = ['./', './app/', './manifest.webmanifest', './icons/app-192.png', './icons/app-512.png', './icons/app-maskable-512.png',
   './icons/app-apple-180.png', './icons/app-badge-96.png', './icons/app-favicon-32.png', './icons/vibra-logo-full.jpg',
   './icons/vibra-logo-light.webp', './icons/vibra-logo-dark.webp']; // 3.0.0: the sign-in logo without its white box, one for each theme
