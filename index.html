@@ -3,15 +3,30 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>VIBRA Tracker</title>
+<title>VIBRA has moved to Coscripta</title>
 <meta name="robots" content="noindex">
-<link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" type="image/png" sizes="32x32" href="icons/app-favicon-32.png">
-<link rel="apple-touch-icon" href="icons/app-apple-180.png">
-<!-- VIBRA 2.0.0: the tracker itself is the app, at ./app/. This address (and the app installed from it before) opens it. -->
-<script>location.replace('./app/' + location.search + location.hash);</script>
-<meta http-equiv="refresh" content="0; url=./app/">
-<style>body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#F8F6F1;font:16px system-ui,sans-serif}a{color:#14396E;font-weight:600}</style>
+<style>
+  :root { color-scheme: light dark; --paper: #faf9f6; --ink: #1c1b19; --muted: #6b6862; --line: #e4e1da; }
+  @media (prefers-color-scheme: dark) { :root { --paper: #1a1917; --ink: #f1efe9; --muted: #a29f97; --line: #34322e; } }
+  body { margin: 0; background: var(--paper); color: var(--ink); font: 17px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+  main { max-width: 34rem; margin: 18vh auto 0; padding: 0 24px; }
+  h1 { font: 400 2rem/1.2 Georgia, "Times New Roman", serif; margin: 0 0 16px; }
+  p { color: var(--muted); margin: 0 0 24px; }
+  a.go { display: inline-block; min-height: 40px; line-height: 40px; padding: 0 20px; border-radius: 10px; background: var(--ink); color: var(--paper); text-decoration: none; }
+  small { display: block; margin-top: 28px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 16px; }
+</style>
 </head>
-<body><p><a href="./app/">Open VIBRA Tracker</a></p></body>
+<body>
+<main>
+  <h1>VIBRA has moved to Coscripta.</h1>
+  <p>The papers, their steps and their story are there now. Sign in with the same Google account. This old app no longer changes anything.</p>
+  <a class="go" href="https://app.coscripta.workers.dev">Open Coscripta</a>
+  <small>If you installed the old app on your phone, remove it from the home screen and add Coscripta instead.</small>
+</main>
+<script>
+  // The old app kept itself on the device through its service worker: take it away so that this page is what opens.
+  if ('serviceWorker' in navigator) navigator.serviceWorker.getRegistrations().then(function (rs) { rs.forEach(function (r) { r.unregister(); }); });
+  if (window.caches) caches.keys().then(function (ks) { ks.forEach(function (k) { caches.delete(k); }); });
+</script>
+</body>
 </html>
